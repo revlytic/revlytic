@@ -1,0 +1,1616 @@
+@import url('https://fonts.googleapis.com/css2?family=Mulish:wght@300;400;500;600;700;800;900;1000&display=swap');
+* {
+    font-family: 'Mulish', sans-serif !important;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p {
+    margin: 0;
+}
+
+
+/********** custom scroll for all webpages start here ***********/
+
+.table-wrap::-webkit-scrollbar {
+    width: 4px;
+    margin-top: 2rem;
+}
+
+.table-wrap::-webkit-scrollbar:horizontal {
+    height: 4px;
+}
+
+
+/* Track */
+
+.table-wrap::-webkit-scrollbar-track {
+    background: #fff;
+    border-radius: 10px;
+}
+
+
+/* Handle */
+
+.table-wrap::-webkit-scrollbar-thumb {
+    background: #0F550C;
+    border-radius: 10px;
+}
+
+
+/********** custom scroll for all webpages end here ***********/
+
+.revlytic-subscription-order {
+    background: #fff;
+    padding-top: 25px;
+}
+
+.order_profile {
+    border-radius: 5px;
+    background: #12600F;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    column-gap: 10px;
+}
+
+.order_profile h4 {
+    color: #12600F;
+    font-size: 22px;
+    font-weight: 500;
+    letter-spacing: -0.44px;
+    background: #fff;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.order_profile_details h3 {
+    color: #FFF;
+    font-size: 15px;
+    font-weight: 500;
+    letter-spacing: -0.3px;
+}
+
+.order_profile_details h5 {
+    color: #FFF;
+    font-size: 15px;
+    font-weight: 400;
+    line-height: 1.3;
+    letter-spacing: -0.3px;
+}
+
+.order_profile h4,
+h3,
+h5 {
+    margin: 0;
+}
+
+
+/******* search input with icon css ******/
+
+.inner-search-input input[type=search]::placeholder {
+    color: #bbb;
+}
+
+.inner-search-input button[type=submit] {
+    text-indent: -999px;
+    overflow: hidden;
+    width: 40px;
+    padding: 0;
+    margin: 0;
+    border: 1px solid transparent;
+    border-radius: inherit;
+    background: transparent url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' class='bi bi-search' viewBox='0 0 16 16'%3E%3Cpath d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z'%3E%3C/path%3E%3C/svg%3E") no-repeat center;
+    cursor: pointer;
+    opacity: 0.7;
+}
+
+.inner-search-input button[type=submit]:hover {
+    opacity: 1;
+}
+
+.inner-search-input form.nosubmit {
+    border: none;
+    padding: 0;
+}
+
+.inner-search-input input.nosubmit {
+    border-radius: 5px;
+    border: 1px solid #D1D1D1;
+    background: #FFF;
+    padding: 11px 4px 11px 40px;
+    background: transparent url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' class='bi bi-search' viewBox='0 0 16 16'%3E%3Cpath d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z'%3E%3C/path%3E%3C/svg%3E") no-repeat 13px center;
+}
+
+.serach-date {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    row-gap: 1rem;
+}
+
+.inner-search-input input,
+.inner-search-date input {
+    border-radius: 5px;
+    border: 1px solid #D1D1D1;
+    background: #FFF;
+    padding: 11px 16px;
+    width: 300px;
+}
+
+.revlytic_subscription-table {
+    margin-top: 1.5rem;
+}
+
+.revlytic_subscription-table .responsive-table li {
+    padding: 15px 30px;
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px solid #E4E4E4;
+    margin-bottom: 2rem;
+    align-items: center;
+}
+
+.revlytic_subscription-table .responsive-table .table-row {
+    border-radius: 5px;
+    border: 1px solid #E4E4E4;
+    background: #FFF;
+    margin-bottom: 10px;
+    height: 49px;
+}
+
+.revlytic_subscription-table ul {
+    padding-left: 0;
+}
+
+.revlytic_subscription-table .table-header .col-col-1 {
+    width: 150px;
+    color: #1B1B1B;
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: -0.3px;
+}
+
+.revlytic_subscription-table .table-row .col-col-1 {
+    width: 150px;
+    color: #1B1B1B;
+    font-size: 15px;
+    font-weight: 400;
+    letter-spacing: -0.3px;
+}
+
+.revlytic_subscription-table .table-row:hover {
+    border-radius: 5px;
+    border: 1px solid #12600F;
+    background: #E9FFEF;
+}
+
+.revlytic_subscription-table .table-row:hover a {
+    color: #12600F;
+    font-size: 14px;
+    font-weight: 400;
+    letter-spacing: -0.28px;
+    text-decoration-line: underline;
+}
+
+.revlytic_subscription_pagination .pagination {
+    display: inline-block;
+}
+
+.revlytic_subscription_pagination .pagination a {
+    color: black;
+    padding: 8px 16px;
+    text-decoration: none;
+    border-radius: 5.009px;
+    border: 1.252px solid #EAEAEA;
+}
+
+.revlytic_subscription_pagination .pagination a.active {
+    color: white;
+    border-radius: 5.009px;
+    background: #12600F;
+    border: 1px solid #12600F;
+}
+
+.revlytic_subscription_pagination .pagination a:hover:not(.active) {
+    background-color: #ddd;
+}
+
+.revlytic_subscription_pagination {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+
+.revlytic_subscription_pagination p {
+    color: #666;
+    font-size: 14px;
+    font-weight: 400;
+    letter-spacing: -0.28px;
+}
+
+.revlytic_subscription-table .col-col-1 a {
+    color: #1B1B1B;
+    font-size: 14px;
+    font-weight: 400;
+    letter-spacing: -0.28px;
+    text-decoration: underline;
+}
+
+@media all and (max-width: 991px) {
+    .revlytic_subscription-table .responsive-table .col {
+        flex-basis: 100%;
+    }
+    .revlytic_subscription-table .col-col-1 {
+        width: auto;
+    }
+    .revlytic_subscription-table ul {
+        width: 1200px;
+    }
+    .revlytic-edit-details-grid {
+        grid-template-columns: repeat(auto-fit, minmax(500px, 1fr)) !important;
+    }
+}
+
+@media (max-width:576px) {
+    .inner-search-input input,
+    .inner-search-date input {
+        width: auto;
+    }
+    .edit-plan-details-main,
+    .edit-plan-additional-main,
+    .edit-plan-payment-main {
+        padding-left: 0 !important;
+    }
+    .revlytic-edit-details-grid {
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)) !important;
+    }
+    .edit-plan-details-main select,
+    .edit-plan-details-main input,
+    .edit-plan-additional-main input {
+        width: 100% !important;
+    }
+    .rev-cancel-reason-modal .modal-content {
+        width: 100% !important;
+        margin: 20% auto !important;
+    }
+}
+
+@media (max-width:410px) {
+    .edit-plan-details-main {
+        margin-top: 1rem;
+    }
+}
+
+
+/* ////////details page css///////////////////// */
+
+a {
+    text-decoration: none;
+}
+
+.revlytic-edit-manual-subscription {
+    border-radius: 10px;
+    background: #FFF;
+    box-shadow: 0px 14px 41px 0px rgba(0, 0, 0, 0.05);
+    padding: 30px;
+}
+
+.revlytic-subscription-id {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    align-items: center;
+    border-bottom: 1px solid #CFCFCF;
+    padding-bottom: 1rem;
+    row-gap: 1rem;
+}
+
+.id-content h4 {
+    color: #1B1B1B;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 500;
+    letter-spacing: -0.5px;
+}
+
+.id-content-active h5 {
+    border-radius: 3.961px;
+    border: 0.792px solid #3EBE62;
+    background: #2FA851;
+    color: #FFF;
+    font-size: 13px;
+    font-style: normal;
+    font-weight: 700;
+    letter-spacing: -0.28px;
+    padding: 5px 7px;
+    display: flex;
+    align-items: center;
+    column-gap: 7px;
+}
+
+.id-content-paused h5 {
+    border-radius: 3.961px;
+    border: 0.792px solid #e1b581;
+    background: #ec9b3a;
+    color: #FFF;
+    font-size: 13px;
+    font-style: normal;
+    font-weight: 400;
+    letter-spacing: -0.28px;
+    padding: 5px 7px;
+    display: flex;
+    align-items: center;
+    column-gap: 7px;
+}
+
+.id-content-cancelled h5 {
+    border-radius: 3.961px;
+    border: 0.792px solid #ecadad;
+    background: #e90300ba;
+    color: #FFF;
+    font-size: 13px;
+    font-style: normal;
+    font-weight: 400;
+    letter-spacing: -0.28px;
+    padding: 5px 7px;
+    display: flex;
+    align-items: center;
+    column-gap: 7px;
+}
+
+
+/********* edit details css *******/
+
+.revlytic-edit-details-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    margin-top: 30px;
+    grid-column-gap: 20px;
+    grid-row-gap: 1rem;
+}
+
+.edit-sub-details {
+    border-radius: 10px;
+    background: #F2E9E0;
+    padding: 20px;
+}
+
+.edit-additional-details {
+    border-radius: 10px;
+    background: #E9F5E7;
+    padding: 20px;
+}
+
+.edit-payment-details {
+    border-radius: 10px;
+    background: #E9E9FF;
+    padding: 20px;
+}
+
+.edit-sub-detail-inner h3 {
+    color: #1B1B1B;
+    font-size: 15px;
+    font-weight: 500;
+    letter-spacing: -0.3px;
+}
+
+.edit-sub-detail-inner {
+    display: flex;
+    column-gap: 10px;
+}
+
+#cancelModal button {
+    color: #FFf;
+    font-size: 14px;
+    font-weight: 700;
+    background: #255500;
+    border-color: #2b5500;
+    border-radius: 6px;
+}
+
+.edit-plan-details-main h4:last-child {
+    margin-bottom: 0;
+}
+
+.edit-plan-details-main h4 span {
+    color: #000;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    letter-spacing: -0.3px;
+}
+
+
+/******** edit additional details css *********/
+
+.edit-sub-additional-inner {
+    display: flex;
+    column-gap: 10px;
+}
+
+.edit-sub-additional-inner h3 {
+    color: #1B1B1B;
+    font-size: 15px;
+    font-weight: 500;
+    letter-spacing: -0.3px;
+}
+
+.edit-plan-additional-main h4 {
+    color: #545454;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    letter-spacing: -0.3px;
+    margin-bottom: 7px;
+    display: grid;
+    grid-column-gap: 10px;
+    white-space: nowrap;
+    /* align-items: center; */
+    grid-template-columns: repeat(auto-fill, minmax(186px, 1fr));
+}
+
+.edit-plan-additional-main h4:last-child {
+    margin-bottom: 0;
+}
+
+.edit-plan-additional-main h4 span {
+    color: #000;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    letter-spacing: -0.3px;
+}
+
+.edit-additional-btn {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    flex-wrap: wrap;
+    row-gap: 5px;
+}
+
+.edit-additional-btn a {
+    border-radius: 3.961px;
+    border: 0.792px solid #CACACA;
+    background: #FFF;
+    padding: 6px 10px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    column-gap: 6px;
+    color: #12600F;
+    font-size: 13px;
+    font-weight: 400;
+    letter-spacing: -0.222px;
+}
+
+
+/******** edit payment details css *********/
+
+.edit-sub-payment-inner {
+    display: flex;
+    column-gap: 10px;
+}
+
+.edit-sub-payment-inner h3 {
+    color: #1B1B1B;
+    font-size: 15px;
+    font-weight: 500;
+    letter-spacing: -0.3px;
+}
+
+.edit-plan-payment-main h4 {
+    color: #545454;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    letter-spacing: -0.3px;
+    margin-bottom: 7px;
+    display: grid;
+    grid-column-gap: 10px;
+    white-space: nowrap;
+    /* align-items: center; */
+    grid-template-columns: repeat(auto-fill, minmax(186px, 1fr));
+}
+
+.edit-plan-payment-main h4:last-child {
+    margin-bottom: 0;
+}
+
+.edit-plan-payment-main h4 span {
+    color: #000;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    letter-spacing: -0.3px;
+    white-space: normal;
+}
+
+.edit-payment-btn {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    flex-wrap: wrap;
+    row-gap: 10px;
+}
+
+.edit-payment-btn a {
+    border-radius: 3.961px;
+    border: 0.792px solid #CACACA;
+    background: #FFF;
+    padding: 6px 10px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    column-gap: 6px;
+    color: #12600F;
+    font-size: 13px;
+    font-weight: 400;
+    letter-spacing: -0.222px;
+}
+
+
+/*********** edit sub add product section css *******/
+
+.revlytic-sub-add-product-section {
+    border-radius: 10px;
+    border: 1px solid #E3E3E3;
+    background: #FFF;
+    box-shadow: 8px 4px 43px 0px rgba(0, 0, 0, 0.10);
+    margin-top: 20px;
+    padding: 20px;
+}
+
+.add-product-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    row-gap: 1rem;
+}
+
+.add-product-row h4 {
+    color: #1B1B1B;
+    font-size: 22px;
+    font-style: normal;
+    font-weight: 500;
+    letter-spacing: -0.44px;
+}
+
+.add-product-row a {
+    border-radius: 5px;
+    background: #0F550C;
+    display: flex;
+    align-items: center;
+    column-gap: 7px;
+    padding: 10px 15px;
+    color: #FFF;
+    font-size: 13px;
+    font-weight: 700;
+    height: 31px;
+}
+
+
+/****** edit product list css ***********/
+
+td.submit-cancel-button {
+    text-align: right !important;
+}
+
+.edit-add-product-list .d-flex.align-items-center {
+    display: flex;
+    column-gap: 7px;
+    align-items: center;
+}
+
+.edit-add-product-list {
+    margin-top: 20px;
+}
+
+.edit-add-product-list .img {
+    width: 60px;
+    height: 50px;
+    margin: 10px 0;
+    background-size: cover;
+    background-repeat: no-repeat;
+    border-radius: 5px;
+}
+
+.edit-add-product-list .pl-3.email {
+    margin-top: 10px;
+}
+
+.edit-add-product-list .table.table-responsive-xl {
+    width: 100%;
+    min-width: 1000px;
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+
+.edit-add-product-list .table-wrap {
+    max-height: 260px;
+    overflow: auto;
+}
+
+.edit-add-product-list th {
+    color: #000;
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: -0.28px;
+    text-transform: capitalize;
+    border-bottom: 1px solid #e4e4e4 !important;
+    padding-bottom: 1rem;
+}
+
+.edit-add-product-list th,
+td {
+    border: none;
+}
+
+.edit-add-product-list tr {
+    border-bottom: 1px solid #e4e4e4;
+}
+
+.edit-add-product-list tr:last-child {
+    border-bottom: none;
+}
+
+div#revlytic-main-body .hidden {
+    display: none;
+}
+
+#rev-reason-cancelCancelBtn {
+    float: right;
+}
+
+.edit-add-product-list td {
+    color: #1B1B1B;
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: -0.32px;
+    text-align: center;
+}
+
+.edit-product-subtotal {
+    display: flex;
+    justify-content: space-between;
+    border-radius: 5px;
+    border: 1px solid #12600F;
+    background: #E9FFEF;
+    padding: 13px 20px;
+    margin-top: 10px;
+    align-items: center;
+}
+
+.edit-product-subtotal h3 {
+    color: #2B2B2B;
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: -0.32px;
+}
+
+.edit-product-subtotal h2 {
+    color: #12600F;
+    font-size: 18px;
+    font-weight: 800;
+    letter-spacing: -0.44px;
+}
+
+
+/*******shipping details css *********/
+
+.edit-shiping-content h4 {
+    font-size: 22px;
+    font-weight: 500;
+}
+
+.revlytic-edit-shipping-details {
+    border-radius: 10px;
+    border: 1px solid #E3E3E3;
+    background: #FFF;
+    box-shadow: 0px 14px 43px 0px rgba(0, 0, 0, 0.10);
+    padding: 20px;
+    margin-top: 20px;
+}
+
+.edit-shiping-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #CFCFCF;
+    padding-bottom: 1rem;
+}
+
+.edit-shiping-content a {
+    border-radius: 3.961px;
+    border: 0.792px solid #CACACA;
+    background: #FFF;
+    padding: 6px 10px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    column-gap: 6px;
+    color: #12600F;
+    font-size: 13px;
+    font-weight: 400;
+    letter-spacing: -0.222px;
+}
+
+.shiping-inputs-main input[type=text][disabled],
+.shiping-inputs-main select[disabled] {
+    background-color: rgba(0, 0, 0, 0.04) !important;
+}
+
+.shiping-inputs-main input[type=text],
+select {
+    width: 100%;
+    padding: 4px 11px;
+    margin: 8px 0;
+    box-sizing: border-box;
+    border-radius: 5px;
+    border: 0.796px solid #C8C8C8;
+    background: #FFF;
+    font-size: 14px;
+    line-height: 1.5714285714285714;
+    height: 35px;
+}
+
+input#reschedule-datepicker {
+    width: 100%;
+    background-color: #ffffff;
+    border: 1px solid #d9d9d9;
+    height: 35px;
+    border-radius: 5px;
+    padding: 0 11px;
+    margin-bottom: 1rem;
+    font-size: 16px;
+}
+#rescheduleConfirm {
+    color: #FFF;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 700;
+    background: #255500 !important;
+    border-color: #2b5500;
+    padding: 4px 15px;
+    border-radius: 6px;
+    height: 35px;
+    cursor: pointer;
+    border: none;
+}
+
+.shiping-inputs-main {
+    display: flex;
+    justify-content: space-between;
+    column-gap: 1rem;
+    margin-top: 10px;
+}
+
+.shiping-address {
+    width: 50%;
+}
+
+.shiping-address.city-zip div {
+    width: 100%;
+}
+
+.shiping-address.city-zip {
+    display: flex;
+    justify-content: space-between;
+    column-gap: 1rem;
+}
+
+.revlytic-edit-shipping-details label {
+    color: #1B1B1B;
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: -0.28px;
+    text-transform: capitalize;
+}
+
+.revlytic-edit-shipping-details label ::placeholder {
+    text-transform: capitalize;
+}
+
+
+/********** upcoming order css ********/
+
+.upcoming-order.tabset {
+    border-radius: 10px;
+    border: 1px solid #E3E3E3;
+    background: #FFF;
+    box-shadow: 0px 14px 43px 0px rgba(0, 0, 0, 0.10);
+    padding: 0px 20px 30px;
+    margin-top: 20px;
+}
+
+.tabset>input[type="radio"] {
+    position: absolute;
+    left: -200vw;
+}
+
+.tabset .tab-panel {
+    display: none;
+}
+
+.tabset>input:first-child:checked~.tab-panels>.tab-panel:first-child,
+.tabset>input:nth-child(3):checked~.tab-panels>.tab-panel:nth-child(2),
+.tabset>input:nth-child(5):checked~.tab-panels>.tab-panel:nth-child(3),
+.tabset>input:nth-child(7):checked~.tab-panels>.tab-panel:nth-child(4),
+.tabset>input:nth-child(9):checked~.tab-panels>.tab-panel:nth-child(5),
+.tabset>input:nth-child(11):checked~.tab-panels>.tab-panel:nth-child(6) {
+    display: block;
+}
+
+.tabset>label {
+    position: relative;
+    display: inline-block;
+    padding: 15px 0;
+    border: 1px solid transparent;
+    border-bottom: 0;
+    cursor: pointer;
+    color: #737171;
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: -0.4px;
+    margin-right: 1rem;
+}
+
+.tabset>input:focus+label,
+.tabset>input:checked+label {
+    border-bottom: 3px solid #0F550C;
+    color: #0F550C;
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: -0.4px;
+}
+
+.tabset>label:hover {
+    color: #0F550C;
+}
+
+.tab-panel {
+    border-top: 1px solid #ccc;
+    min-width: 700px;
+}
+
+.tab-panels {
+    overflow-x: auto;
+}
+
+.order-conformation-inner {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    border-bottom: 1px solid #CFCFCF;
+    padding: 20px 0;
+}
+
+.order-conformation-inner:last-child {
+    border-bottom: none;
+}
+
+.order-status {
+    display: flex;
+    align-items: center;
+    column-gap: 5px;
+    justify-content: center;
+}
+
+.order-status h5 {
+    border-radius: 3.747px;
+    border: 0.594px solid #0F550C;
+    background: #FFF;
+    color: #12600F;
+    font-size: 13px;
+    font-weight: 400;
+    letter-spacing: -0.21px;
+    padding: 4px 7px;
+}
+
+.order-date h4 {
+    color: #666;
+    font-size: 13px;
+    font-weight: 400;
+    letter-spacing: -0.28px;
+}
+
+.order-status h4 {
+    color: #666;
+    font-size: 13px;
+    font-weight: 400;
+    letter-spacing: -0.28px;
+}
+
+.order-date h5 {
+    color: #000;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: -0.28px;
+    line-height: 1.5;
+}
+
+.order-now-and-skip {
+    display: flex;
+    justify-content: right;
+    column-gap: 1rem;
+    align-items: center;
+}
+
+.order-now-and-skip button {
+    border-radius: 5px;
+    background: #1c5503;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: -0.28px;
+    padding: 5px 15px;
+    text-transform: capitalize;
+    border: 1px solid #255500;
+    height: 35px;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.revlytic-subscription-status {
+    margin-top: 20px;
+    display: flex;
+    justify-content: end;
+    column-gap: 1rem;
+}
+
+.revlytic-subscription-status .resume-sub {
+    border-radius: 5px;
+    border: 1px solid #0F550C;
+    background: #E7FFED;
+    padding: 10px 15px;
+    color: #12600F;
+    font-size: 14px;
+    font-weight: 400;
+    letter-spacing: -0.28px;
+    cursor: pointer;
+}
+
+.revlytic-subscription-status .pause-sub {
+    border-radius: 5px;
+    border: 1px solid #ec9b3a;
+    background: #fce9d1;
+    padding: 10px 15px;
+    color: #ec9b3a;
+    font-size: 13px;
+    font-weight: 400;
+    letter-spacing: -0.28px;
+    cursor: pointer;
+}
+
+.revlytic-subscription-status .cancel-sub {
+    border-radius: 5px;
+    border: 1px solid #FF6C6C;
+    background: #FFEAEA;
+    padding: 10px 15px;
+    color: #FF4F4F;
+    font-size: 14px;
+    font-weight: 400;
+    letter-spacing: -0.28px;
+    cursor: pointer;
+}
+
+@media (max-width:767px) {
+    .order-conformation-inner {
+        grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)) !important;
+    }
+}
+
+@media (max-width:640px) {
+    .shiping-inputs-main,
+    .shiping-address.city-zip {
+        flex-wrap: wrap;
+        margin-top: 0;
+    }
+    .shiping-inputs-main:first-child {
+        margin-top: 10px;
+    }
+    .revlytic-subscription-status {
+        justify-content: start !important;
+    }
+    .shiping-address {
+        width: 100% !important;
+    }
+}
+
+@media (max-width:430px) {
+    .revlytic-edit-details-grid {
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    }
+    .edit-sub-details,
+    .edit-additional-details,
+    .edit-payment-details {
+        padding: 10px;
+    }
+    #rev-edit-payment-btn,
+    .add-product-row a {
+        font-size: 11px;
+    }
+    #rev-edit-subscriptionDetails,
+    .revlytic-shipping-action-btn button,
+    .revlytic-subdetails-btn button,
+    .submit-cancel-button button {
+        font-size: 11px;
+    }
+}
+
+.revlytic.upcoming-orders-main {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    border-bottom: 1px solid #CFCFCF;
+    padding: 1rem 0;
+}
+
+.revlytic.past-order-container .status {
+    position: relative;
+    right: 0 !important;
+    text-align: center;
+}
+
+.col-col-1.rev-product-count {
+    text-align: center;
+    position: relative;
+    right: 2rem;
+}
+
+.revlytic.upcoming-orders-main .manage {
+    text-align: right;
+    position: relative;
+    right: 80px;
+}
+
+.revlytic.upcoming-orders-main .status {
+    position: relative;
+    text-align: center;
+}
+
+
+/* /* //////modal test///////////////////////////////////////////////////// */
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 3;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.4);
+}
+
+
+/* Modal Content */
+
+.modal-content {
+    background-color: #e7e7e7;
+    margin: 10% auto;
+    width: 600px;
+    height: auto;
+    border-radius: 10px 10px 0 0;
+}
+
+.modal-content-inner {
+    padding: 1px 0 20px 20px;
+}
+
+
+/* Close Button */
+
+.close {
+    color: #000;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    margin-top: -9px;
+    margin-right: 10px;
+}
+
+.revlytic.product-headerFixed {
+    width: 600px;
+    background: #ddd;
+    z-index: 1;
+    padding: 7px 0px 0 20px;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    height: 48px;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+
+/* /////////////////////////////////////////////////////////////// */
+
+#product-list {
+    padding: 1rem 2rem 0;
+    height: 60vh;
+    overflow-y: auto;
+}
+
+#product-list div {
+    list-style: none;
+    display: flex;
+    align-items: center;
+    column-gap: 1rem;
+}
+
+.product-title,
+.variant-title {
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.product-item,
+.variant-item {
+    border-bottom: 1px solid #d1d1d1;
+    margin-bottom: 10px;
+}
+
+.product-image,
+.variant-image {
+    height: 40px;
+    margin-bottom: 1.5rem;
+    position: relative;
+    border-radius: 5px;
+    border: 1px solid #d1d1d1;
+}
+
+.product-image img,
+.variant-image img {
+    height: 40px;
+    width: 40px;
+    object-fit: contain;
+    border-radius: 5px;
+}
+
+.variant-item {
+    margin-left: 2.5rem;
+}
+
+.revlytic-edit-manual-subscription #search-input {
+    width: 80%;
+    padding: 7px 6px;
+    border-radius: 4px;
+    border: 1px solid #c5c5c5;
+}
+
+.revlytic-edit-manual-subscription #search-button {
+    border: none;
+    padding: 8px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    background: #2b5500;
+    color: #fff;
+}
+
+.revlytic.product-modalBtn {
+    position: fixed;
+    background: #ddd;
+    width: 600px;
+    left: 50%;
+    transform: translate(-50%, -1px);
+    text-align: right;
+    padding: 7px 20px;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+}
+
+.revlytic.product-modalBtn button {
+    border: none;
+    padding: 8px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    background: #2b5500;
+    color: #fff;
+}
+
+
+/* //////////////////////////////////loader css start */
+
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(240, 240, 240, 0.5);
+    backdrop-filter: blur(.5px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+    display: none;
+}
+
+.revlytic-shipping-action-btn {
+    display: flex;
+    column-gap: 10px;
+}
+
+
+/* Styles for the square snake loader */
+
+.revlytic-loader {
+    background-color: #141417;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column
+}
+
+.sd-loader svg {
+    height: 50%;
+    width: 50%;
+}
+
+@keyframes snakeMove {
+    0% {
+        transform: translateX(0);
+    }
+    20% {
+        transform: translateX(120px);
+    }
+    40% {
+        transform: translateX(120px);
+    }
+    60% {
+        transform: translateX(0);
+    }
+    80% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(120px);
+    }
+}
+
+
+/* ////////////////////////////loader css end */
+
+#rev-edit-subscriptionDetails,
+.revlytic-shipping-action-btn button,
+.revlytic-subdetails-btn button,
+.submit-cancel-button button {
+    border: none;
+    color: #fff;
+    padding: 7px 12px;
+    border-radius: 5px;
+    background: #0F550C;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 700;
+    height: 31px;
+}
+
+.submit-cancel-button {
+    text-align: right;
+}
+
+#rev-edit-payment-btn {
+    border: none;
+    color: #fff;
+    padding: 4px 9px;
+    border-radius: 5px;
+    background: #0F550C;
+    cursor: pointer;
+    height: 31px;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+#rev-edit-subscriptionDetails path,
+#rev-billing-freq-edit path,
+#rev-billing-cycle-edit path {
+    fill: #fff;
+}
+
+#rev-edit-subscriptionDetails,
+#rev-billing-freq-edit,
+#rev-billing-cycle-edit {
+    display: flex;
+    column-gap: 4px;
+    align-items: center;
+}
+
+.edit-plan-details-main input,
+.edit-plan-additional-main input {
+    padding: 4px 10px;
+    margin: 4px 0;
+    box-sizing: border-box;
+    border-radius: 5px;
+    border: 0.796px solid #C8C8C8;
+    background: #FFF;
+    width: 100%;
+    font-size: 14px;
+}
+
+
+/* ////////////toast */
+
+.toast {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #333;
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    z-index: 9999;
+}
+
+.edit-plan-details-main select {
+    width: 100%;
+    padding: 3px 10px;
+    margin: 0;
+    font-size: 14px;
+}
+
+.edit-plan-details-main h4 {
+    color: #545454;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    letter-spacing: -0.3px;
+    margin-bottom: 7px;
+    display: grid;
+    width: 100%;
+    /* align-items: center; */
+    grid-column-gap: 10px;
+    row-gap: 1rem;
+    white-space: nowrap;
+    grid-template-columns: repeat(3, 1fr);
+}
+
+
+/* ////////////////////////active dropdown css */
+
+.dropdown-options {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background-color: white;
+    border: 1px solid #ccc;
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+}
+
+
+/* Style the dropdown options list */
+
+.dropdown-options ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.dropdown-options ul li {
+    padding: 8px 16px;
+    cursor: pointer;
+}
+
+
+/* Show the options when the dropdown is active */
+
+.dropdown-container.active .dropdown-options {
+    display: block;
+}
+
+.rev-edit-product-icon,
+.rev-delete-icon {
+    cursor: pointer;
+}
+
+.rev-edit-product-icon {
+    margin-right: 1rem;
+}
+
+
+/* /////////////////////////////////cancel subscription reason modal */
+
+@media(max-width:576px) {
+    .revlytic-edit-manual-subscription {
+        padding: 10px !important;
+    }
+    .rev-cancel-reason-modal .modal-content {
+        width: 100% !important;
+    }
+    #cancelModal button {
+        font-size: 11px;
+    }
+}
+
+@media (max-width: 350px) {
+    .revlytic-edit-details-grid {
+        grid-template-columns: repeat(auto-fit, minmax( 270px, 1fr)) !important;
+    }
+}
+
+.rev-cancel-reason-modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.4);
+    overflow: auto;
+}
+
+.rev-cancel-reason-modal .modal-content {
+    background-color: #f9f9f9;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 600px;
+    border-radius: 10px;
+    position: relative;
+}
+
+.rev-cancel-reason-modal .close {
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: 10px;
+    cursor: pointer;
+}
+
+.rev-cancel-reason-modal .modal-title {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.rev-cancel-reason-modal .modal-text {
+    font-size: 15px;
+    margin-bottom: 20px;
+}
+
+.rev-cancel-reason-modal .modal-btn {
+    padding: 10px 20px;
+    background-color: #007BFF;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    margin-right: 10px;
+}
+
+.rev-cancel-reason-modal .modal-btn:last-child {
+    margin-right: 0;
+}
+
+.revlytic.order-main-tabs .ant-tabs-content-holder {
+    overflow-x: auto;
+}
+
+#cancelModal h2,
+p {
+    text-align: center;
+}
+
+div#cancelModal #cancelModal button {
+    background: #0F550C;
+    border-radius: 5px;
+    margin-top: 1rem;
+    font-weight: 700;
+}
+
+#rev-cancel-reason-select {
+    padding: 10px 5px;
+    width: 100%;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    margin-bottom: 2rem;
+    height: 120px;
+    font-size: 16px;
+}
+.rev-cancel-reason-modal .modal-content select {
+    height: auto !important;
+}
+
+.revlytic.product-headerFixed input:focus,
+#rev-cancel-reason-select:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+div#revlytic-main-body {
+    padding: 0 20px;
+}
+
+.revlytic.cancel-reason-container {
+    display: flex;
+    column-gap: 10px;
+    align-items: center;
+}
+
+
+/* .///////////////////////////////rescdule modal css start */
+
+.rev-reschedule-modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.7);
+}
+
+
+/* Modal content */
+
+.rev-reschedule-modal-content {
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 500px;
+    background-color: #f9f9f9;
+    border-radius: 10px;
+}
+
+.rev-reschedule-modal-content h2 {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+
+/* Close button */
+
+.rev-reschedule-close-modal {
+    color: #000;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    position: relative;
+    bottom: 11px;
+}
+
+.rev-reschedule-close-modal:hover,
+.rev-reschedule-close-modal:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+
+/* ////////////////////////reschedule mmodal css ends */
+
+
+
+@media (max-width:576px){
+    .rev-reschedule-modal-content {
+        width: 300px !important;
+        padding: 15px;
+    }
+    .rev-reschedule-modal-content h2 {
+        font-size: 18px;
+    }
+    .rev-reschedule-close-modal {
+        font-size: 22px;
+        bottom: 8px;
+    }
+}

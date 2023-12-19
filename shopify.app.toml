@@ -1,0 +1,33 @@
+# Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
+
+name = "subscription"
+client_id = "a3fb3d5d86b47a536e7377a9d8b989ca"
+application_url = "https://democrat-packing-das-mag.trycloudflare.com"
+embedded = true
+
+[access_scopes]
+# Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
+scopes = "write_products,read_translations,read_themes,read_products,write_products ,read_discounts,write_discounts,read_customers ,write_customers,read_orders,write_orders,read_merchant_managed_fulfillment_orders,write_merchant_managed_fulfillment_orders,read_third_party_fulfillment_orders,write_third_party_fulfillment_orders,read_price_rules,unauthenticated_write_checkouts ,read_own_subscription_contracts,write_own_subscription_contracts,read_customer_payment_methods,unauthenticated_read_product_listings,unauthenticated_read_product_tags,read_fulfillments,write_fulfillments"
+use_legacy_install_flow = true
+
+[auth]
+redirect_urls = [
+  "https://democrat-packing-das-mag.trycloudflare.com/auth/callback",
+  "https://democrat-packing-das-mag.trycloudflare.com/auth/shopify/callback",
+  "https://democrat-packing-das-mag.trycloudflare.com/api/auth/callback"
+]
+
+[webhooks]
+api_version = "2023-04"
+
+  [webhooks.privacy_compliance]
+  customer_deletion_url = "https://stop-respondent-serve-platform.trycloudflare.com/api/webhooks"
+  customer_data_request_url = "https://stop-respondent-serve-platform.trycloudflare.com/api/webhooks"
+  shop_deletion_url = "https://stop-respondent-serve-platform.trycloudflare.com/api/webhooks"
+
+[pos]
+embedded = false
+
+[build]
+automatically_update_urls_on_dev = true
+dev_store_url = "sahil-shine.myshopify.com"

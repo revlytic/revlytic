@@ -1,0 +1,26 @@
+{
+  "name": "subscription-app-virender",
+  "version": "1.0.0",
+  "main": "web/index.js",
+  "license": "UNLICENSED",
+  "scripts": {
+    "shopify": "shopify",
+    "build": "shopify app build",
+    "dev": "shopify app dev",
+    "info": "shopify app info",
+    "generate": "shopify app generate",
+    "deploy": "shopify app deploy",
+    "start": "node web/index.js"
+  },
+  "dependencies": {
+    "@babel/preset-react": "^7.22.5",
+    "@node-loader/babel": "^2.0.1",
+    "@shopify/admin-ui-extensions-react": "^1.1.0",
+    "@shopify/app": "^3.49.2",
+    "@shopify/app-bridge-react": "^3.7.8",
+    "@shopify/cli": "^3.49.2",
+    "dotenv": "^16.3.1",
+    "html-to-pdfmake": "^2.5.1"
+  },
+  "author": "ShineD-110"
+}

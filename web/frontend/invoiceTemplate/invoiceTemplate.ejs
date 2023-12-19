@@ -1,0 +1,624 @@
+<html lang="en">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title> Order confirmation </title>
+    <meta name="robots" content="noindex,nofollow">
+    <meta name="viewport" content="width=device-width; initial-scale=1.0;">
+    <style type="text/css">
+        @media print {
+
+            * {
+                -webkit-print-color-adjust: exact;
+            }
+
+            html {
+                background: none;
+                padding: 0;
+            }
+
+            body {
+                box-shadow: none;
+                margin: 0;
+            }
+
+            span:empty {
+                display: none;
+            }
+
+            .add,
+            .cut {
+                display: none;
+            }
+            
+        }
+
+        @page {
+            margin: 0;
+        }
+
+
+        .fullPadding th:first-child {
+            border-top-left-radius: 5px;
+            border-bottom-left-radius: 5px;
+        }
+
+        .fullPadding th:last-child {
+            border-top-right-radius: 5px;
+            border-bottom-right-radius: 5px;
+        }
+
+        .fullPadding td:first-child {
+            border-top-left-radius: 5px;
+            border-bottom-left-radius: 5px;
+        }
+
+        .fullPadding td:last-child {
+            border-top-right-radius: 5px;
+            border-bottom-right-radius: 5px;
+        }
+
+        .visibleMobile {
+            display: none;
+        }
+
+        .hiddenMobile {
+            display: block;
+        }
+
+        .invoice-table-head {
+            background: linear-gradient(0deg, #0F550C 0%, #0F550C 100%);
+        }
+
+        @media only screen and (max-width: 767px) {
+
+            table[class=fullTable] {
+                width: 96% !important;
+                clear: both;
+            }
+
+            table[class=fullPadding] {
+                width: 85% !important;
+                clear: both;
+            }
+
+            .fullPaddingheader {
+                width: 85%;
+            }
+
+            table[class=col] {
+                width: 45% !important;
+            }
+
+            .erase {
+                display: none;
+            }
+        }
+
+        @media only screen and (max-width: 420px) {
+            table[class=fullTable] {
+                width: 100% !important;
+                clear: both;
+            }
+
+            table[class=fullPadding] {
+                width: 85% !important;
+                clear: both;
+            }
+
+            .fullPaddingheader {
+                width: 85%;
+            }
+
+            table[class=col] {
+                width: 100% !important;
+                clear: both;
+            }
+
+            table[class=col] td {
+                text-align: left !important;
+            }
+
+            .erase {
+                display: none;
+                font-size: 0;
+                max-height: 0;
+                line-height: 0;
+                padding: 0;
+            }
+
+            .visibleMobile {
+                display: block !important;
+            }
+
+            .hiddenMobile {
+                display: none !important;
+            }
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <!-- Header -->
+    <table width="600px" border="0" cellpadding="0" cellspacing="0" align="center" class="fullTable" bgcolor="#e1e1e1">
+        <tbody>
+            <tr>
+                <td height="20"></td>
+            </tr>
+            <tr>
+                <td>
+                    <table width="85%" border="0" cellpadding="0" cellspacing="0" align="center" class="fullTable"
+                        bgcolor="#ffffff" style="border-radius: 10px 10px 0 0;">
+                        <tbody>
+                            <tr class="hiddenMobile">
+                                <td height="40"></td>
+                            </tr>
+                            <tr class="visibleMobile">
+                                <td height="30"></td>
+                            </tr>
+
+                            <tr>
+                                <td>
+                                    <table width="95%" border="0" cellpadding="0" cellspacing="0" align="center"
+                                        class="fullPaddingheader">
+                                        <tbody>
+                                            <tr>
+                                                <td>
+                                                    <table width="100%" border="0" cellpadding="0" cellspacing="0"
+                                                        align="left" class="col">
+                                                        <tbody>
+                                                            <% if (details.components[0].status) { %>
+
+                                                            <tr>
+                                                                <td align="left"> <img src="<%= details.labels.Logo %>" width=216 height=43
+                                                                        alt="logo" border="0"></td>
+                                                            </tr>
+                                                            <% } %>
+
+                                                            <tr class="hiddenMobile">
+                                                                <td height="40"></td>
+                                                            </tr>
+                                                            <tr class="visibleMobile">
+                                                                <td height="20"></td>
+                                                            </tr>
+                                                            <% if (details.components[1].status) { %>
+
+                                                            <tr>
+
+                                                                <td
+                                                                    style="font-size: 14px;color: #5b5b5b;line-height: 18px;vertical-align: top;text-align: left;">
+                                                                    <strong
+                                                                        style="color: #000;font-size: 15px;margin: 0;">
+                                                                        <%= details.labels.Bill_To %>
+                                                                    </strong>
+                                                                    <p
+                                                                        style="color: #5b5b5b;font-size: 14px;font-weight: 500;margin: 2px 0 2px;">
+                                                                        <%= details.bill_to.firstName %> <%= details.bill_to.lastName %>
+                                                                    </p>
+                                                                    <% if (details.bill_to.address1) { %>
+
+                                                                        <%= details.bill_to.address1 %>,</br>
+                                                                        <% } %>
+                                                                        <% if (details.bill_to.address2) { %>
+
+                                                                            <%= details.bill_to.address2 %>,<br>
+                                                                            <% } %>
+                                                                    
+                                                                            <% if (details.bill_to.province) { %>
+                                                                    <%= details.bill_to.province %>,<br>
+                                                                    <% } %>
+
+                                                                    <%= details.bill_to.country %>
+
+                                                                </td>
+                                                            </tr>
+                                                            <% } %>
+
+                                                        </tbody>
+                                                    </table>
+                                                </td>
+                                                <td>
+                                                    <table width="100%" border="0" cellpadding="0" cellspacing="0"
+                                                        align="right" class="col">
+                                                        <tbody>
+                                                            <tr class="visibleMobile">
+                                                                <td height="20"></td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td height="5"></td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td style="text-align: right;">
+                                                                    <strong
+                                                                        style="color: #0F550C;font-size: 45px;font-style: normal;font-weight: 600;  vertical-align: top; line-height: 1;">Invoice</strong>
+
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                            </tr>
+                                                            <tr class="hiddenMobile">
+                                                                <td height="50"></td>
+                                                            </tr>
+                                                            <tr class="visibleMobile">
+                                                                <td height="20"></td>
+                                                            </tr>
+
+                                                            <tr>
+                                                                <td
+                                                                    style="font-size: 14px;color: #5b5b5b;line-height: 18px;vertical-align: top;text-align: right;">
+                                                                    <% if (details.components[2].status) { %>
+                                                                        <b style="color: #000;"><%= details.labels.Invoice_Number %>:</b> <%= details.labels.Invoice_Number_Prefix %>-<%= details.orderno %> <br><% } %>                                                            
+
+                                                                        <% if (details.components[4].status) { %>    <b style="color: #000;"><%= details.labels.Invoice_Billing_Date %>: </b>
+                                                                    <%= details.billing_date %> <% } %>
+                                                                </td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <!-- /Header -->
+    <!-- Order Details -->
+    <table width="600px" border="0" cellpadding="0" cellspacing="0" align="center" class="fullTable" bgcolor="#e1e1e1">
+        <tbody>
+            <tr>
+                <td>
+                    <table width="85%" border="0" cellpadding="0" cellspacing="0" align="center" class="fullTable"
+                        bgcolor="#ffffff">
+                        <tbody>
+                            <tr>
+                            </tr>
+                            <tr class="hiddenMobile">
+                                <td height="30"></td>
+                            </tr>
+                            <tr class="visibleMobile">
+                                <td height="40"></td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <table width="95%" border="0" cellpadding="0" cellspacing="0" align="center"
+                                        class="fullPadding">
+                                        <tbody>
+                                            <tr class="invoice-table-head">
+                                                <th style="font-size: 15px;color: #fff;font-weight: normal;line-height: 1;vertical-align: top;padding: 10px;"
+                                                    align="left">
+                                                    <% if (details.components[5].status) { %>      <%= details.labels.Serial_Number %>  <% } %>
+                                                </th>
+                                                <th style="font-size: 15px;color: #fff;font-weight: normal;line-height: 1;vertical-align: top;padding: 10px;"
+                                                    align="left">
+                                                    <% if (details.components[6].status) { %>         <%= details.labels.Item_Description %> <% } %>
+                                                </th>
+                                                <th style="font-size: 15px;color: #fff;font-weight: normal;line-height: 1;vertical-align: top;padding: 10px;text-align: center;  "
+                                                    align="left">
+                                                    <% if (details.components[8].status) { %>        <%= details.labels.QTY %> <% } %>
+                                                </th>
+                                                <th style="font-size: 15px;color: #fff;font-weight: normal;line-height: 1;vertical-align: top;padding: 10px;"
+                                                    align="center">
+                                                    <% if (details.components[7].status) { %>       <%= details.labels.Price %> <% } %>
+
+                                                </th>
+                                                <th style="font-size: 15px;color: #fff;font-weight: normal;line-height: 1;vertical-align: top;padding: 10px;"
+                                                    align="center">
+                                                    <% if (details.components[9].status) { %>       <%= details.labels.Total %> <% } %>
+                                                </th>
+                                            </tr>
+
+                                            <tr>
+                                                <td height="10" colspan="4"></td>
+                                            </tr>
+                                            <% details.items.forEach(function(item,index) { %>
+                                                <tr <% if ((index + 1) % 2 !== 0) { %>style="background: linear-gradient(0deg, #F0F0F0 0%, #F0F0F0 100%);" <% } %>>
+
+                                                <td style="font-size: 14px;color: #000;font-weight: 600;line-height: 18px;vertical-align: top;padding:10px;text-align: left;"
+                                                    class="article">
+                                                    <%= index+1 %>
+                                                </td>
+                                                <td
+                                                    style="font-size: 14px;color: #000;line-height: 18px;vertical-align: top; padding:10px">
+                                                   <%= item.node.name %>
+                                                </td>
+                                                <td style="font-size: 14px;color: #000;line-height: 18px;vertical-align: top;padding:10px; text-align: center;"
+                                                    align="left">  <%= item.node.quantity %></td>
+                                                <td style="font-size: 14px;color: #1e2b33;line-height: 18px;vertical-align: top;padding:10px;"
+                                                    align="center"> <%= details.currency %><%=  parseFloat(Number(item.node.discountedUnitPriceSet.presentmentMoney.amount)).toFixed(2) %></td>
+                                                <td style="font-size: 14px;color: #1e2b33;line-height: 18px;vertical-align: top;padding:10px;"
+                                                    align="center"><%= details.currency %><%=  parseFloat(Number(item.node.quantity) * Number(item.node.discountedUnitPriceSet.presentmentMoney.amount)).toFixed(2) %></td>
+</tr>
+                                            <% }); %>
+
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td height="20"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <!-- /Order Details -->
+
+
+    <!-----custom -->
+    <table width="600px" border="0" cellpadding="0" cellspacing="0" align="center" class="fullTable" bgcolor="#e1e1e1">
+        <tbody>
+            <tr>
+                <td>
+                    <table width="85%" border="0" cellpadding="0" cellspacing="0" align="center" class="fullTable"
+                        bgcolor="#ffffff">
+                        <tbody>
+                            <tr>
+                            </tr>
+                            <tr class="hiddenMobile">
+                                <td height="30"></td>
+                            </tr>
+                            <tr class="visibleMobile">
+                                <td height="40"></td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <table width="95%" border="0" cellpadding="0" cellspacing="0" align="center"
+                                        class="fullPadding">
+                                        <tbody>
+                                            <tr>
+                                                <td>
+                                                    <table width="300" border="0" cellpadding="0" cellspacing="0"
+                                                        align="left" class="col">
+
+                                                        <tbody>
+                                                            <% if (details.components[10].status) { %>
+                                                            <tr>
+                                                                    <td
+                                                                    style="font-size: 15px;color: #000;line-height: 1;vertical-align: top;">
+                                                                    <strong><%= details.labels.Terms %></strong>
+                                                                </td> 
+                                                            </tr>
+                                                            <tr>
+                                                                <td width="100%" height="10"></td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td
+                                                                    style="font-size: 14px;color: #5b5b5b;line-height: 20px;vertical-align: top;">
+                                                                           <%= details.labels.TermsData %>   
+                                                                </td>
+                                                            </tr>
+                                                            <% } %>
+                                                        </tbody>
+                                                    </table>
+
+
+                                                    <table width="300" border="0" cellpadding="0" cellspacing="0"
+                                                        align="right" class="col">
+                                                        <tbody>
+                                                            <% if (details.components[12].status) { %>
+                                                            <tr>
+                                                                <td
+                                                                    style="font-size: 14px;color: #000;line-height: 22px;vertical-align: top;text-align:right;">
+                                                                    <%= details.labels.Subtotal %>
+                                                                </td>
+                                                                <td style="font-size: 14px;color: #000;line-height: 22px;padding-right: 10px;vertical-align: top;text-align:right;white-space:nowrap;"
+                                                                    width="80">
+                                                                    <b> <%= details.currency %><%=  parseFloat(details.subtotal).toFixed(2) %></b>
+                                                                </td>
+                                                            </tr>
+                                                            <% } %>
+                                                            <% if (details.components[13].status) { %>
+                                                            <tr>
+                                                                <td
+                                                                    style="font-size: 12px;   color: #000; line-height: 22px; vertical-align: top; text-align:right; ">
+                                                                    <%= details.labels.Tax %></td>
+                                                                <td
+                                                                    style="font-size: 12px;    padding-right: 10px; color: rgb(189, 189, 189); line-height: 22px; vertical-align: top; text-align:right; ">
+                                                                    <b> <%= details.currency %><%=  parseFloat(details.tax).toFixed(2) %></b>
+                                                                </td>
+                                                            </tr>
+                                                            <% } %>
+                                                            <% if (details.components[14].status) { %>
+                                                            <tr>
+                                                                <td
+                                                                    style="font-size: 14px;color: #000;line-height: 22px;vertical-align: top;text-align:right;">
+                                                                    <%= details.labels.Shipping %>
+                                                                </td>
+                                                                <td
+                                                                    style="font-size: 14px;padding-right: 10px;color: rgb(189, 189, 189);line-height: 22px;vertical-align: top;text-align:right;">
+                                                                    <b> <%= details.currency %><%= parseFloat(details.shipping).toFixed(2) %></b>
+                                                                </td>
+                                                            </tr>
+                                                            <% } %>
+                                                            <% if (details.components[15].status) { %>
+                                                            <tr>
+                                                                <td
+                                                                    style="font-size: 14px;color: #000;line-height: 22px;vertical-align: top;text-align:right;">
+                                                                    <%= details.labels.Discount %>
+                                                                </td>
+                                                                <td
+                                                                    style="font-size: 14px;padding-right: 10px;color: #000;line-height: 22px;vertical-align: top;text-align:right;">
+                                                                    <strong><%= details.currency %><%=  parseFloat(details.discount).toFixed(2) %></strong>
+                                                                </td>
+                                                            </tr>
+                                                            <% } %>
+
+                                                        </tbody>
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                            <tr class="visibleMobile">
+                                                <td height="20"></td>
+                                            </tr>
+
+
+
+
+
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <table width="95%" border="0" cellpadding="0" cellspacing="0" align="center"
+                                        class="fullPadding">
+                                        <tbody>
+                                            <tr>
+                                                <td>
+                                                    <table width="300" border="0" cellpadding="0" cellspacing="0"
+                                                        align="left" class="col">
+                                                        <% if (details.components[11].status) { %>
+                                                        <tbody>
+
+                                                            <tr class="visibleMobile">
+                                                                <td height="20"></td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td
+                                                                    style="font-size: 15px;color: #000;line-height: 1;vertical-align: top;">
+                                                                    <strong><%= details.labels.Notes %></strong>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td width="100%" height="10"></td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td
+                                                                    style="font-size: 14px;color: #5b5b5b;line-height: 20px;vertical-align: top;">
+                                                                    <%= details.labels.NotesData %>
+                                                                </td>
+                                                            </tr>
+                                                        </tbody>
+                                                        <% } %>
+                                                    </table>
+
+
+                                                </td>
+                                                <td>
+                                                    <table width="175" border="0" cellpadding="0" cellspacing="0"
+                                                        align="right" class="col">
+                                                        <tbody>
+                                                            <tr class="visibleMobile">
+                                                                <td height="20"></td>
+                                                            </tr>
+
+                                                            <tr>
+                                                                <td width="100%" height="10"></td>
+                                                            </tr>
+                                                            <tr align="right">
+                                                                <td>
+                                                                    <a href="#" style="text-decoration: none;
+                                                                     border-radius: 5px;background: #0F550C;color:#fff;font-size: 17px; font-weight: 400;display: inline-block; padding: 10px 20px;text-transform: uppercase;">
+                                                                        <%= details.labels.TotalPriceLabel %>: <b> <%= details.currency %><%=  parseFloat(details.total).toFixed(2) %>
+                                                                </a>
+                                                                </td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+
+                        </tbody>
+                    </table>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+
+
+    <!-- Total -->
+    <table width="600px" border="0" cellpadding="0" cellspacing="0" align="center" class="fullTable" bgcolor="#e1e1e1">
+        <tbody>
+            <tr>
+                <td>
+                    <table width="85%" border="0" cellpadding="0" cellspacing="0" align="center" class="fullTable"
+                        bgcolor="#ffffff">
+                        <tbody>
+                            <tr>
+                                <td>
+
+                                    <!-- Table Total -->
+                                    <table width="95%" border="0" cellpadding="0" cellspacing="0" align="center"
+                                        class="fullPadding">
+                                        <tbody>
+
+
+
+                                            <% if (details.components[16].status) { %>
+                                                <tr class="visibleMobile"><td height="20"></td></tr>
+                                                <tr class="hiddenMobile"><td height="20"></td></tr>
+                                            <tr>
+                                                <td
+                                                    style="font-size: 14px;color: #000;line-height: 22px;vertical-align: top;text-align:right;">
+                                                    <img src="<%= details.labels.Signature %>" width=216 height=43
+                                                        alt="signature" border="0">
+                                                </td>
+                                            </tr>
+                                            <% } %>
+
+
+                                        </tbody>
+                                    </table>
+                                    <!-- /Table Total -->
+
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <!-- /Total -->
+    <!-- Information -->
+
+    <!-- /Information -->
+    <table width="600px" border="0" cellpadding="0" cellspacing="0" align="center" class="fullTable" bgcolor="#e1e1e1">
+
+        <tbody>
+            <tr>
+                <td>
+                    <table width="85%" border="0" cellpadding="0" cellspacing="0" align="center" class="fullTable"
+                        bgcolor="#ffffff" style="border-radius: 0 0 10px 10px;">
+                        <tbody>
+                            <tr>
+                                <td>
+
+                                </td>
+                            </tr>
+                            <tr class="spacer">
+                                <td height="40"></td>
+                            </tr>
+
+                        </tbody>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <td height="20"></td>
+            </tr>
+        </tbody>
+    </table>
+
+
+
+
+</body>
+
+</html>
