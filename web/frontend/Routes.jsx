@@ -1,7 +1,6 @@
 import { Routes as ReactRouterRoutes, Route } from "react-router-dom";
 import Sidebar from "./components/common/Sidebar";
 import CreateManualSubscription from "./components/createManualSubscription";
-// import Home from "./pages/Home";
 /**
  * File-based routing.
  * @desc File-based routing that uses React Router under the hood.
