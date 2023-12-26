@@ -1008,9 +1008,16 @@ const sendEmail = (options, emailConfig) => {
         
       
             const data = await sendEmail(options, emailConfig);
-        
            
-            console.log("first in last");
+         fs.unlink(filePath, (error) => {
+              if (error) {
+                console.error("Error deleting customer data file:", error);
+                throw error;
+              } else {
+                console.log("customer data file deleted successfully.");
+              }
+            });
+           
           }
         })
     
@@ -1290,7 +1297,6 @@ meta_field_value_not = "true";
 
 console.log("incACHHHHH")
 
-throw error;
 // theme_block_support = "support_theme_block";
 
 // meta_field_value = "false";
@@ -1299,6 +1305,13 @@ throw error;
 
 // meta_field_value_not = "true";
 
+theme_block_support = "support_theme_block";
+
+meta_field_value = "false";
+
+theme_block_support_not = "support_theme_block_not";
+
+meta_field_value_not = "true";
 
 }
 
@@ -1639,12 +1652,8 @@ StoreSchemaModal.updateOne({shop},{$set:{themeType:themeType,themeId:getThemeId}
                   currency:
                     orderData.body.data.order.currentTotalPriceSet
                       .presentmentMoney.currencyCode,
-                },
-                {
-                  new:true
                 }
               );
-              console.log("billing_attempt_success",billing_attempt_success)
 
             let getMaxCycle = await subscriptionDetailsModal.findOne(
               {

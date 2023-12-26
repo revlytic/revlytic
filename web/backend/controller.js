@@ -194,14 +194,14 @@ const sendMailCall = async (recipientMails, others, extra) => {
 
   let data = extra?.configurationData;
 
-  if (!data) {
-    console.log("nodatafound");
-  } else {
+  // if (!data) {
+  //   console.log("nodatafound");
+  // } else {
     let emailConfig = {};
 
     let options = {};
 
-    if (data.enable == true) {
+    if (data && data.enable == true) {
       console.log("inenabletrue");
 
       let encryptionConfig = {};
@@ -817,7 +817,7 @@ generatePdf();
     }
   }
   }
-};
+// };
 
 let subscriptionBillingAttemptCreateMutation = `mutation subscriptionBillingAttemptCreate($subscriptionBillingAttemptInput: SubscriptionBillingAttemptInput!, $subscriptionContractId: ID!) {
   subscriptionBillingAttemptCreate(subscriptionBillingAttemptInput: $subscriptionBillingAttemptInput, subscriptionContractId: $subscriptionContractId) {
@@ -8251,13 +8251,14 @@ export async function saveCustomerPortalDetails(req, res) {
         cancellation: data.selectedOption,
         options: data.options,
       },
-      { upsert: true }
+      { upsert: true ,new:true }
     );
+    console.log("saveData",saveData)
     if (saveData) {
       res.send({ message: "success", data: "Settings saved successfully" });
     }
   } catch (err) {
-    console.log(err);
+    console.log("err",err);
     res.send({ message: "error", data: "Something went wrong" });
   }
 }

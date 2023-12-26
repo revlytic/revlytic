@@ -2854,28 +2854,28 @@ console.log("sdasdasdakeuwriorioriorioriorioriorioriorioiooppo")
               <div className="revlytic customer-profile">
                 <div className="revlytic customer-profile-name">
                   <Form.Item
-                    // label="First Name"
-                    label={<p className="revlytic required">First Name</p>}
+                    label="First Name"
+                    // label={<p className="revlytic required">First Name</p>}
                     name={["customer_details", "firstName"]}
                     // initialValue={props?.data?.customer_details?.customerFirstName}
-                    rules={[
-                      {
-                        required: true,
-                        message: "",
-                      },
+                    // rules={[
+                    //   {
+                    //     required: true,
+                    //     message: "",
+                    //   },
 
-                      {
-                        validator: (rule, value) => {
-                          if (!value) {
-                            return Promise.reject("First Name is required!");
-                          } else if (value.trim() === "") {
-                            return Promise.reject("First Name is required!");
-                          }
+                    //   {
+                    //     validator: (rule, value) => {
+                    //       if (!value) {
+                    //         return Promise.reject("First Name is required!");
+                    //       } else if (value.trim() === "") {
+                    //         return Promise.reject("First Name is required!");
+                    //       }
 
-                          return Promise.resolve();
-                        },
-                      },
-                    ]}
+                    //       return Promise.resolve();
+                    //     },
+                    //   },
+                    // ]}
                   >
                     <Input
                       // placeholder="enter name"
@@ -3881,26 +3881,27 @@ console.log("sdasdasdakeuwriorioriorioriorioriorioriorioiooppo")
             </div>
             <div className="revlytic shipping-details">
               <Form.Item
-                label={<p className="revlytic required">First Name</p>}
+                // label={<p className="revlytic required">First Name</p>}
+                label="First Name"
                 name={["address_details", "firstName"]}
                 // initialValue={props?.data?.customer_details?.customerFirstName}
-                rules={[
-                  {
-                    required: true,
-                    message: "",
-                  },
-                  {
-                    validator: (rule, value) => {
-                      if (!value) {
-                        return Promise.reject("First Name is required!");
-                      } else if (value.trim() === "") {
-                        return Promise.reject("First Name is required!");
-                      }
+                // rules={[
+                //   {
+                //     required: true,
+                //     message: "",
+                //   },
+                //   {
+                //     validator: (rule, value) => {
+                //       if (!value) {
+                //         return Promise.reject("First Name is required!");
+                //       } else if (value.trim() === "") {
+                //         return Promise.reject("First Name is required!");
+                //       }
 
-                      return Promise.resolve();
-                    },
-                  },
-                ]}
+                //       return Promise.resolve();
+                //     },
+                //   },
+                // ]}
               >
                 <Input
                   // placeholder="enter name"

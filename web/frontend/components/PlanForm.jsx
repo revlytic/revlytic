@@ -630,6 +630,7 @@ const PlanForm = (props) => {
     //console.log(values, "kkk");
 
     if (editExistingPlan) {
+      console.log("1check")
       //console.log(initialPlans);
       let idArr = [...editedArrayIds];
       idArr.push(editIndex);
@@ -651,6 +652,7 @@ const PlanForm = (props) => {
       setOpenForm(false);
       setEditExistingPlan(false);
     } else if (editNewPlan) {
+      console.log("2check")
       let arr = [...plansList];
       arr[editIndex] = form.getFieldsValue();
       // arr[editIndex].billingEveryType = billingEvery;
@@ -664,6 +666,7 @@ const PlanForm = (props) => {
       setOpenForm(false);
       setEditNewPlan(false);
     } else {
+      console.log("3check")
       // values.billingEveryType = billingEvery;
       values.priceType = offerPriceSelect;
       console.log("values",values);
@@ -2309,6 +2312,7 @@ const PlanForm = (props) => {
                                   setButtonText(true),
                                   form.resetFields();
                                 setEditExistingPlan(false);
+                                setEditNewPlan(false);
                               }}
                             >
                               Cancel

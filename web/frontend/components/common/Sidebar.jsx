@@ -75,7 +75,7 @@ function Sidebar() {
                 </li> */}
                  <li
                       className={
-                        location.pathname == "/home"
+                        location.pathname == "/"
                           ? "revlytic custom  active-sidebar"
                           : "revlytic custom"
                       }
@@ -171,7 +171,7 @@ function Sidebar() {
                     </li>
                     <li
                       className={
-                        location.pathname == "/"
+                        location.pathname == "/manageplans"
                           ? "revlytic  active-sidebar"
                           : "revlytic"
                       }

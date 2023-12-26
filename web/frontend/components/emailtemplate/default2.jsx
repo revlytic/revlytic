@@ -300,7 +300,7 @@ console.log("morninng",formData)
             
               </Panel>
 
-         {   templateType != 'subscriptionInvoice' &&(<div>  <Panel header="Manage Subscription Button" key="5">
+              {   templateType != 'subscriptionInvoice' &&  <Panel header="Manage Subscription Button" key="5">
               
 
                 <div><p>Text</p><Input value={formData.manageSubscriptionText} onChange={(value)=>handleFormChange(value,"manageSubscriptionText")}/></div>
@@ -319,9 +319,9 @@ console.log("morninng",formData)
               <div><p>Background</p>   <ColorPicker showText={(color) => <span>{formData.manageSubscriptionButtonBackground}</span>}    format={selected}  onFormatChange={(s)=>setSelected(s)}
               value={formData.manageSubscriptionButtonBackground}
               onChange={(value)=>handleFormChange(value,"manageSubscriptionButtonBackground")}  /></div>
-              </Panel>
+              </Panel>}
 
-              <Panel header="Shipping Address" key="6">
+              {   templateType != 'subscriptionInvoice' &&    <Panel header="Shipping Address" key="6">
 
 
               <div><p>Text</p><Input value={formData.subscriptionShippingAddressText} onChange={(value)=>handleFormChange(value,"subscriptionShippingAddressText")}/></div>
@@ -336,9 +336,9 @@ console.log("morninng",formData)
                     handleEditorStateChange(newEditorState, "shippingAddress")
                   }
                 />
-              </Panel>
+              </Panel>}
 
-              <Panel header="Billing Address" key="7">
+              {   templateType != 'subscriptionInvoice' &&     <Panel header="Billing Address" key="7">
               <div><p>Text</p><Input value={formData.subscriptionBillingAddressText} onChange={(value)=>handleFormChange(value,"subscriptionBillingAddressText")}/></div>
 
               
@@ -353,13 +353,12 @@ console.log("morninng",formData)
                     handleEditorStateChange(newEditorState, "billingAddress")
                   }
                 />
-              </Panel>
-              <Panel header="Payment Method" key="8">
+              </Panel>}
+              {   templateType != 'subscriptionInvoice' &&        <Panel header="Payment Method" key="8">
               <div><p>Text</p><Input value={formData.paymentMethodText} onChange={(value)=>handleFormChange(value,"paymentMethodText")}/></div>
               <div><p>Ending With</p><Input value={formData.endingWithText} onChange={(value)=>handleFormChange(value,"endingWithText")}/></div>
             
-              </Panel> </div> )
-}
+              </Panel> }
               <Panel header="Placeholder Text" key="9">
               <div><p>Order Number</p><Input value={formData.orderNumberText} onChange={(value)=>handleFormChange(value,"orderNumberText")}/></div>
               <div><p>Subscription ID</p><Input value={formData.subscriptionIdText} onChange={(value)=>handleFormChange(value,"subscriptionIdText")}/></div>

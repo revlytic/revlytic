@@ -6,7 +6,28 @@ document.addEventListener("DOMContentLoaded", () => {
   var shop = Shopify.shop;
   var prevButton, nextButton;
   var countrydata;
-  var permissions;
+  var permissions={
+    "cancellation": "simple",
+     "options": {
+     "one": "Doesn't meet my needs",
+     "two": "Found a better alternative",
+     "three": "Very expensive",
+     "four": "Other"
+     },
+     "values": {
+      "attemptBilling": false,
+      "skipOrder": false,
+      "skipUpcomingFullfilment": false,
+      "pauseResumeSubscription": false,
+      "nextBilldate": false,
+      "changeShippingAddress": false,
+      "cancelSubscription": false,
+      "pauseBeforeCancellation": false,
+      "changeProductQuantity": false,
+      "addNewContractProduct": false,
+      "deleteSubscriptionProduct": false
+      }
+ }
   var currencyCode;
   var timezone;
   var rescheduleId = "";
@@ -2381,7 +2402,7 @@ ${item?.order_no}
                         <div class="order-status">
                         <h5><a
                         target="_blank"
-                        href="https://admin.shopify.com/store/${shop?.split(".myshopify.com")[0]}/orders/${item?.order_id}"
+                        href="https://admin.shopify.com/store/${shop?.split(".myshopify.com")[0]}/orders/${item?.order_id?.split('/').at(-1)}"
                         
                       >
                       ${item?.order_no}
@@ -2976,7 +2997,7 @@ ${cancelReasonModal}
           : "Closed"
       }</label>
       <input type="radio" name="tabset" id="tab4" aria-controls="PrepaidPastOrders">
-      ${mainDetails.subscription_details.planType == "prepaid" &&`<label for="tab4">Past Orders</label>`}
+      ${mainDetails.subscription_details.planType == "prepaid" ? `<label for="tab4">Past Orders</label>` : ""}
 
       <div class="tab-panels">
           <section id="UpcomingOrders" class="tab-panel">
