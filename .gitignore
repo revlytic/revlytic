@@ -30,5 +30,7 @@ web/database.sqlite
 
 # toml file
 .toml
+shopify.app.toml
+
 
 .cache/
