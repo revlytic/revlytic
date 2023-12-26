@@ -1,0 +1,27 @@
+<script>
+    var theme_block_supported = '{{ app.metafields.theme_support.support_theme_block }}';
+    console.log('theme_block_supported', theme_block_supported);
+</script>
+ 
+<div class="revlytic-bundles-block"></div>
+
+{% schema %}
+{
+  "name": "Revlytic Bundle",
+  "templates": [
+    "product"
+  ],
+  "target": "section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "About this block"
+    },
+    {
+      "type": "paragraph",
+      "content": "This is the example for the position of the revlytic  Icon. You may now check the storefront product page for plan selection  that you've added the app block here."
+    }
+  ]
+}
+{% endschema %}   
+
