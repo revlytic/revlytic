@@ -180,7 +180,7 @@ function customerPortalSettings() {
 
 
               <div  className="revlytic settings-fields">
-              <div className="revlytic label-tooltip-main"><label>Skip Scheduled Fulfillments</label><Tooltip title='Allows the customer to skip a scheduled fulfillment.'><QuestionCircleOutlined/></Tooltip></div> 
+              <div className="revlytic label-tooltip-main"><label>Postpone Scheduled Fulfillments</label><Tooltip title='Allows the customer to postpone a scheduled fulfillment.'><QuestionCircleOutlined/></Tooltip></div> 
                 
                 <Form.Item
                   // label=" "

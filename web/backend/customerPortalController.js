@@ -21,7 +21,7 @@ import storeModal from "./modals/storeCredentials.js";
 export async function appProxy(req, res) {
   const __dirname = path.resolve();
   // const componentHtml = ReactDOMServer.renderToString(<YourComponent />);
-  let  apiPath = "https://revlytic.shinedezign.pro/"
+  let  apiPath = "https://revlytic.co/"
   path.join(__dirname, "../frontend/pages/SubscriptionList.jsx");
   const liquidContent = `
       <html>

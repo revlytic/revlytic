@@ -400,13 +400,11 @@ const sendPaymentFailureMail = async (recipientMails, others, extra) => {
     console.log("configuraitondata", extra?.configurationData);
     console.log("selecetdtemplatedata", extra?.selectedTemplateData);
     let data = extra?.configurationData;
-    if (!data) {
-      console.log("nodatafound");
-    } else {
+
       let emailConfig = {};
       let options = {};
 
-      if (data.enable == true) {
+      if (data && data.enable == true) {
         console.log("inenabletrue");
         let encryptionConfig = {};
         if (data.encryption === "ssl") {
@@ -753,7 +751,7 @@ const sendPaymentFailureMail = async (recipientMails, others, extra) => {
       ///////
 
       ////////end/////
-    }
+    
   } catch (error) {
     console.log("error", error);
     throw error;

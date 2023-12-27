@@ -151,7 +151,7 @@ function Create() {
 
     if (planList.length > 0 && planGroupName.length > 0) {
       const createApi = await fetch(
-        "https://revlytic.shinedezign.pro/api/prodEx/prodExCreatePlan",
+        "https://revlytic.co/api/prodEx/prodExCreatePlan",
         {
           method: "POST", // or 'PUT'
           headers: {
@@ -605,7 +605,7 @@ function Add() {
         console.log(checkedPlans, "checked plans");
 
         const response = await fetch(
-          "https://revlytic.shinedezign.pro/api/prodEx/prodExAddProduct",
+          "https://revlytic.co/api/prodEx/prodExAddProduct",
           {
             method: "POST", // or 'PUT'
             headers: {
@@ -642,7 +642,7 @@ function Add() {
   useEffect(async () => {
     let token = await getSessionToken();
     const response = await fetch(
-      "https://revlytic.shinedezign.pro/api/prodEx/prodExGetallPlans",
+      "https://revlytic.co/api/prodEx/prodExGetallPlans",
       {
         method: "POST", // or 'PUT'
         headers: {
@@ -687,7 +687,7 @@ function Remove() {
     let token = await getSessionToken();
 
     const response = await fetch(
-      "https://revlytic.shinedezign.pro/api/prodEx/prodExRemoveVariants",
+      "https://revlytic.co/api/prodEx/prodExRemoveVariants",
       {
         method: "POST", // or 'PUT'
         headers: {
@@ -792,7 +792,7 @@ function Edit() {
     let token = await getSessionToken();
 
     const createApi = await fetch(
-      "https://revlytic.shinedezign.pro/api/prodEx/prodExPlanDetails",
+      "https://revlytic.co/api/prodEx/prodExPlanDetails",
       {
         method: "POST", // or 'PUT'
         headers: {
@@ -972,7 +972,7 @@ function Edit() {
 
     if (planList.length > 0 || prevPlanList.length > 0) {
       const createApi = await fetch(
-        "https://revlytic.shinedezign.pro/api/prodEx/prodExPlanUpdate",
+        "https://revlytic.co/api/prodEx/prodExPlanUpdate",
         {
           method: "POST", // or 'PUT'
           headers: {

@@ -140,9 +140,9 @@ console.log(signatureData,signatureData,"sdasdasdas");
         // toast.success("Logo uploaded successfully", {
         //   position: toast.POSITION.TOP_RIGHT,
         // });
-      updatedLogo=`https://revlytic.shinedezign.pro/images/logo/${savelogo.data.name}`
+      updatedLogo=`https://revlytic.co/images/logo/${savelogo.data.name}`
         setLogo(
-          `https://revlytic.shinedezign.pro/images/logo/${savelogo.data.name}`
+          `https://revlytic.co/images/logo/${savelogo.data.name}`
         );
 
 
@@ -167,9 +167,9 @@ if(signatureData){
           // toast.success("Signature uploaded successfully", {
           //   position: toast.POSITION.TOP_RIGHT,
           // });
-          updatedSignature=`https://revlytic.shinedezign.pro/images/signature/${savesignature.data.name}`;
+          updatedSignature=`https://revlytic.co/images/signature/${savesignature.data.name}`;
         setSignature(
-           `https://revlytic.shinedezign.pro/images/signature/${savesignature.data.name}`
+         `https://revlytic.co/images/signature/${savesignature.data.name}`
         );
       }
     } catch (error) {

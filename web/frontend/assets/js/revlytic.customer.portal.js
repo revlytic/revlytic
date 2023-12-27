@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
   console.log("21novmber")
-  let apiPath = "https://revlytic.shinedezign.pro/";
+  let apiPath = "https://revlytic.co/";
   const customerId = ShopifyAnalytics.meta.page.customerId;
   console.log(customerId, "idg");
   var shop = Shopify.shop;

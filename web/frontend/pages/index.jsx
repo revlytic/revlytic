@@ -476,7 +476,7 @@ const newItems= [{
     <div className="revlytic-annoucments-inner-section"> 
          <div className="revlytic-annoucments-inner-row">
          <div className="revlytic-annoucments-inner-column">
-          <img src={`https://revlytic.shinedezign.pro/images/announcement/${item?.image}`} width="100" height="100"  />
+          <img src={`https://revlytic.co/images/announcement/${item?.image}`} width="100" height="100"  />
           <div className="revlyticannoucments-inner-content">
             <h3>{item?.title}</h3>  
             <p>{item?.description}</p>
