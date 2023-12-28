@@ -26,7 +26,7 @@ import image8 from "../../assets/images/setting_icon.svg";
 import image9 from "../../assets/images/subscription_icon.svg";
 import image10 from "../../assets/images/trans_icon.svg";
 import image11 from "../../assets/images/billing.svg";
-
+import contact from '../../assets/images/contactus.svg'
 
 function Sidebar() {
   const app = useAppBridge();
@@ -258,6 +258,18 @@ function Sidebar() {
                       <Link to ="/settings" onClick={()=>setToggleSidebar(false)}>
                     <img src={image8} />
                     Settings
+                  </Link>
+                </li>
+                <li
+                      className={
+                        location.pathname == "/contactus"
+                          ? "revlytic custom  active-sidebar"
+                          : "revlytic custom"
+                      }
+                    >
+                      <Link to ="/contactus" onClick={()=>setToggleSidebar(false)}>
+                    <img src={contact} style={{filter: "invert(1)"}} />
+                    Contact Us
                   </Link>
                 </li>
 
