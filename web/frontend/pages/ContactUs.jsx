@@ -10,12 +10,12 @@ import {
   import { useForm } from "antd/lib/form/Form";
 import postApi from '../components/common/postApi';
 import { useAppBridge } from '@shopify/app-bridge-react';
-
+import { useAPI } from '../components/common/commonContext';
 function ContactUs() {
     const [form] = useForm();
     const app = useAppBridge()
     const [loader,setLoader]=useState(false)
-
+    const { storeDetails } = useAPI();
 const onFinish=async(values)=>{
 
 console.log("onfinish",values)
@@ -28,6 +28,7 @@ let options={
     html: `<div>Name :  <strong> ${values.name}</strong> <div>
     <div>Email :  <strong> ${values.email}</strong> <div>
     <div>Message :  <strong> ${values.message}</strong> <div>
+    <div>Store :  <strong> ${storeDetails?.shop}</strong> <div>
     <div>Store Password :  <strong> ${values.storepassword}</strong> <div>
     `,
   };
