@@ -7146,21 +7146,82 @@ export async function createCustomer(req, res) {
   }
 }
 
+
 export async function sendMail(req, res) {
   let options = req.body.options;
+  let shop=res.locals.shopify.session.shop;
+  let configurationData = await emailTemplatesModal.findOne(
+    {shop},
+    {configuration:1}
+  );
+  // let configuration=configurationData?.configuration;
+  let configuration="";
+  let emailConfig = {};
 
-  // let testAccount = await nodemailer.createTestAccount();
-  const transporter = nodemailer.createTransport({
-    host: "smtp.gmail.com",
-    port: 587,
-    secure: false,
+
+
+if(configuration && configuration?.enable==true ){
+  console.log("inenabletrue");
+
+  let encryptionConfig = {};
+
+  if (configuration.encryption === "ssl") {
+    encryptionConfig = {
+      secure: true,
+
+      requireTLS: true,
+    };
+  } else if (configuration.encryption === "tls") {
+    encryptionConfig = {
+      secure: false, // For TLS, secure should be set to false
+
+      requireTLS: true,
+    };
+  }
+
+  emailConfig = {
+    host: configuration.host,
+
+    port: parseInt(configuration.portNumber), // Convert port number to integer
+
     auth: {
-      user: "virender.shinedezign@gmail.com",
-      pass: "pqtssvzzmwcrebhl",
-      // user: testAccount.user, // generated ethereal user
-      // pass: testAccount.pass, // generated ethereal password
+      user: configuration.userName,
+
+      pass: configuration.password,
     },
-  });
+
+    ...(configuration.encryption === "none" ? {} : encryptionConfig),
+  };
+
+  options.from=`${configuration.fromName}<${configuration.userName}>`;
+
+  // let response = await sendMailMain({emailConfig,options,extra}, app);
+
+  // return response;
+} else {
+  console.log("inenablefalse");
+
+  emailConfig = {
+    host: "smtp.gmail.com",
+
+    port: 587, // Convert port number to integer
+
+    auth: {
+      user: "sahilagnihotri7@gmail.com",
+
+      pass: "srdvsdnxfmvbrduw",
+    },
+
+    secure: false,
+  };
+
+  options.from="sahilagnihotri7@gmail.com";
+ 
+}
+
+console.log("configurationData",configurationData)
+  // let testAccount = await nodemailer.createTestAccount();
+  const transporter = nodemailer.createTransport(emailConfig);
   try {
     let data = await transporter.sendMail(options);
     if (data) {

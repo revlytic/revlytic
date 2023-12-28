@@ -1899,7 +1899,7 @@ console.log("value,data.counteruy",value, data?.country)
             link = link + end;
             setCopyText(link);
             setOptions({
-              from: "virender.shinedezign@gmail.com",
+              // from: "virender.shinedezign@gmail.com",
               to: values.customer_details.email,
               subject: "Subscription Checkout Link",
               html: `<p>Click <a href= ${link}>here</a> to redirect to checkout</p>`,
