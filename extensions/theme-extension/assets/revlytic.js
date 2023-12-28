@@ -1,4 +1,4 @@
-console.log(" text novemberr");
+console.log(" dec27");
 let shop = Shopify.shop;
 
 let currentUrl=window.location.href
