@@ -115,13 +115,13 @@ if (response.data.message == "success") {
               <Form.Item
                 label={<p className='revlytic contactus-password'>Store Password</p>}
                 name={"storepassword"}
-                rules={[
-                  {
-                    required: true,
-                    message: "",
-                  },
+                // rules={[
+                //   {
+                //     required: true,
+                //     message: "",
+                //   },
                
-                ]}
+                // ]}
               
               >
                 <Input
