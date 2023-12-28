@@ -266,7 +266,7 @@ function Sidebar() {
                       }
                     >
                       <Link to ="/contactus" onClick={()=>setToggleSidebar(false)}>
-                    <img src={contact} style={{filter: "invert(1)"}} />
+                    <img src={contact}/>
                     Contact Us
                   </Link>
                 </li>
