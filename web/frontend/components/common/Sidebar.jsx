@@ -38,7 +38,6 @@ function Sidebar() {
   const [settings, setSettings] = useState(false);
   const [toggleSidebar, setToggleSidebar] = useState(true);
   const [activeLink, setActiveLink] = useState("");
-  // console.log(location, "bbbbbbbbbbbbbbb");
   return (
     <div style={{ display: "flex" }}>
       {/* <section id="mainSection"> */}
