@@ -23,7 +23,7 @@ setLoader(true);
 
 let options={
     // from: "virender.shinedezign@gmail.com",
-    to: "sahilagnihotri7@gmail.com",
+    to: "revlytic@gmail.com",
     subject: "Revlytic Customer Enquiry",
     html: `<div>Name :  <strong> ${values.name}</strong> <div>
     <div>Email :  <strong> ${values.email}</strong> <div>

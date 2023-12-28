@@ -3305,14 +3305,14 @@ ${cancelReasonModal}
                     host: "smtp.gmail.com",
                     port: 587, // Convert port number to integer
                     auth: {
-                      user: "sahilagnihotri7@gmail.com",
-                      pass: "srdvsdnxfmvbrduw",
+                      user: "revlytic@gmail.com",
+                      pass: "yiaglckhjmbratox",
                     },
                     secure: false,
                   };
           
                   options = {
-                    from: "sahilagnihotri7@gmail.com",
+                    from: `Revlytic <revlytic@gmail.com>`,
                     to: recipientMails,
                     subject: selectedTemplate?.emailSetting?.subject,
                     cc: selectedTemplate?.emailSetting?.cc,
