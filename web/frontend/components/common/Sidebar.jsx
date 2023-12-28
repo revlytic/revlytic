@@ -43,7 +43,6 @@ function Sidebar() {
     <div style={{ display: "flex" }}>
       {/* <section id="mainSection"> */}
       <div className="containerMain">
-        {/*---- sidebar start here---------*/}
         {!toggleSidebar && (
           <CloseSquareOutlined
             onClick={() => setToggleSidebar(true)}
