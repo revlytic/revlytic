@@ -7587,7 +7587,9 @@ export async function prodExCreatePlan(req, res) {
       console.log(list, "lololo");
       let allOptions = [];
       list?.map((item) => {
-        allOptions?.push(item?.billEvery + " " + item?.interval);
+        let unique =
+      Date.now().toString(36) + Math.random().toString(36).substring(2, 5);
+        allOptions?.push(item?.billEvery + " " + item?.interval+ " " + unique);
       });
       const topOptions = allOptions.join(",");
       console.log(allOptions, "hbhbhb");
@@ -7596,32 +7598,140 @@ export async function prodExCreatePlan(req, res) {
         let draftAnchors = [];
 
         let pricingPolicy = [];
-        if (item.offerDiscount) {
-          if (item.priceType == "percentage") {
-            pricingPolicy.push({
-              fixed: {
-                adjustmentType: "PERCENTAGE",
-                adjustmentValue: {
-                  percentage: parseFloat(item.discount),
-                },
-              },
-            });
-          } else if (item.priceType == "fixed") {
-            pricingPolicy.push({
-              fixed: {
-                adjustmentType: "FIXED_AMOUNT",
-                adjustmentValue: {
-                  fixedValue: parseFloat(item.discount),
-                },
-              },
-            });
-          }
-        }
 
-        console.log(pricingPolicy, "ffff");
+        ///////////////////////////
+        // if (item.offerDiscount) {
+        //   if (item.priceType == "percentage") {
+        //     pricingPolicy.push({
+        //       fixed: {
+        //         adjustmentType: "PERCENTAGE",
+        //         adjustmentValue: {
+        //           percentage: parseFloat(item.discount),
+        //         },
+        //       },
+        //     });
+        //   } else if (item.priceType == "fixed") {
+        //     pricingPolicy.push({
+        //       fixed: {
+        //         adjustmentType: "FIXED_AMOUNT",
+        //         adjustmentValue: {
+        //           fixedValue: parseFloat(item.discount),
+        //         },
+        //       },
+        //     });
+        //   }
+        // }
+
+        
+        if (item.offerDiscount && item.discount != undefined && item.discount != null &&  parseInt(item.discount) != 0) {
+          if (item.freeTrial) {
+
+            if (item.discountType == "percentage") {
+              console.log("ckecjj1")
+              pricingPolicy.push(
+                {
+                  fixed: {
+                    adjustmentType: "PERCENTAGE",
+                    adjustmentValue: {
+                      percentage: parseFloat(100),
+                    },
+                  },
+                },
+                {
+                  recurring: {
+                    adjustmentType: "PERCENTAGE",
+                    adjustmentValue: {
+                      percentage: parseFloat(item.discount),
+                    },
+                    afterCycle: parseInt(1),
+                    // afterCycle: parseInt(item.trialCount),
+                  },
+                }
+              );
+            } else if (item.discountType == "fixed") {
+              console.log("ckecjj2")
+
+              pricingPolicy.push(
+                {
+                  fixed: {
+                    adjustmentType: "PERCENTAGE",
+                    adjustmentValue: {
+                      percentage: parseFloat(100),
+                    },
+                  },
+                },
+                {
+                  recurring: {
+                    adjustmentType: "FIXED_AMOUNT",
+                    adjustmentValue: {
+                      fixedValue: parseFloat(item.discount),
+                    },
+                    // afterCycle: parseInt(item.trialCount),
+                    afterCycle: parseInt(1),
+                  },
+                }
+              );
+            }
+          } else {
+            if (item.discountType == "percentage") {
+              console.log("ckecjj3")
+
+              pricingPolicy.push({
+                fixed: {
+                  adjustmentType: "PERCENTAGE",
+                  adjustmentValue: {
+                    percentage: parseFloat(item.discount),
+                  },
+                },
+              });
+            } else if (item.discountType == "fixed") {
+              console.log("ckecjj4")
+
+              pricingPolicy.push({
+                fixed: {
+                  adjustmentType: "FIXED_AMOUNT",
+                  adjustmentValue: {
+                    fixedValue: parseFloat(item.discount),
+                  },
+                },
+              });
+            }
+          }
+        } else {
+          if (item.freeTrial) {
+            console.log("ckecjj5")
+            pricingPolicy.push(
+              {
+                fixed: {
+                  adjustmentType: "PERCENTAGE",
+                  adjustmentValue: {
+                    percentage: parseFloat(100),
+                  },
+                },
+              },
+              {
+                recurring: {
+                  adjustmentType: "PERCENTAGE",
+                  adjustmentValue: {
+                    percentage: parseFloat(0),
+                  },
+                  afterCycle: parseInt(1),
+                  // afterCycle: parseInt(item.trialCount),
+                },
+              }
+            );
+          }
+      }
+      
+      console.log(pricingPolicy, "ffff");
+
+        ////////////////////////////////
+        let unique =
+        Date.now().toString(36) + Math.random().toString(36).substring(2, 5);
+  
         sellPlan.push({
           name: req.body.planGroupName + "-" + item.frequencyPlanName,
-          options: item?.billEvery + " " + item?.interval,
+          options: item?.billEvery + " " + item?.interval + " " + unique,
           position: 1,
           category: "SUBSCRIPTION",
           inventoryPolicy: {
@@ -7747,6 +7857,10 @@ mutation sellingPlanGroupCreate($input: SellingPlanGroupInput!,$resources:Sellin
             maxCycle: item.maxCycle,
             planType: item.planType,
             deliveryEvery: item.deliveryEvery,
+            freeTrial:item.freeTrial,
+            trialCount:item.freeTrialCount,
+            freeTrialCycle:item.freeTrialCycle,
+
           });
         });
         let variants = [];
@@ -7815,6 +7929,7 @@ export async function prodExPlanDetails(req, res) {
 }
 
 export async function prodExPlanUpdate(req, res) {
+  console.log("checkjan4")
   const secretOrPublicKey = process.env.SHOPIFY_API_SECRET;
   const token = req.headers.authentication;
   let shop;
@@ -7835,10 +7950,14 @@ export async function prodExPlanUpdate(req, res) {
       let editedArrayIds = [...new Set(editedArrayId)];
       let allOptions = [];
       req.body.planList?.map((item) => {
-        allOptions?.push(item?.billEvery + " " + item?.interval);
+        let unique =
+        Date.now().toString(36) + Math.random().toString(36).substring(2, 5);
+        allOptions?.push(item?.billEvery + " " + item?.interval + " " + unique);
       });
       req.body.prevPlanList?.map((item) => {
-        allOptions?.push(item?.billEvery + " " + item?.interval);
+        let unique =
+        Date.now().toString(36) + Math.random().toString(36).substring(2, 5);
+        allOptions?.push(item?.billEvery + " " + item?.interval + " " + unique);
       });
       const topOptions = allOptions.join(",");
       console.log(allOptions, "optionssss");
@@ -7849,31 +7968,126 @@ export async function prodExPlanUpdate(req, res) {
           let draftAnchors = [];
           let pricingPolicy = [];
 
-          item.offerDiscount &&
-            item.discountType == "percentage" &&
-            pricingPolicy.push({
-              fixed: {
-                adjustmentType: "PERCENTAGE",
-                adjustmentValue: {
-                  percentage: parseFloat(item.discount),
-                },
-              },
-            });
+          // item.offerDiscount &&
+          //   item.discountType == "percentage" &&
+          //   pricingPolicy.push({
+          //     fixed: {
+          //       adjustmentType: "PERCENTAGE",
+          //       adjustmentValue: {
+          //         percentage: parseFloat(item.discount),
+          //       },
+          //     },
+          //   });
 
-          item.offerDiscount &&
-            item.discountType == "fixed" &&
-            pricingPolicy.push({
-              fixed: {
-                adjustmentType: "FIXED_AMOUNT",
-                adjustmentValue: {
-                  fixedValue: parseFloat(item.discount),
-                },
-              },
-            });
+          // item.offerDiscount &&
+          //   item.discountType == "fixed" &&
+          //   pricingPolicy.push({
+          //     fixed: {
+          //       adjustmentType: "FIXED_AMOUNT",
+          //       adjustmentValue: {
+          //         fixedValue: parseFloat(item.discount),
+          //       },
+          //     },
+          //   });
+
+////////////
+if (item.offerDiscount && item.discount != undefined && item.discount != null &&  parseInt(item.discount) != 0) {
+  if (item.freeTrial) {
+    if (item.discountType == "percentage") {
+      pricingPolicy.push(
+        {
+          fixed: {
+            adjustmentType: "PERCENTAGE",
+            adjustmentValue: {
+              percentage: parseFloat(100),
+            },
+          },
+        },
+        {
+          recurring: {
+            adjustmentType: "PERCENTAGE",
+            adjustmentValue: {
+              percentage: parseFloat(item.discount),
+            },
+            afterCycle: parseInt(1),
+            // afterCycle: parseInt(item.trialCount),
+          },
+        }
+      );
+    } else if (item.discountType == "fixed") {
+      pricingPolicy.push(
+        {
+          fixed: {
+            adjustmentType: "PERCENTAGE",
+            adjustmentValue: {
+              percentage: parseFloat(100),
+            },
+          },
+        },
+        {
+          recurring: {
+            adjustmentType: "FIXED_AMOUNT",
+            adjustmentValue: {
+              fixedValue: parseFloat(item.discount),
+            },
+            // afterCycle: parseInt(item.trialCount),
+            afterCycle: parseInt(1),
+          },
+        }
+      );
+    }
+  } else {
+    if (item.discountType == "percentage") {
+      pricingPolicy.push({
+        fixed: {
+          adjustmentType: "PERCENTAGE",
+          adjustmentValue: {
+            percentage: parseFloat(item.discount),
+          },
+        },
+      });
+    } else if (item.discountType == "fixed") {
+      pricingPolicy.push({
+        fixed: {
+          adjustmentType: "FIXED_AMOUNT",
+          adjustmentValue: {
+            fixedValue: parseFloat(item.discount),
+          },
+        },
+      });
+    }
+  }
+} else {
+  if (item.freeTrial) {
+    pricingPolicy.push(
+      {
+        fixed: {
+          adjustmentType: "PERCENTAGE",
+          adjustmentValue: {
+            percentage: parseFloat(100),
+          },
+        },
+      },
+      {
+        recurring: {
+          adjustmentType: "PERCENTAGE",
+          adjustmentValue: {
+            percentage: parseFloat(0),
+          },
+          afterCycle: parseInt(1),
+          // afterCycle: parseInt(item.trialCount),
+        },
+      }
+    );
+  }
+}
+////////
+let unique =
+Date.now().toString(36) + Math.random().toString(36).substring(2, 5);
 
           sellPlan.push({
             name: req.body.planGroupName + "-" + item.frequencyPlanName,
-            options: item?.billEvery + " " + item?.interval,
+            options: item?.billEvery + " " + item?.interval + " " + unique,
             position: 1,
             category: "SUBSCRIPTION",
             inventoryPolicy: {
@@ -7900,7 +8114,7 @@ export async function prodExPlanUpdate(req, res) {
                 anchors: draftAnchors,
                 preAnchorBehavior: "ASAP",
                 interval: item.interval.toUpperCase(),
-                intervalCount: parseInt(item.billEvery),
+                intervalCount: item.plantype=='prepaid' ? parseInt(item.deliveryEvery) : parseInt(item.billEvery) ,
               },
             },
             pricingPolicies: pricingPolicy,
@@ -7915,28 +8129,123 @@ export async function prodExPlanUpdate(req, res) {
           let draftAnchors = [];
           let pricingPolicy = [];
 
-          req.body.prevPlanList[item].offerDiscount &&
-            req.body.prevPlanList[item].discountType == "percentage" &&
-            pricingPolicy.push({
-              fixed: {
-                adjustmentType: "PERCENTAGE",
-                adjustmentValue: {
-                  percentage: parseFloat(req.body.prevPlanList[item].discount),
-                },
-              },
-            });
+          // req.body.prevPlanList[item].offerDiscount &&
+          //   req.body.prevPlanList[item].discountType == "percentage" &&
+          //   pricingPolicy.push({
+          //     fixed: {
+          //       adjustmentType: "PERCENTAGE",
+          //       adjustmentValue: {
+          //         percentage: parseFloat(req.body.prevPlanList[item].discount),
+          //       },
+          //     },
+          //   });
 
-          req.body.prevPlanList[item].offerDiscount &&
-            req.body.prevPlanList[item].discountType == "fixed" &&
-            pricingPolicy.push({
-              fixed: {
-                adjustmentType: "FIXED_AMOUNT",
-                adjustmentValue: {
-                  fixedValue: parseFloat(req.body.prevPlanList[item].discount),
-                },
-              },
-            });
+          // req.body.prevPlanList[item].offerDiscount &&
+          //   req.body.prevPlanList[item].discountType == "fixed" &&
+          //   pricingPolicy.push({
+          //     fixed: {
+          //       adjustmentType: "FIXED_AMOUNT",
+          //       adjustmentValue: {
+          //         fixedValue: parseFloat(req.body.prevPlanList[item].discount),
+          //       },
+          //     },
+          //   });
+///////start//////////
+if (req.body.prevPlanList[item].offerDiscount && req.body.prevPlanList[item].discount != undefined && req.body.prevPlanList[item].discount != null &&  parseInt(req.body.prevPlanList[item].discount) != 0) {
+  if (req.body.prevPlanList[item].freeTrial) {
+    if (req.body.prevPlanList[item].discountType == "percentage") {
+      pricingPolicy.push(
+        {
+          fixed: {
+            adjustmentType: "PERCENTAGE",
+            adjustmentValue: {
+              percentage: parseFloat(100),
+            },
+          },
+        },
+        {
+          recurring: {
+            adjustmentType: "PERCENTAGE",
+            adjustmentValue: {
+              percentage: parseFloat(req.body.prevPlanList[item].discount),
+            },
+            afterCycle: parseInt(1),
+            // afterCycle: parseInt(item.trialCount),
+          },
+        }
+      );
+    } else if (req.body.prevPlanList[item].discountType == "fixed") {
+      pricingPolicy.push(
+        {
+          fixed: {
+            adjustmentType: "PERCENTAGE",
+            adjustmentValue: {
+              percentage: parseFloat(100),
+            },
+          },
+        },
+        {
+          recurring: {
+            adjustmentType: "FIXED_AMOUNT",
+            adjustmentValue: {
+              fixedValue: parseFloat(req.body.prevPlanList[item].discount),
+            },
+            // afterCycle: parseInt(item.trialCount),
+            afterCycle: parseInt(1),
+          },
+        }
+      );
+    }
+  } else {
+    if (req.body.prevPlanList[item].discountType == "percentage") {
+      pricingPolicy.push({
+        fixed: {
+          adjustmentType: "PERCENTAGE",
+          adjustmentValue: {
+            percentage: parseFloat(req.body.prevPlanList[item].discount),
+          },
+        },
+      });
+    } else if (req.body.prevPlanList[item].discountType == "fixed") {
+      pricingPolicy.push({
+        fixed: {
+          adjustmentType: "FIXED_AMOUNT",
+          adjustmentValue: {
+            fixedValue: parseFloat(req.body.prevPlanList[item].discount),
+          },
+        },
+      });
+    }
+  }
+} else {
+  if (req.body.prevPlanList[item].freeTrial) {
+    pricingPolicy.push(
+      {
+        fixed: {
+          adjustmentType: "PERCENTAGE",
+          adjustmentValue: {
+            percentage: parseFloat(100),
+          },
+        },
+      },
+      {
+        recurring: {
+          adjustmentType: "PERCENTAGE",
+          adjustmentValue: {
+            percentage: parseFloat(0),
+          },
+          afterCycle: parseInt(1),
+          // afterCycle: parseInt(item.trialCount),
+        },
+      }
+    );
+  }
+}
 
+////end///////////
+let unique =
+Date.now().toString(36) + Math.random().toString(36).substring(2, 5);
+console.log("req.body.prevPlanList[item].plan_id===>",req.body.prevPlanList[item])
           sellPlanToUpdate.push({
             name:
               req.body.planGroupName +
@@ -7946,7 +8255,7 @@ export async function prodExPlanUpdate(req, res) {
             options:
               req.body.prevPlanList[item]?.billEvery +
               " " +
-              req.body.prevPlanList[item]?.interval,
+              req.body.prevPlanList[item]?.interval + " "+ unique ,
             position: 1,
             category: "SUBSCRIPTION",
             inventoryPolicy: {
@@ -7980,18 +8289,19 @@ export async function prodExPlanUpdate(req, res) {
                 anchors: draftAnchors,
                 preAnchorBehavior: "ASAP",
                 interval: req.body.prevPlanList[item].interval.toUpperCase(),
-                intervalCount: parseInt(req.body.prevPlanList[item].billEvery),
+                intervalCount: req.body.prevPlanList[item].planType=='prepaid' ?  parseInt(req.body.prevPlanList[item].deliveryEvery) :  parseInt(req.body.prevPlanList[item].billEvery),
+                
               },
             },
             pricingPolicies: pricingPolicy,
           });
         });
-
+console.log("ssellPlanToUpdate",sellPlanToUpdate)
       const Input = {
         id: req.body.id,
         input: {
           appId: "SdSubscriptionApp2k23virga22luck",
-          merchantCode:req.body.planGroupName,
+          merchantCode: req.body.planGroupName,
           name: req.body.planGroupName,
           options: [topOptions],
         },
@@ -8007,14 +8317,14 @@ export async function prodExPlanUpdate(req, res) {
       const dataString =
         typeof Input === "string" ? Input : JSON.stringify(Input);
 
-      // fs.writeFile("haha.txt", dataString, (err) => {
-      //   if (err) {
-      //     console.error("Error writing to file:", err);
-      //   } else {
-      //     console.log("Data written to file successfully!");
-      //   }
-      // });
-      // console.log(sellPlan[0]["billingPolicy"], "aaaaa");
+      fs.writeFile("haha.txt", dataString, (err) => {
+        if (err) {
+          console.error("Error writing to file:", err);
+        } else {
+          console.log("Data written to file successfully!");
+        }
+      });
+      // // console.log(sellPlan[0]["billingPolicy"], "aaaaa");
       console.log(Input, "lllll");
       const mutationQuery = `
         mutation sellingPlanGroupUpdate($id: ID!, $input: SellingPlanGroupInput!) {
@@ -8082,6 +8392,10 @@ export async function prodExPlanUpdate(req, res) {
               maxCycle: item.maxCycle,
               planType: item.planType,
               deliveryEvery: item.deliveryEvery,
+              freeTrial:item.freeTrial,
+              trialCount:item.freeTrialCount,
+              freeTrialCycle:item.freeTrialCycle,
+  
             };
             planDetails.push(obj);
 
@@ -8094,6 +8408,7 @@ export async function prodExPlanUpdate(req, res) {
         ///**********************/// previous existing plans to update
         await Promise.all(
           req.body.prevPlanList?.map(async (item, index) => {
+            console.log("jan4item,",item)
             let obj = {
               planName: item.frequencyPlanName,
               plan_id: item.plan_id,
@@ -8107,6 +8422,11 @@ export async function prodExPlanUpdate(req, res) {
               maxCycle: item.maxCycle,
               planType: item.planType,
               deliveryEvery: item.deliveryEvery,
+              freeTrial:item.freeTrial,
+              trialCount:item.freeTrialCount,
+              freeTrialCycle:item.freeTrialCycle,
+  
+
             };
             updatedPlans.push(obj);
           })
