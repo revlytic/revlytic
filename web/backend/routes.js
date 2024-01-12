@@ -82,6 +82,7 @@ import {
   demo,
   checkAppBlockEmbed,
   convertStoreProductPriceIntoOrderCurrency,
+  subscriptionBookings
 } from "./controller.js";
   import { appProxy, getCustomerPortalDetailsStore, getCustomerSubscriptions, getStoreCountries, getStoreToken, getTotalOrdersBillingsCount } from "./customerPortalController.js";
 
@@ -249,6 +250,8 @@ router.post("/updateAnnouncement",updateAnnouncement)
 router.post("/getAnnouncements",getAnnouncements)
 router.post("/deleteAnnouncement",deleteAnnouncement)
 router.post('/checkAppBlockEmbed',checkAppBlockEmbed)
+router.post("/subscriptionBookings", subscriptionBookings);
+
 
 
 

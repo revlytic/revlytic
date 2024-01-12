@@ -3,7 +3,7 @@ import shopify from "../shopify.js";
 import planModal from "./modals/PlanGroupDetails.js";
 import subscriptionDetailsModal from "./modals/subscriptionDetails.js";
 import StoreSchemaModal from "./modals/storeDetails.js";
-import storeModal from "./modals/storeCredentials.js";
+
 
 import checkoutCustomerModal from "./modals/checkoutCustomer.js";
 import nodemailer from "nodemailer";
@@ -4892,6 +4892,27 @@ export async function combinedData(req, res) {
     res.send({ message: "error" });
   }
 }
+export async function subscriptionBookings(req, res) {
+  try {
+    let shop = res.locals.shopify.session.shop;
+    let dateRange = findDateRange(req.body);
+
+    // Query for data within the date range
+    let data = await subscriptionDetailsModal.countDocuments({
+      shop: shop,
+     
+      createdAt: dateRange,
+    });
+
+    console.log("subscriptionBookings", data);
+
+    res.send({ message: "success", data });
+  } catch (error) {
+    console.log("error", error);
+    res.send({ message: "error" });
+  }
+}
+
 
 export async function activeCustomers(req, res) {
   try {
@@ -7589,6 +7610,7 @@ export async function prodExCreatePlan(req, res) {
       list?.map((item) => {
         let unique =
       Date.now().toString(36) + Math.random().toString(36).substring(2, 5);
+      console.log("unique--",unique)
         allOptions?.push(item?.billEvery + " " + item?.interval+ " " + unique);
       });
       const topOptions = allOptions.join(",");
@@ -7728,10 +7750,10 @@ export async function prodExCreatePlan(req, res) {
         ////////////////////////////////
         let unique =
         Date.now().toString(36) + Math.random().toString(36).substring(2, 5);
-  
+       console.log("unique---->",unique)
         sellPlan.push({
           name: req.body.planGroupName + "-" + item.frequencyPlanName,
-          options: item?.billEvery + " " + item?.interval + " " + unique,
+          options: item?.billEvery + " " + item?.interval + " " + unique + Math.random().toString(10),
           position: 1,
           category: "SUBSCRIPTION",
           inventoryPolicy: {
@@ -7768,8 +7790,8 @@ export async function prodExCreatePlan(req, res) {
         });
       });
       console.log(topOptions, "check1");
-      console.log(sellPlan, "check2");
-
+      console.log(sellPlan, "check234");
+      console.log(sellPlan[0].deliveryPolicy.recurring, "checck09");
       const CreateInput = {
         input: {
           appId: "SdSubscriptionApp2k23virga22luck",
@@ -7929,7 +7951,7 @@ export async function prodExPlanDetails(req, res) {
 }
 
 export async function prodExPlanUpdate(req, res) {
-  console.log("checkjan4")
+  console.log("checkjan888")
   const secretOrPublicKey = process.env.SHOPIFY_API_SECRET;
   const token = req.headers.authentication;
   let shop;
@@ -8087,7 +8109,7 @@ Date.now().toString(36) + Math.random().toString(36).substring(2, 5);
 
           sellPlan.push({
             name: req.body.planGroupName + "-" + item.frequencyPlanName,
-            options: item?.billEvery + " " + item?.interval + " " + unique,
+            options: item?.billEvery + " " + item?.interval + " " + unique +  Math.random().toString(10),
             position: 1,
             category: "SUBSCRIPTION",
             inventoryPolicy: {
@@ -8255,7 +8277,7 @@ console.log("req.body.prevPlanList[item].plan_id===>",req.body.prevPlanList[item
             options:
               req.body.prevPlanList[item]?.billEvery +
               " " +
-              req.body.prevPlanList[item]?.interval + " "+ unique ,
+              req.body.prevPlanList[item]?.interval + " "+ unique +  Math.random().toString(10),
             position: 1,
             category: "SUBSCRIPTION",
             inventoryPolicy: {
@@ -8297,6 +8319,7 @@ console.log("req.body.prevPlanList[item].plan_id===>",req.body.prevPlanList[item
           });
         });
 console.log("ssellPlanToUpdate",sellPlanToUpdate)
+console.log("ssellPlanToUpdate1231",sellPlanToUpdate[0]?.deliveryPolicy?.recurring)
       const Input = {
         id: req.body.id,
         input: {
@@ -8316,6 +8339,8 @@ console.log("ssellPlanToUpdate",sellPlanToUpdate)
 
       const dataString =
         typeof Input === "string" ? Input : JSON.stringify(Input);
+       
+        console.log("jddkk",JSON.stringify(Input))
 
       fs.writeFile("haha.txt", dataString, (err) => {
         if (err) {

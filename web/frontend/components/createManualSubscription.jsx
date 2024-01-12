@@ -4216,6 +4216,7 @@ console.log("sdasdasdakeuwriorioriorioriorioriorioriorioiooppo")
             setNextBillingDate={setNextBillingDate}
             pastOrders={pastOrders}
             skippedOrders={skippedOrders}
+            mode={mode}
           />
         ) : (
           <Fulfillments
@@ -4227,6 +4228,7 @@ console.log("sdasdasdakeuwriorioriorioriorioriorioriorioiooppo")
             storeDetails={storeDetails}
               setNextBillingDate={setNextBillingDate}
               pastOrders={pastOrders}
+              mode={mode}
           />
         )
       ) : (

@@ -364,7 +364,7 @@ import { useNavigate } from "react-router-dom";
 import { useAPI } from "../common/commonContext";
 import { useAppBridge } from "@shopify/app-bridge-react";
 import { toast } from "react-toastify";
-function Fulfillments({ data,fullfillmentDataMain,setFullfillmentDataMain,setLoader,setExistingSubscription,storeDetails,setNextBillingDate,pastOrders}) {
+function Fulfillments({ data,fullfillmentDataMain,setFullfillmentDataMain,setLoader,setExistingSubscription,storeDetails,setNextBillingDate,pastOrders,mode}) {
   const navigate = useNavigate();
   const { storeName } = useAPI();
   const app = useAppBridge();
@@ -691,10 +691,10 @@ setLoader(true)
          </div> 
           
           <div className="order-now-and-skip order-inner">
-                <Button onClick={() =>rescheduleButtonClick(Object.keys(item)[0],Object.values(item)[0].fulfill_at) }>
+                <Button onClick={() =>rescheduleButtonClick(Object.keys(item)[0],Object.values(item)[0].fulfill_at) } disabled={mode=='view'}>
                Reschedule
                 </Button>
-                <Button  onClick={() => handleSkipFulfillment(Object.keys(item)[0],Object.values(item)[0].fulfill_at)}>Postpone</Button>
+                <Button  onClick={() => handleSkipFulfillment(Object.keys(item)[0],Object.values(item)[0].fulfill_at)} disabled={mode=='view'}>Postpone</Button>
               </div>
 
 </div>   )

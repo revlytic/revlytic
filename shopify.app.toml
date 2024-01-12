@@ -1,6 +1,6 @@
 # Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
 
-name = "Revlytic"
+name = "Revlytic Subscriptions"
 client_id = "d733a4696305f73394b07285ed5794f6"
 application_url = "https://revlytic.co"
 embedded = true

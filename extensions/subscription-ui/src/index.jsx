@@ -45,10 +45,10 @@ function Create() {
   const [discount, setDiscount] = useState("");
   const [discountType, setdiscountType] = useState("percentage");
   const [freeTrialCount, setFreeTrialCount] = useState("");
-  const [freeTrialCycle, setFreeTrialCycle] = useState("");
+  const [freeTrialCycle, setFreeTrialCycle] = useState("day");
   const [editState, seteditState] = useState(false);
   const [editIndex, seteditIndex] = useState();
-  console.log(data, "dtaaaaalatestvala");
+  // console.log(data, "zazazaa");
   const options = [
     { label: "Pay As You Go", value: "payAsYouGo" },
     { label: "Prepaid", value: "prepaid" },
@@ -61,9 +61,9 @@ function Create() {
   ];
   const numberRegex = /^-?\d+(\.\d+)?$/;
   const addPlan = () => {
-    console.log("aksdjfhjhdklajh", numberRegex.test(billEvery));
-    console.log("discount--->",discount);
-    console.log("plantype--->",planType);
+    // console.log("ddd", numberRegex.test(billEvery));
+    // console.log("discount--->",discount);
+    // console.log("plantype--->",planType);
     let arr = [...planList];
     if (editState) {
       arr.splice(editIndex, 1);
@@ -91,15 +91,15 @@ function Create() {
       
 
       billEvery > 0 &&
-      numberRegex.test(billEvery) && (offerDiscount==false ||  (offerDiscount==true && discount != undefined && discount != null && discount !="")) && (freeTrial==false ||  (freeTrial==true && freeTrialCount != undefined && freeTrialCount != null && freeTrialCount !=""))
+      numberRegex.test(billEvery) && (offerDiscount==false ||  (offerDiscount==true && discount != undefined && discount != null && discount !="")) && (freeTrial==false ||  freeTrial==undefined || (freeTrial==true && freeTrialCount != undefined && freeTrialCount != null && freeTrialCount !=""))
     ) {
-console.log("intreere")
+// console.log("vfvfs")
 
 if(planType == "prepaid" )
 {
 console.log("finalcheckk")
   if((deliveryEvery==billEvery) || deliveryEvery =="" || deliveryEvery <=0  ){
-    console.log("intestrrrraa")
+    // console.log("intestrrrraa")
     showToast("Delivery every must be greater than 0 . Bill every and Delivery every cannot be same !!");
 
     return ;
@@ -167,7 +167,7 @@ console.log("finalcheckk")
 
     }
   };
-  console.log(planList, "jkhg");
+  // console.log(planList, "jkhg");
 
   const DeletePlan = (index) => {
     let arr = [...planList];
@@ -212,7 +212,7 @@ seteditState(false)
         }
       );
       const result = await createApi.json();
-      console.log(result, "nbvcx");
+      // console.log(result, "nbvcx");
       if (result.message == "success") {
         showToast("Plan created successfully");
         done();
@@ -260,7 +260,8 @@ seteditState(false)
             value={planGroupName}
             // placeholder="Plan  name"
             onChange={(value) => {
-              console.log(value, " was typed"), setPlanGroupName(value);
+              // console.log(value, " was typed")
+               setPlanGroupName(value);
             }}
             error={planGroupName.length < 1 ? "Plan Name is required!" : false}
           />
@@ -307,7 +308,8 @@ seteditState(false)
               type="text"
               value={frequencyPlanName}
               onChange={(value) => {
-                console.log(value, " was typed"), setFrequencyPlanName(value);
+                // console.log(value, " was typed")
+                 setFrequencyPlanName(value);
               }}
               error={
                 planList.length > 0
@@ -329,7 +331,8 @@ seteditState(false)
               options={options}
               // labelInline
               onChange={(e) => {
-                setplanType(e), console.log(e, "was selected");
+                setplanType(e)
+                //  console.log(e, "was selected");
                 e != "prepaid" && setAutoRenew(true);
               }}
               value={planType}
@@ -341,7 +344,8 @@ seteditState(false)
               type="number"
               value={billEvery}
               onChange={(value) => {
-                console.log(value, " was typed"), setbillEvery(value);
+                // console.log(value, " was typed")
+                 setbillEvery(value);
               }}
               error={
                 billEvery &&
@@ -356,7 +360,7 @@ seteditState(false)
               options={options1}
               // labelInline
               onChange={(e) => {
-                console.log(e, "was selected");
+                // console.log(e, "was selected");
                 setinterval(e);
               }}
               value={interval}
@@ -371,7 +375,8 @@ seteditState(false)
                   type="number"
                   value={deliveryEvery}
                   onChange={(value) => {
-                    console.log(value, " was typed"), setdeliveryEvery(value);
+                    // console.log(value, " was typed")
+                     setdeliveryEvery(value);
                   }}
                   error=""
                 />
@@ -381,7 +386,7 @@ seteditState(false)
                   options={options1}
                   // labelInline
                   onChange={(e) => {
-                    console.log(e, "was selected");
+                    // console.log(e, "was selected");
                     setinterval(e);
                   }}
                   value={interval}
@@ -409,7 +414,8 @@ seteditState(false)
                   type="number"
                   value={minCycle}
                   onChange={(value) => {
-                    console.log(value, " was typed"), setminCycle(value);
+                    // console.log(value, " was typed")
+                     setminCycle(value);
                   }}
                 />
 
@@ -418,7 +424,8 @@ seteditState(false)
                   type="number"
                   value={maxCycle}
                   onChange={(value) => {
-                    console.log(value, " was typed"), setmaxCycle(value);
+                    // console.log(value, " was typed")
+                     setmaxCycle(value);
                   }}
                 />
               </InlineStack>
@@ -444,7 +451,8 @@ seteditState(false)
                   //  placeholder="Enter discount"
                   value={discount}
                   onChange={(value) => {
-                    console.log(value, " was typed"), setDiscount(value);
+                    // console.log(value, " was typed")
+                     setDiscount(value);
                   }}
                   error={!discount  ? "Discount Value is required!" : false}
                 />
@@ -457,7 +465,8 @@ seteditState(false)
                   ]}
                   // labelInline
                   onChange={(e) => {
-                    console.log(e, "was selected"), setdiscountType(e);
+                    // console.log(e, "was selected")
+                     setdiscountType(e);
                   }}
                   value={discountType}
                 />
@@ -483,7 +492,8 @@ seteditState(false)
                 type="text"
                 value={freeTrialCount}
                 onChange={(value) => {
-                  console.log(value, " was typed"), setFreeTrialCount(value);
+                  // console.log(value, " was typed")
+                   setFreeTrialCount(value);
                 }}
                 error={!discount  ? "Free Trial Count is required!" : false}
               />
@@ -492,7 +502,7 @@ seteditState(false)
               options={options1}
               // labelInline
               onChange={(e) => {
-                console.log(e, "was selected");
+                // console.log(e, "was selected");
                 setFreeTrialCycle(e);
               }}
               value={freeTrialCycle}
@@ -673,8 +683,8 @@ function Add() {
       onAction: async () => {
         const token = await getSessionToken();
 
-        console.log(selectedPlans, "selected plans");
-        console.log(checkedPlans, "checked plans");
+        // console.log(selectedPlans, "selected plans");
+        // console.log(checkedPlans, "checked plans");
 
         const response = await fetch(
           "https://revlytic.co/api/prodEx/prodExAddProduct",
@@ -690,7 +700,7 @@ function Add() {
 
         const result = await response.json();
 
-        console.log(result, "result");
+        // console.log(result, "result");
         if (result.message == "success") {
           showToast("Plan added successfully");
           done();
@@ -753,7 +763,7 @@ function Remove() {
   const { extensionPoint, container } = useExtensionApi();
   const data = useData();
 
-  console.log(data, "clicked on remove");
+  // console.log(data, "clicked on remove");
 
   const removeVariants = async () => {
     let token = await getSessionToken();
@@ -771,7 +781,7 @@ function Remove() {
     );
 
     const result = await response.json();
-    console.log("Success:", result);
+    // console.log("Success:", result);
     if (result.message == "success") {
       showToast("Plan removed successfully");
       // location.reload()
@@ -782,7 +792,7 @@ function Remove() {
     setPrimaryAction({
       content: "Remove",
       onAction: async () => {
-        console.log("primary action pressed!");
+        // console.log("primary action pressed!");
         await removeVariants();
         done();
       },
@@ -791,12 +801,12 @@ function Remove() {
     setSecondaryAction({
       content: "Cancel",
       onAction: () => {
-        console.log("secondary action pressed!");
+        // console.log("secondary action pressed!");
         close();
       },
     });
   }, [close, done, setPrimaryAction, setSecondaryAction]);
-  console.log("9 oct");
+  // console.log("9 oct");
   return (
     <>
       <Text>Are you sure you want to remove this plan !!</Text>
@@ -848,7 +858,7 @@ function Edit() {
   // });
   const [error, seterror] = useState(true);
 
-  console.log(data, "dtaaaaatatatatabye");
+  // console.log(data, "dtaaaaatatatatabye");
   const options = [
     { label: "Pay As You Go", value: "payAsYouGo" },
     { label: "Prepaid", value: "prepaid" },
@@ -876,7 +886,7 @@ function Edit() {
       }
     );
     const result = await createApi.json();
-    console.log(result);
+    // console.log(result);
     let allplans = result.data.plans;
     let arr = [];
     allplans.map((item) => {
@@ -900,61 +910,55 @@ function Edit() {
       });
     });
     setprevPlanList(arr);
+    // console.log("arr-------->",arr)
     setPlanGroupName(result.data.plan_group_name);
   }, []);
 
   const addPlan = () => {
-    console.log("atbegning",planType,billEvery,deliveryEvery)
+    // console.log("atbegning",planType,billEvery,deliveryEvery)
     let arr = [];
     if (editState) {
-      console.log("editatate");
+      // console.log("editatate");
       if (!whichPlanList) {
-        console.log("newlist");
+        // console.log("newlist");
         arr = [...planList];
         arr.splice(editIndex, 1);
         arr = [...arr, ...prevPlanList];
       } else {
-        console.log("prevlist");
+        // console.log("prevlist---->",prevPlanList);
 
         arr = [...prevPlanList];
         arr.splice(editIndex, 1);
         arr = [...arr, ...planList];
       }
     } else {
-      console.log("inelseee");
+      // console.log("inelseee");
       arr = [...planList, ...prevPlanList];
     }
-
+// console.log("loppp",frequencyPlanName,arr,freeTrial,"sss",freeTrialCount)
     if (
       frequencyPlanName.length > 0 &&
       !arr.some((item) => item.frequencyPlanName === frequencyPlanName) &&
-      // !arr.some(
-      //   (item) =>
-      //     item.billEvery === billEvery &&
-      //     item.interval == interval &&
-      //     item.planType != "prepaid" &&
-      //     planType != "prepaid"
-      // ) &&
-      // !arr.some(
-      //   (item) =>
-      //     item.billEvery === billEvery &&
-      //     item.deliveryEvery == deliveryEvery &&
-      //     item.interval == interval &&
-      //     item.planType == "prepaid" &&
-      //     planType == "prepaid"
-      // )
-      // &&
+      
         billEvery > 0 &&
-      numberRegex.test(billEvery) &&  (offerDiscount==false ||  (offerDiscount==true && discount != undefined && discount != null && discount !="")) && (freeTrial==false ||  (freeTrial==true && freeTrialCount != undefined && freeTrialCount != null && freeTrialCount !=""))
+      numberRegex.test(billEvery) &&  (offerDiscount==false ||  (offerDiscount==true && discount != undefined && discount != null && discount !="")) && (freeTrial==false || freeTrial==undefined || (freeTrial==true && freeTrialCount != undefined && freeTrialCount != null && freeTrialCount !=""))
     ) {
 
+// if((freeTrial)){
+// console.log("dkjscdnidcsjc")
+// if(freeTrialCount == undefined ||  freeTrialCount == null || freeTrialCount ==""){
+// console.log("ncjdncjd")
+// return;
+// }
+//   }
+  
 
 
       if(planType == "prepaid" )
       {
-      console.log("finalcheckk")
+      // console.log("finalcheckk")
         if((deliveryEvery==billEvery) || deliveryEvery =="" || deliveryEvery <=0  ){
-          console.log("intestrrrraa")
+          // console.log("intestrrrraa")
           showToast("Delivery every must be greater than 0 . Bill every and Delivery every cannot be same !!");
       
           return ;
@@ -982,19 +986,19 @@ function Edit() {
         details.deliveryEvery = deliveryEvery;
       }
       if (!editState) {
-        console.log("dsjdsaisisi")
+        // console.log("dsjdsaisisi")
         let arr = [...planList];
         arr.push(details);
         setplanList(arr);
       } else {
         if (!whichPlanList) {
-          console.log("sdjsusuu")
+          // console.log("sdjsusuu")
           let arr = [...planList];
           arr[editIndex] = details;
           setplanList(arr);
           seteditState(false);
         } else {
-          console.log("prevPlanList===>",prevPlanList)
+          // console.log("prevPlanList===>",prevPlanList)
           let arr = [...prevPlanList];
           details.plan_id=prevPlanList[editIndex].plan_id
           arr[editIndex] = details;
@@ -1021,7 +1025,7 @@ function Edit() {
       setFreeTrialCount("")
       setFreeTrialCycle("day")
     } else {
-
+      // console.log("elseeeeee")
       if (
         frequencyPlanName.length > 0 &&
         arr.some((item) => item.frequencyPlanName === frequencyPlanName)
@@ -1030,7 +1034,7 @@ function Edit() {
       }
 
       if( planType == "prepaid" && (deliveryEvery == billEvery)){
-        console.log("mimii")
+        // console.log("mimii")
         showToast(
              "Bill every and Delivery every cannot be same !!"
             );
@@ -1073,7 +1077,7 @@ function Edit() {
       // }
     }
   };
-  console.log(planList, "jkhg");
+  // console.log(planList, "jkhg");
 
   const DeletePlan = (index) => {
     let arr = [...planList];
@@ -1144,7 +1148,7 @@ function Edit() {
         }
       );
       const result = await createApi.json();
-      console.log(result, "nbvcx");
+      // console.log(result, "nbvcx");
       if (result.message == "success") {
         showToast("Plan updated successfully");
         done();
@@ -1228,7 +1232,8 @@ function Edit() {
             type="text"
             value={planGroupName}
             onChange={(value) => {
-              console.log(value, " was typed"), setPlanGroupName(value);
+              // console.log(value, " was typed")
+               setPlanGroupName(value);
             }}
             error={planGroupName.length < 1 ? "Plan Name is required!" : false}
           />
@@ -1304,7 +1309,8 @@ function Edit() {
               type="text"
               value={frequencyPlanName}
               onChange={(value) => {
-                console.log(value, " was typed"), setFrequencyPlanName(value);
+                // console.log(value, " was typed")
+                 setFrequencyPlanName(value);
               }}
               error={
                 planList.length > 0
@@ -1325,7 +1331,8 @@ function Edit() {
               options={options}
               // labelInline
               onChange={(e) => {
-                setplanType(e), console.log(e, "was selected");
+                setplanType(e)
+                //  console.log(e, "was selected");
               }}
               value={planType}
             />
@@ -1338,7 +1345,8 @@ function Edit() {
               type="number"
               value={billEvery}
               onChange={(value) => {
-                console.log(value, " was typed"), setbillEvery(value);
+                // console.log(value, " was typed")
+                 setbillEvery(value);
               }}
               error={
                 billEvery &&
@@ -1352,7 +1360,7 @@ function Edit() {
               options={options1}
               // labelInline
               onChange={(e) => {
-                console.log(e, "was selected");
+                // console.log(e, "was selected");
                 setinterval(e);
               }}
               value={interval}
@@ -1367,7 +1375,8 @@ function Edit() {
                   type="number"
                   value={deliveryEvery}
                   onChange={(value) => {
-                    console.log(value, " was typed"), setdeliveryEvery(value);
+                    // console.log(value, " was typed")
+                     setdeliveryEvery(value);
                   }}
                   error=""
                 />
@@ -1376,7 +1385,7 @@ function Edit() {
                   options={options1}
                   // labelInline
                   onChange={(e) => {
-                    console.log(e, "was selected");
+                    // console.log(e, "was selected");
                     setinterval(e);
                   }}
                   value={interval}
@@ -1403,7 +1412,8 @@ function Edit() {
               type="number"
               value={minCycle}
               onChange={(value) => {
-                console.log(value, " was typed"), setminCycle(value);
+                // console.log(value, " was typed")
+                 setminCycle(value);
               }}
             />
             <TextField
@@ -1411,7 +1421,8 @@ function Edit() {
               type="number"
               value={maxCycle}
               onChange={(value) => {
-                console.log(value, " was typed"), setmaxCycle(value);
+                // console.log(value, " was typed")
+                 setmaxCycle(value);
               }}
             />
           </InlineStack>
@@ -1469,7 +1480,8 @@ function Edit() {
                   //  placeholder="Enter discount"
                   value={discount}
                   onChange={(value) => {
-                    console.log(value, " was typed"), setDiscount(value);
+                    // console.log(value, " was typed")
+                     setDiscount(value);
                   }}
                   error={!discount  ? "Discount Value is required!" : false}
                 />
@@ -1482,7 +1494,8 @@ function Edit() {
                   ]}
                   // labelInline
                   onChange={(e) => {
-                    console.log(e, "was selected"), setdiscountType(e);
+                    // console.log(e, "was selected")
+                     setdiscountType(e);
                   }}
                   value={discountType}
                 />
@@ -1508,7 +1521,7 @@ function Edit() {
                 type="text"
                 value={freeTrialCount}
                 onChange={(value) => {
-                  console.log(value, " was typed");
+                  // console.log(value, " was typed");
                   setFreeTrialCount(value);
                 }}
                 error={!discount  ? "Free Trial Count is required!" : false}
@@ -1518,7 +1531,7 @@ function Edit() {
               options={options1}
               // labelInline
               onChange={(e) => {
-                console.log(e, "was selected");
+                // console.log(e, "was selected");
                 setFreeTrialCycle(e);
               }}
               value={freeTrialCycle}
