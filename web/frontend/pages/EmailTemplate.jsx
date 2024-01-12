@@ -1,6 +1,5 @@
 import React, { useState,useEffect} from "react";
 import { Tabs, Button,Spin } from "antd";
-import Default from "../components/emailtemplate/default";
 import EmailSetting from "../components/emailtemplate/emailSetting";
 import Custom from "../components/emailtemplate/custom";
 import DefaultTemp from "../components/emailtemplate/default2";

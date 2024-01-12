@@ -8,6 +8,7 @@ const APIContext = createContext();
    const [currencyCode,setCurrencyCode]=useState("") ;
    const [storeName,setStoreName]=useState("") ;
    const [storeDetails,setStoreDetails]=useState({}) ;
+   const [billingPlan,setBillingPlan]=useState("") ;
    const app=useAppBridge();
   const [getShop, setGetShop] = useState(new URL(location.href).searchParams.get("shop"));
   console.log("shop",getShop);
@@ -18,20 +19,30 @@ const APIContext = createContext();
       
          let getStoreName=result?.data?.data?.shop.split(".myshopify.com")[0];
          
-   
-
         setCurrency(result?.data?.data?.currency);
         setCurrencyCode(result?.data?.data?.currency_code);
         setStoreName(getStoreName)
         setStoreDetails(result?.data?.data)
                 
        }
+
+    let billingPlanData=await postApi("api/admin/getBillingPlanData",{},app);
+    if(billingPlanData && billingPlanData?.data?.message=='success') {
+      // console.log("ksjaisa",billingPlanData)
+      setBillingPlan(billingPlanData?.data?.plan)
+      // console.log(billingPlanData?.data?.plan,"kilkill")
+    }else{
+      setBillingPlan("")
+    }
+
+
+
        
    },[])
  
   return (
 
-    <APIContext.Provider value={{ shop: getShop,currency:currency,storeName:storeName,storeDetails:storeDetails}}>
+    <APIContext.Provider value={{ shop: getShop,currency:currency,storeName:storeName,storeDetails:storeDetails,billingPlan}}>
 
       {children}
 

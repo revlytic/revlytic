@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-
 import {
   render,
   extend,
@@ -43,9 +42,10 @@ function Create() {
   const [interval, setinterval] = useState("day");
   const [minCycle, setminCycle] = useState();
   const [maxCycle, setmaxCycle] = useState();
-  const [discount, setDiscount] = useState(0);
+  const [discount, setDiscount] = useState("");
   const [discountType, setdiscountType] = useState("percentage");
   const [freeTrialCount, setFreeTrialCount] = useState("");
+  const [freeTrialCycle, setFreeTrialCycle] = useState("");
   const [editState, seteditState] = useState(false);
   const [editIndex, seteditIndex] = useState();
   console.log(data, "dtaaaaalatestvala");
@@ -62,12 +62,14 @@ function Create() {
   const numberRegex = /^-?\d+(\.\d+)?$/;
   const addPlan = () => {
     console.log("aksdjfhjhdklajh", numberRegex.test(billEvery));
+    console.log("discount--->",discount);
+    console.log("plantype--->",planType);
     let arr = [...planList];
     if (editState) {
       arr.splice(editIndex, 1);
     }
     if (
-      frequencyPlanName.length > 0 &&
+      frequencyPlanName.length > 0 && 
       !arr.some((item) => item.frequencyPlanName === frequencyPlanName) &&
       // !arr.some(
       //   (item) =>
@@ -82,9 +84,28 @@ function Create() {
       //     item.interval == interval &&
       //     planType == "prepaid"
       // ) &&
+   
+      // !(planType == "prepaid" && (deliveryEvery == billEvery)) && !(planType == "prepaid" && deliveryEvery ==""  && deliveryEvery > 0 &&
+
+      // numberRegex.test(deliveryEvery)==false  ) &&
+      
+
       billEvery > 0 &&
-      numberRegex.test(billEvery)
+      numberRegex.test(billEvery) && (offerDiscount==false ||  (offerDiscount==true && discount != undefined && discount != null && discount !="")) && (freeTrial==false ||  (freeTrial==true && freeTrialCount != undefined && freeTrialCount != null && freeTrialCount !=""))
     ) {
+console.log("intreere")
+
+if(planType == "prepaid" )
+{
+console.log("finalcheckk")
+  if((deliveryEvery==billEvery) || deliveryEvery =="" || deliveryEvery <=0  ){
+    console.log("intestrrrraa")
+    showToast("Delivery every must be greater than 0 . Bill every and Delivery every cannot be same !!");
+
+    return ;
+  }
+}
+
       let details = {
         frequencyPlanName,
         planType,
@@ -96,6 +117,9 @@ function Create() {
         offerDiscount,
         discount,
         discountType,
+        freeTrial,
+       freeTrialCount,
+        freeTrialCycle
       };
       if (planType == "prepaid") {
         details.deliveryEvery = deliveryEvery;
@@ -116,26 +140,31 @@ function Create() {
       setbillEvery(1);
       setdeliveryEvery(1);
       setinterval("day");
-      setAutoRenew(false);
+      setAutoRenew(true);
       setminCycle(1);
       setmaxCycle(1);
       setOfferDiscount(false);
-      setDiscount(1);
+      setDiscount("");
       setdiscountType("percentage");
+      setFreeTrial(false)
+      setFreeTrialCount("")
+      setFreeTrialCycle("day")
     } else {
-      if (
-        arr.some(
-          (item) =>
-            item.billEvery === billEvery &&
-            item.deliveryEvery &&
-            item.interval == interval &&
-            planType == "prepaid"
-        )
-      ) {
-        showToast(
-          "Same plan with same billing and delivery frequencies exist already !!"
-        );
-      }
+      // if (
+      //   arr.some(
+      //     (item) =>
+      //       item.billEvery === billEvery &&
+      //       item.deliveryEvery &&
+      //       item.interval == interval &&
+      //       planType == "prepaid"
+      //   )
+      // ) {
+      //   showToast(
+      //     "Same plan with same billing and delivery frequencies exist already !!"
+      //   );
+      // }
+      console.log("helooineseess")
+
     }
   };
   console.log(planList, "jkhg");
@@ -144,6 +173,22 @@ function Create() {
     let arr = [...planList];
     arr.splice(index, 1);
     setplanList(arr);
+seteditState(false)
+    setFrequencyPlanName("");
+    setplanType("payAsYouGo");
+    setbillEvery(1);
+    setdeliveryEvery(1);
+    setinterval("day");
+    setAutoRenew(true);
+    setminCycle(1);
+    setmaxCycle(1);
+    setOfferDiscount(false);
+    setDiscount("");
+    setdiscountType("percentage");
+    setFreeTrial(false)
+    setFreeTrialCount("")
+    setFreeTrialCycle("day")
+
   };
 
   const createPlanGroup = async () => {
@@ -151,7 +196,7 @@ function Create() {
 
     if (planList.length > 0 && planGroupName.length > 0) {
       const createApi = await fetch(
-        "https://revlytic.co/api/prodEx/prodExCreatePlan",
+        "https://tells-cowboy-memorial-honolulu.trycloudflare.com/api/prodEx/prodExCreatePlan",
         {
           method: "POST", // or 'PUT'
           headers: {
@@ -176,7 +221,7 @@ function Create() {
         showToast(result.data);
       }
     } else {
-      if (!(planList.length > 0 || prevPlanList.length > 0)) {
+      if (!(planList.length > 0 )) {
         showToast("Minimum one plan required !!");
       } else {
         showToast("Enter valid Plan Name !!");
@@ -198,6 +243,9 @@ function Create() {
     setOfferDiscount(arr[index].offerDiscount);
     setDiscount(arr[index].discount);
     setdiscountType(arr[index].discountType);
+    setFreeTrial(arr[index].freeTrial);
+    setFreeTrialCount(arr[index].freeTrialCount);
+    setFreeTrialCycle(arr[index].freeTrialCycle);    
   };
   return (
     <>
@@ -380,7 +428,10 @@ function Create() {
             <Checkbox
               label="Offer Discount"
               checked={offerDiscount}
-              onChange={() => setOfferDiscount(!offerDiscount)}
+              onChange={() => { 
+                setOfferDiscount(!offerDiscount)
+                setDiscount("")                 
+              }}
             />
           </CardSection>
 
@@ -395,6 +446,7 @@ function Create() {
                   onChange={(value) => {
                     console.log(value, " was typed"), setDiscount(value);
                   }}
+                  error={!discount  ? "Discount Value is required!" : false}
                 />
 
                 <Select
@@ -412,13 +464,20 @@ function Create() {
               </InlineStack>
             </>
           )}
-          {/* <Checkbox
+           <CardSection>
+           <Checkbox
             label="Free Trial"
             checked={freeTrial}
-            onChange={() => setFreeTrial(!freeTrial)}
+            onChange={() => {
+              setFreeTrial(!freeTrial)
+              setFreeTrialCount("")
+            }
+          }
           />
+          </CardSection>
           {freeTrial && (
-            <>
+             <CardSection>
+            <InlineStack>
               <TextField
                 label="Free Trial Count"
                 type="text"
@@ -426,9 +485,22 @@ function Create() {
                 onChange={(value) => {
                   console.log(value, " was typed"), setFreeTrialCount(value);
                 }}
+                error={!discount  ? "Free Trial Count is required!" : false}
               />
-            </>
-          )} */}
+                <Select
+              label="Period"
+              options={options1}
+              // labelInline
+              onChange={(e) => {
+                console.log(e, "was selected");
+                setFreeTrialCycle(e);
+              }}
+              value={freeTrialCycle}
+            />
+            </InlineStack>
+            </CardSection>
+          )} 
+
           <Button
             title={!editState ? "Add Plan" : "Update Plan"}
             onPress={addPlan}
@@ -605,7 +677,7 @@ function Add() {
         console.log(checkedPlans, "checked plans");
 
         const response = await fetch(
-          "https://revlytic.co/api/prodEx/prodExAddProduct",
+          "https://tells-cowboy-memorial-honolulu.trycloudflare.com/api/prodEx/prodExAddProduct",
           {
             method: "POST", // or 'PUT'
             headers: {
@@ -642,7 +714,7 @@ function Add() {
   useEffect(async () => {
     let token = await getSessionToken();
     const response = await fetch(
-      "https://revlytic.co/api/prodEx/prodExGetallPlans",
+      "https://tells-cowboy-memorial-honolulu.trycloudflare.com/api/prodEx/prodExGetallPlans",
       {
         method: "POST", // or 'PUT'
         headers: {
@@ -687,7 +759,7 @@ function Remove() {
     let token = await getSessionToken();
 
     const response = await fetch(
-      "https://revlytic.co/api/prodEx/prodExRemoveVariants",
+      "https://tells-cowboy-memorial-honolulu.trycloudflare.com/api/prodEx/prodExRemoveVariants",
       {
         method: "POST", // or 'PUT'
         headers: {
@@ -755,6 +827,7 @@ function Edit() {
   const [discount, setDiscount] = useState(0);
   const [discountType, setdiscountType] = useState("percentage");
   const [freeTrialCount, setFreeTrialCount] = useState("");
+  const [freeTrialCycle, setFreeTrialCycle] = useState("day");
   const [editState, seteditState] = useState(false);
   const [editIndex, seteditIndex] = useState();
   const [deletedPlans, setdeletedPlans] = useState([]);
@@ -792,7 +865,7 @@ function Edit() {
     let token = await getSessionToken();
 
     const createApi = await fetch(
-      "https://revlytic.co/api/prodEx/prodExPlanDetails",
+      "https://participation-journals-lincoln-eva.trycloudflare.com/api/prodEx/prodExPlanDetails",
       {
         method: "POST", // or 'PUT'
         headers: {
@@ -820,6 +893,10 @@ function Edit() {
         discount: item?.price,
         discountType: item?.priceType,
         plan_id: item?.plan_id,
+        freeTrial:item?.freeTrial,
+        freeTrialCount:item?.trialCount,
+        freeTrialCycle:item?.freeTrialCycle
+
       });
     });
     setprevPlanList(arr);
@@ -827,6 +904,7 @@ function Edit() {
   }, []);
 
   const addPlan = () => {
+    console.log("atbegning",planType,billEvery,deliveryEvery)
     let arr = [];
     if (editState) {
       console.log("editatate");
@@ -846,7 +924,7 @@ function Edit() {
       console.log("inelseee");
       arr = [...planList, ...prevPlanList];
     }
-
+    console.log("lopppcccc",frequencyPlanName,arr,freeTrial,"sss",freeTrialCount)
     if (
       frequencyPlanName.length > 0 &&
       !arr.some((item) => item.frequencyPlanName === frequencyPlanName) &&
@@ -866,9 +944,25 @@ function Edit() {
       //     planType == "prepaid"
       // )
       // &&
-      billEvery > 0 &&
-      numberRegex.test(billEvery)
+        billEvery > 0 &&
+      numberRegex.test(billEvery) &&  (offerDiscount==false ||  (offerDiscount==true && discount != undefined && discount != null && discount !="")) && (freeTrial==false || freeTrial==undefined || (freeTrial==true && freeTrialCount != undefined && freeTrialCount != null && freeTrialCount !=""))
     ) {
+
+
+
+      if(planType == "prepaid" )
+      {
+      console.log("finalcheckk")
+        if((deliveryEvery==billEvery) || deliveryEvery =="" || deliveryEvery <=0  ){
+          console.log("intestrrrraa")
+          showToast("Delivery every must be greater than 0 . Bill every and Delivery every cannot be same !!");
+      
+          return ;
+        }
+      }
+      
+
+
       let details = {
         frequencyPlanName,
         planType,
@@ -880,22 +974,29 @@ function Edit() {
         offerDiscount,
         discount,
         discountType,
+        freeTrial,
+        freeTrialCount,
+        freeTrialCycle
       };
       if (planType == "prepaid") {
         details.deliveryEvery = deliveryEvery;
       }
       if (!editState) {
+        console.log("dsjdsaisisi")
         let arr = [...planList];
         arr.push(details);
         setplanList(arr);
       } else {
         if (!whichPlanList) {
+          console.log("sdjsusuu")
           let arr = [...planList];
           arr[editIndex] = details;
           setplanList(arr);
           seteditState(false);
         } else {
+          console.log("prevPlanList===>",prevPlanList)
           let arr = [...prevPlanList];
+          details.plan_id=prevPlanList[editIndex].plan_id
           arr[editIndex] = details;
           setprevPlanList(arr);
           let newarr = [...editIndexOfPrevPlan];
@@ -914,40 +1015,62 @@ function Edit() {
       setminCycle(1);
       setmaxCycle(1);
       setOfferDiscount(false);
-      setDiscount(1);
+      setDiscount("");
       setdiscountType("percentage");
+      setFreeTrial(false)
+      setFreeTrialCount("")
+      setFreeTrialCycle("day")
     } else {
+      console.log("elseeeeee")
       if (
         frequencyPlanName.length > 0 &&
         arr.some((item) => item.frequencyPlanName === frequencyPlanName)
       ) {
         showToast("Plan names should be unique");
       }
-      if (
-        arr.some(
-          (item) =>
-            item.billEvery === billEvery &&
-            item.interval == interval &&
-            item.planType != "prepaid" &&
-            planType != "prepaid"
-        )
-      ) {
-        showToast("Another plan with same billing frequency exists");
-      }
-      if (
-        arr.some(
-          (item) =>
-            item.billEvery === billEvery &&
-            item.deliveryEvery == deliveryEvery &&
-            item.interval == interval &&
-            item.planType == "prepaid" &&
-            planType == "prepaid"
-        )
-      ) {
+
+      if( planType == "prepaid" && (deliveryEvery == billEvery)){
+        console.log("mimii")
         showToast(
-          "Same plan with same billing and delivery frequencies exist already !!"
-        );
-      }
+             "Bill every and Delivery every cannot be same !!"
+            );
+  
+       }
+
+      //  if( planType == "prepaid" && ( deliveryEvery/billEvery != 0 )){
+      //   console.log("saksakklsak")
+
+      //   showToast(
+      //        "Bill every must be multiple of delivery every !!"
+      //       );
+  
+      //  }
+
+      // if (
+      //   arr.some(
+      //     (item) =>
+      //       item.billEvery === billEvery &&
+      //       item.interval == interval &&
+      //       item.planType != "prepaid" &&
+      //       planType != "prepaid"
+      //   )
+      // ) {
+      //   showToast("Another plan with same billing frequency exists");
+      // }
+      // if (
+      //   arr.some(
+      //     (item) =>
+      //       item.billEvery === billEvery &&
+      //       item.deliveryEvery == deliveryEvery &&
+      //       item.interval == interval &&
+      //       item.planType == "prepaid" &&
+      //       planType == "prepaid"
+      //   )
+      // ) {
+      //   showToast(
+      //     "Same plan with same billing and delivery frequencies exist already !!"
+      //   );
+      // }
     }
   };
   console.log(planList, "jkhg");
@@ -956,6 +1079,21 @@ function Edit() {
     let arr = [...planList];
     arr.splice(index, 1);
     setplanList(arr);
+    seteditState(false)
+    setFrequencyPlanName("");
+    setplanType("payAsYouGo");
+    setbillEvery(1);
+    setdeliveryEvery(1);
+    setinterval("day");
+    setAutoRenew(true);
+    setminCycle(1);
+    setmaxCycle(1);
+    setOfferDiscount(false);
+    setDiscount("");
+    setdiscountType("percentage");
+    setFreeTrial(false)
+    setFreeTrialCount("")
+    setFreeTrialCycle("day")
   };
   const DeletePrevPlan = (index) => {
     let arr = [...prevPlanList];
@@ -965,6 +1103,22 @@ function Edit() {
     setdeletedPlans(newarr);
     arr.splice(index, 1);
     setprevPlanList(arr);
+    
+    seteditState(false)
+    setFrequencyPlanName("");
+    setplanType("payAsYouGo");
+    setbillEvery(1);
+    setdeliveryEvery(1);
+    setinterval("day");
+    setAutoRenew(true);
+    setminCycle(1);
+    setmaxCycle(1);
+    setOfferDiscount(false);
+    setDiscount("");
+    setdiscountType("percentage");
+    setFreeTrial(false)
+    setFreeTrialCount("")
+    setFreeTrialCycle("day")
   };
 
   const updatePlanGroup = async () => {
@@ -972,7 +1126,7 @@ function Edit() {
 
     if (planList.length > 0 || prevPlanList.length > 0) {
       const createApi = await fetch(
-        "https://revlytic.co/api/prodEx/prodExPlanUpdate",
+        "https://tells-cowboy-memorial-honolulu.trycloudflare.com/api/prodEx/prodExPlanUpdate",
         {
           method: "POST", // or 'PUT'
           headers: {
@@ -1016,7 +1170,13 @@ function Edit() {
     setFrequencyPlanName(arr[index].frequencyPlanName);
     setplanType(arr[index].planType);
     setbillEvery(arr[index].billEvery);
+    if(arr[index].deliveryEvery){
     setdeliveryEvery(arr[index].deliveryEvery);
+    }
+    else{
+    setdeliveryEvery(1);
+
+    }
     setinterval(arr[index].interval);
     setAutoRenew(arr[index].autoRenew);
     setminCycle(arr[index].minCycle);
@@ -1024,6 +1184,9 @@ function Edit() {
     setOfferDiscount(arr[index].offerDiscount);
     setDiscount(arr[index].discount);
     setdiscountType(arr[index].discountType);
+    setFreeTrial(arr[index].freeTrial);
+    setFreeTrialCount(arr[index].freeTrialCount);
+    setFreeTrialCycle(arr[index].freeTrialCycle);
   };
   const EditPrevPlan = (index) => {
     seteditIndex(index);
@@ -1033,7 +1196,14 @@ function Edit() {
     setFrequencyPlanName(arr[index].frequencyPlanName);
     setplanType(arr[index].planType);
     setbillEvery(arr[index].billEvery);
-    setdeliveryEvery(arr[index].deliveryEvery);
+
+    // setdeliveryEvery(arr[index].deliveryEvery);
+    if(arr[index].deliveryEvery){
+      setdeliveryEvery(arr[index].deliveryEvery);
+      }
+      else{
+      setdeliveryEvery(1);
+      }
     setinterval(arr[index].interval);
     setAutoRenew(arr[index].autoRenew);
     setminCycle(arr[index].minCycle);
@@ -1041,6 +1211,9 @@ function Edit() {
     setOfferDiscount(arr[index].offerDiscount);
     setDiscount(arr[index].discount);
     setdiscountType(arr[index].discountType);
+    setFreeTrial(arr[index].freeTrial);
+    setFreeTrialCount(arr[index].freeTrialCount);
+    setFreeTrialCycle(arr[index].freeTrialCycle);
   };
   return (
     <>
@@ -1247,11 +1420,15 @@ function Edit() {
             <Checkbox
               label="Offer Discount"
               checked={offerDiscount}
-              onChange={() => setOfferDiscount(!offerDiscount)}
+              onChange={() => {
+                setOfferDiscount(!offerDiscount)
+                setDiscount("")
+              }
+              }
             />
           </CardSection>
 
-          {offerDiscount && (
+          {/* {offerDiscount && (
             <>
               <InlineStack>
                 <TextField
@@ -1278,7 +1455,79 @@ function Edit() {
                 />
               </InlineStack>
             </>
+          )} */}
+
+{/* start */}
+
+
+{offerDiscount && (
+            <>
+              <InlineStack>
+                <TextField
+                  label="Discount Value"
+                  type="number"
+                  //  placeholder="Enter discount"
+                  value={discount}
+                  onChange={(value) => {
+                    console.log(value, " was typed"), setDiscount(value);
+                  }}
+                  error={!discount  ? "Discount Value is required!" : false}
+                />
+
+                <Select
+                  label="Discount Type"
+                  options={[
+                    { label: "Percentage", value: "percentage" },
+                    { label: "Fixed", value: "fixed" },
+                  ]}
+                  // labelInline
+                  onChange={(e) => {
+                    console.log(e, "was selected"), setdiscountType(e);
+                  }}
+                  value={discountType}
+                />
+              </InlineStack>
+            </>
           )}
+           <CardSection>
+           <Checkbox
+            label="Free Trial"
+            checked={freeTrial}
+            onChange={() => {
+             setFreeTrial(!freeTrial)
+             setFreeTrialCount("")
+            }
+            }  
+          />
+          </CardSection>
+          {freeTrial && (
+             <CardSection>
+            <InlineStack>
+              <TextField
+                label="Free Trial Count"
+                type="text"
+                value={freeTrialCount}
+                onChange={(value) => {
+                  console.log(value, " was typed");
+                  setFreeTrialCount(value);
+                }}
+                error={!discount  ? "Free Trial Count is required!" : false}
+              />
+                <Select
+              label="Period"
+              options={options1}
+              // labelInline
+              onChange={(e) => {
+                console.log(e, "was selected");
+                setFreeTrialCycle(e);
+              }}
+              value={freeTrialCycle}
+            />
+            </InlineStack>
+            </CardSection>
+          )} 
+
+          {/* end */}
           <CardSection>
             <Button
               title={!editState ? "Add Plan" : "Update Plan"}

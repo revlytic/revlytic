@@ -3,8 +3,6 @@ import shopify from "../shopify.js";
 import planModal from "./modals/PlanGroupDetails.js";
 import subscriptionDetailsModal from "./modals/subscriptionDetails.js";
 import StoreSchemaModal from "./modals/storeDetails.js";
-import storeModal from "./modals/storeCredentials.js";
-
 import checkoutCustomerModal from "./modals/checkoutCustomer.js";
 import nodemailer from "nodemailer";
 import { CronJob } from "cron";
@@ -22,16 +20,7 @@ console.log("utcdate",new Date())
 console.log(process.env.HOST, "envvvvvvvvvvv");
 console.log(process.env.SCOPES, "envvvvvvvvvvv");
 import { ObjectId } from "bson";
-import { PDFDocument, rgb } from 'pdf-lib'
-import htmlToPdf from "html-pdf-node"
-// import htmlToPdfmake from "html-to-pdfmake"
-// import pdfMake from 'pdfmake/build/pdfmake';
-// import pdfFonts from 'pdfmake/build/vfs_fonts';
 import puppeteer from "puppeteer"
-
-// pdfMake.vfs = pdfFonts.pdfMake.vfs;
-
-
 import widgetSettingsModal from "./modals/widgetSetting.js";
 import productBundleModal from "./modals/productBundle.js";
 import path from "path";
@@ -39,9 +28,11 @@ import ejs from "ejs";
 import cPortalSettings from "./modals/customerPortalSettings.js";
 import orderOnly from "./modals/contractOrder.js";
 import orderContractDetails from "./modals/contractOrderDetails.js";
+import billingModal from "./modals/billing.js";
 
 const __dirname = path.resolve();
-const dirPath = path.join(__dirname, "/web/frontend/invoiceTemplate");
+const dirPath = path.join(__dirname, "/frontend/invoiceTemplate");
+// const dirPath2 = path.join(__dirname);
 function formatVariableName(variableName) {
   // Split the variable name by underscores
   const parts = variableName.split("_");
@@ -305,7 +296,7 @@ const sendMailCall = async (recipientMails, others, extra) => {
 
     console.log(__dirname, "kjh");
 
-    const dirPath = path.join(__dirname, "/web/frontend/components/emailtemplate");
+    const dirPath = path.join(__dirname, "/frontend/components/emailtemplate");
 
     console.log(dirPath, "fsdfdf");
 
@@ -498,7 +489,7 @@ const sendMailCall = async (recipientMails, others, extra) => {
     // }
 
     ////////////saaahhhillll
-console.log(extra?.check,"extra?.check")
+
     if (extra?.check == "subscriptionInvoice") {
       
 /////////////////////////////////////
@@ -509,7 +500,7 @@ async function generatePdf() {
     executablePath: '/usr/bin/chromium-browser',headless: true, args:['--no-sandbox']
   })
   const page = await browser.newPage();
-  const options1 = {
+  const options = {
     format: 'A4',
     printBackground: true, // To include background colors/images in PDF
   };
@@ -517,9 +508,7 @@ async function generatePdf() {
   const filename = String(new Date().getTime());
 
   try {
-let dirPath1 = path.join(__dirname, "/web/frontend/invoiceTemplate");
-
-    let templatePath = dirPath1 + '/invoiceTemplate.ejs';
+    const templatePath = dirPath + '/invoiceTemplate.ejs';
     const compiledTemplate = ejs.compile(fs.readFileSync(templatePath, 'utf8'));
 
     const content = compiledTemplate({ details:extra.details });
@@ -527,17 +516,17 @@ let dirPath1 = path.join(__dirname, "/web/frontend/invoiceTemplate");
     await page.setContent(content);
     await page.pdf({
       path: dirPath + `/${filename}.pdf`,
-      format: options1.format,
+      format: options.format,
     });
 
     await browser.close();
 
-    // sendEmail(
-    //   dirPath + `/${filename}.pdf`,
-    //   orderDetails.email,
-    //   getorder.orderId,
-    //   getorder.shop
-    // );
+    sendEmail(
+      dirPath + `/${filename}.pdf`,
+      orderDetails.email,
+      getorder.orderId,
+      getorder.shop
+    );
     //////////////////////////
     const pdfData = fs.readFileSync(dirPath + `/${filename}.pdf`);
     const base64Data = Buffer.from(pdfData).toString("base64");
@@ -551,10 +540,8 @@ let dirPath1 = path.join(__dirname, "/web/frontend/invoiceTemplate");
         contentType: contentType,
         contentDisposition: "inline",
       },
- ]
-    
-    let recipientEmails = recipientMails.join(',')
-    console.log(recipientEmails,"rockstar")
+    ]
+    const recipientEmails = recipientMails.join(',')
     options = {
       ...options,
 
@@ -599,7 +586,7 @@ let dirPath1 = path.join(__dirname, "/web/frontend/invoiceTemplate");
           { shop: extra.shop, orderId: extra.orderId },
           { status: true }
         );
-        fs.unlink(dirPath + `/${filename}.pdf`, (err) => {
+        fs.unlink(pdfPath, (err) => {
           if (err) {
             console.error("Error deleting PDF file:", err);
             throw error;
@@ -883,12 +870,17 @@ async function getshopToken(shop) {
 }
 // ///////////////////////////contract create cron start///////////////////////////////////////////
 const firstScheduledTime = "*/30 * * * * *"; // Replace with your desired time in cron syntax
+
 const firstJob = new CronJob(firstScheduledTime, contractCronJob);
+
 const secondJob =new CronJob(firstScheduledTime, sendInvoiceMailAndSaveContract)
+
 firstJob.start();
+
 secondJob.start()
 
 export async function contractCronJob(req, res) {
+
   const currentDate = new Date().toISOString();
 
   const targetDate = new Date(currentDate);
@@ -914,6 +906,7 @@ console.log("checking dataess",targetDate)
       },
 
       { status: "active" }
+
     ],
 
     },
@@ -924,42 +917,81 @@ console.log("checking dataess",targetDate)
 
   console.log(data, "Function executed at the scheduled time.");
 
+ 
+
   let mutation = `mutation subscriptionBillingAttemptCreate($subscriptionBillingAttemptInput: SubscriptionBillingAttemptInput!, $subscriptionContractId: ID!) {
+
     subscriptionBillingAttemptCreate(subscriptionBillingAttemptInput: $subscriptionBillingAttemptInput, subscriptionContractId: $subscriptionContractId) {
+
       subscriptionBillingAttempt {
+
         id
+
               subscriptionContract
+
               {
+
                   nextBillingDate
+
                   billingPolicy{
+
                       interval
+
                       intervalCount
+
                       maxCycles
+
                       minCycles
+
                       anchors{
+
                           day
+
                           type
+
                           month
+
                       }
+
                   }
+
                   deliveryPolicy{
+
                       interval
+
                       intervalCount
+
                       anchors{
+
                           day
+
                           type
+
                           month
+
                       }
+
                   }
+
               }
+
       }
+
       userErrors {
+
         field
+
         message
+
       }
+
     }
+
   }
+
   `;
+
+ 
 
   if (data.length > 0) {
 
@@ -1040,6 +1072,7 @@ console.log("checking dataess",targetDate)
           billing_attempt_date: currentDate,
 
           renewal_date: currentDate,
+
           contract_products: data[i].product_details,
 
           contract_id: data[i].subscription_id,
@@ -1141,6 +1174,8 @@ console.log("checking dataess",targetDate)
     }
 
   }
+
+ 
 
 }
 /////////////////////////////// contract create cron end/////////////////////////////////////////
@@ -3519,7 +3554,7 @@ export async function emailTemplateStatusOrAdminNotificationUpdate(req, res) {
 export async function sendMailCommon(req, res) {
   const __dirname = path.resolve();
   console.log(__dirname, "kjh");
-  const dirPath = path.join(__dirname, "/web/frontend/components/emailtemplate");
+  const dirPath = path.join(__dirname, "/frontend/components/emailtemplate");
 
   let options = req.body?.options;
   console.log("options", options);
@@ -3787,7 +3822,7 @@ export async function sendMailOnUpdate(req, res) {
   try {
     const __dirname = path.resolve();
     console.log(__dirname, "kjh");
-    const dirPath = path.join(__dirname, "/web/frontend/components/emailtemplate");
+    const dirPath = path.join(__dirname, "/frontend/components/emailtemplate");
     let shop = res?.locals?.shopify?.session?.shop
       ? res?.locals?.shopify?.session?.shop
       : req?.body?.shop;
@@ -4934,6 +4969,32 @@ export async function combinedData(req, res) {
   }
 }
 
+
+export async function subscriptionBookings(req, res) {
+  try {
+    let shop = res.locals.shopify.session.shop;
+    let dateRange = findDateRange(req.body);
+
+    // Query for data within the date range
+    let data = await subscriptionDetailsModal.countDocuments({
+      shop: shop,
+     
+      createdAt: dateRange,
+    });
+
+    console.log("subscriptionBookings", data);
+
+    res.send({ message: "success", data });
+  } catch (error) {
+    console.log("error", error);
+    res.send({ message: "error" });
+  }
+}
+
+
+
+
+
 export async function activeCustomers(req, res) {
   try {
     let shop = res.locals.shopify.session.shop;
@@ -5069,7 +5130,6 @@ export async function deleteAnnouncement(req, res) {
   }
 }
 
-
 export async function convertStoreProductPriceIntoOrderCurrency(req,res,next){
 
 try {
@@ -5175,12 +5235,12 @@ export async function  checkAppBlockEmbed (req,res) {
       theme_id: storeDetails?.themeId,
       asset: {"key": "config/settings_data.json"},
     });
-    console.log("ddd",JSON.parse(ddd?.data[0]?.value))
+    // console.log("ddd",JSON.parse(ddd?.data[0]?.value))
 let z=JSON.parse(ddd?.data[0]?.value)
 console.log("zzz",z?.current?.blocks)
-let searchedBlock=Object.values(z?.current?.blocks).find(item=>item.type==`shopify://apps/${process.env?.APP_NAME}/blocks/${process.env?.APP_EXTENSION_BLOCK}/${process.env?.SHOPIFY_REVLYTIC_THEME_EXT_ID}`)
+let searchedBlock=Object.values(z?.current?.blocks).find(item=>item.type==`shopify://apps/${process.env?.APP_NAME}/blocks/${process.env?.APP_EXTENSION_BLOCK}/${process.env?.SHOPIFY_THEME_APP_EXTENSION_ID}`)
 
-console.log("jigjaggggv",searchedBlock)
+// console.log("jigjaggggv",searchedBlock)
 
 if (searchedBlock){
 
@@ -5197,9 +5257,114 @@ res.send({message:"noData",data:{}})
 
 }
 
+export async function recurringBiling(req, res) {
+  try {
 
+    const { plan, interval, price } = req.body;
+    const session = res.locals.shopify.session;
+    const shop = res.locals.shopify.session.shop;
+    const API_KEY = process.env.SHOPIFY_API_KEY;
+    console.log("keyyyy",API_KEY)
+    const client = new shopify.api.clients.Graphql({session});
+    let billingInterval = interval == "MONTHLY" ? "EVERY_30_DAYS" : "ANNUAL";
+    let testCharge;
+    if (
+      shop == "sahil-shine.myshopify.com"  
+       ) {
+      testCharge = true;
+    } else {
+      testCharge = false;
+    }
 
+    const recurringString = `mutation CreateSubscription{
+            appSubscriptionCreate(
+                name: "${plan}",
+      returnUrl: "https://${shop}/admin/apps/${API_KEY}/billing"
+                test : ${testCharge}
+                lineItems: [{
+                    plan: {
+          appRecurringPricingDetails: {
+            price: { amount: ${price}, currencyCode: USD }
+            interval: ${billingInterval}
+                        }
+                    }
+                }]
+            ){
+                userErrors {
+                    field
+                    message
+                }
+                confirmationUrl    
+                appSubscription {
+                    id
+                }
+            }
+        }`;
 
+    const response = await client.query({
+      data: recurringString,
+    });
+    
+    console.log("response",response?.body?.data?.appSubscriptionCreate?.userErrors.length > 0)
+
+    if(response && response?.body?.data?.appSubscriptionCreate?.userErrors.length > 0){
+      res.send({message: "error",data:response?.body?.data?.appSubscriptionCreate?.userErrors[0]?.message});
+     }
+else{
+  res.status(200).send({message: "success", url : response, interval : interval});
+}
+  } catch (err) {
+    return res.json({ message: "INTERNAL_SERVER_ERROR", err: err.message });
+  }
+}
+
+export async function recurringBilingSelected(req, res) {
+  try {
+    const { charge_id } = req.body;
+    const shop = res.locals.shopify.session.shop;
+   const verifyBilling = await shopify.api.rest.RecurringApplicationCharge.find({
+     session : res.locals.shopify.session,
+     id : charge_id
+   })
+console.log("verifyBilling",verifyBilling)
+   if(verifyBilling.status === "active") {
+    const updatePlan = await billingModal.findOneAndUpdate(
+      { shop },
+      { charge_id, plan: verifyBilling.name, price: verifyBilling.price, interval: "MONTHLY" },
+      { upsert: true, new: true }
+    );
+
+    if (!updatePlan) {
+      return res.json({
+        message: "something went wrong!!!",
+        result: 0,
+      });
+    } else {
+      return res
+        .status(202)
+        .json({ message: "Updated Successfully", result: 1, plan: verifyBilling.name, interval : "MONTHLY"  });
+    }
+   } else {
+      res.status(499).json({message : "Payment status is pending!!!", result : 0})
+   }
+  } catch (err) {
+    return res.json({ message: "INTERNAL_SERVER_ERROR", err: err.message });
+  }
+}
+
+export async function getBillingPlanData(req,res){
+try{console.log("oitoo")
+  const shop = res.locals.shopify.session.shop;
+  const planData=await billingModal.findOne({shop},{plan:1,_id:0})
+  console.log("dplandaata",planData)  
+  res.send({message:"success", plan:planData?.plan})
+}
+catch(error)
+{
+console.log("errorr",error)
+res.send({message:"error",data:error?.message})
+}
+}
 
 
 ///////////////////////////////////////////////
@@ -6603,8 +6768,7 @@ id      }
         $set: {
           plans: planDetails.concat(updatedPlans),
           product_details: productList,
-          plan_group_name:req.body.planGroupName
-
+          plan_group_name: req.body.planGroupName,
         },
       }
     );
@@ -6726,42 +6890,9 @@ export async function deletePlanGroupFromDb(req, res) {
 }
 
 export async function getPlanGroups(req, res) {
-
   ///**********************/// function to get the plan groups from db  for listing
   let shop = res.locals.shopify.session.shop;
   let session = res.locals.shopify.session;
-
-
-  // const storefront_access_token =
-  // new shopify.api.rest.StorefrontAccessToken({
-  //   session: {
-  //     shop: session.shop,
-  //     accessToken: session.accessToken,
-  //   },
-  // })
-  // storefront_access_token.title = "Test";
-  // await storefront_access_token.save({
-  //   update: true,
-  // });
-  // console.log(storefront_access_token,"lkjhgg");
-
-
-
-  // await storeModal.findOne({ shop }).then((data) => {
-  //   if (data) {
-  //     storeModal.updateOne({accessToken: storefront_access_token.accessToken})
-  //     // return data;
-  //   } else {
-  //     storeModal.create({
-  //       shop:shop,
-  //       accessToken:storefront_access_token.access_token
-  //     })
-  //       .then(() => {
-  //         console.log("Store info successfully saved");
-  //       })
-  //       .catch((err) => console.log(err));
-  //   }
-  // });
   const client = new shopify.api.clients.Graphql({ session });
   console.log(session);
   // sendInvoiceMailAndSaveContract();
@@ -7148,19 +7279,79 @@ export async function createCustomer(req, res) {
 
 export async function sendMail(req, res) {
   let options = req.body.options;
+  let shop=res.locals.shopify.session.shop;
+  let configurationData = await emailTemplatesModal.findOne(
+    {shop},
+    {configuration:1}
+  );
+  // let configuration=configurationData?.configuration;
+  let configuration="";
+  let emailConfig = {};
 
-  // let testAccount = await nodemailer.createTestAccount();
-  const transporter = nodemailer.createTransport({
-    host: "smtp.gmail.com",
-    port: 587,
-    secure: false,
+
+
+if(configuration && configuration?.enable==true ){
+  console.log("inenabletrue");
+
+  let encryptionConfig = {};
+
+  if (configuration.encryption === "ssl") {
+    encryptionConfig = {
+      secure: true,
+
+      requireTLS: true,
+    };
+  } else if (configuration.encryption === "tls") {
+    encryptionConfig = {
+      secure: false, // For TLS, secure should be set to false
+
+      requireTLS: true,
+    };
+  }
+
+  emailConfig = {
+    host: configuration.host,
+
+    port: parseInt(configuration.portNumber), // Convert port number to integer
+
     auth: {
-      user: "virender.shinedezign@gmail.com",
-      pass: "pqtssvzzmwcrebhl",
-      // user: testAccount.user, // generated ethereal user
-      // pass: testAccount.pass, // generated ethereal password
+      user: configuration.userName,
+
+      pass: configuration.password,
     },
-  });
+
+    ...(configuration.encryption === "none" ? {} : encryptionConfig),
+  };
+
+  options.from=`${configuration.fromName}<${configuration.userName}>`;
+
+  // let response = await sendMailMain({emailConfig,options,extra}, app);
+
+  // return response;
+} else {
+  console.log("inenablefalse");
+
+  emailConfig = {
+    host: "smtp.gmail.com",
+
+    port: 587, // Convert port number to integer
+
+    auth: {
+      user: "sahilagnihotri7@gmail.com",
+
+      pass: "srdvsdnxfmvbrduw",
+    },
+
+    secure: false,
+  };
+
+  options.from="sahilagnihotri7@gmail.com";
+ 
+}
+
+console.log("configurationData",configurationData)
+  // let testAccount = await nodemailer.createTestAccount();
+  const transporter = nodemailer.createTransport(emailConfig);
   try {
     let data = await transporter.sendMail(options);
     if (data) {
@@ -7476,12 +7667,14 @@ export async function prodExRemoveVariants(req, res) {
             plan_group_id: SId,
           });
         }
+        
         res.send({
           message: "success",
           data: "Details saved successfully",
         });
       }
     } catch (err) {
+    
       res.send({ message: "error", data: "Something went wrong" });
     }
   }
@@ -7567,7 +7760,10 @@ export async function prodExCreatePlan(req, res) {
       console.log(list, "lololo");
       let allOptions = [];
       list?.map((item) => {
-        allOptions?.push(item?.billEvery + " " + item?.interval);
+        let unique =
+      Date.now().toString(36) + Math.random().toString(36).substring(2, 5);
+      console.log("unique--",unique)
+        allOptions?.push(item?.billEvery + " " + item?.interval+ " " + unique);
       });
       const topOptions = allOptions.join(",");
       console.log(allOptions, "hbhbhb");
@@ -7576,32 +7772,140 @@ export async function prodExCreatePlan(req, res) {
         let draftAnchors = [];
 
         let pricingPolicy = [];
-        if (item.offerDiscount) {
-          if (item.priceType == "percentage") {
-            pricingPolicy.push({
-              fixed: {
-                adjustmentType: "PERCENTAGE",
-                adjustmentValue: {
-                  percentage: parseFloat(item.discount),
-                },
-              },
-            });
-          } else if (item.priceType == "fixed") {
-            pricingPolicy.push({
-              fixed: {
-                adjustmentType: "FIXED_AMOUNT",
-                adjustmentValue: {
-                  fixedValue: parseFloat(item.discount),
-                },
-              },
-            });
-          }
-        }
 
-        console.log(pricingPolicy, "ffff");
+        ///////////////////////////
+        // if (item.offerDiscount) {
+        //   if (item.priceType == "percentage") {
+        //     pricingPolicy.push({
+        //       fixed: {
+        //         adjustmentType: "PERCENTAGE",
+        //         adjustmentValue: {
+        //           percentage: parseFloat(item.discount),
+        //         },
+        //       },
+        //     });
+        //   } else if (item.priceType == "fixed") {
+        //     pricingPolicy.push({
+        //       fixed: {
+        //         adjustmentType: "FIXED_AMOUNT",
+        //         adjustmentValue: {
+        //           fixedValue: parseFloat(item.discount),
+        //         },
+        //       },
+        //     });
+        //   }
+        // }
+
+        
+        if (item.offerDiscount && item.discount != undefined && item.discount != null &&  parseInt(item.discount) != 0) {
+          if (item.freeTrial) {
+
+            if (item.discountType == "percentage") {
+              console.log("ckecjj1")
+              pricingPolicy.push(
+                {
+                  fixed: {
+                    adjustmentType: "PERCENTAGE",
+                    adjustmentValue: {
+                      percentage: parseFloat(100),
+                    },
+                  },
+                },
+                {
+                  recurring: {
+                    adjustmentType: "PERCENTAGE",
+                    adjustmentValue: {
+                      percentage: parseFloat(item.discount),
+                    },
+                    afterCycle: parseInt(1),
+                    // afterCycle: parseInt(item.trialCount),
+                  },
+                }
+              );
+            } else if (item.discountType == "fixed") {
+              console.log("ckecjj2")
+
+              pricingPolicy.push(
+                {
+                  fixed: {
+                    adjustmentType: "PERCENTAGE",
+                    adjustmentValue: {
+                      percentage: parseFloat(100),
+                    },
+                  },
+                },
+                {
+                  recurring: {
+                    adjustmentType: "FIXED_AMOUNT",
+                    adjustmentValue: {
+                      fixedValue: parseFloat(item.discount),
+                    },
+                    // afterCycle: parseInt(item.trialCount),
+                    afterCycle: parseInt(1),
+                  },
+                }
+              );
+            }
+          } else {
+            if (item.discountType == "percentage") {
+              console.log("ckecjj3")
+
+              pricingPolicy.push({
+                fixed: {
+                  adjustmentType: "PERCENTAGE",
+                  adjustmentValue: {
+                    percentage: parseFloat(item.discount),
+                  },
+                },
+              });
+            } else if (item.discountType == "fixed") {
+              console.log("ckecjj4")
+
+              pricingPolicy.push({
+                fixed: {
+                  adjustmentType: "FIXED_AMOUNT",
+                  adjustmentValue: {
+                    fixedValue: parseFloat(item.discount),
+                  },
+                },
+              });
+            }
+          }
+        } else {
+          if (item.freeTrial) {
+            console.log("ckecjj5")
+            pricingPolicy.push(
+              {
+                fixed: {
+                  adjustmentType: "PERCENTAGE",
+                  adjustmentValue: {
+                    percentage: parseFloat(100),
+                  },
+                },
+              },
+              {
+                recurring: {
+                  adjustmentType: "PERCENTAGE",
+                  adjustmentValue: {
+                    percentage: parseFloat(0),
+                  },
+                  afterCycle: parseInt(1),
+                  // afterCycle: parseInt(item.trialCount),
+                },
+              }
+            );
+          }
+      }
+      
+      console.log(pricingPolicy, "ffff");
+
+        ////////////////////////////////
+        let unique =
+        Date.now().toString(36) + Math.random().toString(36).substring(2, 5);
+       console.log("unique---->",unique)
         sellPlan.push({
           name: req.body.planGroupName + "-" + item.frequencyPlanName,
-          options: item?.billEvery + " " + item?.interval,
+          options: item?.billEvery + " " + item?.interval + " " + unique + Math.random().toString(10),
           position: 1,
           category: "SUBSCRIPTION",
           inventoryPolicy: {
@@ -7638,8 +7942,8 @@ export async function prodExCreatePlan(req, res) {
         });
       });
       console.log(topOptions, "check1");
-      console.log(sellPlan, "check2");
-
+      console.log(sellPlan, "check234");
+      console.log(sellPlan[0].deliveryPolicy.recurring, "checck09");
       const CreateInput = {
         input: {
           appId: "SdSubscriptionApp2k23virga22luck",
@@ -7727,6 +8031,10 @@ mutation sellingPlanGroupCreate($input: SellingPlanGroupInput!,$resources:Sellin
             maxCycle: item.maxCycle,
             planType: item.planType,
             deliveryEvery: item.deliveryEvery,
+            freeTrial:item.freeTrial,
+            trialCount:item.freeTrialCount,
+            freeTrialCycle:item.freeTrialCycle,
+
           });
         });
         let variants = [];
@@ -7795,6 +8103,7 @@ export async function prodExPlanDetails(req, res) {
 }
 
 export async function prodExPlanUpdate(req, res) {
+  console.log("checkjan888")
   const secretOrPublicKey = process.env.SHOPIFY_API_SECRET;
   const token = req.headers.authentication;
   let shop;
@@ -7815,10 +8124,14 @@ export async function prodExPlanUpdate(req, res) {
       let editedArrayIds = [...new Set(editedArrayId)];
       let allOptions = [];
       req.body.planList?.map((item) => {
-        allOptions?.push(item?.billEvery + " " + item?.interval);
+        let unique =
+        Date.now().toString(36) + Math.random().toString(36).substring(2, 5);
+        allOptions?.push(item?.billEvery + " " + item?.interval + " " + unique);
       });
       req.body.prevPlanList?.map((item) => {
-        allOptions?.push(item?.billEvery + " " + item?.interval);
+        let unique =
+        Date.now().toString(36) + Math.random().toString(36).substring(2, 5);
+        allOptions?.push(item?.billEvery + " " + item?.interval + " " + unique);
       });
       const topOptions = allOptions.join(",");
       console.log(allOptions, "optionssss");
@@ -7829,31 +8142,126 @@ export async function prodExPlanUpdate(req, res) {
           let draftAnchors = [];
           let pricingPolicy = [];
 
-          item.offerDiscount &&
-            item.discountType == "percentage" &&
-            pricingPolicy.push({
-              fixed: {
-                adjustmentType: "PERCENTAGE",
-                adjustmentValue: {
-                  percentage: parseFloat(item.discount),
-                },
-              },
-            });
+          // item.offerDiscount &&
+          //   item.discountType == "percentage" &&
+          //   pricingPolicy.push({
+          //     fixed: {
+          //       adjustmentType: "PERCENTAGE",
+          //       adjustmentValue: {
+          //         percentage: parseFloat(item.discount),
+          //       },
+          //     },
+          //   });
 
-          item.offerDiscount &&
-            item.discountType == "fixed" &&
-            pricingPolicy.push({
-              fixed: {
-                adjustmentType: "FIXED_AMOUNT",
-                adjustmentValue: {
-                  fixedValue: parseFloat(item.discount),
-                },
-              },
-            });
+          // item.offerDiscount &&
+          //   item.discountType == "fixed" &&
+          //   pricingPolicy.push({
+          //     fixed: {
+          //       adjustmentType: "FIXED_AMOUNT",
+          //       adjustmentValue: {
+          //         fixedValue: parseFloat(item.discount),
+          //       },
+          //     },
+          //   });
+
+////////////
+if (item.offerDiscount && item.discount != undefined && item.discount != null &&  parseInt(item.discount) != 0) {
+  if (item.freeTrial) {
+    if (item.discountType == "percentage") {
+      pricingPolicy.push(
+        {
+          fixed: {
+            adjustmentType: "PERCENTAGE",
+            adjustmentValue: {
+              percentage: parseFloat(100),
+            },
+          },
+        },
+        {
+          recurring: {
+            adjustmentType: "PERCENTAGE",
+            adjustmentValue: {
+              percentage: parseFloat(item.discount),
+            },
+            afterCycle: parseInt(1),
+            // afterCycle: parseInt(item.trialCount),
+          },
+        }
+      );
+    } else if (item.discountType == "fixed") {
+      pricingPolicy.push(
+        {
+          fixed: {
+            adjustmentType: "PERCENTAGE",
+            adjustmentValue: {
+              percentage: parseFloat(100),
+            },
+          },
+        },
+        {
+          recurring: {
+            adjustmentType: "FIXED_AMOUNT",
+            adjustmentValue: {
+              fixedValue: parseFloat(item.discount),
+            },
+            // afterCycle: parseInt(item.trialCount),
+            afterCycle: parseInt(1),
+          },
+        }
+      );
+    }
+  } else {
+    if (item.discountType == "percentage") {
+      pricingPolicy.push({
+        fixed: {
+          adjustmentType: "PERCENTAGE",
+          adjustmentValue: {
+            percentage: parseFloat(item.discount),
+          },
+        },
+      });
+    } else if (item.discountType == "fixed") {
+      pricingPolicy.push({
+        fixed: {
+          adjustmentType: "FIXED_AMOUNT",
+          adjustmentValue: {
+            fixedValue: parseFloat(item.discount),
+          },
+        },
+      });
+    }
+  }
+} else {
+  if (item.freeTrial) {
+    pricingPolicy.push(
+      {
+        fixed: {
+          adjustmentType: "PERCENTAGE",
+          adjustmentValue: {
+            percentage: parseFloat(100),
+          },
+        },
+      },
+      {
+        recurring: {
+          adjustmentType: "PERCENTAGE",
+          adjustmentValue: {
+            percentage: parseFloat(0),
+          },
+          afterCycle: parseInt(1),
+          // afterCycle: parseInt(item.trialCount),
+        },
+      }
+    );
+  }
+}
+////////
+let unique =
+Date.now().toString(36) + Math.random().toString(36).substring(2, 5);
 
           sellPlan.push({
             name: req.body.planGroupName + "-" + item.frequencyPlanName,
-            options: item?.billEvery + " " + item?.interval,
+            options: item?.billEvery + " " + item?.interval + " " + unique +  Math.random().toString(10),
             position: 1,
             category: "SUBSCRIPTION",
             inventoryPolicy: {
@@ -7880,7 +8288,7 @@ export async function prodExPlanUpdate(req, res) {
                 anchors: draftAnchors,
                 preAnchorBehavior: "ASAP",
                 interval: item.interval.toUpperCase(),
-                intervalCount: parseInt(item.billEvery),
+                intervalCount: item.plantype=='prepaid' ? parseInt(item.deliveryEvery) : parseInt(item.billEvery) ,
               },
             },
             pricingPolicies: pricingPolicy,
@@ -7895,28 +8303,123 @@ export async function prodExPlanUpdate(req, res) {
           let draftAnchors = [];
           let pricingPolicy = [];
 
-          req.body.prevPlanList[item].offerDiscount &&
-            req.body.prevPlanList[item].discountType == "percentage" &&
-            pricingPolicy.push({
-              fixed: {
-                adjustmentType: "PERCENTAGE",
-                adjustmentValue: {
-                  percentage: parseFloat(req.body.prevPlanList[item].discount),
-                },
-              },
-            });
+          // req.body.prevPlanList[item].offerDiscount &&
+          //   req.body.prevPlanList[item].discountType == "percentage" &&
+          //   pricingPolicy.push({
+          //     fixed: {
+          //       adjustmentType: "PERCENTAGE",
+          //       adjustmentValue: {
+          //         percentage: parseFloat(req.body.prevPlanList[item].discount),
+          //       },
+          //     },
+          //   });
 
-          req.body.prevPlanList[item].offerDiscount &&
-            req.body.prevPlanList[item].discountType == "fixed" &&
-            pricingPolicy.push({
-              fixed: {
-                adjustmentType: "FIXED_AMOUNT",
-                adjustmentValue: {
-                  fixedValue: parseFloat(req.body.prevPlanList[item].discount),
-                },
-              },
-            });
+          // req.body.prevPlanList[item].offerDiscount &&
+          //   req.body.prevPlanList[item].discountType == "fixed" &&
+          //   pricingPolicy.push({
+          //     fixed: {
+          //       adjustmentType: "FIXED_AMOUNT",
+          //       adjustmentValue: {
+          //         fixedValue: parseFloat(req.body.prevPlanList[item].discount),
+          //       },
+          //     },
+          //   });
+///////start//////////
+if (req.body.prevPlanList[item].offerDiscount && req.body.prevPlanList[item].discount != undefined && req.body.prevPlanList[item].discount != null &&  parseInt(req.body.prevPlanList[item].discount) != 0) {
+  if (req.body.prevPlanList[item].freeTrial) {
+    if (req.body.prevPlanList[item].discountType == "percentage") {
+      pricingPolicy.push(
+        {
+          fixed: {
+            adjustmentType: "PERCENTAGE",
+            adjustmentValue: {
+              percentage: parseFloat(100),
+            },
+          },
+        },
+        {
+          recurring: {
+            adjustmentType: "PERCENTAGE",
+            adjustmentValue: {
+              percentage: parseFloat(req.body.prevPlanList[item].discount),
+            },
+            afterCycle: parseInt(1),
+            // afterCycle: parseInt(item.trialCount),
+          },
+        }
+      );
+    } else if (req.body.prevPlanList[item].discountType == "fixed") {
+      pricingPolicy.push(
+        {
+          fixed: {
+            adjustmentType: "PERCENTAGE",
+            adjustmentValue: {
+              percentage: parseFloat(100),
+            },
+          },
+        },
+        {
+          recurring: {
+            adjustmentType: "FIXED_AMOUNT",
+            adjustmentValue: {
+              fixedValue: parseFloat(req.body.prevPlanList[item].discount),
+            },
+            // afterCycle: parseInt(item.trialCount),
+            afterCycle: parseInt(1),
+          },
+        }
+      );
+    }
+  } else {
+    if (req.body.prevPlanList[item].discountType == "percentage") {
+      pricingPolicy.push({
+        fixed: {
+          adjustmentType: "PERCENTAGE",
+          adjustmentValue: {
+            percentage: parseFloat(req.body.prevPlanList[item].discount),
+          },
+        },
+      });
+    } else if (req.body.prevPlanList[item].discountType == "fixed") {
+      pricingPolicy.push({
+        fixed: {
+          adjustmentType: "FIXED_AMOUNT",
+          adjustmentValue: {
+            fixedValue: parseFloat(req.body.prevPlanList[item].discount),
+          },
+        },
+      });
+    }
+  }
+} else {
+  if (req.body.prevPlanList[item].freeTrial) {
+    pricingPolicy.push(
+      {
+        fixed: {
+          adjustmentType: "PERCENTAGE",
+          adjustmentValue: {
+            percentage: parseFloat(100),
+          },
+        },
+      },
+      {
+        recurring: {
+          adjustmentType: "PERCENTAGE",
+          adjustmentValue: {
+            percentage: parseFloat(0),
+          },
+          afterCycle: parseInt(1),
+          // afterCycle: parseInt(item.trialCount),
+        },
+      }
+    );
+  }
+}
 
+////end///////////
+let unique =
+Date.now().toString(36) + Math.random().toString(36).substring(2, 5);
+console.log("req.body.prevPlanList[item].plan_id===>",req.body.prevPlanList[item])
           sellPlanToUpdate.push({
             name:
               req.body.planGroupName +
@@ -7926,7 +8429,7 @@ export async function prodExPlanUpdate(req, res) {
             options:
               req.body.prevPlanList[item]?.billEvery +
               " " +
-              req.body.prevPlanList[item]?.interval,
+              req.body.prevPlanList[item]?.interval + " "+ unique +  Math.random().toString(10),
             position: 1,
             category: "SUBSCRIPTION",
             inventoryPolicy: {
@@ -7960,18 +8463,20 @@ export async function prodExPlanUpdate(req, res) {
                 anchors: draftAnchors,
                 preAnchorBehavior: "ASAP",
                 interval: req.body.prevPlanList[item].interval.toUpperCase(),
-                intervalCount: parseInt(req.body.prevPlanList[item].billEvery),
+                intervalCount: req.body.prevPlanList[item].planType=='prepaid' ?  parseInt(req.body.prevPlanList[item].deliveryEvery) :  parseInt(req.body.prevPlanList[item].billEvery),
+                
               },
             },
             pricingPolicies: pricingPolicy,
           });
         });
-
+console.log("ssellPlanToUpdate",sellPlanToUpdate)
+console.log("ssellPlanToUpdate1231",sellPlanToUpdate[0]?.deliveryPolicy?.recurring)
       const Input = {
         id: req.body.id,
         input: {
           appId: "SdSubscriptionApp2k23virga22luck",
-          merchantCode:req.body.planGroupName,
+          merchantCode: req.body.planGroupName,
           name: req.body.planGroupName,
           options: [topOptions],
         },
@@ -7986,15 +8491,17 @@ export async function prodExPlanUpdate(req, res) {
 
       const dataString =
         typeof Input === "string" ? Input : JSON.stringify(Input);
+       
+        console.log("jddkk",JSON.stringify(Input))
 
-      // fs.writeFile("haha.txt", dataString, (err) => {
-      //   if (err) {
-      //     console.error("Error writing to file:", err);
-      //   } else {
-      //     console.log("Data written to file successfully!");
-      //   }
-      // });
-      // console.log(sellPlan[0]["billingPolicy"], "aaaaa");
+      fs.writeFile("haha.txt", dataString, (err) => {
+        if (err) {
+          console.error("Error writing to file:", err);
+        } else {
+          console.log("Data written to file successfully!");
+        }
+      });
+      // // console.log(sellPlan[0]["billingPolicy"], "aaaaa");
       console.log(Input, "lllll");
       const mutationQuery = `
         mutation sellingPlanGroupUpdate($id: ID!, $input: SellingPlanGroupInput!) {
@@ -8062,6 +8569,10 @@ export async function prodExPlanUpdate(req, res) {
               maxCycle: item.maxCycle,
               planType: item.planType,
               deliveryEvery: item.deliveryEvery,
+              freeTrial:item.freeTrial,
+              trialCount:item.freeTrialCount,
+              freeTrialCycle:item.freeTrialCycle,
+  
             };
             planDetails.push(obj);
 
@@ -8074,6 +8585,7 @@ export async function prodExPlanUpdate(req, res) {
         ///**********************/// previous existing plans to update
         await Promise.all(
           req.body.prevPlanList?.map(async (item, index) => {
+            console.log("jan4item,",item)
             let obj = {
               planName: item.frequencyPlanName,
               plan_id: item.plan_id,
@@ -8087,6 +8599,11 @@ export async function prodExPlanUpdate(req, res) {
               maxCycle: item.maxCycle,
               planType: item.planType,
               deliveryEvery: item.deliveryEvery,
+              freeTrial:item.freeTrial,
+              trialCount:item.freeTrialCount,
+              freeTrialCycle:item.freeTrialCycle,
+  
+
             };
             updatedPlans.push(obj);
           })
@@ -8281,1189 +8798,6 @@ export async function getCustomerPortalDetails(req, res) {
 }
 
 ///////////////////////////////////customrt portal
-
-//////////////////cron for contract save to db and mail and invoice
-// export async function sendInvoiceMailAndSaveContract(req, res) {
-//   console.log("dfsdkfsjjkdfjksjdfskdlfksldfksldfksjdfksdklfskdjfskjdfksjdkfjskdj")
-//   try {
-//     let getorder = await orderOnly.findOne({ status: false, orderId: { $ne: null }  });  
-//     if (getorder) {
-//       let orderId = '"' + getorder.orderId + '"';
-
-//       let orderQuery = `query {
-//         node(id: ${orderId}) {
-//           ... on Order {
-//             createdAt
-//             confirmationNumber
-//             subtotalPriceSet {
-//               presentmentMoney {
-//                 amount
-//                 currencyCode
-//               }
-//             }
-//             totalDiscountsSet {
-//               presentmentMoney {
-//                 amount
-//                 currencyCode
-//               }
-//             }
-//             totalShippingPriceSet {
-//               presentmentMoney {
-//                 amount
-//                 currencyCode
-//               }
-//             }
-//             totalTaxSet {
-//               presentmentMoney {
-//                 amount
-//                 currencyCode
-//               }
-//             }
-//             totalPriceSet {
-//               presentmentMoney {
-//                 currencyCode
-//                 amount
-//               }
-//             }
-//             name
-//             email
-//             customer {
-//               id
-//               email
-//               firstName
-//             }
-//             billingAddress {
-//               firstName
-//               lastName
-//               address1
-//               address2
-//               city
-//               zip
-//               phone
-//               country
-//               province
-//               countryCodeV2
-//               provinceCode
-//             }
-//             shippingAddress {
-//               firstName
-//               lastName
-//               address1
-//               address2
-//               city
-//               zip
-//               phone
-//               country
-//               province
-//               countryCodeV2
-//               provinceCode
-//             }
-//             lineItems(first: 50) {
-//               edges {
-//                 node {
-//                   name
-//                   quantity
-//                   originalUnitPriceSet{
-//                     presentmentMoney{
-//                       amount
-//                       currencyCode
-//                     }
-//                   }
-//                   discountedUnitPriceSet{
-//                     presentmentMoney{
-//                       amount
-//                       currencyCode
-//                     }
-//                   }
-//                   id
-//                   image {
-//                     url
-//                   }
-//                   contract {
-//                     id
-//                     billingPolicy {
-//                       interval
-//                       intervalCount
-//                     }
-//                     deliveryPolicy {
-//                       interval
-//                       intervalCount
-//                     }
-//                     nextBillingDate
-//                     customerPaymentMethod {
-//                       __typename
-//                       instrument {
-//                         __typename
-//                         ... on CustomerCreditCard {
-//                           brand
-//                           expiryYear
-//                           expiryMonth
-//                           lastDigits
-//                           name
-//                         }
-//                         ... on CustomerShopPayAgreement {
-//                           expiryMonth
-//                           expiryYear
-//                           isRevocable
-//                           maskedNumber
-//                           lastDigits
-//                           name
-//                         }
-//                         ... on CustomerPaypalBillingAgreement {
-//                           billingAddress {
-//                             country
-//                           }
-//                           paypalAccountEmail
-//                         }
-//                       }
-//                     }
-//                   }
-//                   sellingPlan {
-//                     name
-//                     sellingPlanId
-//                   }
-//                 }
-//               }
-//             }
-//           }
-//         }
-//       }`;
-
-//       /////////////////creating client
-//       let client = await getshopToken(getorder.shop);
-//       //////////////   get invoice details
-//       let saveDetails = await invoice_all_details.findOne({
-//         shop: getorder.shop,
-//       });
-//       let orderQueryData = await client.query({
-//         data: orderQuery,
-//       });
-//       console.log(
-//         orderQueryData.body.data.node.shippingAddress,
-//         "detailssssssss"
-//       );
-//       let orderDetails = orderQueryData.body.data.node;
-
-//       //////////////////getiing contracts related to order
-
-//       checkContracts();
-//       async function checkContracts() {
-//         let contract = await orderContractDetails.findOne({
-//           status: false,
-//           orderId: getorder.orderId,
-//         });
-//         if (contract) {
-//           let contractId = '"' + contract.contractID + '"';
-//           console.log(contractId, "isdfasgfh");
-//           let mutation = `query {
-//               subscriptionContract(id: ${contractId}) {
-//                 id
-//                 originOrder {
-//                   id
-//                   name
-//                   totalPriceSet {
-//                     presentmentMoney {
-//                       amount
-//                       currencyCode
-//                     }
-//                   }
-//                   customerLocale
-//                   shippingLine {
-//                     code
-//                     originalPriceSet {
-//                       shopMoney {
-//                         amount
-//                         currencyCode
-//                       }
-//                     }
-//                   }
-//                 }
-//                 customer {
-//                   firstName
-//                   lastName
-//                   id
-//                   email
-//                 }
-//                 customerPaymentMethod {
-//                   id
-//                   instrument {
-//                     __typename
-//                     ... on CustomerCreditCard {
-//                       brand
-//                       expiresSoon
-//                       expiryMonth
-//                       expiryYear
-//                       firstDigits
-//                       lastDigits
-//                       name
-//                     }
-//                   }
-//                 }
-//                 nextBillingDate
-//                 billingPolicy {
-//                   intervalCount
-//                   interval
-//                   maxCycles
-//                   minCycles
-//                 }
-//                 deliveryPolicy {
-//                   intervalCount
-//                 }
-//                 lines(first: 50) {
-//                   edges {
-//                     node {
-//                       id
-//                       quantity
-//                       sellingPlanId
-//                       sellingPlanName
-//                       productId
-//                       requiresShipping
-//                       variantId
-//                       variantTitle
-//                       title
-//                       quantity
-//                       variantImage {
-//                         url
-//                       }
-//                       discountAllocations {
-//                         amount {
-//                           amount
-//                         }
-//                         discount {
-//                           __typename
-//                           ... on SubscriptionManualDiscount {
-//                             title
-//                           }
-//                         }
-//                       }
-//                       pricingPolicy {
-//                         basePrice {
-//                           amount
-//                         }
-//                         cycleDiscounts {
-//                           adjustmentType
-//                           afterCycle
-//                           computedPrice {
-//                             amount
-//                           }
-//                           adjustmentValue {
-//                             ... on MoneyV2 {
-//                               amount
-//                             }
-//                             ... on SellingPlanPricingPolicyPercentageValue {
-//                               percentage
-//                             }
-//                           }
-//                         }
-//                       }
-//                       currentPrice {
-//                         amount
-//                         currencyCode
-//                       }
-//                     }
-//                   }
-//                 }
-//               }
-//             }`;
-
-//           let contractData = await client.query({
-//             data: mutation,
-//           });
-//           console.log(contractData.body.data.subscriptionContract?.billingPolicy, "mutationnnnnnnn");
-//           console.log(
-//             contractData.body.data.subscriptionContract.lines.edges[0].node
-//               .sellingPlanId,
-//             "weqwqwwqe"
-//           );
-
-//           ///////////////////getting autao renew from db
-//           let autoRenewState = await planModal.findOne(
-//             {
-//               shop: getorder.shop, // Replace with your plan_group_id
-//               plans: {
-//                 $elemMatch: {
-//                   plan_id:
-//                     contractData.body.data.subscriptionContract.lines.edges[0]
-//                       .node.sellingPlanId,
-//                 }, // Replace with the plan_id you want to filter by
-//               },
-//             },
-//             {
-//               "plans.$": 1,
-//               _id: 0,
-//             }
-//           );
-//           console.log(autoRenewState, "aiutorewnewstate");
-//           let products = [];
-//           let plantype =
-//             contractData.body.data.subscriptionContract?.billingPolicy
-//               ?.intervalCount ==
-//             contractData.body.data.subscriptionContract?.deliveryPolicy
-//               ?.intervalCount
-//               ? "payAsYouGo"
-//               : "prepaid";
-//           contractData.body.data.subscriptionContract.lines.edges.map((el) => {
-//             let price = Number(el.node.currentPrice?.amount);
-//             console.log(
-//               el.node.currentPrice?.amount,
-//               "el.node.currentPrice?.amount"
-//             );
-//             if (plantype == "prepaid") {
-//               let deliveries =
-//                 Number(
-//                   contractData.body.data.subscriptionContract?.billingPolicy
-//                     ?.intervalCount
-//                 ) /
-//                 Number(
-//                   contractData.body.data.subscriptionContract?.deliveryPolicy
-//                     ?.intervalCount
-//                 );
-//               price = Number(el.node.currentPrice?.amount) / deliveries;
-//               console.log(
-//                 Number(el.node.currentPrice?.amount) / deliveries,
-//                 "Number(el.node.currentPrice?.amount) / deliveries"
-//               );
-//             }
-//             console.log(price, "price");
-
-//             let computedPrice;
-//             if (el.node?.pricingPolicy?.cycleDiscounts.length == 2) {
-//               computedPrice =
-//                 el?.node?.pricingPolicy?.cycleDiscounts?.[1]?.computedPrice
-//                   .amount;
-//               console.log(computedPrice, "computedPrice");
-
-//               let freeTrial =
-//                 el?.node?.pricingPolicy?.cycleDiscounts[1]?.afterCycle;
-//               if (freeTrial == 1) {
-//                 if (plantype == "prepaid") {
-//                   let deliveries =
-//                     Number(
-//                       contractData.body.data.subscriptionContract?.billingPolicy
-//                         ?.intervalCount
-//                     ) /
-//                     Number(
-//                       contractData.body.data.subscriptionContract
-//                         ?.deliveryPolicy?.intervalCount
-//                     );
-//                   price = Number(computedPrice) / deliveries;
-//                 } else {
-//                   price = computedPrice;
-//                 }
-//               }
-
-//               console.log(price, "testofprice");
-//             }
-//             const productObj = {
-//               id: el.node.variantId,
-//               title: el.node.variantTitle,
-//               image: el.node.variantImage?.url,
-//               price: price,
-//               quantity: el.node.quantity,
-//               requiresShipping: el.node.requiresShipping,
-//               product_id: el.node.productId,
-//               product_name: el.node.title,
-//               product_image: el.node.variantImage?.url,
-//               hasOnlyDefaultVariant: "",
-//               subscriptionLine: el.node.id,
-//             };
-//             if (computedPrice !== undefined) {
-//               productObj.computedPrice = computedPrice;
-//             }
-//             products.push(productObj);
-//           });
-//           // fs.appendFile(
-//           //   "mutationdata2.txt",
-//           //   JSON.stringify(contractData),
-//           //   function (err) {
-//           //     if (err) throw err;
-//           //     console.log("IS WRITTEN");
-//           //   }
-//           // );
-//           let allData = contractData.body.data.subscriptionContract;
-//           // console.log(allData, "productsswwewesss");
-//           let updatedBillingAddress = {
-//             ...orderDetails?.billingAddress,
-//             countryCode: orderDetails?.billingAddress.countryCodeV2,
-//           };
-//           delete updatedBillingAddress.countryCodeV2;
-
-//           let updatedShippingAddress = orderDetails.shippingAddress
-//             ? {
-//                 ...orderDetails.shippingAddress,
-//                 countryCode: orderDetails?.shippingAddress?.countryCodeV2,
-//               }
-//             : {};
-//           updatedShippingAddress?.countryCodeV2 &&
-//             delete updatedShippingAddress?.countryCodeV2;
-
-//           let obj = {
-//             shop: getorder.shop,
-//             subscription_id: contract.contractID,
-//             createdBy: "customer",
-//             customer_details: allData?.customer,
-//             shipping_address: updatedShippingAddress,
-//             billing_address: updatedBillingAddress,
-//             subscription_details: {
-//               planName:
-//                 contractData?.body?.data?.subscriptionContract?.lines?.edges[0]
-//                   ?.node?.sellingPlanName,
-//               planType:
-//                 contractData.body.data.subscriptionContract?.billingPolicy
-//                   ?.intervalCount ==
-//                 contractData.body.data.subscriptionContract?.deliveryPolicy
-//                   ?.intervalCount
-//                   ? "payAsYouGo"
-//                   : "prepaid",
-//               billingLength:
-//                 contractData.body.data.subscriptionContract?.billingPolicy
-//                   ?.intervalCount,
-//               delivery_billingType:
-//                 contractData.body.data.subscriptionContract?.billingPolicy
-//                   ?.interval,
-//               delivery_billingValue:
-//                 contractData.body.data.subscriptionContract?.deliveryPolicy
-//                   ?.intervalCount,
-//               currency: getCurrencySymbol(
-//                 orderDetails.subtotalPriceSet.presentmentMoney.currencyCode
-//               ),
-//               billingMaxValue:
-//                 contractData.body.data.subscriptionContract?.billingPolicy
-//                   ?.maxCycles,
-//               billingMinValue:
-//                 contractData.body.data.subscriptionContract?.billingPolicy
-//                   ?.minCycles,
-//               autoRenew: autoRenewState?.plans[0]?.billingCycle,
-//               currency:
-//                 contractData.body.data.subscriptionContract.originOrder
-//                   .totalPriceSet.presentmentMoney.currencyCode,
-//             },
-//             product_details: products,
-//             payment_details: {
-//               payment_method_token: allData?.customerPaymentMethod?.id,
-//               payment_instrument_value:
-//                 allData?.customerPaymentMethod.instrument,
-//             },
-//             nextBillingDate: allData?.nextBillingDate,
-//             status: "active",
-//           };
-
-//           // console.log("reached at --------------bottom");
-
-//           if (
-//             contractData?.body?.data?.subscriptionContract?.lines?.edges[0]
-//               ?.node?.pricingPolicy
-//           ) {
-//             let policies;
-//             let discountvalue;
-
-//             if (
-//               contractData?.body?.data?.subscriptionContract?.lines?.edges[0]
-//                 ?.node?.pricingPolicy?.cycleDiscounts.length == 1
-//             ) {
-//               policies =
-//                 contractData?.body?.data?.subscriptionContract?.lines?.edges[0]
-//                   ?.node?.pricingPolicy?.cycleDiscounts[0];
-
-//               discountvalue =
-//                 contractData?.body?.data?.subscriptionContract?.lines?.edges[0]
-//                   ?.node?.pricingPolicy?.cycleDiscounts[0]?.adjustmentValue;
-//             } else {
-//               policies =
-//                 contractData?.body?.data?.subscriptionContract?.lines?.edges[0]
-//                   ?.node?.pricingPolicy?.cycleDiscounts[1];
-
-//               discountvalue =
-//                 contractData?.body?.data?.subscriptionContract?.lines?.edges[0]
-//                   ?.node?.pricingPolicy?.cycleDiscounts[1]?.adjustmentValue;
-//               let freeTrial =
-//                 contractData?.body?.data?.subscriptionContract?.lines?.edges[0]
-//                   ?.node?.pricingPolicy?.cycleDiscounts[1]?.afterCycle;
-//               obj.subscription_details.freeTrial = freeTrial;
-
-//               if (parseInt(freeTrial) == 1) {
-//                 obj.subscription_details.freeTrialStatus = false;
-
-//                 contractData?.body?.data?.subscriptionContract?.lines?.edges.forEach(
-//                   async (item, index) => {
-//                     const mutationQuery = `mutation subscriptionContractUpdate($contractId: ID!) {
-//                     subscriptionContractUpdate(contractId: $contractId) {             
-//                       draft {            
-//                        id            
-//                       }
-//                         userErrors {
-//                         field
-//                         message
-//                       }
-//                     }
-//                   }`;
-//                     const Input1 = {
-//                       contractId: contract.contractID,
-//                     };
-//                     let response1 = await client.query({
-//                       data: { query: mutationQuery, variables: Input1 },
-//                     });
-//                     // console.log(response1, "response1 hai yee");
-//                     if (
-//                       response1.body.data?.subscriptionContractUpdate
-//                         ?.userErrors.length < 1
-//                     ) {
-//                       // console.log(
-//                       //   "drfat id bn gyi hai",
-//                       //   response1.body.data.subscriptionContractUpdate?.draft
-//                       //     ?.id
-//                       // );
-//                       let draftID =
-//                         response1.body.data.subscriptionContractUpdate?.draft
-//                           ?.id;
-
-//                       const mutationQuery = `mutation subscriptionDraftLineUpdate($draftId: ID!, $input: SubscriptionLineUpdateInput!, $lineId: ID!) {
-//                     subscriptionDraftLineUpdate(draftId: $draftId, input: $input, lineId: $lineId) {
-//                       draft {
-//                         id
-//                       }
-//                       lineUpdated {
-//                         id
-//                         variantId
-//                         quantity
-//                         productId
-//                         currentPrice {
-//                           amount
-//                         }
-//                       }
-//                       userErrors {
-//                         field
-//                         message
-//                       }
-//                     }
-//                   }`;
-
-//                       const Input = {
-//                         draftId: draftID,
-//                         input: {
-//                           currentPrice:
-//                             item?.node?.pricingPolicy?.cycleDiscounts?.[1]
-//                               ?.computedPrice.amount,
-//                         },
-//                         lineId: item?.node?.id,
-//                       };
-
-//                       let response2 = await client.query({
-//                         data: { query: mutationQuery, variables: Input },
-//                       });
-
-//                       // console.log(response2.body.data);
-
-//                       if (
-//                         response2.body.data?.subscriptionDraftLineUpdate
-//                           ?.userErrors.length < 1
-//                       ) {
-//                         // console.log("update hio giyo draftttt");
-
-//                         let mutationSubscriptionDraftCommit = `mutation subscriptionDraftCommit($draftId: ID!) {
-//                       subscriptionDraftCommit(draftId: $draftId) {
-//                         contract {
-//                         id
-//                         status
-//                         }
-//                         userErrors {
-//                           field
-//                           message
-//                         }
-//                       }
-//                     }`;
-
-//                         const InputMutationSubscriptionDraftCommit = {
-//                           draftId: draftID,
-//                         };
-//                         let response3 = await client.query({
-//                           data: {
-//                             query: mutationSubscriptionDraftCommit,
-//                             variables: InputMutationSubscriptionDraftCommit,
-//                           },
-//                         });
-
-//                         // console.log(
-//                         //   "jklmnaop",
-//                         //   response3.body.data?.subscriptionDraftCommit?.contract
-//                         //     ?.status
-//                         // );
-//                       }
-//                     }
-//                   }
-//                 );
-//               } else {
-//                 obj.subscription_details.freeTrialStatus = true;
-//               }
-//             }
-
-//             obj.subscription_details.discount = {
-//               type: policies?.adjustmentType,
-//               value: discountvalue[Object.keys(discountvalue)],
-//             };
-//           }
-
-//           // console.log(obj, "ye hai objjj");
-//           const currentDate = new Date().toISOString();
-//           let saveToBillingAttempt = await billing_Attempt.create({
-//             shop: getorder.shop,
-//             status: "initial",
-//             billing_attempt_date: currentDate,
-//             renewal_date: currentDate,
-//             contract_products: products,
-//             order_id:
-//               contractData.body.data.subscriptionContract.originOrder.id,
-//             order_no:
-//               contractData.body.data.subscriptionContract.originOrder.name,
-//             contract_id: contract.contractID,
-//             currency:
-//               contractData.body.data.subscriptionContract.originOrder
-//                 .totalPriceSet.presentmentMoney.currencyCode,
-//             total_amount:
-//               contractData.body.data.subscriptionContract.originOrder
-//                 .totalPriceSet.presentmentMoney.amount,
-//           });
-//           ///////////////// check max to pause start////////////////////////
-//           // console.log(
-//           //   contractData.body.data.subscriptionContract?.billingPolicy
-//           //     ?.maxCycles,
-//           //   "ye hai maxxxxx"
-//           // );
-
-//           // console.log(
-//           //   parseInt(
-//           //     contractData.body.data.subscriptionContract?.billingPolicy
-//           //       ?.maxCycles
-//           //   ),
-//           //   "ye hai maxxxxx"
-//           // );
-//           if (
-//             contractData.body.data.subscriptionContract?.billingPolicy
-//               ?.maxCycles != undefined &&
-//             contractData.body.data.subscriptionContract?.billingPolicy
-//               ?.maxCycles != null
-//           ) {
-//             if (
-//               1 ==
-//               parseInt(
-//                 contractData.body.data.subscriptionContract?.billingPolicy
-//                   ?.maxCycles
-//               )
-//             ) {
-//               // console.log("ander aa gya haiiiiii");
-//               const mutationQuery = `mutation subscriptionContractUpdate($contractId: ID!) {
-//                 subscriptionContractUpdate(contractId: $contractId) {             
-//                   draft {            
-//                    id            
-//                   }
-//                     userErrors {
-//                     field
-//                     message
-//                   }
-//                 }
-//               }`;
-//               const Input1 = {
-//                 contractId: contract.contractID,
-//               };
-//               let response1 = await client.query({
-//                 data: { query: mutationQuery, variables: Input1 },
-//               });
-//               // console.log(response1, "response1 hai yee");
-//               if (
-//                 response1.body.data?.subscriptionContractUpdate?.userErrors
-//                   .length < 1
-//               ) {
-//                 // console.log(
-//                 //   "drfat id bn gyi hai",
-//                 //   response1.body.data.subscriptionContractUpdate?.draft?.id
-//                 // );
-//                 let draftID =
-//                   response1.body.data.subscriptionContractUpdate?.draft?.id;
-
-//                 const mutationQuery = `mutation subscriptionDraftUpdate($draftId: ID!, $input: SubscriptionDraftInput!) {
-//                   subscriptionDraftUpdate(draftId: $draftId, input: $input) {
-//                     draft {
-//                       id
-//                       status
-//                     }
-//                     userErrors {
-//                       field
-//                       message
-//                     }
-//                   }
-//                 }`;
-
-//                 const Input = {
-//                   draftId: draftID,
-//                   input: { status: "PAUSED" },
-//                 };
-//                 let response2 = await client.query({
-//                   data: { query: mutationQuery, variables: Input },
-//                 });
-
-//                 if (
-//                   response2.body.data?.subscriptionDraftUpdate?.userErrors
-//                     .length < 1
-//                 ) {
-//                   // console.log("update hio gyi draftttt");
-
-//                   let mutationSubscriptionDraftCommit = `mutation subscriptionDraftCommit($draftId: ID!) {
-//                   subscriptionDraftCommit(draftId: $draftId) {
-//                     contract {
-//                     id
-//                     status
-//                     }
-//                     userErrors {
-//                       field
-//                       message
-//                     }
-//                   }
-//                 }`;
-
-//                   const InputMutationSubscriptionDraftCommit = {
-//                     draftId: draftID,
-//                   };
-//                   let response3 = await client.query({
-//                     data: {
-//                       query: mutationSubscriptionDraftCommit,
-//                       variables: InputMutationSubscriptionDraftCommit,
-//                     },
-//                   });
-
-//                   // console.log(
-//                   //   "jklmnaop",
-//                   //   response3.body.data?.subscriptionDraftCommit?.contract
-//                   //     ?.status
-//                   // );
-//                 }
-//               }
-//             }
-//           }
-//           ////////////////////////////check max to pause end////////////////////////
-
-//           let saveContractDetailsToDB = await subscriptionDetailsModal.create(
-//             obj
-//           );
-//           // console.log(saveContractDetailsToDB, "hahahahaahahahah");
-
-//           if (saveContractDetailsToDB) {
-//             let updateDb = await orderContractDetails.findOneAndUpdate(
-//               { shop: getorder.shop, contractID: contract.contractID },
-//               { status: true }
-//             );
-//             // console.log(updateDb, "updatedbbb");
-//             checkContracts();
-//           }
-//         } else {
-//           let updateOrderDb = await orderOnly.findOneAndUpdate(
-//             { shop: getorder.shop, orderId: getorder.orderId },
-//             { status: true }
-//           );
-//         }
-//       }
-
-//       /////////////////////send invoice start
-//       if (orderDetails) {
-//         if (saveDetails.components[17]) {
-//           let addTagMutation = `mutation tagsAdd($id: ID!, $tags: [String!]!) {
-//               tagsAdd(id: $id, tags: $tags) {
-//                 node {
-//                 id
-//                 }
-//                 userErrors {
-//                   field
-//                   message
-//                 }
-//               }
-//             }`;
-
-//           let customerTagInput = {
-//             id: orderDetails.customer.id,
-//             tags: ["revlytic-subcription-customer"],
-//           };
-
-//           let orderTagInput = {
-//             id: getorder.orderId,
-//             tags: ["revlytic-subscription"],
-//           };
-
-//           let addOrderTag = await client.query({
-//             data: {
-//               query: addTagMutation,
-//               variables: orderTagInput,
-//             },
-//           });
-//           let addCustomerTag = await client.query({
-//             data: {
-//               query: addTagMutation,
-//               variables: customerTagInput,
-//             },
-//           });
-
-//           // console.log(saveDetails.invoice_details, "jhsdjjk");
-
-//           let details = {
-//             email: orderDetails.email,
-//             bill_to: {
-//               firstName:
-//                 orderDetails.billingAddress.firstName != undefined
-//                   ? orderDetails.billingAddress.firstName
-//                   : "",
-//               lastName:
-//                 orderDetails.billingAddress.lastName != undefined
-//                   ? orderDetails.billingAddress.lastName
-//                   : "",
-//               address1:
-//                 (orderDetails.billingAddress.address1 != undefined ?  orderDetails.billingAddress.address1 : "") +
-//                 " " +
-//                 orderDetails.billingAddress.address2 != undefined  ?  orderDetails.billingAddress.address2 : "" ,
-//               address2:
-//                 orderDetails.billingAddress.city != undefined  ?  orderDetails.billingAddress.city : "" +
-//                 "-" +
-//                 orderDetails.billingAddress.zip != undefined  ? orderDetails.billingAddress.zip : "",
-
-//               province:orderDetails.billingAddress.province != undefined  ? orderDetails.billingAddress.province : ""
-//             },
-//             billing_date: new Date(orderDetails.createdAt)
-//               .toISOString()
-//               .split("T")[0],
-//             subtotal:
-//               orderDetails.subtotalPriceSet.presentmentMoney.amount != null
-//                 ? orderDetails.subtotalPriceSet.presentmentMoney.amount
-//                 : 0,
-//             discount:
-//               orderDetails.totalDiscountsSet.presentmentMoney.amount != null
-//                 ? orderDetails.totalDiscountsSet.presentmentMoney.amount
-//                 : 0,
-//             shipping:
-//               orderDetails.totalShippingPriceSet.presentmentMoney.amount != null
-//                 ? orderDetails.totalShippingPriceSet.presentmentMoney.amount
-//                 : 0,
-//             tax:
-//               orderDetails.totalTaxSet.presentmentMoney.amount != null
-//                 ? orderDetails.totalTaxSet.presentmentMoney.amount
-//                 : 0,
-//             total:
-//               orderDetails.totalPriceSet.presentmentMoney.amount != null
-//                 ? orderDetails.totalPriceSet.presentmentMoney.amount
-//                 : 0,
-//             items: orderDetails.lineItems.edges,
-//             labels: saveDetails.invoice_details,
-//             components: saveDetails.components,
-//             orderno: orderDetails.name,
-//             currency: getCurrencySymbol(
-//               orderDetails.subtotalPriceSet.presentmentMoney.currencyCode
-//             ),
-//           };
-//           console.log("labels logo",details.labels)
-//           // console.log(details.items[0], "logi");
-//           // console.log(
-//           //   parseFloat(
-//           //     details.items[0].node.discountedUnitPriceSet.presentmentMoney
-//           //       .amount
-//           //   ),
-//           //   "logfdgdfi"
-//           // );
-
-
-
-
-//           // const options = {
-//           //   format: "A4",
-//           // };
-//           // const filename = String(new Date().getTime());
-//           // ejs.renderFile(
-//           //   dirPath + "/invoiceTemplate.ejs",
-//           //   { details },
-//           //   (err, data) => {
-//           //     if (err) {
-//           //       console.log(err);
-//           //     } else {
-//           //       pdf
-//           //         .create(data, options)
-//           //         .toFile(dirPath + `/${filename}.pdf`, (err, res) => {
-//           //           if (err) {
-//           //             console.error(err);
-//           //             return;
-//           //           }
-
-//           //           sendEmail(
-//           //             res.filename,
-//           //             orderDetails.email,
-//           //             getorder.orderId,
-//           //             getorder.shop
-//           //           );
-//           //         });
-//           //     }
-//           //   }
-//           // );
-
-
-//           async function generatePdf() {
-//             const browser = await puppeteer.launch();
-//             const page = await browser.newPage();
-//             const options = {
-//               format: 'A4',
-//               printBackground: true, // To include background colors/images in PDF
-//             };
-          
-//             const filename = String(new Date().getTime());
-          
-//             try {
-//               const templatePath = dirPath + '/invoiceTemplate.ejs';
-//               const compiledTemplate = ejs.compile(fs.readFileSync(templatePath, 'utf8'));
-          
-//               const content = compiledTemplate({ details });
-          
-//               await page.setContent(content);
-//               await page.pdf({
-//                 path: dirPath + `/${filename}.pdf`,
-//                 format: options.format,
-//               });
-          
-//               await browser.close();
-          
-//               sendEmail(
-//                 dirPath + `/${filename}.pdf`,
-//                 orderDetails.email,
-//                 getorder.orderId,
-//                 getorder.shop
-//               );
-//             } catch (err) {
-//               console.error(err);
-//             }
-//           }
-          
-//           generatePdf();
-
-
-//         }
-
-//         // ////////////////////////////////////bY SAHIL(START) ////////////////////////////////////////////////////////////////////////////
-//         //  console.log(
-//         //   "shippingAddress",
-//         //   orderDetails?.shippingAddress,
-//         //   orderDetails?.billingAddress
-//         // );
-
-//         let lineItemDetails = orderDetails.lineItems.edges;
-
-//         // console.log("lineItemDetails", lineItemDetails);
-
-//         let newArr = [];
-//         // let plansDetailObj = {};
-//         // let lineItemSellingPlanObj = {};
-//         let flag = false;
-//         let contractDetails;
-//         let imageObj = {};
-//         let emailCheck = false;
-//         lineItemDetails.map((item, index) => {
-//           newArr.push({
-//             id: item.node.id,
-//             sellingPlanId: item.node?.sellingPlan?.sellingPlanId,
-//             sellingPlanName: item.node?.sellingPlan?.name,
-//             imageUrl: item.node?.image?.url,
-//             name: item.node?.name,
-//             quantity: item?.node?.quantity,
-//             price:
-//               item.node?.discountedUnitPriceSet?.presentmentMoney?.amount !=
-//               null
-//                 ? item.node?.discountedUnitPriceSet?.presentmentMoney?.amount
-//                 : 0,
-//           });
-
-//           // console.log(
-//           //   "4oct",
-//           //   item.node?.discountedUnitPriceSet?.presentmentMoney
-//           // );
-//           // console.log(
-//           //   "t555",
-//           //   item.node?.originalUnitPriceSet?.presentmentMoney
-//           // );
-//           // console.log("imageurl", item.node?.image?.url);
-//           imageObj[item.node.id] = item.node?.image?.url;
-//           console.log("sdsdsd14augusts", item.node.sellingPlan);
-
-//           if (item.node.sellingPlan) {
-//             // console.log("checkinif of map", item.node.id);
-//             // console.log("14augusts", item.node.sellingPlan);
-//             emailCheck = true;
-//             if (flag == false) {
-//               // console.log("contract--->", item.node.contract);
-//               contractDetails = item?.node?.contract?.customerPaymentMethod;
-//               flag = true;
-//             }
-//             console.log("contract", item?.node?.contract);
-//             console.log(
-//               "deliverytype",
-//               item?.node?.contract?.deliveryPolicy?.interval
-//             );
-//             newArr.at(-1).planName = item?.node?.sellingPlan?.name;
-//             newArr.at(-1).contractId = item?.node?.contract?.id
-//               ?.split("/")
-//               ?.at(-1);
-//             newArr.at(-1).billingEvery =
-//               item?.node?.contract?.billingPolicy?.intervalCount;
-//             newArr.at(-1).billingEveryType =
-//               item?.node?.contract?.billingPolicy?.interval;
-//             newArr.at(-1).deliveryEvery =
-//               item?.node?.contract?.deliveryPolicy?.intervalCount;
-//             newArr.at(-1).deliveryEveryType =
-//               item?.node?.contract?.deliveryPolicy?.interval;
-//             newArr.at(-1).nextBillingDate =
-//               item?.node?.contract?.nextBillingDate;
-
-//             //  let nextDate ;
-
-//             // if ((item?.node?.contract?.billingPolicy?.interval).toLowerCase() === "day") {
-//             //   nextDate = new Date(item?.node?.contract?.nextBillingDate);
-//             //   nextDate.setDate(nextDate.getDate() + 1);
-//             // } else if (
-//             //   (item?.node?.contract?.billingPolicy?.interval).toLowerCase() === "month"
-//             // ) {
-//             //   nextDate = new Date(item?.node?.contract?.nextBillingDate);
-//             //   nextDate.setMonth(nextDate.getMonth() + 1);
-//             // } else if (
-//             //   (item?.node?.contract?.billingPolicy?.interval).toLowerCase() === "week"
-//             // ) {
-//             //   nextDate = new Date(item?.node?.contract?.nextBillingDate);
-//             //   nextDate.setDate(nextDate.getDate() + 7);
-//             // } else if (
-//             //   (item?.node?.contract?.billingPolicy?.interval).toLowerCase() === "year"
-//             // ) {
-//             //   nextDate = new Date(item?.node?.contract?.nextBillingDate);
-//             //   nextDate.setFullYear(nextDate.getFullYear() + 1);
-//             // }
-
-//             // newArr.at(-1).startDate=nextDate ;
-
-//             // console.log("plan--->", item.node.sellingPlan);
-//           }
-//         });
-//         // console.log("newArr", newArr);
-
-//         // let lineItemData = responseWebhook.line_items;
-
-//         // console.log("lineItemData", lineItemData);
-//         // let sellingPlanArr = [];
-
-//         // let mergedArray = lineItemData.map((itemA) => {
-//         //   const matchingItemB = newArr.find(
-//         //     (itemB) => itemB.id === itemA.admin_graphql_api_id
-//         //   );
-//         //   let data = { ...itemA, ...matchingItemB };
-//         //   if (data.sellingPlanId != undefined) {
-//         //     sellingPlanArr.push(data.sellingPlanId);
-//         //   }
-//         //   return { ...itemA, ...matchingItemB };
-//         // });
-
-//         // console.log("mergedArray", mergedArray);
-//         // console.log("sellinplanArr", sellingPlanArr);
-
-//         // let planDetailsArr = [];
-
-
-// console.log("orderDetails?.customer",orderDetails?.customer)
-
-// console.log("sdsdsadas",orderDetails?.shippingAddress)
-// console.log("rererreer",orderDetails?.billingAddress)
-// console.log("ngyftg",orderDetails?.subtotalPriceSet?.presentmentMoney?.currencyCode)
-
-
-//         let getData = {
-//           order_number: orderDetails?.name,
-//           customer_id: orderDetails?.customer?.id,
-//           customer_email: orderDetails?.customer?.email,
-//           customer_name:
-//             orderDetails?.customer?.firstName != null
-//               ? orderDetails?.customer?.firstName
-//               : "",
-//           shipping_address: orderDetails?.shippingAddress,
-//           billing_address: orderDetails?.billingAddress,
-//           items: newArr,
-
-//           currencySymbol: getCurrencySymbol(
-//             orderDetails?.subtotalPriceSet?.presentmentMoney?.currencyCode
-//           ),
-//         };
-
-//         try {
-//           // console.log("beforrreeeee");
-//           let shopName;
-//           let shopEmail;
-//           let subscriptionPurchasedTemplateData =
-//             await emailTemplatesModal.findOne(
-//               { shop: getorder.shop },
-//               { "settings.subscriptionPurchased": 1, configuration: 1 }
-//             );
-//           // console.log(
-//           //   "subscriptionPurchasedTemplateData",
-//           //   subscriptionPurchasedTemplateData
-//           // );
-//           if (subscriptionPurchasedTemplateData) {
-//             let sendMailToCustomer =
-//               subscriptionPurchasedTemplateData?.settings?.subscriptionPurchased
-//                 ?.status;
-//             let sendMailToMerchant =
-//               subscriptionPurchasedTemplateData?.settings?.subscriptionPurchased
-//                 ?.adminNotification;
-
-//             if (sendMailToCustomer || sendMailToMerchant) {
-//               let recipientMails = [];
-
-//               if (sendMailToMerchant) {
-//                 let storeData = await getStoreDetails(getorder.shop);
-//                 shopEmail = storeData.store_email;
-//                 shopName = storeData.store_name;
-//                 // console.log("emailstore", shopEmail);
-//                 recipientMails.push(shopEmail);
-//                 getData.shopEmail = shopEmail;
-//                 getData.shopName = shopName;
-//               }
-//               if (sendMailToCustomer) {
-//                 // console.log("customeremail", getData.customer_email);
-//                 recipientMails.push(getData.customer_email);
-//               }
-//               // console.log("recipiensmails", recipientMails);
-//               let configurationData =
-//                 subscriptionPurchasedTemplateData?.configuration;
-//               let selectedTemplateData =
-//                 subscriptionPurchasedTemplateData?.settings
-//                   ?.subscriptionPurchased;
-//               //////
-
-//               ///////
-//               let mailCheck = await sendMailCall(
-//                 recipientMails,
-//                 {},
-//                 {
-//                   shop: getorder.shop,
-//                   selectedTemplateData,
-//                   configurationData,
-//                   data: {
-//                     ...getData,
-//                     recipientMails: recipientMails,
-//                     contractDetails,
-//                   },
-//                   check: "orderCreate",
-//                 }
-//               );
-//             }
-//           } else {
-//             // console.log("nodatafrotemplatesubscriptionpurachase found");
-//           }
-//         } catch (error) {
-//           console.log("error", error);
-//         }
-
-//         /////////////////////////////////Sahil End///////////////////////////////////////
-//       }
-//     }
-//   } catch (err) {
-//     console.error("Error in fetching orders", err);
-//   }
-// }
 
 const sendEmail = async (pdfPath, email, orderId, shop,) => {
   console.log("oiiiiiiiii");
@@ -10500,15 +9834,14 @@ console.log( contractData.body.data.subscriptionContract.originOrder
               address1:
                 (orderDetails.billingAddress.address1 != undefined ?  orderDetails.billingAddress.address1 : "") +
                 " " +
-                (orderDetails.billingAddress.address2 != undefined  ?  orderDetails.billingAddress.address2 : "") ,
+                orderDetails.billingAddress.address2 != undefined  ?  orderDetails.billingAddress.address2 : "" ,
               address2:
-                (orderDetails.billingAddress.city != undefined  ?  orderDetails.billingAddress.city : "" )+
+                orderDetails.billingAddress.city != undefined  ?  orderDetails.billingAddress.city : "" +
                 "-" +
-                (orderDetails.billingAddress.zip != undefined  ? orderDetails.billingAddress.zip : ""),
+                orderDetails.billingAddress.zip != undefined  ? orderDetails.billingAddress.zip : "",
 
-              province: orderDetails.billingAddress.province != undefined ? orderDetails.billingAddress.province : "",
+              province:orderDetails.billingAddress.province != undefined  ? orderDetails.billingAddress.province : "",
               country: orderDetails.billingAddress.country != undefined ? orderDetails.billingAddress.country : "",
-              
             },
             billing_date: new Date(orderDetails.createdAt)
               .toISOString()
@@ -10806,6 +10139,3 @@ if (subscriptionPurchasedTemplateData && saveDetails.components[17]) {
     console.error("Error in fetching orders", err);
   }
 }
-
-
-

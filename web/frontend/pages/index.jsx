@@ -37,7 +37,7 @@ function Home() {
 
   const [customDate, setCustomDate] = useState(dayjs().format("YYYY-MM-DD"));
 
-  const [range, setRange] = useState("last7Days");
+  const [range, setRange] = useState("today");
 
   const [recurringRevenue, setRecurringRevenue] = useState(0);
 
@@ -192,7 +192,7 @@ setShowAppBlock(response?.data?.data?.disabled)
 
       let sum = 0;
 
-      let countInitialStatus = 0;
+      // let countInitialStatus = 0;
 
       if (arr.length > 0) {
         arr.map((item) => {
@@ -201,9 +201,9 @@ setShowAppBlock(response?.data?.data?.disabled)
             parseFloat(item.total_amount) *
               parseFloat(rates[item?.currency] / rates[storeDetails?.currency]);
 
-          if (item.status == "initial") {
-            countInitialStatus = countInitialStatus + 1;
-          }
+          // if (item.status == "initial") {
+          //   countInitialStatus = countInitialStatus + 1;
+          // }
         });
       }
 
@@ -211,10 +211,22 @@ setShowAppBlock(response?.data?.data?.disabled)
 
       setRecurringRevenue(sum);
 
-      setSubscriptionBookings(countInitialStatus);
+      // setSubscriptionBookings(countInitialStatus);
     }
 
-    return response;
+
+    const subscriptionBookingsData = await axios.post("/api/admin/subscriptionBookings", body, {
+      headers: { Authorization: `Bearer ${sessionToken}` },
+    });
+
+console.log("subscriptionBookingsData",subscriptionBookingsData)
+if (subscriptionBookingsData?.data?.message == "success") {
+
+  setSubscriptionBookings(subscriptionBookingsData?.data?.data)
+
+}
+
+    // return response;
   };
 
   const getActiveCustomers = async (body) => {
@@ -322,7 +334,7 @@ setShowAppBlock(response?.data?.data?.disabled)
           With Subscription Plans, you have a quick and easy way to set up various recurring billing plans. These billing plans can then be assigned to any of your Products. Once assigned, your customers can self-subscribe to any of the plans you made available on your Products. This can jumpstart your Company’s growth in recurring revenue! </p>
 
 <p>
-Among the available features are Prepaid plans, Pay As You Go plans. Automatic Renewals, Discounts, and much more! These are all at your fingertips to make it easy to expand business! We’ve built in a lot of flexibility to meet your needs. Please click <Link>HERE</Link>  for more Help documentation on Subscription Plans. Click below to start building your Subscription Plans!
+Among the available features are Prepaid plans, Pay As You Go plans. Automatic Renewals, Discounts, and much more! These are all at your fingertips to make it easy to expand business! We’ve built in a lot of flexibility to meet your needs. Please click   <a href="https://revlytics.gitbook.io/revlytic/quick-create" target='/blank'>HERE</a>  for more Help documentation on Subscription Plans. Click below to start building your Subscription Plans!
 
             </p>
           </div>
@@ -347,7 +359,7 @@ Among the available features are Prepaid plans, Pay As You Go plans. Automatic R
       children: (
         <>
           <div className="checklist-tabs-content">
-            <p>With Manual Subscriptions, we give all the control and flexibility to you to create individual subscriptions for any existing or new customers. With this feature you can create one off orders or automatically renew subscriptions for individual customers. We’ve built in the ability to create and send checkout links to your customers so you don’t have to do it! Please click <Link>HERE</Link>  for more Help documentation on Manual Subscriptions. Click below to start building your Manual Subscriptions!
+            <p>With Manual Subscriptions, we give all the control and flexibility to you to create individual subscriptions for any existing or new customers. With this feature you can create one off orders or automatically renew subscriptions for individual customers. We’ve built in the ability to create and send checkout links to your customers so you don’t have to do it! Please click   <a href="https://revlytics.gitbook.io/revlytic/manual-subscription" target='/blank'>HERE</a>  for more Help documentation on Manual Subscriptions. Click below to start building your Manual Subscriptions!
 </p>
           </div>
 
@@ -452,7 +464,7 @@ Among the available features are Prepaid plans, Pay As You Go plans. Automatic R
           <div className="checklist-tabs-btns">
             <Button >
               {" "}
-              Help Docs
+             <a href="https://revlytics.gitbook.io/revlytic/" target='/blank'>Help Docs</a> 
             </Button>
             {/* <Button className="help">Help</Button> */}
           </div>
@@ -476,7 +488,7 @@ const newItems= [{
     <div className="revlytic-annoucments-inner-section"> 
          <div className="revlytic-annoucments-inner-row">
          <div className="revlytic-annoucments-inner-column">
-          <img src={`https://revlytic.co/images/announcement/${item?.image}`} width="100" height="100"  />
+          <img src={` https://sorry-canvas-anthony-labels.trycloudflare.com/images/announcement/${item?.image}`} width="100" height="100"  />
           <div className="revlyticannoucments-inner-content">
             <h3>{item?.title}</h3>  
             <p>{item?.description}</p>
@@ -519,7 +531,7 @@ const newItems= [{
    
 
 
-      <div className="revlytic daterange-section-main">
+      <div className="revlytic daterange-section-main" style={{alignItems:"center"}}>
         <Select
           onChange={handleRangeSelection}
           value={range}
@@ -531,7 +543,7 @@ const newItems= [{
           <Select.Option value="yesterday">Yesterday</Select.Option>
           <Select.Option value="last7Days">Last 7 Days</Select.Option>
           <Select.Option value="last30Days">Last 30 Days</Select.Option>
-          <Select.Option value="last90Days">Last 90 days</Select.Option>
+          <Select.Option value="last90Days">Last 90 Days</Select.Option>
           {/* <Select.Option value="last6months">
 Last 6 Months
 </Select.Option> */}
@@ -616,6 +628,7 @@ Last 6 Months
           </div>
         )}
 
+<p style={{color:"#999"}}>Note : Last 7 Days, Last 30 Days, Last 90 Days exclude today</p>
       </div>
       
       <div className="revlytic data-record-main-container">
@@ -744,7 +757,7 @@ Last 6 Months
               </svg>
               Help Docs
             </p> */}
-            <p>
+            {/* <p>
               <svg
                 width="17"
                 height="12"
@@ -758,7 +771,7 @@ Last 6 Months
                 />
               </svg>
               Video Tutorials
-            </p>
+            </p> */}
             <p>
               <svg
                 width="16"
@@ -772,19 +785,19 @@ Last 6 Months
                   fill="#888888"
                 />
               </svg>
-            support@revlytic.co
+              <Link onClick={()=>navigate('/contactus')} >support@revlytic.co</Link>
             </p>
           </div>
          
         </Card>
         <Card className="revlytic-timeline-wrapper">
           <h2>Latest Updates </h2>
-          <h3> November 2023</h3>
+          <h3> January 2024</h3>
         <Timeline
           items={[
-            {
-              children: 'Revlytic Is Now Live!',
-            },
+            // {
+            //   children: 'Revlytic Is Now Live!',
+            // },
             {
               children: 'Quick Create - Manual Subscription',
             },

@@ -47,7 +47,7 @@ import { useAPI } from "../components/common/commonContext";
 import { sendMailOnUpdate } from "./common/helpers";
 
 function CreateManualSubscription() {
-  const { currency, storeDetails } = useAPI();
+  const { currency, storeDetails,billingPlan} = useAPI();
   const [form] = useForm();
   const [form2] = useForm();
   const navigate = useNavigate();
@@ -540,7 +540,7 @@ else if(input?.toLowerCase()=="year"){
     }
   }
 
-  useEffect(async () => {
+  useEffect(async () => { 
     getPrepaidPastorders()
     //console.log();
     //console.log("in useeffect", params.get("mode"));
@@ -1426,7 +1426,7 @@ console.log("27cntrydata",response?.data?.data?.data)
     }
     // //console.log(customersList)
   };
-
+console.log(storeDetails,"billingplan",billingPlan)
   const handleMaxCycle = (rule, value) => {
     if (
       form.getFieldValue(["subscription", "billingMinValue"]) != "" &&
@@ -1899,7 +1899,7 @@ console.log("value,data.counteruy",value, data?.country)
             link = link + end;
             setCopyText(link);
             setOptions({
-              from: "virender.shinedezign@gmail.com",
+              // from: "virender.shinedezign@gmail.com",
               to: values.customer_details.email,
               subject: "Subscription Checkout Link",
               html: `<p>Click <a href= ${link}>here</a> to redirect to checkout</p>`,
@@ -4195,11 +4195,11 @@ console.log("sdasdasdakeuwriorioriorioriorioriorioriorioiooppo")
 
         {existingSubscription != {} &&
         (mode == "view" || mode == "edit") ? null : (
-          <Button className="revlytic-save-subscription" htmlType="submit">
+          <Tooltip title={customerPaymentsData.length==0 && billingPlan !="starter" ? "Upgrade your Plan" :""}><Button className="revlytic-save-subscription" htmlType="submit" disabled={customerPaymentsData.length==0 && billingPlan !="starter"} >
             {customerPaymentsData.length > 0
               ? "Submit"
-              : "Create Checkout Link"}
-          </Button>
+              :  "Create Checkout Link" } 
+          </Button></Tooltip>
         )}
       </Form>
 
@@ -4216,6 +4216,7 @@ console.log("sdasdasdakeuwriorioriorioriorioriorioriorioiooppo")
             setNextBillingDate={setNextBillingDate}
             pastOrders={pastOrders}
             skippedOrders={skippedOrders}
+            mode={mode}
           />
         ) : (
           <Fulfillments
@@ -4227,6 +4228,7 @@ console.log("sdasdasdakeuwriorioriorioriorioriorioriorioiooppo")
             storeDetails={storeDetails}
               setNextBillingDate={setNextBillingDate}
               pastOrders={pastOrders}
+              mode={mode}
           />
         )
       ) : (

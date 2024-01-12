@@ -7,7 +7,7 @@ import { useAPI } from "../common/commonContext";
 import { useAppBridge } from "@shopify/app-bridge-react";
 import { toast } from "react-toastify";
            
-function Orders({ data, upcomingOrders,attemptedOrders ,fetchDataUpcomingOrders,setLoader,storeDetails,setExistingSubscription,setNextBillingDate,pastOrders,skippedOrders}) {
+function Orders({ data, upcomingOrders,attemptedOrders ,fetchDataUpcomingOrders,setLoader,storeDetails,setExistingSubscription,setNextBillingDate,pastOrders,skippedOrders,mode}) {
   const navigate = useNavigate();
   const { storeName } = useAPI();
   const app = useAppBridge();
@@ -431,13 +431,13 @@ const pastAndSkippedItems =[
             
           {item.status == "upcoming" ? (
                       <div className="order-inner">
-                        <Button onClick={() => handleOrderNow(item.renewal_date)}>
+                        <Button onClick={() => handleOrderNow(item.renewal_date)} disabled={mode=='view'}>
                           Order Now
                         </Button>
-                        <Button  onClick={() => handleSkipOrder(item.renewal_date)}>Skip Order</Button>
+                        <Button  onClick={() => handleSkipOrder(item.renewal_date)} disabled={mode=='view'}>Skip Order</Button>
                       </div>
                     ) : item.status == "failed" ? 
-                      <Button onClick={()=>handleRetry(item.renewal_date,item.idempotencyKey)}>Retry</Button>
+                      <Button onClick={()=>handleRetry(item.renewal_date,item.idempotencyKey)} disabled={mode=='view'}>Retry</Button>
                       : ""
                      }
           </div>

@@ -82,6 +82,10 @@ import {
   demo,
   checkAppBlockEmbed,
   convertStoreProductPriceIntoOrderCurrency,
+  recurringBiling,
+  recurringBilingSelected,
+  getBillingPlanData,
+  subscriptionBookings
 } from "./controller.js";
   import { appProxy, getCustomerPortalDetailsStore, getCustomerSubscriptions, getStoreCountries, getStoreToken, getTotalOrdersBillingsCount } from "./customerPortalController.js";
 
@@ -93,7 +97,7 @@ import { getPlansForStoreFront, getWidgetSettingsForStoreFront } from "./storeFr
 
 import fs from "fs"
 
-const upload = multer({ dest: '/web/frontend/uploads' });
+const upload = multer({ dest: '/frontend/uploads' });
 const router = express.Router();
 
 router.post('/demo',demo)
@@ -242,6 +246,7 @@ router.post('/fulfillmentOrderRescheduleOrSkip',fulfillmentOrderRescheduleOrSkip
 
 router.post('/retryFailedOrder',retryFailedOrder)
 router.post("/combinedData", combinedData);
+router.post("/subscriptionBookings", subscriptionBookings);
 router.post("/activeCustomers", activeCustomers);
 router.post("/getUpcomingRevenue", upcomingRevenue);
 router.post("/addAnnouncement",addAnnouncement)
@@ -249,7 +254,7 @@ router.post("/updateAnnouncement",updateAnnouncement)
 router.post("/getAnnouncements",getAnnouncements)
 router.post("/deleteAnnouncement",deleteAnnouncement)
 router.post('/checkAppBlockEmbed',checkAppBlockEmbed)
-
+router.post('/getBillingPlanData',getBillingPlanData)
 
 
 router.post("/getProductPlanList", getProductPlanList);
@@ -284,6 +289,10 @@ router.post("/updateproductbundleDetails", updateproductbundleDetails)
 router.post("/updateproductbundleStatus", updateproductbundleStatus)
 router.post("/saveCustomerPortalDetails", saveCustomerPortalDetails)
 router.post("/getCustomerPortalDetails", getCustomerPortalDetails)
+router.post("/recurringBiling", recurringBiling)
+router.post("/recurringBilingSelected", recurringBilingSelected)
+router.post("/getTotalOrdersBillingsCount", getTotalOrdersBillingsCount)
+
 
 
 
@@ -304,8 +313,6 @@ router.post("/getCustomerSubscriptions", getCustomerSubscriptions)
 router.post("/getStoreToken", getStoreToken)
 router.post("/getStoreCountries", getStoreCountries)
 router.post("/getCustomerPortalDetailsStore", getCustomerPortalDetailsStore)
-router.post("/getTotalOrdersBillingsCount", getTotalOrdersBillingsCount)
-
 
 
 
@@ -364,11 +371,11 @@ router.post('/upload', upload.single('image'), (req, res) => {
   // Specify the target folder based on req.body.flag
   const targetFolder =
     req.body.flag == "logo"
-      ? path.join(__dirname, "/web/frontend/images/logo")
+      ? path.join(__dirname, "frontend/images/logo")
       : req.body.flag == "announcement"
-      ? path.join(__dirname, "/web/frontend/images/announcement")
-      : path.join(__dirname, "/web/frontend/images/signature");
-console.log(targetFolder,"ooooo")
+      ? path.join(__dirname, "frontend/images/announcement")
+      : path.join(__dirname, "frontend/images/signature");
+
   // Check if the target folder exists
   if (!fs.existsSync(targetFolder)) {
     fs.mkdirSync(targetFolder, { recursive: true }); // Create the target folder if it doesn't exist
@@ -390,7 +397,7 @@ console.log()
 router.post("/delete", (req, res) => {
   const imageName = req.body.url.substring(req.body.url.lastIndexOf("images"));
   console.log(imageName,"kjhk")
-  fs.unlink(`/web/frontend/${imageName}`, (error) => {
+  fs.unlink(`frontend/${imageName}`, (error) => {
     if (error) {
       res.send({ message: "error", data: error});
       // Handle the error or show a notification to the user
