@@ -28,7 +28,7 @@ export default function Routes({ pages }) {
       <Route element ={<Sidebar/>} >
         {routeComponents}
         {/* <Route  path="/" element={<Home />} /> */}
-        <Route path="/create-manual-subscription" element={<CreateManualSubscription />} />
+        <Route path="/create-manual-subscription" element={<CreateManualSubscription  />} />
 
       <Route path="*" element={<NotFound />} />
       </Route>
@@ -36,7 +36,7 @@ export default function Routes({ pages }) {
   );
 }
 
-function useRoutes(pages) {
+function useRoutes(pages,hello) {
   const routes = Object.keys(pages)
     .map((key) => {
       let path = key

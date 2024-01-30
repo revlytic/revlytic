@@ -1,21 +1,45 @@
 import React,{useEffect,useState} from "react";
-import { CheckOutlined } from "@ant-design/icons";
+import { CheckOutlined, SmileOutlined } from "@ant-design/icons";
 import Slider from "react-slick";
-import { Progress,Spin } from 'antd';
+import { Alert, Progress,Spin,notification } from 'antd';
 import postApi from "../components/common/postApi";
 import { useAppBridge } from "@shopify/app-bridge-react";
 import { useLocation } from "react-router-dom";
+import axios from "axios";
+import { useAPI } from "../components/common/commonContext";
 
 
-function Billing() {
-    
+function Billing(props) {
+ 
     const app =useAppBridge();
     const location = useLocation();
     const queryParams = location.search;
     const params = new URLSearchParams(queryParams);
     const charge_id = params.get("charge_id");
+    const option = params.get("option");
+    const {billingPlan,setBillingPlan,nextBillingDate,recurringRevenue} =useAPI();
    const [loader,setLoader]=useState(false)
- 
+   const [activePlan,setActivePlan]=useState("")
+   const [message,setMessage]=useState(false)
+  //  const [recurringRevenue,setRecurringRevenue]=useState(0)
+  const [currencyConversionRates, setCurrencyConversionRates] = useState({});
+  const [nextDate,setNextDate]=useState('')
+  const [api, contextHolder] = notification.useNotification();
+  const toastNotification = (type,res,placement) => {
+    console.log(type,res)
+return( 
+notification[type]({
+message: `Notification ${type}`,
+description: `${res}`,
+placement:`${placement}`,
+closeIcon:false,
+maxCount:1
+
+})
+)
+
+}
+
     const settings = {
     dots: false,
     infinite: false,
@@ -42,34 +66,143 @@ function Billing() {
 ],
 };
 
-
+console.log(props,"====bilingdata===",billingPlan,nextBillingDate,)
 useEffect(async () => {
-  
-    console.log("charge_id",charge_id)
+
+    console.log("charge_id",charge_id,props)
+    setActivePlan(billingPlan)
+    setNextDate(nextBillingDate)
+
     setLoader(true);
     if (charge_id) {
+
       let response=await postApi("/api/admin/recurringBilingSelected",{charge_id: charge_id},app)
-      //   setBtnClicked("");
-      
-      
-      //       const sessionToken = await getSessionToken(app);
-      //       await axios
-      //         .post(
-        //           "/api/billingSelected",
-        //           { shop: shop, charge_id: charge_id },
-//           { headers: { Authorization: `Bearer ${sessionToken}` } }
-//         )
-//         .then((res) => {
-  //           setBillingPlan({
-    //             ...billingPlan,
-    //             plan: res.data.plan,
-    //             interval: res.data.interval,
-    //           });
-    //         })
-    //         .catch((err) => console.log("Something went wrong!" + err));
+     
+    console.log("ressponse=====25jan",response)
+    if(response.data.message=='success'){
+      console.log("myclll",response.data.plan)
+      setActivePlan(response.data.plan)
+      setNextDate(response.data.next_billing)
+      setBillingPlan(response.data.plan)
+    if(checkNotify(response.data.plan,props.revenue)){
+      props.setpPlanUpdate(true)
+      setMessage(true)
+      // toastNotification("info",'Since the current plan limit has been exceeded, kindly upgrade.',"top",)
+    }
+
+
+    }
+  
   }
+  else{
+    console.log("sdsd34344")
+  if(  props.planUpdate==true){
+    console.log("5ttt")
+    // toastNotification("info",'Since the current plan limit has been exceeded, kindly upgrade.',"top",)
+    setMessage(true)
+  }
+
+  }
+
+//   else {
+
+//     let data = await axios.get(
+//       "https://cdn.shopify.com/s/javascripts/currencies.js"
+//     );
+
+    
+
+//     let filtered =await  eval(
+//       new Function(`
+
+//   ${data?.data}
+
+//   return Currency;
+
+// `)
+//     )();
+
+//     console.log("yyyy", filtered);
+
+//     filtered && setCurrencyConversionRates(filtered.rates);
+
+//     if (filtered) {
+//       let response = await getData({ range: "lastmonth" }, filtered?.rates);
+//     }
+
+//   }
+
+
   setLoader(false);
-}, []);
+}, [props]);
+
+// console.log("24jan",billingPlan,props.planUpdate)
+
+const getData = async (body, rates) => {
+  console.log("getData", body);
+
+  // const sessionToken = await getSessionToken(app);
+
+  const response = await postApi("/api/admin/combinedData", body, app);
+
+  console.log("response", response);
+
+  if (response?.data?.message == "success") {
+    console.log("dfdfd", response?.data?.data);
+
+    console.log("trates", rates);
+
+    let arr = response?.data?.data;
+
+    let sum = 0;
+
+    // let countInitialStatus = 0;
+
+    if (arr.length > 0) {
+      arr.map((item) => {
+        sum =
+          sum +
+          parseFloat(item.total_amount) *
+            parseFloat(rates[item?.currency] / rates["USD"]);
+
+console.log("checkitemsrev",sum)
+
+      });
+    }
+
+    console.log("sum", sum);
+
+    // setRecurringRevenue(sum);
+
+  }
+
+
+};
+
+const checkNotify=(billingPlan,sum)=>{
+
+ // if (billingPlan === false || billingPlan === undefined || billingPlan === null) {
+    //   // Billing plan is not available yet
+    //   console.log("Billing plan not available");
+    // } else {
+      // Billing plan is available, update the state
+      if (billingPlan === 'starter' && sum >= 5000) {
+        return true
+      } else if (billingPlan === 'premium' && sum >= 30000) {
+        return true
+      } else {
+        if ((billingPlan === false || billingPlan === undefined || billingPlan === null) && sum >= 1000) {
+          return true
+        } else {
+         return false
+        }
+      }
+    // }
+
+}
+
+
+
 
 
 const handleUpgradePlan=async(planData)=>{
@@ -88,36 +221,29 @@ console.log("heloo inupgrade plan")
 
  
   return (
-    <Spin spinning={loader} size="large" tip="Loading...">
+ <Spin spinning={loader} size="large" tip="Loading...">
+  
+    
     <div className="revlytic-billing-plans">
+   {message && <Alert className="revlytic-billing-plans-warning" banner closable message="Revenue cap for the monthly plan reached; please upgrade." type="warning"  />}
       <div className="container">
       <div className="revlytic-usage-tracker-wrapper">
         <div className="revlytic-plan-history">
-          <h5>Start plan</h5>
-          <p>Next billing date : 25/09/23</p>
+          <h5>{activePlan ? activePlan : "Free"} plan</h5>
+          <p>Next billing date : {nextDate}</p>
         </div>
         <div className="revlytic-usage-tracker-main">
           <div className="usage-tarcker-content">
-          <h3>$0</h3>
-          <p> Completely free of charge</p>
-          <Progress percent={0}  showInfo={false} />
+          <h3>${recurringRevenue}</h3>
+          <p>{activePlan ?  activePlan : "Completely free of charge"}</p>
+          <Progress percent={ !activePlan ? (recurringRevenue/1000 * 100 ): activePlan == 'starter' ?  (recurringRevenue/5000 * 100):0}  showInfo={false}  />
           </div>
-          <div className="usage-tarcker-content">
-          <h3>1/1</h3>
-          <p> Completely free of charge</p>
-          <Progress percent={0}    status="active" showInfo={false} />
-          </div>
-          <div className="usage-tarcker-content">
-          <h3>2/1</h3>
-          <p> Completely free of charge</p>
-          <Progress percent={0}    status="exception" showInfo={false} />
- 
-          </div>
+      
         </div>
         </div>
         <div className="card-wrapper">
         <Slider {...settings} className="billing-plan-slider">
-          <div className="subscription-card yellow">
+          <div className={`subscription-card yellow ${activePlan != 'starter' && activePlan != 'premium' ? 'active' : ""}`}>
             <div className="subscription-card-heading">
               <h2>Free</h2>
               {/* <span><b>$0/</b>month</span> */}
@@ -154,12 +280,12 @@ console.log("heloo inupgrade plan")
                   </div>
                   Prepaid Plans
                 </li>
-                <li>
+                {/* <li>
                   <div className="check-box">
                   <CheckOutlined />
                   </div>
                   Unlimited Emails
-                </li>
+                </li> */}
                 <li>
                   <div className="check-box">
                   <CheckOutlined />
@@ -198,7 +324,7 @@ console.log("heloo inupgrade plan")
             </a>
             </div> */}
           </div>
-          <div className="subscription-card green">
+          <div className={`subscription-card green ${activePlan == 'starter' ? 'active' : ""}`}>
             <div className="subscription-card-heading">
               <h2>
                 Starter{" "}
@@ -208,11 +334,11 @@ console.log("heloo inupgrade plan")
                 Includes up to $5,000 of monthly subscription revenue.
               </p>
               <span>
-                  (<b>$5/</b>month)
+                  (<b>$7/</b>month)
                 </span>
                 <p className="price_card_fee"> No transaction fees.  </p>
                 <div className="billing-update-plan">
-                <button type="button"  onClick={()=>handleUpgradePlan({plan:"starter",interval:"MONTHLY",price:5})}>Upgrade Plan</button>
+            {activePlan !='starter' && <button type="button"  onClick={()=>handleUpgradePlan({plan:"starter",interval:"MONTHLY",price:7})}>Upgrade Plan</button>}
                 </div>
             </div>
             <div className="subscription-card-list">
@@ -233,7 +359,7 @@ console.log("heloo inupgrade plan")
                   <div className="check-box">
                   <CheckOutlined />
                   </div>
-                  One Click Checkout Link
+                 {option=='checkoutlink' ? <strong>One Click Checkout Link</strong> : "One Click Checkout Link"}
                 </li>
                 <li>
                   <div className="check-box">
@@ -241,47 +367,48 @@ console.log("heloo inupgrade plan")
                   </div>
                   Customer Portal
                 </li>
-                <li>
+                {/* <li>
                   <div className="check-box">
                   <CheckOutlined />
                   </div>
                   Customization
+                </li> */}
+                <li>
+                  <div className="check-box">
+                  <CheckOutlined />
+                  </div>
+                  {option=='invoice' ? <strong>Invoice Templates</strong> : "Invoice Templates"}
                 </li>
                 <li>
                   <div className="check-box">
                   <CheckOutlined />
                   </div>
-                  Invoice Templates
+                  {option=='earlyAttempt' ? <strong>Early Attempt</strong> : "Early Attempt"}
+                  
                 </li>
-                <li>
-                  <div className="check-box">
-                  <CheckOutlined />
-                  </div>
-                  Early Attempt
-                </li>
-                <li>
+                {/* <li>
                   <div className="check-box">
                   <CheckOutlined />
                   </div>
                   Billing Orders
+                </li> */}
+                <li>
+                  <div className="check-box">
+                  <CheckOutlined />
+                  </div>
+                  {option=='skipOrders' ? <strong>Skip Subscription Orders</strong> : "Skip Subscription Orders"}
+                 </li>
+                <li>
+                  <div className="check-box">
+                  <CheckOutlined />
+                  </div>
+                  {option=='rescheduleDelivery' ? <strong>Reschedule Upcoming Deliveries</strong> : "Reschedule Upcoming Deliveries"}
                 </li>
                 <li>
                   <div className="check-box">
                   <CheckOutlined />
                   </div>
-                  Skip Subscription Orders
-                </li>
-                <li>
-                  <div className="check-box">
-                  <CheckOutlined />
-                  </div>
-                  Reschedule Upcoming Deliveries
-                </li>
-                <li>
-                  <div className="check-box">
-                  <CheckOutlined />
-                  </div>
-                  Email templates Customization
+                  {option=='emailTemplates' ? <strong> Email templates Customization</strong> : " Email templates Customization"}   
                 </li>
               </ul>
             </div>
@@ -291,7 +418,7 @@ console.log("heloo inupgrade plan")
             </a>
             </div> */}
           </div>
-          <div className="subscription-card blue">
+          <div className={`subscription-card blue ${ activePlan == 'premium' ? 'active' : ""}`}>
             <div className="subscription-card-heading">
               <h2>
                 Premium{" "}
@@ -305,7 +432,7 @@ console.log("heloo inupgrade plan")
                 </span>
                 <p className="price_card_fee"> No transaction fees.  </p>
                 <div className="billing-update-plan">
-                <button type="button"  onClick={()=>handleUpgradePlan({plan:"premium",interval:"MONTHLY",price:20})}>Upgrade Plan</button>
+                {activePlan !='premium' &&  <button type="button"  onClick={()=>handleUpgradePlan({plan:"premium",interval:"MONTHLY",price:20})}>Upgrade Plan</button>}
                 </div>
             </div>
             <div className="subscription-card-list">
@@ -320,19 +447,19 @@ console.log("heloo inupgrade plan")
                   <div className="check-box">
                   <CheckOutlined />
                   </div>
-                  Customize Widget
+                  {option=='customiseWidget' ? <strong> Customize Widget </strong> : "Customize Widget"}   
                 </li>
                 <li>
                   <div className="check-box">
                   <CheckOutlined />
                   </div>
-                  Email Domain
+                  {option=='enableEmailConfiguration' ? <strong>  Email Configuration </strong> : " Email Configuration"}
                 </li>
                 <li>
                   <div className="check-box">
                   <CheckOutlined />
                   </div>
-                  Product Changes in Existing
+                  {option=='editProducts' ? <strong> Product Changes in Existing </strong> : "Customize Widget"} 
                 </li>
                 <li>
                   <div className="check-box">
@@ -348,7 +475,7 @@ console.log("heloo inupgrade plan")
             </a>
             </div> */}
           </div>
-          <div className="subscription-card pink">
+          <div className={`subscription-card pink ${activePlan == 'premiere' ? 'active' : ""}`}>
             <div className="subscription-card-heading">
               <h2>
                 Premiere{" "}
@@ -437,13 +564,13 @@ console.log("heloo inupgrade plan")
                     <div className="check-box">
                   <CheckOutlined />
                   </div>
-                        Customize Widget
+                  Customize Widget
                     </li>
                     <li>
                     <div className="check-box">
                   <CheckOutlined />
                   </div>
-                        Email Domain
+                        Email Configuration
                     </li>
                     <li>
                     <div className="check-box">

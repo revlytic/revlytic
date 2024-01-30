@@ -1,6 +1,6 @@
 //althogh textdeditors are contained in form ,but there values are extracted in textEditorData object
 import React, { useEffect, useState, useRef } from "react";
-import { Card, Switch, Form, Input, Select, Button,Collapse,ColorPicker, InputNumber} from "antd";
+import { Card, Switch, Form, Input, Select, Button,Collapse,ColorPicker, InputNumber,Tooltip} from "antd";
 import { useForm } from "antd/lib/form/Form";
 import Preview from "./preview";
 import { Editor } from "react-draft-wysiwyg";
@@ -17,6 +17,7 @@ import draftToHtml from "draftjs-to-html";
 import { useAPI } from "../common/commonContext";
 import postApi from "../common/postApi";
 import { useAppBridge } from "@shopify/app-bridge-react";
+import { Link } from "react-router-dom";
 // import { renderToString } from "react-dom/server";
 
 function DefaultTemp({ formData, setFormData, templateType,setLoader,editorStateContentText,setEditorStateContentText,editorStateShippingAddress,setEditorStateShippingAddress,editorStateBillingAddress,setEditorStateBillingAddress,editorStateFooterText,setEditorStateFooterText}) {
@@ -25,7 +26,7 @@ function DefaultTemp({ formData, setFormData, templateType,setLoader,editorState
   const app = useAppBridge();
   
 
-  const { storeName } = useAPI();
+  const { storeName,billingPlan } = useAPI();
 
   const { Panel } = Collapse;
   const contentEditorRef = useRef(null);
@@ -159,10 +160,12 @@ console.log("morninng",formData)
         <Card>
         
           {/* */}
-          <div className="revlytic email-dynamic-field-column">
-            <Collapse>
+          <Tooltip color='#ffffff' title={billingPlan !="starter" && billingPlan !="premium" ? <Link to={(`/billing?option=emailTemplates`)}>Upgrade your Plan</Link> :""}>
+          <div className="revlytic email-dynamic-field-column"  >
+          
+            <Collapse  collapsible={billingPlan !='starter' ? "disabled" : "" }      >
 
-            <Panel header="Enable/Disable Settings" key="11">
+            <Panel header="Enable/Disable Settings" key="11"  >
             <div className="revlytic email-control-input-main">
             {/* <Form.Item
               label="Show Currency"
@@ -385,6 +388,8 @@ console.log("morninng",formData)
               </Panel>
             </Collapse>
           </div>
+          </Tooltip>
+
         </Card>
         </div>
         <div className="revlytic email-template-preview-main">
@@ -396,9 +401,16 @@ console.log("morninng",formData)
       </div>
 }
       <div className="revlytic email-template-setting-button-main">
-        <Button className="revlytic-save-subscription" htmlType="submit" onClick={handleSubmit}>
+      <Tooltip color='#ffffff' title={billingPlan !="starter" && billingPlan !="premium" ?<Link to={(`/billing?option=emailTemplates`)}>Upgrade your Plan</Link> :""}>
+          <Button className="revlytic-save-subscription" htmlType="submit" disabled={ billingPlan !="starter" && billingPlan !="premium"} onClick={handleSubmit}>
           Submit
         </Button>
+        </Tooltip>
+        {/* <Tooltip title={ billingPlan !="starter" ? "Upgrade your Plan" :""}><Button className="revlytic-save-subscription" htmlType="submit" disabled={customerPaymentsData.length==0 && billingPlan !="starter"} >
+            {customerPaymentsData.length > 0
+              ? "Submit"
+              :  "Create Checkout Link" } 
+          </Button></Tooltip> */}
         </div>
      
 

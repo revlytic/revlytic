@@ -23,12 +23,14 @@ import { useAppBridge } from "@shopify/app-bridge-react";
 import { toast } from "react-toastify";
 import { setupModalAutoSizing } from "@shopify/app-bridge-utils";
 import postApi from "../components/common/postApi";
+import { useAPI } from "../components/common/commonContext";
 import { CalendarOutlined, CloseOutlined, ContactsOutlined, EditOutlined, QuestionCircleFilled, QuestionCircleOutlined, UserSwitchOutlined  } from "@ant-design/icons";
 const { Panel } = Collapse;
 
 function customerPortalSettings() {
   const [form] = Form.useForm();
   const app = useAppBridge();
+  const {billingPlan}=useAPI();
 
   const [loader, setLoader] = useState(false); // for loader
   const [open, setOpen] = useState(false);
@@ -122,11 +124,11 @@ function customerPortalSettings() {
                   valuePropName="checked"
                   name="attemptBilling"
                   initialValue={false}
-                  
-
+             
+                
                   
                 >
-                  <Switch />
+                 <Tooltip   title={  billingPlan != 'starter' ? "Upgrade your plan" : ""}><Switch  disabled={  billingPlan != 'starter' }/></Tooltip>
                 </Form.Item>{" "}
                     </div>
 
@@ -174,7 +176,7 @@ function customerPortalSettings() {
                   initialValue={false}
                   // noStyle
                 >
-                  <Switch />
+                 <Tooltip  title={  billingPlan != 'starter' ? "Upgrade your plan" : ""}> <Switch  disabled={  billingPlan != 'starter'}/></Tooltip>  
                 </Form.Item>{" "}
               </div>
 
@@ -190,7 +192,7 @@ function customerPortalSettings() {
                   initialValue={false}
                   // noStyle
                 >
-                  <Switch />
+                   <Tooltip   title={  billingPlan != 'starter' ? "Upgrade your plan" : ""}><Switch disabled={  billingPlan != 'starter' } /> </Tooltip>
                 </Form.Item>{" "}
               </div>
               <div className="revlytic settings-fields">

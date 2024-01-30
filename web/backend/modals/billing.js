@@ -7,6 +7,7 @@ let billing = new Schema(
     price:Number,
     interval:String,
     charge_id:String,
+    next_billing:String
 
   },
   { timestamps: true }

@@ -29,7 +29,7 @@ import cPortalSettings from "./modals/customerPortalSettings.js";
 import orderOnly from "./modals/contractOrder.js";
 import orderContractDetails from "./modals/contractOrderDetails.js";
 import billingModal from "./modals/billing.js";
-
+import axios from "axios";
 const __dirname = path.resolve();
 const dirPath = path.join(__dirname, "/frontend/invoiceTemplate");
 // const dirPath2 = path.join(__dirname);
@@ -4919,6 +4919,18 @@ function findDateRange(data) {
       $gte: new Date(date.setUTCHours(0, 0, 0, 0)),
       $lt: new Date(new Date().setUTCHours(0, 0, 0, 0)),
     };
+  } else if (data.range == "lastmonth") {
+   ///this case is used in billing plan page
+
+    console.log("16jan", new Date(new Date().setHours(0, 0, 0, 0)));
+    date = new Date();
+    console.log("chekcinnnn",date)
+    date.setDate(date.getDate() - 30);
+
+    dateRange = {
+      $gte: new Date(date.setUTCHours(23, 59, 59, 99)),
+      $lt: new Date(new Date().setUTCHours(23, 59, 59, 999)),
+    };
   }
 
   console.log("daterange", dateRange);
@@ -4929,9 +4941,9 @@ function findDateRange(data) {
 export async function combinedData(req, res) {
   try {
     let shop = res.locals.shopify.session.shop;
-    console.log("ccd", req.body);
+    // console.log("ccd", req.body);
 
-    console.log(new Date(), new Date(new Date().setUTCHours(23, 59, 59, 999)));
+    // console.log(new Date(), new Date(new Date().setUTCHours(23, 59, 59, 999)));
     let dateRange = findDateRange(req.body);
 
     // let data = await billing_Attempt.aggregate([
@@ -4960,7 +4972,7 @@ export async function combinedData(req, res) {
       { new: true, _id: 0, total_amount: 1, currency: 1, status: 1 }
     );
 
-    console.log("dataac", data);
+    // console.log("dataaccc", data);
 
     res.send({ message: "success", data });
   } catch (error) {
@@ -5268,6 +5280,7 @@ export async function recurringBiling(req, res) {
     const client = new shopify.api.clients.Graphql({session});
     let billingInterval = interval == "MONTHLY" ? "EVERY_30_DAYS" : "ANNUAL";
     let testCharge;
+    let trialDays=plan=='premium' ? 14 : 0
     if (
       shop == "sahil-shine.myshopify.com"  
        ) {
@@ -5281,6 +5294,7 @@ export async function recurringBiling(req, res) {
                 name: "${plan}",
       returnUrl: "https://${shop}/admin/apps/${API_KEY}/billing"
                 test : ${testCharge}
+                trialDays: ${trialDays},
                 lineItems: [{
                     plan: {
           appRecurringPricingDetails: {
@@ -5330,7 +5344,7 @@ console.log("verifyBilling",verifyBilling)
    if(verifyBilling.status === "active") {
     const updatePlan = await billingModal.findOneAndUpdate(
       { shop },
-      { charge_id, plan: verifyBilling.name, price: verifyBilling.price, interval: "MONTHLY" },
+      { charge_id, plan: verifyBilling.name, price: verifyBilling.price, interval: "MONTHLY",next_billing:verifyBilling.billing_on },
       { upsert: true, new: true }
     );
 
@@ -5342,7 +5356,7 @@ console.log("verifyBilling",verifyBilling)
     } else {
       return res
         .status(202)
-        .json({ message: "Updated Successfully", result: 1, plan: verifyBilling.name, interval : "MONTHLY"  });
+        .json({ message: "success", result: 1, plan: verifyBilling.name, interval : "MONTHLY" ,next_billing : verifyBilling.billing_on });
     }
    } else {
       res.status(499).json({message : "Payment status is pending!!!", result : 0})
@@ -5353,11 +5367,72 @@ console.log("verifyBilling",verifyBilling)
 }
 
 export async function getBillingPlanData(req,res){
-try{console.log("oitoo")
+  
+  // console.log("oitoo")
+  try{
   const shop = res.locals.shopify.session.shop;
-  const planData=await billingModal.findOne({shop},{plan:1,_id:0})
-  console.log("dplandaata",planData)  
-  res.send({message:"success", plan:planData?.plan})
+  const planData=await billingModal.findOne({shop},{plan:1,updatedAt:1,_id:0,next_billing:1})
+  // console.log("dplandaata",planData)  
+//  let range= planData.updatedAt
+//  range.setHours(0,0,0,0)
+
+//   // console.log("smckscdclsdll",range)
+  
+
+//       let data = await axios.get(
+//       "https://cdn.shopify.com/s/javascripts/currencies.js"
+//     );
+
+    
+
+//     let filtered =await  eval(
+//       new Function(`
+
+//   ${data?.data}
+
+//   return Currency;
+
+// `)
+//     )();
+
+//     // console.log("yyyy", filtered);
+//     let sum = 0;
+//         if (filtered) {
+
+      
+//       let rates=filtered?.rates ;
+
+//       let data = await billing_Attempt.find(
+//         {
+//           shop: shop,
+//           $or: [{ status: "success" }, { status: "initial" }],
+//           // createdAt:  { $gte: range },
+//           createdAt: { $gte: range},
+//         },
+//         { new: true, _id: 0, total_amount: 1, currency: 1, status: 1 }
+//       );
+
+    
+
+//       // let countInitialStatus = 0;
+  
+//       if (data.length > 0) {
+//         data.map((item) => {
+//           sum =
+//             sum +
+//             parseFloat(item.total_amount) *
+//               parseFloat(rates[item?.currency] / rates["USD"]);
+  
+
+  
+//         });
+//       }
+// // console.log("mysum",sum)
+
+
+    //}
+
+  res.send({message:"success", planData:planData})
 }
 catch(error)
 {
@@ -5365,8 +5440,33 @@ console.log("errorr",error)
 res.send({message:"error",data:error?.message})
 }
 }
+export async function calculateRevenue(req, res) {
+  try {
+    let shop = res.locals.shopify.session.shop;
+   let range= req?.body?.range
+      range.setHours(0,0,0,0)
 
 
+    let data = await billing_Attempt.find(
+      {
+        shop: shop,
+        $or: [{ status: "success" }, { status: "initial" }],
+        createdAt: { $gte: range},
+      },
+      { new: true, _id: 0, total_amount: 1, currency: 1, status: 1 }
+    );
+
+    // console.log("dataaccc", data);
+
+    res.send({ message: "success", data });
+  } catch (error) {
+    console.log("error", error);
+    res.send({ message: "error" });
+  }
+}
+
+
+// export async function  
 ///////////////////////////////////////////////
 
 // export async function getProductVarientsIds(req, res) {

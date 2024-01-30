@@ -1,8 +1,9 @@
 document.addEventListener("DOMContentLoaded", () => {
   console.log("21novmber")
-  let apiPath = "https://revlytic.co/";
+  let apiPath = "https://meyer-temperatures-alternatively-tackle.trycloudflare.com/";
   const customerId = ShopifyAnalytics.meta.page.customerId;
   console.log(customerId, "idg");
+  console.log(revlytic_customer_id, "idrevlytic_customer_idgg");
   var shop = Shopify.shop;
   var prevButton, nextButton;
   var countrydata;

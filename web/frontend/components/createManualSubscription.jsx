@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import postApi from "../components/common/postApi";
 import { useAppBridge } from "@shopify/app-bridge-react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 import { useForm } from "antd/lib/form/Form";
 import dayjs from "dayjs";
@@ -1886,7 +1886,8 @@ console.log("value,data.counteruy",value, data?.country)
 
             let shop = response.data.data.shop;
             let link = `https://${shop}/cart/clear?return_to=/cart/add?`;
-            let end = `return_to=/checkout?checkout[email]=${values.customer_details.email}`;
+            // let end = `return_to=/checkout?checkout[email]=${values.customer_details.email}`;
+            let end = `return_to=/checkout`;
             products.map((i, index) => {
               let fullId = i.id;
               let varient = fullId.split("/");
@@ -4195,7 +4196,7 @@ console.log("sdasdasdakeuwriorioriorioriorioriorioriorioiooppo")
 
         {existingSubscription != {} &&
         (mode == "view" || mode == "edit") ? null : (
-          <Tooltip title={customerPaymentsData.length==0 && billingPlan !="starter" ? "Upgrade your Plan" :""}><Button className="revlytic-save-subscription" htmlType="submit" disabled={customerPaymentsData.length==0 && billingPlan !="starter"} >
+          <Tooltip color= "#ffffff" title={customerPaymentsData.length==0 && billingPlan !="starter" && billingPlan !="premium" ? <Link to={(`/billing?option=checkoutlink`)}>Upgrade your Plan</Link> :""}><Button className="revlytic-save-subscription" htmlType="submit" disabled={customerPaymentsData.length==0 && billingPlan !="starter" && billingPlan !="premium" } >
             {customerPaymentsData.length > 0
               ? "Submit"
               :  "Create Checkout Link" } 
@@ -4217,6 +4218,7 @@ console.log("sdasdasdakeuwriorioriorioriorioriorioriorioiooppo")
             pastOrders={pastOrders}
             skippedOrders={skippedOrders}
             mode={mode}
+            billingPlan={billingPlan}
           />
         ) : (
           <Fulfillments
@@ -4229,6 +4231,8 @@ console.log("sdasdasdakeuwriorioriorioriorioriorioriorioiooppo")
               setNextBillingDate={setNextBillingDate}
               pastOrders={pastOrders}
               mode={mode}
+            billingPlan={billingPlan}
+
           />
         )
       ) : (

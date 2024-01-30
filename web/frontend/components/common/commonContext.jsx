@@ -9,9 +9,11 @@ const APIContext = createContext();
    const [storeName,setStoreName]=useState("") ;
    const [storeDetails,setStoreDetails]=useState({}) ;
    const [billingPlan,setBillingPlan]=useState("") ;
+   const [billingPlanDate,setBillingPlanDate]=useState() ;
+   const [recurringRevenue,setRecurringRevenue]=useState(0) ;
    const app=useAppBridge();
   const [getShop, setGetShop] = useState(new URL(location.href).searchParams.get("shop"));
-  console.log("shop",getShop);
+  // console.log("shop",getShop);
      useEffect(async()=>{
       let result = await postApi("api/admin/getCurrencyCode", {}, app);
       
@@ -28,9 +30,10 @@ const APIContext = createContext();
 
     let billingPlanData=await postApi("api/admin/getBillingPlanData",{},app);
     if(billingPlanData && billingPlanData?.data?.message=='success') {
-      // console.log("ksjaisa",billingPlanData)
-      setBillingPlan(billingPlanData?.data?.plan)
-      // console.log(billingPlanData?.data?.plan,"kilkill")
+      console.log(billingPlanData?.data?.planData?.next_billing,"ksjaisa",billingPlanData)
+      setBillingPlan(billingPlanData?.data?.planData?.plan)
+      setBillingPlanDate(billingPlanData?.data?.planData?.next_billing)
+      console.log(billingPlanData?.data?.planData?.updatedAt,"kilkill")
     }else{
       setBillingPlan("")
     }
@@ -42,7 +45,7 @@ const APIContext = createContext();
  
   return (
 
-    <APIContext.Provider value={{ shop: getShop,currency:currency,storeName:storeName,storeDetails:storeDetails,billingPlan}}>
+    <APIContext.Provider value={{ shop: getShop,currency:currency,storeName:storeName,storeDetails:storeDetails,billingPlan,nextBillingDate:billingPlanDate ,recurringRevenue,setRecurringRevenue:setRecurringRevenue,setBillingPlan:setBillingPlan}}>
 
       {children}
 

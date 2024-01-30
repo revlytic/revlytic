@@ -25,6 +25,7 @@ import { toast } from "react-toastify";
 import { useAPI } from "./common/commonContext";
 import dayjs from "dayjs";
 import { sendMailOnUpdate } from "./common/helpers";
+import { Link } from "react-router-dom";
 
 const SubscriptionProductsEdit = ({
   products,
@@ -50,7 +51,7 @@ const SubscriptionProductsEdit = ({
   const [price, setPrice] = useState("");
   const [quantity, setQuantity] = useState("");
 
-  const { currency, storeName, storeDetails } = useAPI();
+  const { currency, storeName, storeDetails,billingPlan } = useAPI();
   const handleAddButton = () => {
     setAddProductModal(true);
   };
@@ -840,10 +841,11 @@ console.log("7decec",price)
           <p>Products</p>
           {!edit?.productDetails ? null : (
             <div>
-               <Tooltip title='Add products to your Subscription Plan. You can either add all variants of a Product or a specific Product variant as selected.'>
+               <Tooltip color='#ffffff' title={billingPlan != 'premium' ? <Link to='/billing?option=editProducts'>Upgrade Your Plan</Link>: 'Add products to your Subscription Plan. You can either add all variants of a Product or a specific Product variant as selected.'}>
               <Button
                 className="revlytic pricing-add-product"
                 onClick={handleAddButton}
+                disabled={billingPlan != 'premium'}
               >
                 Add Products
               </Button>

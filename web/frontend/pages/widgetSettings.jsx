@@ -24,6 +24,7 @@ import { toast } from "react-toastify";
 import { useAPI } from "../components/common/commonContext";
 
 import dayjs from "dayjs";
+import { Link } from "react-router-dom";
 
 function WidgetSettings() {
   const [form] = useForm();
@@ -77,7 +78,7 @@ const  defaultSettings={
 
   // Rest of the form field values
 }
-  const { currency } = useAPI();
+  const { currency,billingPlan } = useAPI();
 
   const [loader, setLoader] = useState(false);
   const app = useAppBridge();
@@ -268,15 +269,16 @@ setLoader(false)
         //   onFinishFailed={onFinishFailedproduct}
 
         autoComplete="off"
+        disabled={billingPlan != 'premium'}
       >
     
 
         <div className="revlytic widget-main-container">
-          <div className="revlytic widget-card-heading">
-            <h3>Widget Settings</h3>
+          <div className="revlytic widget-card-heading revlytic_ugradeYour_plan1">
+            <h3>Widget Settings</h3>{billingPlan != 'premium' ? <div className="revlytic_ugradeYour_plan"><Link to='/billing?option=customiseWidget'>Upgrade Your Plan</Link></div> :""}
           </div>
           <div className="revlytic widget-inner-container">
-            <Card className="revlytic widget-card-main">
+            <Card className={`revlytic widget-card-main ${billingPlan != 'premium' ? 'billing-disable-card' :""}`}>
               <div className="revlytic widget-items">
                 <Form.Item
                   label="Purchase Options Text"
@@ -1275,8 +1277,8 @@ setLoader(false)
           </div>
         </div>
         <div className="revlytic widget-save-button">
-          <Button onClick ={handleResetDefault}>Reset To Default</Button>{" "}
-          <Button htmlType="submit">Save</Button>{" "}
+        <Tooltip color='#ffffff' title={billingPlan !="premium" ? <Link to={(`/billing?option=customiseWidget`)}>Upgrade your Plan</Link> :""}><Button onClick ={handleResetDefault} disabled={billingPlan !="premium"}>Reset To Default</Button></Tooltip>
+          <Tooltip color='#ffffff' title={billingPlan !="premium" ? <Link to={(`/billing?option=customiseWidget`)}>Upgrade your Plan</Link> :""}><Button htmlType="submit" disabled={billingPlan !="premium"}>Save</Button></Tooltip>
         </div>
       </Form>
     </Spin>

@@ -12,7 +12,7 @@ import postApi from '../components/common/postApi';
 import { useAppBridge } from '@shopify/app-bridge-react';
 import { useAPI } from '../components/common/commonContext';
 
-function ContactUs() {
+function ContactUs(props) {
     const [form] = useForm();
     const app = useAppBridge()
     const [loader,setLoader]=useState(false)
@@ -53,6 +53,8 @@ if (response.data.message == "success") {
 }
 
 }
+
+console.log(props,"propss")
   return (
     <Spin spinning={loader} size="large" tip="Loading...">
     <Form

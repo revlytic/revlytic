@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { Button, Card, Collapse, Form, Input, Spin, Switch } from "antd";
+import { Button, Card, Collapse, Form, Input, Spin, Switch, Tooltip } from "antd";
 import postApi from "../components/common/postApi";
 import { useAppBridge } from "@shopify/app-bridge-react";
 import UploadImage from "../components/upload";
 import { toast } from "react-toastify";
 import { useAPI } from "../components/common/commonContext";
+import { Link } from "react-router-dom";
 
 // import dotenv from 'dotenv';
 // dotenv.config();
@@ -328,12 +329,12 @@ if(signatureData){
         <div>
           <div className="revlytic invoice-edit-container">
             <div className="revlytic invoice-edit-switch">
-              <p> Edit Mode</p>{" "}
-              <Switch
+              <p> Edit Modes</p>{" "}
+             <Tooltip color='#ffffff' title={billingPlan !="starter" && billingPlan != 'premium' ? <Link to={(`/billing?option=invoice`)}>Upgrade your Plan</Link> :""}> <Switch
                 checked={editMode}
                 onChange={(checked) => setEditMode(checked)}
-                disabled={billingPlan !='starter'}
-              />
+                disabled={billingPlan !='starter' && billingPlan !='premium' }
+              /></Tooltip>
             </div>
             <div className="revlytic invoice details-save-button">
               {editMode && <Button onClick={saveDetails}>Save</Button>}

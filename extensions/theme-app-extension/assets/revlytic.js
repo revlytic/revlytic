@@ -11,13 +11,15 @@ if (currentUrl.includes('account')) {
     let url = item.href;
     if (url.includes("account/addresses")) {
       let button = document.createElement("button");
-
- let linebreak = document.createElement("br");
+      
+      let linebreak = document.createElement("br");
       button.innerHTML = "Manage Subscriptions";
-// button.id="revlytic-account-button";
-
+      // button.id="revlytic-account-button";
+      
+      // console.log(revlytic_customer_id, "idrevlytic_customer_idgg");
+      let id = ShopifyAnalytics.meta.page.customerId
       button.addEventListener("click", function() {
-        const targetUrl = `https://${shop}/apps/revlytic-subscriptions`; // Replace with your desired URL
+        const targetUrl =`https://${shop}/apps/revlytic-subscriptions`; // Replace with your desired URL
         console.log("targetUrl",targetUrl)
           window.location.href = targetUrl;
       });
@@ -30,7 +32,7 @@ button.insertAdjacentHTML('afterend', '<br>');
   });
 }
 
-let serverPath = "https://align-curve-disable-discovery.trycloudflare.com";
+let serverPath = "https://brandon-wine-shipped-jul.trycloudflare.com";
 
 let activeCurrency = Shopify.currency.active;
 console.log("activeeeecrc",activeCurrency)
@@ -247,31 +249,63 @@ if (revlytic_page_type == "product") {
     let getPrice =
       Revlytic.variant["VID_" + selectedVariant]?.allocations?.selling_plans
         ?.list[extractPlanId]?.checkout_charge_amount;
-    //console.log("herapheriii", getPrice);
-    // selectedPlanPrice = getPrice;
-    // document.getElementById("revlytic_subscribe_price").innerText = getPrice;
+ 
 
-    var form = document.querySelector(
-      'form[action="/cart/add"][data-type="add-to-cart-form"]'
-    );
-    //console.log("form", form);
-    var sellingPlanInput = form.querySelector('input[name="selling_plan"]');
-    //console.log("selllinPlanInput", sellingPlanInput);
-    if (sellingPlanInput) {
-      //console.log("innnnnnererrrrrrr");
-      sellingPlanInput.value = e.target.value.split("/").at(-1);
+    // var form = document.querySelector(
+    //   'form[action="/cart/add"][data-type="add-to-cart-form"]'
+    // );
+    // //console.log("form", form);
+    // var sellingPlanInput = form.querySelector('input[name="selling_plan"]');
+    // //console.log("selllinPlanInput", sellingPlanInput);
+    // if (sellingPlanInput) {
+    //   //console.log("innnnnnererrrrrrr");
+    //   sellingPlanInput.value = e.target.value.split("/").at(-1);
+    // }
+
+
+
+//@@@@@@@  18jan   //////////
+var form = document.querySelectorAll(
+  'form[action*="/cart/add"]'
+);
+  form.forEach((item)=>
+    {
+console.log("isi",item)
+
+      var sellingPlanInputs = item.querySelectorAll('input[name="selling_plan"]');
+      console.log("e22novm",sellingPlanInputs) 
+  
+   
+        console.log("22nov-sam")
+        if (sellingPlanInputs.length === 0) {
+          console.log("tickkkktokl")
+          var newHiddenInput = document.createElement("input");
+          newHiddenInput.type = "hidden";
+          newHiddenInput.name = "selling_plan";
+          newHiddenInput.value = e.target.value.split("/").at(-1);
+  
+          item.appendChild(newHiddenInput);
+          //console.log("Created new hidden input:", newHiddenInput);
+        } else {
+          console.log("in3oct else",)
+          
+          sellingPlanInputs.forEach(function (input) {
+            input.value = e.target.value.split("/").at(-1);
+          });
+        }
+      
+
+
+
+
     }
+    
+    
+    )
 
-    // //console.log(
-    //   "rukozaraa",
-    //   document.getElementById("revlytic-price-div-save-section")
-    // );
 
-    // //console.log(
-    //   "planchangevalue",
-    //   e.target.options[e.target.selectedIndex].dataset.index
-    // );
 
+///////enddddd///////////////////
     selectedPlanIndex = e.target.options[e.target.selectedIndex].dataset.index;
     let item = dropdownData[selectedPlanIndex];
     //console.log("auta", item);

@@ -19,9 +19,10 @@ import cPortalSettings from "./modals/customerPortalSettings.js";
 import storeModal from "./modals/storeCredentials.js";
 
 export async function appProxy(req, res) {
+  console.log("20jannnnnncheckkk")
   const __dirname = path.resolve();
   // const componentHtml = ReactDOMServer.renderToString(<YourComponent />);
-  let  apiPath = "https://revlytic.co/"
+  let  apiPath = "https://matches-expedia-official-amy.trycloudflare.com/"
   path.join(__dirname, "../frontend/pages/SubscriptionList.jsx");
   const liquidContent = `
       <html>

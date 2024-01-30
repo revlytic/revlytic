@@ -85,7 +85,8 @@ import {
   recurringBiling,
   recurringBilingSelected,
   getBillingPlanData,
-  subscriptionBookings
+  subscriptionBookings,
+  calculateRevenue
 } from "./controller.js";
   import { appProxy, getCustomerPortalDetailsStore, getCustomerSubscriptions, getStoreCountries, getStoreToken, getTotalOrdersBillingsCount } from "./customerPortalController.js";
 
@@ -255,6 +256,7 @@ router.post("/getAnnouncements",getAnnouncements)
 router.post("/deleteAnnouncement",deleteAnnouncement)
 router.post('/checkAppBlockEmbed',checkAppBlockEmbed)
 router.post('/getBillingPlanData',getBillingPlanData)
+router.post('/calculateRevenue',calculateRevenue)
 
 
 router.post("/getProductPlanList", getProductPlanList);

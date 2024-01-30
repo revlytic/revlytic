@@ -9,7 +9,8 @@ import {
   Select,
   Switch,
   Form,
-  Checkbox
+  Checkbox,
+  Tooltip
 } from "antd";
 import { EyeOutlined, SearchOutlined, EditOutlined } from "@ant-design/icons";
 import { useAppBridge } from "@shopify/app-bridge-react";
@@ -42,7 +43,7 @@ const EmailTemplatesList = () => {
   const [selectedId, setSelectedId] = useState("");
   const [recipientMail, setRecipientMail] = useState("");
   // const [emailTestRecipientMail, setEmailTestRecipientMail] = useState("");
-const {currency}=useAPI();
+const {currency,billingPlan}=useAPI();
   useEffect(async () => {
     // let res= await postApi('/api/admin/orderDetailsCheck',{},app)
     getEmailTemplatesList();
@@ -519,8 +520,10 @@ setInvalidEmailError(false)
                     name="enable"
                     valuePropName="checked"
                     initialValue={false}
+                  
                   >
-                    <Switch />
+                             <Tooltip color= "#ffffff" className="revlytic-upgrade-tooltip" title={billingPlan !="premium" ? <Link to={(`/billing?option=enableEmailConfiguration`)}>Upgrade your Plan</Link> :""}>
+ <Switch disabled={billingPlan !='premium' } /></Tooltip>
                   </Form.Item>
 
                   {/* <p>Enable custom email configuration</p>
@@ -663,7 +666,7 @@ setInvalidEmailError(false)
               </div>
 
               <div className="revlytic-email-save">
-                <Button htmlType="submit">Save</Button>
+              <Tooltip color= "#ffffff" className="revlytic-upgrade-tooltip" title={billingPlan !="premium" ? <Link to={(`/billing?option=enableEmailConfiguration`)}>Upgrade your Plan</Link> :""}><Button htmlType="submit" disabled={billingPlan !='premium'}>Save</Button></Tooltip>
               </div>
             </Form>
 

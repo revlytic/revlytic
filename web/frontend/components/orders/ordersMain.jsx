@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react";
 
-import { Tabs, Button, Spin, Empty } from "antd";
+import { Tabs, Button, Spin, Empty, Tooltip } from "antd";
 import postApi from "../common/postApi";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAPI } from "../common/commonContext";
 import { useAppBridge } from "@shopify/app-bridge-react";
 import { toast } from "react-toastify";
            
-function Orders({ data, upcomingOrders,attemptedOrders ,fetchDataUpcomingOrders,setLoader,storeDetails,setExistingSubscription,setNextBillingDate,pastOrders,skippedOrders,mode}) {
+function Orders({ data, upcomingOrders,attemptedOrders ,fetchDataUpcomingOrders,setLoader,storeDetails,setExistingSubscription,setNextBillingDate,pastOrders,skippedOrders,mode,billingPlan}) {
   const navigate = useNavigate();
   const { storeName } = useAPI();
   const app = useAppBridge();
@@ -431,13 +431,16 @@ const pastAndSkippedItems =[
             
           {item.status == "upcoming" ? (
                       <div className="order-inner">
-                        <Button onClick={() => handleOrderNow(item.renewal_date)} disabled={mode=='view'}>
+                       <Tooltip color= "#ffffff" title={billingPlan !="starter" && billingPlan !="premium" ? <Link  to={(`/billing?option=earlyAttempt`)}>Upgrade your Plan</Link> :""}> 
+                       <Button onClick={() => handleOrderNow(item.renewal_date)} disabled={(billingPlan !='starter' && billingPlan !="premium")|| mode=='view'}>
                           Order Now
-                        </Button>
-                        <Button  onClick={() => handleSkipOrder(item.renewal_date)} disabled={mode=='view'}>Skip Order</Button>
+                        </Button></Tooltip>
+                        <Tooltip color= "#ffffff" title={billingPlan !="starter" && billingPlan !="premium" ? <Link to={(`/billing?option=skipOrders`)}>Upgrade your Plan</Link> :""}> 
+                          <Button  onClick={() => handleSkipOrder(item.renewal_date)} disabled={(billingPlan !='starter' && billingPlan !="premium") || mode=='view'}>Skip Order</Button>
+                          </Tooltip>
                       </div>
                     ) : item.status == "failed" ? 
-                      <Button onClick={()=>handleRetry(item.renewal_date,item.idempotencyKey)} disabled={mode=='view'}>Retry</Button>
+                      <Button onClick={()=>handleRetry(item.renewal_date,item.idempotencyKey)} disabled={(billingPlan !='starter' && billingPlan !="premium") || mode=='view'}>Retry</Button>
                       : ""
                      }
           </div>

@@ -48,6 +48,8 @@ function Create() {
   const [freeTrialCycle, setFreeTrialCycle] = useState("");
   const [editState, seteditState] = useState(false);
   const [editIndex, seteditIndex] = useState();
+  const [submitClick, setSubmitClick] = useState(false);
+  console.log("17january")
   console.log(data, "dtaaaaalatestvala");
   const options = [
     { label: "Pay As You Go", value: "payAsYouGo" },
@@ -192,11 +194,12 @@ seteditState(false)
   };
 
   const createPlanGroup = async () => {
+    setSubmitClick((prev)=>!prev)
     let token = await getSessionToken();
 
     if (planList.length > 0 && planGroupName.length > 0) {
       const createApi = await fetch(
-        "https://tells-cowboy-memorial-honolulu.trycloudflare.com/api/prodEx/prodExCreatePlan",
+        "https://moments-praise-twisted-brass.trycloudflare.com/api/prodEx/prodExCreatePlan",
         {
           method: "POST", // or 'PUT'
           headers: {
@@ -227,6 +230,8 @@ seteditState(false)
         showToast("Enter valid Plan Name !!");
       }
     }
+  console.log("inthenddddddd17jan")  
+  setSubmitClick((prev)=>!prev)
   };
   const EditPlan = (index) => {
     seteditIndex(index);
@@ -508,7 +513,7 @@ seteditState(false)
         </CardSection>
       </Card>
       <InlineStack>
-        <Button title="Submit" kind="primary" onPress={createPlanGroup} />
+        <Button title="Submit" kind="primary"  disabled={submitClick==true}  onPress={createPlanGroup} />
         <Button title="Cancel" onPress={() => close()} />
       </InlineStack>
     </>
@@ -759,7 +764,7 @@ function Remove() {
     let token = await getSessionToken();
 
     const response = await fetch(
-      "https://tells-cowboy-memorial-honolulu.trycloudflare.com/api/prodEx/prodExRemoveVariants",
+      "https://moments-praise-twisted-brass.trycloudflare.com/api/prodEx/prodExRemoveVariants",
       {
         method: "POST", // or 'PUT'
         headers: {
