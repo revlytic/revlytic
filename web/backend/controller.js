@@ -130,49 +130,7 @@ export async function demo(req, res) {
       }
     });
 
-    // let options = {
-    //   from: "sahilagnihotri7@gmail.com",
-    //   to: "sahilagnihotri7@gmail.com",
-    //   subject: "Customer Data",
-    //   text: "Please find the attached customer Data file.",
-    //   attachments: [{
-    //     filename: "asass.json",
-    //     path: filePath
-    //   }]
-    // };
-
-    // let emailConfig = {
-    //   host: "smtp.gmail.com",
-    //   port: 587, // Convert port number to integer
-    //   auth: {
-    //     user: "sahilagnihotri7@gmail.com",
-    //     pass: "srdvsdnxfmvbrduw",
-    //   },
-    //   secure: false,
-    // };
-
-    // const transporter = nodemailer.createTransport(emailConfig);
-
-    // const sendEmail = (options, emailConfig) => {
-    //   return new Promise((resolve, reject) => {
-    //     const transporter = nodemailer.createTransport(emailConfig);
-    //     transporter.sendMail(options, (error, info) => {
-    //       if (error) {
-    //         console.error("Error sending email:", error);
-    //         reject(error);
-    //       } else {
-    //         console.log("Email sent:", info.response);
-    //         resolve(info);
-    //       }
-    //     });
-    //   });
-    // };
-    // const data = await sendEmail(options, emailConfig);
-
-    // console.log("dssdfsdf", path.join(__dirname, "customerDt.json"));
-    // console.log("first in last");
-    // res.send("sdasdas");
-  } catch (error) {
+    } catch (error) {
     console.log("error", error);
     res.send("errr");
   }
@@ -562,13 +520,7 @@ const sendMailCall = async (recipientMails, others, extra) => {
 
         await browser.close();
 
-        sendEmail(
-          dirPath + `/${filename}.pdf`,
-          orderDetails.email,
-          getorder.orderId,
-          getorder.shop
-        );
-        //////////////////////////
+              //////////////////////////
         const pdfData = fs.readFileSync(dirPath + `/${filename}.pdf`);
         const base64Data = Buffer.from(pdfData).toString("base64");
         const contentType = mime.getType(dirPath + `/${filename}.pdf`);
@@ -8982,64 +8934,6 @@ export async function getCustomerPortalDetails(req, res) {
 
 ///////////////////////////////////customrt portal
 
-const sendEmail = async (pdfPath, email, orderId, shop) => {
-  console.log("oiiiiiiiii");
-  const transporter = nodemailer.createTransport({
-    host: "smtp.gmail.com",
-    port: 587,
-    secure: false,
-    auth: {
-      user: "virender.shinedezign@gmail.com",
-      pass: "pqtssvzzmwcrebhl",
-      // user: testAccount.user, // generated ethereal user
-      // pass: testAccount.pass, // generated ethereal password
-    },
-  });
-
-  const pdfData = fs.readFileSync(pdfPath);
-  const base64Data = Buffer.from(pdfData).toString("base64");
-  const contentType = mime.getType(pdfPath);
-
-  const mailOptions = {
-    from: "virender.shinedezign@gmail.com",
-    // to: "nehaa.shinedezign@gmail.com",
-    to: email,
-
-    subject: "Invoice",
-    text: "Please find the attached invoice.",
-    attachments: [
-      {
-        filename: "invoice.pdf",
-        content: base64Data,
-        encoding: "base64",
-        contentType: contentType,
-        contentDisposition: "inline",
-      },
-    ],
-  };
-
-  const send = await transporter.sendMail(mailOptions, async (error, info) => {
-    if (error) {
-      console.error("Error sending email:", error);
-      throw error;
-    } else {
-      console.log("Email sent:", info.response);
-      console.log(orderId, shop, "looooo");
-      let updateDb = await orderOnly.findOneAndUpdate(
-        { shop: shop, orderId: orderId },
-        { status: true }
-      );
-      fs.unlink(pdfPath, (err) => {
-        if (err) {
-          console.error("Error deleting PDF file:", err);
-          throw error;
-        } else {
-          console.log("PDF file deleted successfully.");
-        }
-      });
-    }
-  });
-};
 
 export async function sendInvoiceMailAndSaveContract(req, res) {
   console.log(
