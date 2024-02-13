@@ -47,7 +47,8 @@ function Create() {
   const [freeTrialCount, setFreeTrialCount] = useState("");
   const [freeTrialCycle, setFreeTrialCycle] = useState("day");
   const [editState, seteditState] = useState(false);
-  const [editIndex, seteditIndex] = useState();
+  const [editIndex, seteditIndex] = useState(); 
+  const [submitClick, setSubmitClick] = useState(false);
   // console.log(data, "zazazaa");
   const options = [
     { label: "Pay As You Go", value: "payAsYouGo" },
@@ -62,8 +63,9 @@ function Create() {
   const numberRegex = /^-?\d+(\.\d+)?$/;
   const addPlan = () => {
     // console.log("ddd", numberRegex.test(billEvery));
-    // console.log("discount--->",discount);
-    // console.log("plantype--->",planType);
+    console.log("discount--->",discount);
+    console.log("plantype--->",planType);
+    console.log("freetrial--->",freeTrial);
     let arr = [...planList];
     if (editState) {
       arr.splice(editIndex, 1);
@@ -192,6 +194,7 @@ seteditState(false)
   };
 
   const createPlanGroup = async () => {
+    setSubmitClick((prev)=>!prev)
     let token = await getSessionToken();
 
     if (planList.length > 0 && planGroupName.length > 0) {
@@ -227,6 +230,7 @@ seteditState(false)
         showToast("Enter valid Plan Name !!");
       }
     }
+    setSubmitClick((prev)=>!prev)
   };
   const EditPlan = (index) => {
     seteditIndex(index);
@@ -518,7 +522,7 @@ seteditState(false)
         </CardSection>
       </Card>
       <InlineStack>
-        <Button title="Submit" kind="primary" onPress={createPlanGroup} />
+        <Button title="Submit" kind="primary" disabled={submitClick==true} onPress={createPlanGroup} />
         <Button title="Cancel" onPress={() => close()} />
       </InlineStack>
     </>
@@ -910,38 +914,39 @@ function Edit() {
       });
     });
     setprevPlanList(arr);
-    // console.log("arr-------->",arr)
+    console.log("arr-------->",arr)
     setPlanGroupName(result.data.plan_group_name);
   }, []);
 
   const addPlan = () => {
-    // console.log("atbegning",planType,billEvery,deliveryEvery)
+    console.log("atbegning",planType,billEvery,deliveryEvery)
+    console.log("disccccnt",offerDiscount)
     let arr = [];
     if (editState) {
-      // console.log("editatate");
+      console.log("editatate");
       if (!whichPlanList) {
-        // console.log("newlist");
+        console.log("newlist");
         arr = [...planList];
         arr.splice(editIndex, 1);
         arr = [...arr, ...prevPlanList];
       } else {
-        // console.log("prevlist---->",prevPlanList);
+        console.log("prevlist---->",prevPlanList);
 
         arr = [...prevPlanList];
         arr.splice(editIndex, 1);
         arr = [...arr, ...planList];
       }
     } else {
-      // console.log("inelseee");
+      console.log("inelseee");
       arr = [...planList, ...prevPlanList];
     }
-// console.log("loppp",frequencyPlanName,arr,freeTrial,"sss",freeTrialCount)
+console.log("loppp",frequencyPlanName,arr,freeTrial,"sss",freeTrialCount)
     if (
       frequencyPlanName.length > 0 &&
       !arr.some((item) => item.frequencyPlanName === frequencyPlanName) &&
       
         billEvery > 0 &&
-      numberRegex.test(billEvery) &&  (offerDiscount==false ||  (offerDiscount==true && discount != undefined && discount != null && discount !="")) && (freeTrial==false || freeTrial==undefined || (freeTrial==true && freeTrialCount != undefined && freeTrialCount != null && freeTrialCount !=""))
+      numberRegex.test(billEvery) &&  (offerDiscount==false || offerDiscount==null || offerDiscount==undefined || (offerDiscount==true && discount != undefined && discount != null && discount !="")) && (freeTrial==false || freeTrial==undefined ||  freeTrial==null || (freeTrial==true && freeTrialCount != undefined && freeTrialCount != null && freeTrialCount !=""))
     ) {
 
 // if((freeTrial)){

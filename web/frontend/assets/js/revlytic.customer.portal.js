@@ -1,7 +1,9 @@
 document.addEventListener("DOMContentLoaded", () => {
   console.log("21novmber")
   let apiPath = "https://revlytic.co/";
-  const customerId = ShopifyAnalytics.meta.page.customerId;
+  const urlParams = new URLSearchParams(window.location.search);
+  const customerId = urlParams.get("cid");
+  // const customerId = ShopifyAnalytics.meta.page.customerId;
   console.log(customerId, "idg");
   var shop = Shopify.shop;
   var prevButton, nextButton;
@@ -292,7 +294,7 @@ document.addEventListener("DOMContentLoaded", () => {
       // { "countrycode": "AN", "name": "Netherlands Antilles", "currency": "ANG" }, 
   ]
 
-  const getSymbol = currency => {   const symbol = new Intl.NumberFormat('en', { style: 'currency', currency }).formatToParts().find(x => x.type === 'currency');   return symbol && symbol.value; }
+  const getSymbol =currency => {   const symbol = new Intl.NumberFormat('en', { style: 'currency', currency }).formatToParts().find(x => x.type === 'currency');   return symbol && symbol.value; }
 
   function showToast(message, duration) {
     // Create a toast element
@@ -563,7 +565,7 @@ function getBillingsTotal() {
   const itemsPerPage = 10;
   let currentPage = 1;
 
-  const urlParams = new URLSearchParams(window.location.search);
+  // const urlParams = new URLSearchParams(window.location.search);
   const param1 = urlParams.get("id");
   console.log(param1);
 
@@ -728,8 +730,8 @@ function getBillingsTotal() {
           Cname.innerHTML = `Hello ${customerName}`;
         } else {
           getStoreToken();
-
-          subscriptionDetails(subscriptions);
+console.log("ssdsdasa=>>>",subscriptions)
+           subscriptionDetails(subscriptions);
         }
       })
 
@@ -828,7 +830,7 @@ function getBillingsTotal() {
             filteredItems.length <= itemsPerPage;
         }
         updatePaginationButtons();
-        renderItems({ data: filteredItems });
+         renderItems({ data: filteredItems });
       }
     });
 
@@ -874,9 +876,7 @@ function getBillingsTotal() {
                     <div class="col-col-1">${formattedDate}</div>
                     <div class="col-col-1">${frequency.toLocaleLowerCase()}(s)</div>
                     <div class="col-col-1 rev-product-count">${item.product_details.length}</div>
-                    <div class="col-col-1">${
-                      getSymbol(item.subscription_details.currency)
-                    }${Price.toFixed(2)}</div>
+                    <div class="col-col-1">${getSymbol(item?.subscription_details?.currency)}${Price.toFixed(2)}</div>
                     <div class="col-col-1 ${
                       item.status.toLowerCase() == "active"
                         ? "active"
@@ -891,7 +891,7 @@ function getBillingsTotal() {
                         </svg>
                         ${statusFormatted}
                     </div>
-                    <div class="col-col-1"><a href="https://${shop}/apps/revlytic-subscriptions?id=${numericId}"> View Details </a></div>
+                    <div class="col-col-1"><a href="https://${shop}/apps/revlytic-subscriptions?id=${numericId}&cid=${customerId}"> View Details </a></div>
                 </li>
               `;
       })
@@ -3048,14 +3048,14 @@ ${cancelReasonModal}
               </div>
           </section>
 
-          ${mainDetails.subscription_details.planType == "prepaid" &&`         
+          ${mainDetails.subscription_details.planType == "prepaid" ? `         
            <section id="PrepaidPastOrders" class="tab-panel">
           <div class="revlytic upcoming-orders-main prepaid-past-order-container">
               <h4>Order Date</h4>
               <h4 class="status">Order Number</h4>
                   </div>
 
-      </section>`}
+      </section>`: "" }
       </div>
 
   </div>

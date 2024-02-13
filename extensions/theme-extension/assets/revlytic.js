@@ -15,10 +15,11 @@ if (currentUrl.includes('account')) {
  let linebreak = document.createElement("br");
       button.innerHTML = "Manage Subscriptions";
 // button.id="revlytic-account-button";
-
+  const id = ShopifyAnalytics.meta.page.customerId;
+   
       button.addEventListener("click", function() {
           // const targetUrl = "https://quick-start-0d1be701.myshopify.com/apps/revlytic-subscriptions"; // Replace with your desired URL
-          const targetUrl = `https://${shop}/apps/revlytic-subscriptions`; // Replace with your desired URL
+          const targetUrl = `https://${shop}/apps/revlytic-subscriptions?cid=${id}`; // Replace with your desired URL
           console.log("targetUrl",targetUrl)
           window.location.href = targetUrl;
       });
@@ -243,37 +244,294 @@ function showAmountWithCurrency(value) {
 }
 
 if (revlytic_page_type == "product") {
+  // function handlePlanSelection(e) {
+  //   let extractPlanId = "ID_" + e.target.value.split("/").at(-1);
+  //   //console.log("extractPlanId", extractPlanId);
+  //   let getPrice =
+  //     Revlytic.variant["VID_" + selectedVariant]?.allocations?.selling_plans
+  //       ?.list[extractPlanId]?.checkout_charge_amount;
+  //   //console.log("herapheriii", getPrice);
+  //   // selectedPlanPrice = getPrice;
+  //   // document.getElementById("revlytic_subscribe_price").innerText = getPrice;
+
+  //   var form = document.querySelector(
+  //     'form[action="/cart/add"][data-type="add-to-cart-form"]'
+  //   );
+  //   //console.log("form", form);
+  //   var sellingPlanInput = form.querySelector('input[name="selling_plan"]');
+  //   //console.log("selllinPlanInput", sellingPlanInput);
+  //   if (sellingPlanInput) {
+  //     //console.log("innnnnnererrrrrrr");
+  //     sellingPlanInput.value = e.target.value.split("/").at(-1);
+  //   }
+
+  //   // //console.log(
+  //   //   "rukozaraa",
+  //   //   document.getElementById("revlytic-price-div-save-section")
+  //   // );
+
+  //   // //console.log(
+  //   //   "planchangevalue",
+  //   //   e.target.options[e.target.selectedIndex].dataset.index
+  //   // );
+
+  //   selectedPlanIndex = e.target.options[e.target.selectedIndex].dataset.index;
+  //   let item = dropdownData[selectedPlanIndex];
+  //   //console.log("auta", item);
+
+  //   //console.log( "saaaaaahiiiiiiiillllll",item.billingEvery,item.deliveryEvery);
+
+  //   // selectedPlanPrice =
+  //   //   item.planType == "prepaid"
+  //   //     ? priceMultiplier(getPrice, item.billingEvery, item.deliveryEvery)
+  //   //     : getPrice ;
+
+
+  //   selectedPlanPrice=getPrice;
+
+
+  //   document.getElementById("revlytic_subscribe_price").innerText =
+  //     selectedPlanPrice;
+
+  //   //console.log("after mul,", selectedPlanPrice);
+  //   document.getElementById("revlytic-delivery-frequency").innerText =
+  //     item.planType == "prepaid"
+  //       ? `: ${widgetSettingsData.everyText} ${item.deliveryEvery} ${
+  //           item.billingEveryType == "month"
+  //             ? widgetSettingsData.monthFrequencyText
+  //             : item.billingEveryType == "year"
+  //             ? widgetSettingsData.yearFrequencyText
+  //             : item.billingEveryType == "week"
+  //             ? widgetSettingsData.weekFrequencyText
+  //             : item.billingEveryType == "day"
+  //             ? widgetSettingsData.dayFrequencyText
+  //             : ""
+  //         }`
+  //       : `: ${widgetSettingsData.everyText}  ${item.billingEvery} ${
+  //           item.billingEveryType == "month"
+  //             ? widgetSettingsData.monthFrequencyText
+  //             : item.billingEveryType == "year"
+  //             ? widgetSettingsData.yearFrequencyText
+  //             : item.billingEveryType == "week"
+  //             ? widgetSettingsData.weekFrequencyText
+  //             : item.billingEveryType == "day"
+  //             ? widgetSettingsData.dayFrequencyText
+  //             : ""
+  //         }`;
+
+  //   document.getElementById("revlytic-billing-frequency").innerText =
+  //     item.planType == "prepaid"
+  //       ? `: ${widgetSettingsData.prepayText} ${item.billingEvery} ${
+  //           item.billingEveryType == "month"
+  //             ? widgetSettingsData.monthFrequencyText
+  //             : item.billingEveryType == "year"
+  //             ? widgetSettingsData.yearFrequencyText
+  //             : item.billingEveryType == "week"
+  //             ? widgetSettingsData.weekFrequencyText
+  //             : item.billingEveryType == "day"
+  //             ? widgetSettingsData.dayFrequencyText
+  //             : ""
+  //         }`
+  //       : `: ${widgetSettingsData.everyText} ${item.billingEvery} ${
+  //           item.billingEveryType == "month"
+  //             ? widgetSettingsData.monthFrequencyText
+  //             : item.billingEveryType == "year"
+  //             ? widgetSettingsData.yearFrequencyText
+  //             : item.billingEveryType == "week"
+  //             ? widgetSettingsData.weekFrequencyText
+  //             : item.billingEveryType == "day"
+  //             ? widgetSettingsData.dayFrequencyText
+  //             : ""
+  //         }`;
+
+  //   if (
+  //     (item.offerDiscount == false || item.offerDiscount == null) &&
+  //     (item.freeTrial == false || item.freeTrial == null)
+  //   ) {
+  //     //console.log("breakfast");
+  //     document.getElementById("revlytic-pricediv-main").style.display = "none";
+  //     positionPriceDiv[0].style.display = "block";
+  //   } else {
+  //     //console.log("dinner");
+  //     positionPriceDiv[0].style.display = "none";
+  //     ///
+  //     document.getElementById("revlytic-pricediv-main").innerHTML =
+  //       item.offerDiscount ? priceDivData1 : priceDivData2;
+
+  //     if (item.offerDiscount) {
+  //       document.getElementById(
+  //         "revlytic-price-div-selectedPlanPrice"
+  //       ).innerText = getPrice;
+  //     }
+
+  //     // let setPriceSaveHtml1 = `${
+  //     //   item.offerDiscount || item.freeTrial
+  //     //     ? "(" + widgetSettingsData.saveText
+  //     //     : ""
+  //     // }  ${
+  //     //   item.freeTrial && item.offerDiscount
+  //     //     ? "100% " +
+  //     //       widgetSettingsData.onFirstText +
+  //     //       " " +
+  //     //       (item.trialCount == "1" ? "" : item.trialCount) +
+  //     //       " " +
+  //     //       widgetSettingsData.orderText +
+  //     //       ", " +
+  //     //       widgetSettingsData.thenText +
+  //     //       " "
+  //     //     : item.freeTrial &&
+  //     //       (item.offerDiscount == false || item.offerDiscount == null)
+  //     //     ? "100% " +
+  //     //       widgetSettingsData.onFirstText +
+  //     //       " " +
+  //     //       (item.trialCount == "1" ? "" : item.trialCount) +
+  //     //       " " +
+  //     //       widgetSettingsData.orderText +
+  //     //       ")"
+  //     //     : ""
+  //     // }  ${
+  //     //   item.offerDiscount && item.priceType == "percentage"
+  //     //     ? item.price + "%)"
+  //     //     : item.offerDiscount && item.priceType == "fixed"
+  //     //     ? getCurrencySymbol(activeCurrency) +
+  //     //       " " +
+  //     //       item?.price_adjustment?.position_1?.value / 100 +
+  //     //       ") "
+  //     //     : ""
+  //     // }`;
+
+  //     // let setPriceSaveHtml = `${
+  //     //   item?.price_adjustment
+  //     //     ? "(" + widgetSettingsData.saveText
+  //     //     : ""
+  //     // } ${
+  //     //   item?.price_adjustment?.position_1 &&  item?.price_adjustment?.position_2 && parseFloat(item?.price_adjustment?.position_2?.value) > 0
+  //     //     ?  item?.price_adjustment?.position_1?.value + "% " +
+  //     //       widgetSettingsData.onFirstText +
+  //     //       " " +
+  //     //       (item?.price_adjustment?.position_1?.order_count == "1" ? "" :item?.price_adjustment?.position_1?.order_count) +
+  //     //       " " +
+  //     //       widgetSettingsData.orderText +
+  //     //       ", " +
+  //     //       widgetSettingsData.thenText +
+  //     //       " "
+  //     //     :item?.price_adjustment?.position_1 &&  item?.price_adjustment?.position_2 && parseFloat(item?.price_adjustment?.position_2?.value) == 0
+  //     //     ?  item?.price_adjustment?.position_1?.value + "% " +
+  //     //     widgetSettingsData.onFirstText +
+  //     //     " " +
+  //     //     (item?.price_adjustment?.position_1?.order_count == "1" ? "" :item?.price_adjustment?.position_1?.order_count) +
+  //     //     " " +
+  //     //     widgetSettingsData.orderText +
+  //     //       ")"
+  //     //     : ""
+  //     // }`
+
+
+
+  //     let setPriceSaveHtml;
+  
+  //     if(item?.price_adjustment?.position_1 &&  !item?.price_adjustment?.position_2 ){///pos1 contain discount
+      
+  //       setPriceSaveHtml="(" +widgetSettingsData.saveText+ " "+(item?.price_adjustment?.position_1?.type=="percentage" ?  item?.price_adjustment?.position_1?.value + "%" : showAmountWithCurrency(parseFloat(item?.price_adjustment?.position_1?.value)/100)) +")"
+      
+      
+  //     }
+      
+  //     else if(item?.price_adjustment?.position_1 &&  item?.price_adjustment?.position_2 )
+      
+  //     {
+      
+  //       setPriceSaveHtml="(" +widgetSettingsData.saveText+ " "+item?.price_adjustment?.position_1?.value+"%";
+  //     if(parseFloat(item?.price_adjustment?.position_2?.value) > 0) 
+  //     {
+  //       //console.log("iyyiyiyiyis",widgetSettingsData.onFirstText)
+  //       setPriceSaveHtml += widgetSettingsData.onFirstText + " " +(item?.price_adjustment?.position_1?.order_count == "1" ? "" : item?.price_adjustment?.position_1?.order_count) +
+  //       " " +
+  //       widgetSettingsData.orderText +
+  //       ", " +
+  //       widgetSettingsData.thenText +
+  //       " " +
+  //       (item?.price_adjustment?.position_2?.type=="percentage" ?  item?.price_adjustment?.position_2?.value + "%" : showAmountWithCurrency(parseFloat(item?.price_adjustment?.position_2?.value)/100))  +" off)"
+      
+  //     }else{
+  //       setPriceSaveHtml += " "+widgetSettingsData.onFirstText + " " +(item?.price_adjustment?.position_1?.order_count == "1" ? "" : item?.price_adjustment?.position_1?.order_count) +
+  //       " " +
+  //       widgetSettingsData.orderText+ ")"
+  //     }
+  //     }
+
+
+
+
+
+  //     document.getElementById("revlytic-price-div-save-section").innerHTML =
+  //       setPriceSaveHtml;
+  //     document.getElementById("revlytic-pricediv-main").style.display = "block";
+  //   }
+  // }
   function handlePlanSelection(e) {
     let extractPlanId = "ID_" + e.target.value.split("/").at(-1);
     //console.log("extractPlanId", extractPlanId);
     let getPrice =
       Revlytic.variant["VID_" + selectedVariant]?.allocations?.selling_plans
         ?.list[extractPlanId]?.checkout_charge_amount;
-    //console.log("herapheriii", getPrice);
-    // selectedPlanPrice = getPrice;
-    // document.getElementById("revlytic_subscribe_price").innerText = getPrice;
+ 
 
-    var form = document.querySelector(
-      'form[action="/cart/add"][data-type="add-to-cart-form"]'
-    );
-    //console.log("form", form);
-    var sellingPlanInput = form.querySelector('input[name="selling_plan"]');
-    //console.log("selllinPlanInput", sellingPlanInput);
-    if (sellingPlanInput) {
-      //console.log("innnnnnererrrrrrr");
-      sellingPlanInput.value = e.target.value.split("/").at(-1);
+    // var form = document.querySelector(
+    //   'form[action="/cart/add"][data-type="add-to-cart-form"]'
+    // );
+    // //console.log("form", form);
+    // var sellingPlanInput = form.querySelector('input[name="selling_plan"]');
+    // //console.log("selllinPlanInput", sellingPlanInput);
+    // if (sellingPlanInput) {
+    //   //console.log("innnnnnererrrrrrr");
+    //   sellingPlanInput.value = e.target.value.split("/").at(-1);
+    // }
+
+
+
+//@@@@@@@  18jan   //////////
+var form = document.querySelectorAll(
+  'form[action*="/cart/add"]'
+);
+  form.forEach((item)=>
+    {
+console.log("isi",item)
+
+      var sellingPlanInputs = item.querySelectorAll('input[name="selling_plan"]');
+      console.log("e22novm",sellingPlanInputs) 
+  
+   
+        console.log("22nov-sam")
+        if (sellingPlanInputs.length === 0) {
+          console.log("tickkkktokl")
+          var newHiddenInput = document.createElement("input");
+          newHiddenInput.type = "hidden";
+          newHiddenInput.name = "selling_plan";
+          newHiddenInput.value = e.target.value.split("/").at(-1);
+  
+          item.appendChild(newHiddenInput);
+          //console.log("Created new hidden input:", newHiddenInput);
+        } else {
+          console.log("in3oct else",)
+          
+          sellingPlanInputs.forEach(function (input) {
+            input.value = e.target.value.split("/").at(-1);
+          });
+        }
+      
+
+
+
+
     }
+    
+    
+    )
 
-    // //console.log(
-    //   "rukozaraa",
-    //   document.getElementById("revlytic-price-div-save-section")
-    // );
 
-    // //console.log(
-    //   "planchangevalue",
-    //   e.target.options[e.target.selectedIndex].dataset.index
-    // );
 
+///////enddddd///////////////////
     selectedPlanIndex = e.target.options[e.target.selectedIndex].dataset.index;
     let item = dropdownData[selectedPlanIndex];
     //console.log("auta", item);

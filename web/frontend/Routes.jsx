@@ -1,6 +1,8 @@
 import { Routes as ReactRouterRoutes, Route } from "react-router-dom";
 import Sidebar from "./components/common/Sidebar";
 import CreateManualSubscription from "./components/createManualSubscription";
+import ContactUs from "./pages/ContactUs";
+import { useState } from "react";
 /**
  * File-based routing.
  * @desc File-based routing that uses React Router under the hood.
@@ -17,6 +19,7 @@ import CreateManualSubscription from "./components/createManualSubscription";
  */
 export default function Routes({ pages }) {
   const routes = useRoutes(pages);
+  const [activeContactRoute,setActiveContactRoute]=useState(false)
   const routeComponents = routes.map(({ path, component: Component }) => (
     <Route key={path} path={path} element={<Component />} />
   ));
@@ -25,18 +28,20 @@ export default function Routes({ pages }) {
 
   return (
     <ReactRouterRoutes>
-      <Route element ={<Sidebar/>} >
+      {activeContactRoute && <Route path="/contactus" element={<ContactUs/>}/>}
+      <Route element ={<Sidebar setActiveContactRoute={setActiveContactRoute}/>} >
         {routeComponents}
         {/* <Route  path="/" element={<Home />} /> */}
-        <Route path="/create-manual-subscription" element={<CreateManualSubscription />} />
+        <Route path="/create-manual-subscription" element={<CreateManualSubscription  />} />
 
+      
       <Route path="*" element={<NotFound />} />
       </Route>
     </ReactRouterRoutes>
   );
 }
 
-function useRoutes(pages) {
+function useRoutes(pages,hello) {
   const routes = Object.keys(pages)
     .map((key) => {
       let path = key

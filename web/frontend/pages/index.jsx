@@ -83,7 +83,7 @@ function Home() {
     filtered && setCurrencyConversionRates(filtered.rates);
 
     if (filtered && storeDetails?.currency) {
-      let response = await getData({ range: "last7Days" }, filtered?.rates);
+      let response = await getData({ range: "today" }, filtered?.rates);
 
       // if(response?.data?.message=="success"){
 
@@ -119,7 +119,7 @@ setLoader(true)
 
 await checkAppBlockEmbed()
 setLoader(false)
-    await getActiveCustomers({ range: "last7Days" });
+    await getActiveCustomers({ range: "today" });
 
     await getAnnouncements();
 
@@ -334,7 +334,7 @@ if (subscriptionBookingsData?.data?.message == "success") {
           With Subscription Plans, you have a quick and easy way to set up various recurring billing plans. These billing plans can then be assigned to any of your Products. Once assigned, your customers can self-subscribe to any of the plans you made available on your Products. This can jumpstart your Company’s growth in recurring revenue! </p>
 
 <p>
-Among the available features are Prepaid plans, Pay As You Go plans. Automatic Renewals, Discounts, and much more! These are all at your fingertips to make it easy to expand business! We’ve built in a lot of flexibility to meet your needs. Please click   <a href="https://revlytics.gitbook.io/revlytic/quick-create" target='/blank'>HERE</a>  for more Help documentation on Subscription Plans. Click below to start building your Subscription Plans!
+Among the available features are Prepaid plans, Pay As You Go plans. Automatic Renewals, Discounts, and much more! These are all at your fingertips to make it easy to expand business! We’ve built in a lot of flexibility to meet your needs. Please click   <a href="https://revlytics.gitbook.io/revlytic/quick-create" target='_blank'>HERE</a>  for more Help documentation on Subscription Plans. Click below to start building your Subscription Plans!
 
             </p>
           </div>
@@ -359,7 +359,7 @@ Among the available features are Prepaid plans, Pay As You Go plans. Automatic R
       children: (
         <>
           <div className="checklist-tabs-content">
-            <p>With Manual Subscriptions, we give all the control and flexibility to you to create individual subscriptions for any existing or new customers. With this feature you can create one off orders or automatically renew subscriptions for individual customers. We’ve built in the ability to create and send checkout links to your customers so you don’t have to do it! Please click   <a href="https://revlytics.gitbook.io/revlytic/manual-subscription" target='/blank'>HERE</a>  for more Help documentation on Manual Subscriptions. Click below to start building your Manual Subscriptions!
+            <p>With Manual Subscriptions, we give all the control and flexibility to you to create individual subscriptions for any existing or new customers. With this feature you can create one off orders or automatically renew subscriptions for individual customers. We’ve built in the ability to create and send checkout links to your customers so you don’t have to do it! Please click   <a href="https://revlytics.gitbook.io/revlytic/manual-subscription" target='_blank'>HERE</a>  for more Help documentation on Manual Subscriptions. Click below to start building your Manual Subscriptions!
 </p>
           </div>
 
@@ -464,7 +464,7 @@ Among the available features are Prepaid plans, Pay As You Go plans. Automatic R
           <div className="checklist-tabs-btns">
             <Button >
               {" "}
-             <a href="https://revlytics.gitbook.io/revlytic/" target='/blank'>Help Docs</a> 
+             <a href="https://revlytics.gitbook.io/revlytic/" target='_blank'>Help Docs</a> 
             </Button>
             {/* <Button className="help">Help</Button> */}
           </div>

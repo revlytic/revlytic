@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import postApi from "../components/common/postApi";
 import { useAppBridge } from "@shopify/app-bridge-react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 import { useForm } from "antd/lib/form/Form";
 import dayjs from "dayjs";
@@ -47,7 +47,7 @@ import { useAPI } from "../components/common/commonContext";
 import { sendMailOnUpdate } from "./common/helpers";
 
 function CreateManualSubscription() {
-  const { currency, storeDetails } = useAPI();
+  const { currency, storeDetails,billingPlan} = useAPI();
   const [form] = useForm();
   const [form2] = useForm();
   const navigate = useNavigate();
@@ -199,204 +199,6 @@ else if(input?.toLowerCase()=="year"){
 }
 }
 
-  //   async function fetchDataUpcomingOrders(data) {
-  //     let ordersDataUpcoming = await postApi(
-  //       "/api/admin/getOrdersDataUpcoming",
-  //       { contract_id: data?.subscription_id },
-  //       app
-  //     );
-  // let newArr = [...ordersDataUpcoming?.data?.data]
-  //     //console.log("ordersDataUpcoming----->", newArr);
-
-  //     if (ordersDataUpcoming.data.message == "success") {
-  //       let mainData = newArr;
-  //       setAttemptedOrders(mainData);
-  //       // let attemptedOrdersCount = mainData.length;
-
-  //       let attemptedOrdersCount = ordersDataUpcoming?.data?.data.filter(
-  //                (item) => ["success", "initial"].includes(item.status)
-  //            ).length;
-  //       //console.log("attemptedOrdersCount",attemptedOrdersCount)
-  //       const data1 = newArr.filter(
-  //         (item) => (new Date(item.renewal_date) > new Date()  ) && (item.status=="pending" || item.status=="failed" )
-
-  //       );
-  //       const skipped = newArr.filter(
-  //         (item) => (new Date(item.renewal_date) > new Date()  ) && (item.status=="skipped")
-
-  //       );
-
-  //    let data2;
-  //         let checkDate=data?.nextBillingDate
-
-  //         // let  itemExist=data1.find(
-  //         //   (item) => (new Date(item.renewal_date).getTime() === new Date(checkDate).getTime())
-  //         // );
-  //         // let type = data?.subscription_details?.delivery_billingType;
-  //         //   let value =
-  //         //     data.subscription_details.planType == "payAsYouGo"
-  //         //       ? data?.subscription_details?.billingLength
-  //         //       : data?.subscription_details?.delivery_billingValue;
-  //         // if(itemExist){
-  //         //    while(itemExist){
-  //         //     checkDate= dateChange(type,checkDate,value).toISOString()
-
-  //         //    }
-  //         //    data2 = [{ renewal_date:checkDate , status: "upcoming" }];
-  //         // }
-  //         // else{
-  //         //   data2 = [{ renewal_date:checkDate , status: "upcoming" }];
-  //         // }
-  //         data2 = [{ renewal_date:checkDate , status: "upcoming" }];
-
-  //     //console.log("data1",data1)
-  //      //console.log("data2",data2)
-  //       // let merged=data1.concat(data2)
-  //       let merged =  new Array(...data1, ...data2)
-  //       //console.log("mergwwwed",merged.length)
-  //       // merged.map((e)=> //console.log("e==>", e))
-  //       // //console.log("ticktok",data1,data2)
-  //       // //console.log("daatataaa",[...data1,...data2])
-
-  //      merged.sort((a, b) => new Date(a.renewal_date) - new Date(b.renewal_date));
-
-  //       // //console.log("9sept",merged[0],merged[1])
-  //       ////////<---->///////////////
-
-  //       if (
-  //         data?.subscription_details?.billingMaxValue &&
-  //         data?.subscription_details?.billingMaxValue != undefined &&
-  //         data?.subscription_details?.billingMaxValue != null
-  //       ) {
-  //         // //console.log(parseInt(data.billingMaxValue)<=parseInt(successfullOrdersCount))
-  //         // //console.log(parseInt(data.billingMaxValue),parseInt(successfullOrdersCount))
-
-  //         if (
-  //           parseInt(data.subscription_details.billingMaxValue) <=
-  //           parseInt(attemptedOrdersCount)
-  //         ) {
-  //           //console.log("miccheck123");
-  //           setUpcomingOrders([]);
-  //         } else {
-  //           //console.log(
-  //             "weekeddd",
-  //             data?.subscription_details?.billingMaxValue,
-  //             attemptedOrdersCount
-  //           );
-  //           let nextDate;
-  //           let type = data?.subscription_details?.delivery_billingType;
-  //           let value =
-  //             data.subscription_details.planType == "payAsYouGo"
-  //               ? data?.subscription_details?.billingLength
-  //               : data?.subscription_details?.delivery_billingValue;
-  //           // let originalDate = data2[0]?.renewal_date;
-  //           let originalDate = data?.nextBillingDate;
-
-  //           //console.log("7septttt",merged.length,parseInt(data?.subscription_details?.billingMaxValue) - parseInt(attemptedOrdersCount),merged.length< (parseInt(data?.subscription_details?.billingMaxValue) - parseInt(attemptedOrdersCount)))
-
-  //         if(merged.length<=  ( parseInt(data?.subscription_details?.billingMaxValue) - parseInt(attemptedOrdersCount))){
-  //           while (
-  //             merged.length <
-
-  //            ( parseInt(data?.subscription_details?.billingMaxValue) -
-  //               parseInt(attemptedOrdersCount))
-  //           ) {
-  //             //console.log("rakshabandhana");
-
-  //             let nextDate= dateChange(type,originalDate,value)
-  //             originalDate = nextDate.toISOString();
-
-  //             ////existing item which is success ,initial,pending
-  //             const existingItem = merged.find(
-  //               (item) => (new Date(item.renewal_date).getTime() === new Date(originalDate).getTime())
-  //             );
-  //             const existingItemSkipped = skipped.find(
-  //               (item) => {   //console.log("saaoriginalDate",originalDate,item.renewal_date,new Date(item.renewal_date).getTime() === new Date(originalDate).getTime());
-  //               return new Date(item.renewal_date).getTime() === new Date(originalDate).getTime()}
-  //             );
-
-  //             if(existingItem || existingItemSkipped) {
-  //               //console.log("in iffffyyy")
-  //               //  let nextDate= dateChange(type,originalDate,value)
-  //               // originalDate = nextDate.toISOString();
-  //             }
-
-  //             else {
-  //               //console.log("elsee")
-  //               // let nextDate= dateChange(type,originalDate,value)
-  //               // originalDate = nextDate.toISOString();
-  //               merged.push({ renewal_date: originalDate, status: "upcoming" }); // Add new item to the merged array
-  //             }
-  //           }
-  //           merged.sort(
-  //             (a, b) => new Date(a.renewal_date) - new Date(b.renewal_date)
-  //           );
-  //           //console.log("merged", merged);
-  //           }
-  //           else{
-  //             merged=merged.filter(item=>item.status!="upcoming")
-  //             merged.sort(
-  //               (a, b) => new Date(a.renewal_date) - new Date(b.renewal_date)
-  //             );
-  //             //console.log("merged", merged);
-  //           }
-
-  //           setUpcomingOrders(merged);
-  //         }
-  //       } else {
-  //         //console.log("thickadndthin");
-
-  //         let nextDate;
-  //         let type = data?.subscription_details?.delivery_billingType;
-  //         let value =
-  //           data.subscription_details.planType == "payAsYouGo"
-  //             ? data?.subscription_details?.billingLength
-  //             : data?.subscription_details?.delivery_billingValue;
-  //         // let originalDate = data2[0]?.renewal_date;
-  //         let originalDate = data?.nextBillingDate;
-  //            //console.log(originalDate,"before",merged)
-
-  //         while (merged.length < 5) {
-  //           //console.log("tringtring",type.toLowerCase(),merged)
-
-  //           let nextDate= dateChange(type,originalDate,value)
-  //           originalDate = nextDate.toISOString();
-  //           const existingItem = merged.find(
-  //             (item) => {   //console.log("saaoriginalDate",originalDate,item.renewal_date,new Date(item.renewal_date).getTime() === new Date(originalDate).getTime());
-  //             return new Date(item.renewal_date).getTime() === new Date(originalDate).getTime()}
-  //           );
-
-  //           const existingItemSkipped = skipped.find(
-  //             (item) => {   //console.log("saaoriginalDate",originalDate,item.renewal_date,new Date(item.renewal_date).getTime() === new Date(originalDate).getTime());
-  //             return new Date(item.renewal_date).getTime() === new Date(originalDate).getTime()}
-  //           );
-
-  //           //console.log("originalDate",originalDate,)
-  //           //console.log("existingItem",existingItem)
-  //           if (existingItem || existingItemSkipped) {
-  //             //console.log("in ifffffff")
-  //             // merged.push(data1.shift()); // Add the item from data1 to the merged array
-  //           } else {
-  //             //console.log("sdasdasda")
-  //             merged.push({ renewal_date: originalDate, status: "upcoming" }); // Add new item to the merged array
-  //           }
-  //         }
-
-  //         merged.sort(
-  //           (a, b) => new Date(a.renewal_date) - new Date(b.renewal_date)
-  //         );
-
-  //       //console.log("hmmm merged",merged)
-  //         setUpcomingOrders(merged);
-  //       }
-
-  //       ////////----enddd////////////////
-  //     } else {
-  //       toast.error("Something went wrong", {
-  //         position: toast.POSITION.TOP_RIGHT,
-  //       });
-  //     }
-  //   }
   async function getPrepaidPastorders() {
     console.log(subscriptionId)
     let ordersDataUpcoming = await postApi(
@@ -540,7 +342,7 @@ else if(input?.toLowerCase()=="year"){
     }
   }
 
-  useEffect(async () => {
+  useEffect(async () => { 
     getPrepaidPastorders()
     //console.log();
     //console.log("in useeffect", params.get("mode"));
@@ -1143,9 +945,9 @@ console.log("27cntrydata",response?.data?.data?.data)
       setCustomerPaymentsData(result?.data?.data);
       //console.log("cusssssstttttt", result?.data?.data);
       if (result?.data?.data.length > 0) {
-        form.setFieldsValue({
-          startDate: dayjs(new Date().getTime() + 1 * 24 * 60 * 60 * 1000),
-        });
+        // form.setFieldsValue({
+        //   startDate: dayjs(new Date().getTime() + 1 * 24 * 60 * 60 * 1000),
+        // });
 
         form.setFieldValue("paymentMethod", result?.data?.data[0]?.node?.id);
         let selectedCountryData = countriesData?.find(
@@ -1426,7 +1228,7 @@ console.log("27cntrydata",response?.data?.data?.data)
     }
     // //console.log(customersList)
   };
-
+console.log(storeDetails,"billingplan",billingPlan)
   const handleMaxCycle = (rule, value) => {
     if (
       form.getFieldValue(["subscription", "billingMinValue"]) != "" &&
@@ -1772,88 +1574,7 @@ console.log("value,data.counteruy",value, data?.country)
         position: toast.POSITION.TOP_RIGHT,
       });
     } else {
-      //console.log(values);
-      //console.log(products);
-      if (customerPaymentsData.length > 0) {
-        //console.log(" in finishhhhhsdjskdk");
-        setLoader(true);
-
-        if (
-          JSON.stringify(values?.customer_details) !==
-          JSON.stringify(customerDetails)
-        ) {
-          let body = {
-            input: {
-              id: customerId,
-              ...form.getFieldValue("customer_details"),
-            },
-          };
-
-          let result = await postApi("/api/admin/customerUpdate", body, app);
-        }
-
-        let paymentData = customerPaymentsData.find(
-          (item) => item?.node?.id == values?.paymentMethod
-        );
-
-        let bodyData = {
-          ...values,
-          subscription: { ...values?.subscription, currency: currency },
-          customer_details: { id: customerId, ...values?.customer_details },
-          payment_details: paymentData,
-          products: products,
-          address_details: {
-            ...values?.address_details,
-            countryCode: countryCode,
-            provinceCode: provinceCode,
-          },
-        };
-
-        //console.log("bodyData", bodyData);
-        let response = await postApi(
-          "/api/admin/subscriptionContractCreate",
-          { bodyData },
-          app
-        );
-        setLoader(false);
-        if (response?.data?.message == "duplicate_planName") {
-          toast.error(response?.data?.data, {
-            position: toast.POSITION.TOP_RIGHT,
-          });
-        } else if (response?.data?.message == "userError") {
-          //console.log("jusdt o check");
-          return toast.error(response?.data?.data, {
-            position: toast.POSITION.TOP_RIGHT,
-          });
-        } else if (response?.data?.message == "success") {
-          toast.success("Subscription saved successfully", {
-            position: toast.POSITION.TOP_RIGHT,
-          });
-          //console.log("7aug");
-
-          let subscription_id = (response?.data?.data?.subscription_id)
-            .split("/")
-            .at(-1);
-          //console.log(subscription_id);
-          navigate(`/subscriptionlist`);
-
-          let extra = {
-            templateType: "subscriptionPurchased",
-            data: response?.data?.data,
-            shop_name: storeDetails?.store_name,
-            shop_email: storeDetails?.store_email,
-            currency: storeDetails?.currency,
-          };
-
-          let resp = await sendMailOnUpdate({}, app, extra);
-        } else if (response?.data?.message == "error") {
-          toast.error("Something went wrong", {
-            position: toast.POSITION.TOP_RIGHT,
-          });
-          // setLoader(false)
-        }
-      } else {
-        //console.log("finishelse");
+      
         try {
           setLoader(true);
           if (
@@ -1886,7 +1607,8 @@ console.log("value,data.counteruy",value, data?.country)
 
             let shop = response.data.data.shop;
             let link = `https://${shop}/cart/clear?return_to=/cart/add?`;
-            let end = `return_to=/checkout?checkout[email]=${values.customer_details.email}`;
+            // let end = `return_to=/checkout?checkout[email]=${values.customer_details.email}`;
+            let end = `return_to=/checkout`;
             products.map((i, index) => {
               let fullId = i.id;
               let varient = fullId.split("/");
@@ -1911,7 +1633,7 @@ console.log("value,data.counteruy",value, data?.country)
           setLoader(false);
         }
       }
-    }
+    
   };
 
   const sendPaymentMethodUpdateMail = async () => {
@@ -3104,49 +2826,7 @@ console.log("sdasdasdakeuwriorioriorioriorioriorioriorioiooppo")
             <div className="revlytic subscription-details1">
               <div className="revlytic start-date">
                 {mode != "edit" && mode != "view" ? (
-                  customerPaymentsData.length > 0 ? (
-                    <Form.Item
-                      label={
-                        mode == "view" || mode == "edit" ? (
-                          <p className="revlytic required">Next Billing Date</p>
-                        ) : (
-                          <p className="revlytic required">
-                            Subscription Start Date
-                          </p>
-                        )
-                      }
-                      name="startDate"
-                      initialValue={dayjs(
-                        new Date().getTime() + 1 * 24 * 60 * 60 * 1000
-                      )}
-                      tooltip="Date when subscription starts(* Valid for existing customers only)"
-                      rules={[
-                        {
-                          required: true,
-                          message: "Please select start date!",
-                        },
-                      ]}
-                      // extra="Valid for existing customers only"
-                    >
-                      <DatePicker
-                        allowClear={false}
-                        showTime={false}
-                        showToday={false}
-                        disabledDate={handleDisableDate}
-                        // showTime={{
-                        //   hideDisabledOptions: true,
-                        //   defaultValue: [dayjs("00:00:00", "HH:mm:ss")],
-                        // }}
-                        format="YYYY-MM-DD"
-                        disabled={
-                          existingSubscription != {} &&
-                          (mode == "view" ||
-                            (mode == "edit" &&
-                              edit["subscriptionDetails"] == false))
-                        }
-                      />
-                    </Form.Item>
-                  ) : (
+                 (
                     <Form.Item
                       name="startDate"
                       label={
@@ -3164,15 +2844,7 @@ console.log("sdasdasdakeuwriorioriorioriorioriorioriorioiooppo")
                   )
                 ) : (
                   <Form.Item
-                    label={
-                      mode == "view" || mode == "edit" ? (
-                        <p className="revlytic required">Next Billing Date</p>
-                      ) : (
-                        <p className="revlytic required">
-                          Subscription Start Date
-                        </p>
-                      )
-                    }
+                    label={<p className="revlytic required">Next Billing Date</p>}
                     name="startDate"
                     initialValue={dayjs(
                       new Date().getTime() + 1 * 24 * 60 * 60 * 1000
@@ -3842,7 +3514,7 @@ console.log("sdasdasdakeuwriorioriorioriorioriorioriorioiooppo")
           )}
         </div>
 
-        {customerPaymentsData.length > 0 ||
+        {
         (existingSubscription != {} && (mode == "edit" || mode == "view")) ? (
           <Card>
             <div className="revlytic heading-edit-save-container">
@@ -4195,11 +3867,9 @@ console.log("sdasdasdakeuwriorioriorioriorioriorioriorioiooppo")
 
         {existingSubscription != {} &&
         (mode == "view" || mode == "edit") ? null : (
-          <Button className="revlytic-save-subscription" htmlType="submit">
-            {customerPaymentsData.length > 0
-              ? "Submit"
-              : "Create Checkout Link"}
-          </Button>
+          <Tooltip color= "#ffffff" title={ billingPlan !="starter" && billingPlan !="premium"   && billingPlan !="premiere"  ? <Link to={(`/billing?option=checkoutlink`)}>Upgrade your Plan</Link> :""}><Button className="revlytic-save-subscription" htmlType="submit" disabled={ billingPlan !="starter" && billingPlan !="premium"  && billingPlan !="premiere" } >
+            Create Checkout Link
+          </Button></Tooltip>
         )}
       </Form>
 
@@ -4217,6 +3887,7 @@ console.log("sdasdasdakeuwriorioriorioriorioriorioriorioiooppo")
             pastOrders={pastOrders}
             skippedOrders={skippedOrders}
             mode={mode}
+            billingPlan={billingPlan}
           />
         ) : (
           <Fulfillments
@@ -4229,6 +3900,8 @@ console.log("sdasdasdakeuwriorioriorioriorioriorioriorioiooppo")
               setNextBillingDate={setNextBillingDate}
               pastOrders={pastOrders}
               mode={mode}
+            billingPlan={billingPlan}
+
           />
         )
       ) : (

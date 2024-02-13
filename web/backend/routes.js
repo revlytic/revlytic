@@ -82,7 +82,13 @@ import {
   demo,
   checkAppBlockEmbed,
   convertStoreProductPriceIntoOrderCurrency,
-  subscriptionBookings
+  recurringBiling,
+  recurringBilingSelected,
+  getBillingPlanData,
+  subscriptionBookings,
+  calculateRevenue,
+  freePlanActivation,
+  deleteRecurringCharge
 } from "./controller.js";
   import { appProxy, getCustomerPortalDetailsStore, getCustomerSubscriptions, getStoreCountries, getStoreToken, getTotalOrdersBillingsCount } from "./customerPortalController.js";
 
@@ -250,6 +256,8 @@ router.post("/updateAnnouncement",updateAnnouncement)
 router.post("/getAnnouncements",getAnnouncements)
 router.post("/deleteAnnouncement",deleteAnnouncement)
 router.post('/checkAppBlockEmbed',checkAppBlockEmbed)
+router.post('/getBillingPlanData',getBillingPlanData)
+router.post('/calculateRevenue',calculateRevenue)
 router.post("/subscriptionBookings", subscriptionBookings);
 
 
@@ -287,7 +295,9 @@ router.post("/updateproductbundleDetails", updateproductbundleDetails)
 router.post("/updateproductbundleStatus", updateproductbundleStatus)
 router.post("/saveCustomerPortalDetails", saveCustomerPortalDetails)
 router.post("/getCustomerPortalDetails", getCustomerPortalDetails)
-
+router.post("/recurringBiling", recurringBiling)
+router.post("/recurringBilingSelected", recurringBilingSelected)
+router.post("/freePlanActivation",deleteRecurringCharge, freePlanActivation)
 
 
 

@@ -1,15 +1,24 @@
 import React, { useEffect, useState } from "react";
-import { Button, Card, Collapse, Form, Input, Spin, Switch } from "antd";
+import {
+  Button,
+  Card,
+  Collapse,
+  Form,
+  Input,
+  Spin,
+  Switch,
+  Tooltip,
+} from "antd";
 import postApi from "../components/common/postApi";
 import { useAppBridge } from "@shopify/app-bridge-react";
 import UploadImage from "../components/upload";
-// import dotenv from 'dotenv';
-// dotenv.config();
-
+import { toast } from "react-toastify";
+import { useAPI } from "../components/common/commonContext";
+import { Link } from "react-router-dom";
 const { Panel } = Collapse;
 function invoice() {
   const app = useAppBridge();
-
+  const { billingPlan } = useAPI();
   const [loader, setLoader] = useState(false);
   const [components, setComponents] = useState([
     { label: "Logo", status: true },
@@ -110,80 +119,65 @@ function invoice() {
 
   const saveDetails = async () => {
     setLoader(true);
-    console.log(logo,signature,"gh");
-console.log(signatureData,signatureData,"sdasdasdas");
-    let updatedLogo=logo
-    let updatedSignature=signature
-   
-      if (logo && logoData ) {
-        console.log("breakfast")
-        const response = await postApi(
-          "/api/admin/delete",
-          { url: logo },
-          app
-        );
-      }
-      if (signature && signatureData) {
-        console.log("lunch")
-        const response = await postApi(
-          "/api/admin/delete",
-          { url: signature },
-          app
-        );
-      }
+    console.log(logo, signature, "gh");
+    console.log(signatureData, signatureData, "sdasdasdas");
+    let updatedLogo = logo;
+    let updatedSignature = signature;
 
-      if(logoData){
-        console.log("morinig")
-      try {
-      let  savelogo = await postApi("/api/admin/upload", logoData, app);
-      if (savelogo.data.message == "success") {
-        // toast.success("Logo uploaded successfully", {
-        //   position: toast.POSITION.TOP_RIGHT,
-        // });
-      updatedLogo=`https://revlytic.co/images/logo/${savelogo.data.name}`
-        setLogo(
-          `https://revlytic.co/images/logo/${savelogo.data.name}`
-        );
-
-
-      }
-    } catch (error) {
-      // toast.success("File upload failed", {
-      //   position: toast.POSITION.TOP_RIGHT,
-      // });
+    if (logo && logoData) {
+      console.log("breakfast");
+      const response = await postApi("/api/admin/delete", { url: logo }, app);
     }
-  }
-
-
-if(signatureData){
-    try {
-      console.log("evening")
-      let  savesignature = await postApi(
-        "/api/admin/upload",
-        signatureData,
+    if (signature && signatureData) {
+      console.log("lunch");
+      const response = await postApi(
+        "/api/admin/delete",
+        { url: signature },
         app
       );
-      if (savesignature.data.message == "success") {
+    }
+
+    if (logoData) {
+      console.log("morinig");
+      try {
+        let savelogo = await postApi("/api/admin/upload", logoData, app);
+        if (savelogo.data.message == "success") {
+          // toast.success("Logo uploaded successfully", {
+          //   position: toast.POSITION.TOP_RIGHT,
+          // });
+          updatedLogo = `https://revlytic.co/images/logo/${savelogo.data.name}`;
+          setLogo(`https://revlytic.co/images/logo/${savelogo.data.name}`);
+        }
+      } catch (error) {
+        // toast.success("File upload failed", {
+        //   position: toast.POSITION.TOP_RIGHT,
+        // });
+      }
+    }
+
+    if (signatureData) {
+      try {
+        console.log("evening");
+        let savesignature = await postApi(
+          "/api/admin/upload",
+          signatureData,
+          app
+        );
+        if (savesignature.data.message == "success") {
           // toast.success("Signature uploaded successfully", {
           //   position: toast.POSITION.TOP_RIGHT,
           // });
-          updatedSignature=`https://revlytic.co/images/signature/${savesignature.data.name}`;
-        setSignature(
-         `https://revlytic.co/images/signature/${savesignature.data.name}`
-        );
+          updatedSignature = `https://revlytic.co/images/signature/${savesignature.data.name}`;
+          setSignature(
+            `https://revlytic.co/images/signature/${savesignature.data.name}`
+          );
+        }
+      } catch (error) {
+        // toast.success("File upload failed", {
+        //   position: toast.POSITION.TOP_RIGHT,
+        // });
       }
-    } catch (error) {
-      // toast.success("File upload failed", {
-      //   position: toast.POSITION.TOP_RIGHT,
-      // });
     }
-
-  }
-
-
-
-
-
 
     try {
       console.log(logo, "jh");
@@ -222,14 +216,12 @@ if(signatureData){
     }
     setEditMode(false);
     setLoader(false);
-
-    console.log(editMode);
   };
 
   return (
     <Spin tip="Loading..." size="large" spinning={loader}>
-        <div className="revlytic plan-group-listing-button">
-      <h1 className="revlytic-plan-switch-heading">Invoice</h1>
+      <div className="revlytic plan-group-listing-button">
+        <h1 className="revlytic-plan-switch-heading">Invoice</h1>
       </div>
       <div
         className={
@@ -240,20 +232,15 @@ if(signatureData){
       >
         {editMode && (
           <Card>
-                  
-                        <div
-                          className="revlytic invoice-components-label"
-                          key={18}
-                        >
-                          <p>{components[18].label}</p>
-                          <Switch
-                            checked={components[18].status}
-                            onChange={(value) => onChange(value, 18)}
-                          />
-                        </div>
+            <div className="revlytic invoice-components-label" key={18}>
+              <p>{components[18].label}</p>
+              <Switch
+                checked={components[18].status}
+                onChange={(value) => onChange(value, 18)}
+              />
+            </div>
             <h1>Invoice Fields</h1>
-           
-                  
+
             <Collapse>
               <Panel header="Header" key="1">
                 <ul className="revlytic invoice-components">
@@ -319,22 +306,43 @@ if(signatureData){
                 </ul>
               </Panel>
             </Collapse>
-            
           </Card>
         )}
         <div>
           <div className="revlytic invoice-edit-container">
             <div className="revlytic invoice-edit-switch">
-              <p> Edit Mode</p>{" "}
-              <Switch
-                checked={editMode}
-                onChange={(checked) => setEditMode(checked)}
-              />
+              <p> Edit Modes</p>{" "}
+              <Tooltip
+                color="#ffffff"
+                title={
+                  billingPlan != "starter" &&
+                  billingPlan != "premium" &&
+                  billingPlan != "premiere" ? (
+                    <Link to={`/billing?option=invoice`}>
+                      Upgrade your Plan
+                    </Link>
+                  ) : (
+                    ""
+                  )
+                }
+              >
+                {" "}
+                <Switch
+                  checked={editMode}
+                  onChange={(checked) => setEditMode(checked)}
+                  disabled={
+                    billingPlan != "starter" &&
+                    billingPlan != "premium" &&
+                    billingPlan != "premiere"
+                  }
+                />
+              </Tooltip>
             </div>
             <div className="revlytic invoice details-save-button">
               {editMode && <Button onClick={saveDetails}>Save</Button>}
-              {editMode && <Button onClick={()=>setEditMode(false)}>Cancel</Button>}
-
+              {editMode && (
+                <Button onClick={() => setEditMode(false)}>Cancel</Button>
+              )}
             </div>
           </div>
           <div
@@ -421,7 +429,6 @@ if(signatureData){
                                                 setLoader={setLoader}
                                                 check={"logo"}
                                                 setLogoData={setLogoData}
-
                                               />
                                             ))}
                                         </tr>
@@ -445,7 +452,7 @@ if(signatureData){
                                               <strong
                                                 style={{
                                                   color: "#000",
-                                                
+
                                                   fontSize: 15,
                                                   margin: 0,
                                                 }}
@@ -465,7 +472,7 @@ if(signatureData){
                                               <p
                                                 style={{
                                                   color: "#5b5b5b",
-                                                
+
                                                   fontSize: 14,
                                                   fontWeight: 500,
                                                   margin: "2px 0 2px",
@@ -502,7 +509,7 @@ if(signatureData){
                                               <strong
                                                 style={{
                                                   color: "#0F550C",
-                                                
+
                                                   fontSize: 45,
                                                   fontStyle: "normal",
                                                   fontWeight: 600,
@@ -1398,24 +1405,21 @@ if(signatureData){
                                           <td width="100%" height={10} />
                                         </tr>
                                         <tr style={{ textAlign: "right" }}>
-                                          <td
-                                            align="right"
-                                         
-                                          >
+                                          <td align="right">
                                             <a
                                               style={{
                                                 color: "#fff",
-                                              
+
                                                 fontSize: 17,
                                                 fontStyle: "normal",
                                                 fontWeight: 400,
                                                 textDecoration: "none",
                                                 verticalAlign: "top",
                                                 background:
-                                                "linear-gradient(0deg, #0F550C 0%, #0F550C 100%)",
-                                              display: "inline-block",
-                                              padding: "10px 20px",
-                                              borderRadius: 5,
+                                                  "linear-gradient(0deg, #0F550C 0%, #0F550C 100%)",
+                                                display: "inline-block",
+                                                padding: "10px 20px",
+                                                borderRadius: 5,
                                               }}
                                             >
                                               {!editMode ? (
@@ -1514,8 +1518,8 @@ if(signatureData){
                                           setSignature={setSignature}
                                           signature={signature}
                                           setLoader={setLoader}
-                                            check={"signature"}
-                                            setSignatureData={setSignatureData}
+                                          check={"signature"}
+                                          setSignatureData={setSignatureData}
                                         />
                                       )}
                                     </td>
