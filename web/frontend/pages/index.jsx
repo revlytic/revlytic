@@ -54,7 +54,7 @@ function Home() {
   const [showAppBlock, setShowAppBlock] = useState();
 
   useEffect(async () => {
-    console.log("in useEffectwithdependencys   storedetaisl");
+    // console.log("in useEffectwithdependencys   storedetaisl");
 
     let data = await axios.get(
       "https://cdn.shopify.com/s/javascripts/currencies.js"
@@ -78,7 +78,7 @@ function Home() {
 `)
     )();
 
-    console.log("yyyy", filtered);
+    // console.log("yyyy", filtered);
 
     filtered && setCurrencyConversionRates(filtered.rates);
 
@@ -133,7 +133,7 @@ let response=await postApi("/api/admin/checkAppBlockEmbed",{},app)
 if(response?.data?.message=='success'){
 
 
-console.log(response?.data?.data?.disabled)
+// console.log(response?.data?.data?.disabled)
 setShowAppBlock(response?.data?.data?.disabled)
 
 
@@ -173,7 +173,7 @@ setShowAppBlock(response?.data?.data?.disabled)
 
 
   const getData = async (body, rates) => {
-    console.log("getData", body);
+    // console.log("getData", body);
 
     const sessionToken = await getSessionToken(app);
 
@@ -181,12 +181,12 @@ setShowAppBlock(response?.data?.data?.disabled)
       headers: { Authorization: `Bearer ${sessionToken}` },
     });
 
-    console.log("response", response);
+    // console.log("response", response);
 
     if (response?.data?.message == "success") {
-      console.log("dfdfd", response?.data?.data);
+      // console.log("dfdfd", response?.data?.data);
 
-      console.log("trates", rates);
+      // console.log("trates", rates);
 
       let arr = response?.data?.data;
 
@@ -207,7 +207,7 @@ setShowAppBlock(response?.data?.data?.disabled)
         });
       }
 
-      console.log("sum", sum);
+      // console.log("sum", sum);
 
       setRecurringRevenue(sum);
 
@@ -219,7 +219,7 @@ setShowAppBlock(response?.data?.data?.disabled)
       headers: { Authorization: `Bearer ${sessionToken}` },
     });
 
-console.log("subscriptionBookingsData",subscriptionBookingsData)
+// console.log("subscriptionBookingsData",subscriptionBookingsData)
 if (subscriptionBookingsData?.data?.message == "success") {
 
   setSubscriptionBookings(subscriptionBookingsData?.data?.data)
@@ -230,7 +230,7 @@ if (subscriptionBookingsData?.data?.message == "success") {
   };
 
   const getActiveCustomers = async (body) => {
-    console.log("inactiveeee");
+    // console.log("inactiveeee");
 
     const sessionToken = await getSessionToken(app);
 
@@ -238,10 +238,10 @@ if (subscriptionBookingsData?.data?.message == "success") {
       headers: { Authorization: `Bearer ${sessionToken}` },
     });
 
-    console.log("kikikkik");
+    // console.log("kikikkik");
 
     if (response?.data?.message == "success") {
-      console.log("acttcccicccccveee", response?.data?.data);
+      // console.log("acttcccicccccveee", response?.data?.data);
 
       setActiveCustomers(response?.data?.data);
     }
@@ -294,7 +294,7 @@ if (subscriptionBookingsData?.data?.message == "success") {
 
     // console.log(dayjs(new Date()))
 
-    console.log(new Date(new Date().setHours(0, 0, 0, 0)));
+    // console.log(new Date(new Date().setHours(0, 0, 0, 0)));
 
     setRange(e);
 
@@ -302,7 +302,7 @@ if (subscriptionBookingsData?.data?.message == "success") {
 
         if(e =="customDate" ){
 
-          console.log("saahhhhiiiiii",typeof customDate)
+          // console.log("saahhhhiiiiii",typeof customDate)
           await  getData({range:e,customDate},currencyConversionRates)
 
           await  getActiveCustomers({range:e,customDate})
@@ -619,7 +619,7 @@ Last 6 Months
               format="YYYY-MM-DD"
               value={dayjs(customDate)}
               onChange={(date, dateString) => {
-                console.log("datestringgggg",typeof dateString)
+                // console.log("datestringgggg",typeof dateString)
                 setCustomDate(dateString);
                 getData({ customDate: dateString, range },currencyConversionRates);
                 getActiveCustomers({ customDate: dateString, range });

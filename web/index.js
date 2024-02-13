@@ -16,9 +16,8 @@ import emailTemplatesModal from "./backend/modals/emailtemplates.js";
 const __dirname = path.resolve();
 import path from "path";
 import storeModal from "./backend/modals/storeCredentials.js";
-
 import dotenv from "dotenv";
-
+import nodemailer from "nodemailer";
 const PORT = parseInt(process.env.BACKEND_PORT || process.env.PORT, 10);
 
 DB();
@@ -40,6 +39,55 @@ app.post(
 
 // app.post("/api/storefront/getPlansForStoreFront", getPlansForStoreFront);
 app.use(express.json());
+app.use("/api/emailSendFromShopifyAppStoreContactPopUp", async(req,res)=>{
+console.log("demo",req.body)
+let options={
+  to: "cd@yopmail.com",
+  subject: "Revlytic Customer Enquiry",
+  from : "sahilagnihotri7@gmail.com",
+  html: `<div>Name :  <strong> ${req?.body?.name}</strong> <div>
+  <div>Email :  <strong> ${req?.body?.email}</strong> <div>
+  <div>Message :  <strong> ${req?.body?.message}</strong> <div>
+  `,
+};
+
+
+let emailConfig = {
+  host: "smtp.gmail.com",
+
+  port: 587, 
+
+  auth: {
+    user: "sahilagnihotri7@gmail.com",
+
+    pass: "srdvsdnxfmvbrduw",
+  },
+
+  secure: false,
+};
+
+
+let  transporter = nodemailer.createTransport(emailConfig);
+try {
+  let data = await transporter.sendMail(options);
+  if (data) {
+    res.send({
+      message: "success",
+      data: "Mail sent successfully",
+    });
+  }
+  console.log(data, "jhgfds");
+} catch (err) {
+  console.log(err, "errorr aa gyaa");
+  res.send({ message: "error", data: "Something went wrong" });
+}
+
+
+
+
+
+});
+
 app.use("/api/storefront/", router);
 app.use("/api/prodEx", router);
 app.use("/api/customerPortal", router);
@@ -70,6 +118,16 @@ app.get("/api/privacy-policy", (req, res) => {
 
   res.render(`${templatePath}`);
 });
+
+app.get("/api/pricing-details", (req, res) => {
+  const templatePath = path.join(
+    __dirname,
+    "/frontend/pricingDetails/",
+    "pricingDetails.ejs"
+  );
+  res.render(`${templatePath}`);
+});
+
 
 app.get(shopify.config.auth.path, shopify.auth.begin());
 app.get(

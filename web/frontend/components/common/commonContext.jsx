@@ -11,6 +11,9 @@ const APIContext = createContext();
    const [billingPlan,setBillingPlan]=useState("") ;
    const [billingPlanDate,setBillingPlanDate]=useState() ;
    const [recurringRevenue,setRecurringRevenue]=useState(0) ;
+   const [planBuyDate,setPlanBuyDate]=useState() ;
+   const [chargeId,setChargeId]=useState() ;
+  //  const [check,setCheck]=useState(false) ;
    const app=useAppBridge();
   const [getShop, setGetShop] = useState(new URL(location.href).searchParams.get("shop"));
   // console.log("shop",getShop);
@@ -25,7 +28,7 @@ const APIContext = createContext();
         setCurrencyCode(result?.data?.data?.currency_code);
         setStoreName(getStoreName)
         setStoreDetails(result?.data?.data)
-                
+        // setCheck(true)     
        }
 
     let billingPlanData=await postApi("api/admin/getBillingPlanData",{},app);
@@ -33,9 +36,12 @@ const APIContext = createContext();
       console.log(billingPlanData?.data?.planData?.next_billing,"ksjaisa",billingPlanData)
       setBillingPlan(billingPlanData?.data?.planData?.plan)
       setBillingPlanDate(billingPlanData?.data?.planData?.next_billing)
+      // setPlanBuyDate(billingPlanData?.data?.planData?.updatedAt)
+      setPlanBuyDate(billingPlanData?.data?.planData?.activated_on)
+      setChargeId(billingPlanData?.data?.planData?.charge_id)
       console.log(billingPlanData?.data?.planData?.updatedAt,"kilkill")
     }else{
-      setBillingPlan("")
+      setBillingPlan("free")
     }
 
 
@@ -45,7 +51,7 @@ const APIContext = createContext();
  
   return (
 
-    <APIContext.Provider value={{ shop: getShop,currency:currency,storeName:storeName,storeDetails:storeDetails,billingPlan,nextBillingDate:billingPlanDate ,recurringRevenue,setRecurringRevenue:setRecurringRevenue,setBillingPlan:setBillingPlan}}>
+    <APIContext.Provider value={{ shop: getShop,currency:currency,storeName:storeName,storeDetails:storeDetails,check:true,chargeId,setChargeId,billingPlan,planBuyDate,nextBillingDate:billingPlanDate ,recurringRevenue,setRecurringRevenue:setRecurringRevenue,setBillingPlan:setBillingPlan}}>
 
       {children}
 

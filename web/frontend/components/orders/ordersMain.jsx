@@ -431,16 +431,16 @@ const pastAndSkippedItems =[
             
           {item.status == "upcoming" ? (
                       <div className="order-inner">
-                       <Tooltip color= "#ffffff" title={billingPlan !="starter" && billingPlan !="premium" ? <Link  to={(`/billing?option=earlyAttempt`)}>Upgrade your Plan</Link> :""}> 
-                       <Button onClick={() => handleOrderNow(item.renewal_date)} disabled={(billingPlan !='starter' && billingPlan !="premium")|| mode=='view'}>
+                       <Tooltip color= "#ffffff" title={billingPlan !="starter" && billingPlan !="premium" && billingPlan !="premiere" ? <Link  to={(`/billing?option=earlyAttempt`)}>Upgrade your Plan</Link> :""}> 
+                       <Button onClick={() => handleOrderNow(item.renewal_date)} disabled={(billingPlan !='starter' && billingPlan !="premium" && billingPlan !="premiere")|| mode=='view'}>
                           Order Now
                         </Button></Tooltip>
-                        <Tooltip color= "#ffffff" title={billingPlan !="starter" && billingPlan !="premium" ? <Link to={(`/billing?option=skipOrders`)}>Upgrade your Plan</Link> :""}> 
-                          <Button  onClick={() => handleSkipOrder(item.renewal_date)} disabled={(billingPlan !='starter' && billingPlan !="premium") || mode=='view'}>Skip Order</Button>
+                        <Tooltip color= "#ffffff" title={billingPlan !="starter" && billingPlan !="premium" && billingPlan !="premiere" ? <Link to={(`/billing?option=skipOrders`)}>Upgrade your Plan</Link> :""}> 
+                          <Button  onClick={() => handleSkipOrder(item.renewal_date)} disabled={(billingPlan !='starter' && billingPlan !="premium" && billingPlan !="premiere") || mode=='view'}>Skip Order</Button>
                           </Tooltip>
                       </div>
                     ) : item.status == "failed" ? 
-                      <Button onClick={()=>handleRetry(item.renewal_date,item.idempotencyKey)} disabled={(billingPlan !='starter' && billingPlan !="premium") || mode=='view'}>Retry</Button>
+                      <Button onClick={()=>handleRetry(item.renewal_date,item.idempotencyKey)} disabled={(billingPlan !='starter' && billingPlan !="premium" && billingPlan !="premiere") || mode=='view'}>Retry</Button>
                       : ""
                      }
           </div>

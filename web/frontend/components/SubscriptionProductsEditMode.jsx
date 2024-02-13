@@ -841,11 +841,11 @@ console.log("7decec",price)
           <p>Products</p>
           {!edit?.productDetails ? null : (
             <div>
-               <Tooltip color='#ffffff' title={billingPlan != 'premium' ? <Link to='/billing?option=editProducts'>Upgrade Your Plan</Link>: 'Add products to your Subscription Plan. You can either add all variants of a Product or a specific Product variant as selected.'}>
+               <Tooltip color='#ffffff' title={billingPlan != 'premium'  && billingPlan != 'premiere' ? <Link to='/billing?option=editProducts'>Upgrade Your Plan</Link>: 'Add products to your Subscription Plan. You can either add all variants of a Product or a specific Product variant as selected.'}>
               <Button
                 className="revlytic pricing-add-product"
                 onClick={handleAddButton}
-                disabled={billingPlan != 'premium'}
+                disabled={billingPlan != 'premium'  && billingPlan != 'premiere' }
               >
                 Add Products
               </Button>

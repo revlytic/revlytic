@@ -676,7 +676,7 @@ function Fulfillments({
                         color="#ffffff"
                         title={
                           billingPlan != "starter" &&
-                          billingPlan != "premium" ? (
+                          billingPlan != "premium" && billingPlan !="premiere" ? (
                             <Link to={`/billing?option=rescheduleDelivery`}>
                               Upgrade your Plan
                             </Link>
@@ -692,7 +692,7 @@ function Fulfillments({
                               Object.values(item)[0].fulfill_at
                             )
                           }
-                          disabled={(billingPlan != "starter" && billingPlan !='premium') || mode == "view"}
+                          disabled={(billingPlan != "starter" && billingPlan !='premium' && billingPlan !="premiere") || mode == "view"}
                         >
                           Reschedule
                         </Button>
@@ -701,7 +701,7 @@ function Fulfillments({
                         color="#ffffff"
                         title={
                           billingPlan != "starter" &&
-                          billingPlan != "premium" ? (
+                          billingPlan != "premium" &&  billingPlan !="premiere" ? (
                             <Link to={`/billing?option=rescheduleDelivery`}>
                               Upgrade your Plan
                             </Link>
@@ -719,7 +719,7 @@ function Fulfillments({
                           }
                           disabled={
                             (billingPlan != "starter" &&
-                              billingPlan != "premium") ||
+                              billingPlan != "premium" && billingPlan !="premiere") ||
                             mode == "view"
                           }
                         >

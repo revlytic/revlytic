@@ -1,4 +1,4 @@
-import React,{useState} from 'react'
+import React,{useEffect, useState} from 'react'
 import {
     Card,
     Button,
@@ -12,18 +12,19 @@ import postApi from '../components/common/postApi';
 import { useAppBridge } from '@shopify/app-bridge-react';
 import { useAPI } from '../components/common/commonContext';
 
-function ContactUs(props) {
+function ContactUs() {
     const [form] = useForm();
     const app = useAppBridge()
     const [loader,setLoader]=useState(false)
     const { storeDetails } = useAPI();
-const onFinish=async(values)=>{
 
-console.log("onfinish",values)
+
+    const onFinish=async(values)=>{
+
+// console.log("onfinish",values)
 setLoader(true);
 
 let options={
-    // from: "virender.shinedezign@gmail.com",
     to: "sahilagnihotri7@gmail.com",
     subject: "Revlytic Customer Enquiry",
     html: `<div>Name :  <strong> ${values.name}</strong> <div>
@@ -46,6 +47,9 @@ if (response.data.message == "success") {
   toast.success(response.data.data, {
     position: toast.POSITION.TOP_RIGHT,
   });
+
+form.resetFields()
+
 } else {
   toast.error(response.data.data, {
     position: toast.POSITION.TOP_RIGHT,
@@ -54,7 +58,6 @@ if (response.data.message == "success") {
 
 }
 
-console.log(props,"propss")
   return (
     <Spin spinning={loader} size="large" tip="Loading...">
     <Form
@@ -119,14 +122,7 @@ console.log(props,"propss")
               <Form.Item
                 label={<p className='revlytic contactus-password'>Store Password</p>}
                 name={"storepassword"}
-                rules={[
-                  {
-                    required: true,
-                    message: "",
-                  },
-               
-                ]}
-              
+                            
               >
                 <Input
                   // placeholder="Plan Name"

@@ -287,11 +287,55 @@ const PlanForm = (props) => {
     });
     setPreviewDropdown(arr);
     setDropdownValue(arr[0]);
-  }, [initialPlans, plansList]);
+console.log("products[0]?.variants[0]?.price",  products[0]?.variants[0]?.price,)
+    if (arr.length >0 && arr[0].price != undefined) {
+      if (arr[0].value.includes("percentage")) {
+     console.log("first",  (  (products[0]?.variants[0]?.price ?? 100) -
+     ((products[0]?.variants[0]?.price ?? 100) * arr[0].price) / 100))
+
+
+
+
+        arr[0].planType.toLowerCase().includes("prepaid") ? setPlanpreviewPrice(
+           (arr[0].billing/arr[0].delivery ) *(  (products[0]?.variants[0]?.price ?? 100) -
+            ((products[0]?.variants[0]?.price ?? 100) * arr[0].price) / 100)
+        ) :  setPlanpreviewPrice((products[0]?.variants[0]?.price ?? 100) -
+          ((products[0]?.variants[0]?.price ?? 100 )* arr[0].price) / 100) ;
+ 
+
+
+
+      } else if (arr[0].value.includes("fixed")) {
+
+        console.log("infixxx",(products[0]?.variants[0]?.price ?? 100) - (arr[0].price) > 0
+        ? ((products[0]?.variants[0]?.price ?? 100) - arr[0].price)
+        : 0)
+
+        arr[0].planType.toLowerCase().includes("prepaid") ? setPlanpreviewPrice(
+           (arr[0].billing/arr[0].delivery) * ((products[0]?.variants[0]?.price ?? 100) - (arr[0].price) > 0
+           ? ((products[0]?.variants[0]?.price ?? 100) - arr[0].price)
+           : 0)
+        ) : setPlanpreviewPrice((products[0]?.variants[0]?.price ?? 100) - (arr[0].price) > 0
+          ? ((products[0]?.variants[0]?.price ?? 100) - arr[0].price)
+          : 0) ;
+      }
+    } else {
+
+      setPlanpreviewPrice(products[0]?.variants[0]?.price ?? 100);
+      // setPlanpreviewPrice(100);
+    }
+
+
+
+
+  }, [initialPlans, plansList,products]);
   //console.log(dropdownValue, "sdsdsd");
   useEffect(() => {
     setProducts(products);
     // props.setProductList(products)
+    // if(products.length==0){
+    //   setPlanpreviewPrice(100)
+    // }
   }, [products]);
 
   useEffect(() => {
@@ -1298,6 +1342,24 @@ const PlanForm = (props) => {
     });
     setCheckedIds(ids);
 
+// console.log("senddata",sendData)
+
+
+    setpreviewData({
+      ...previewData,
+      src: sendData[0]?.variants[0]?.image
+        ? sendData[0]?.variants[0]?.image
+        : sendData[0]?.image 
+        ? sendData[0]?.image
+        : pic,
+      price: sendData[0]?.variants[0]?.price,
+      name:  sendData[0]?.hasOnlyDefaultVariant
+        ?  sendData[0]?.product_name
+        : sendData[0]?.variants[0]?.title,
+    });
+
+// setPlanpreviewPrice(sendData[0]?.variants[0]?.price)
+    
     setModal(false);
   };
   // //console.log(checkedIds);

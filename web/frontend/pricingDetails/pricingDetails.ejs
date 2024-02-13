@@ -1,0 +1,1339 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      .loader {
+        border: 4px solid rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        border-top: 4px solid #3498db;
+        width: 20px;
+        height: 20px;
+        animation: spin 1s linear infinite;
+        display: none;
+      }
+
+      /* Add a simple animation for the loader */
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+      .revlytic-billing-plans .subscription-card {
+        width: 100%;
+        border-radius: 14px;
+        padding: 20px;
+        background-color: #fff;
+        border: 2px solid transparent;
+        position: relative;
+      }
+      .subscription-card.active {
+        border: 2px solid #0f550c;
+      }
+      .subscription-card-heading {
+        padding: 14px 20px;
+        border-radius: 10px;
+        min-height: 240px;
+        position: relative;
+      }
+      @media (max-width: 1400px) {
+        .subscription-card-heading {
+          min-height: 300px;
+        }
+      }
+      .subscription-card-heading h2 {
+        font-size: 18px;
+        font-weight: 600;
+        line-height: 31px;
+      }
+
+      .subscription-card-heading span {
+        color: #12600f;
+        font-size: 20px;
+        margin-top: 64px;
+      }
+
+      .subscription-card-heading p {
+        color: #888888;
+        font-size: 14px;
+      }
+
+      .subscription-card-list {
+        margin-bottom: 3rem;
+        position: relative;
+      }
+
+      .subscription-card-list p {
+        font-size: 14px;
+        color: #000000;
+        line-height: 23px;
+        font-weight: 600;
+      }
+
+      .check-box {
+        height: 20px;
+        width: 20px;
+        background-color: #ffdcb9;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2px;
+        border-radius: 50px;
+      }
+
+      .price_card_desc {
+        margin-bottom: 10px;
+      }
+      .price_card_fee {
+        margin-top: 10px;
+      }
+      .revlytic-billing-plans .subscription-card.green:first-child .check-box {
+        background: #e79340;
+      }
+      .check-box i {
+        color: #fff;
+        font-size: 10px;
+      }
+
+      .subscription-card-listing li {
+        font-size: 15px;
+        color: #888888;
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        border-bottom: 1px solid #dfdfdf;
+        padding: 15px 0px;
+      }
+      .check-box svg {
+        fill: #000;
+      }
+      .subscription-card.blue .check-box svg {
+        fill: #fff;
+      }
+      .subscription-card-listing li:last-child {
+        border-bottom: unset;
+      }
+      .subscription-card-listing strong {
+        color: #255500;
+        font-weight: 900;
+        /* -webkit-animation: bounce .4s ease infinite alternate; */
+      }
+      @-webkit-keyframes bounce {
+        0% {
+        }
+        100% {
+          transform: translateY(-5px);
+        }
+      }
+      .card-btn {
+        color: #fff;
+        position: absolute;
+        bottom: 10px;
+        left: 50%;
+        overflow: hidden;
+        text-align: center;
+        padding: 8px;
+        width: 90%;
+        transform: translateX(-50%);
+        border-radius: 7px;
+        z-index: 1;
+        font-weight: 700;
+      }
+
+      .subscription-card-listing {
+        padding-left: 10px;
+      }
+
+      .card-wrapper {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        grid-gap: 1rem;
+      }
+
+      .subscription-card.green:hover {
+        border: 2px solid #12600f;
+      }
+
+      .subscription-card.yellow .subscription-card-heading {
+        background-color: #fdecdb;
+      }
+      .subscription-card.green .subscription-card-heading {
+        background-color: #e9f5e7;
+      }
+      .subscription-card.pink .subscription-card-heading {
+        background-color: #ffeaea;
+      }
+      .subscription-card.pink:hover {
+        border: 2px solid #ffeaea;
+      }
+      .subscription-card.pink .check-box {
+        background-color: #e3a9a9;
+      }
+      .subscription-card.lightyellow .subscription-card-heading {
+        background-color: #f2e9e0;
+      }
+      .subscription-card.lightyellow:hover {
+        border: 2px solid #f2e9e0;
+      }
+      .subscription-card.lightyellow .check-box {
+        background-color: #ffe7cf;
+      }
+      .subscription-card.green .check-box {
+        background-color: #2ba84e !important;
+      }
+
+      .subscription-card.green .card-btn {
+        background-color: #12600f;
+      }
+
+      .subscription-card.blue:hover {
+        border: 2px solid #3b3bee;
+      }
+
+      .subscription-card.blue .subscription-card-heading {
+        background-color: #e9e9ff;
+      }
+
+      .subscription-card.blue .check-box {
+        background-color: #3b3bee;
+      }
+
+      .subscription-card.blue .card-btn {
+        background-color: #3b3bee;
+      }
+
+      .subscription-card.blue .subscription-card-heading span {
+        color: #3b3bee;
+      }
+      .subscription-card.yellow span {
+        color: #ff8000;
+      }
+      .subscription-card.pink span {
+        color: #ff7373;
+      }
+      .subscription-card.lightyellow span {
+        color: #ffb46a;
+      }
+      .subscription-card.yellow:hover {
+        border: 2px solid #fe8000;
+      }
+      .check-box svg {
+        fill: #fff;
+      }
+      @media (min-width: 1600px) {
+        .container {
+          max-width: 1580px !important;
+        }
+      }
+
+      @media (min-width: 1600px) {
+        .card-wrapper {
+          grid-template-columns: repeat(
+            auto-fit,
+            minmax(300px, 1fr)
+          ) !important;
+        }
+      }
+
+      .revlytic-usage-tracker-wrapper {
+        margin-bottom: 1rem;
+        border-radius: 14px;
+        padding: 20px;
+        background-color: #fff;
+        width: 70%;
+        margin-right: 0;
+        margin-left: auto;
+      }
+
+      .revlytic-usage-tracker-main {
+        display: flex;
+        justify-content: space-between;
+        column-gap: 2rem;
+        row-gap: 1rem;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+
+      .usage-tarcker-content h3,
+      .usage-tarcker-content.withBtn h4 {
+        font-size: 18px;
+        font-weight: 600;
+        color: #000;
+        margin-bottom: 6px;
+      }
+      .usage-tarcker-content p,
+      .revlytic-plan-history p {
+        color: #888;
+        font-size: 14px;
+      }
+      .usage-tarcker-content.withBtn button {
+        color: #fff;
+        text-align: center;
+        font-size: 14px;
+        font-weight: 700;
+        background: #255500;
+        border-color: #2b5500;
+        border-radius: 6px;
+        border: none;
+        padding: 9px 14px;
+        cursor: pointer;
+      }
+      .billing-update-plan button {
+        color: #fff;
+        text-align: center;
+        font-size: 14px;
+        font-weight: 700;
+        background: #255500;
+        border-color: #2b5500;
+        border-radius: 6px;
+        border: none;
+        padding: 9px 14px;
+        cursor: pointer;
+      }
+
+      .card-wrapper .slick-track {
+        display: flex;
+      }
+      .card-wrapper .slick-slide {
+        margin-right: 10px;
+      }
+      .card-wrapper .slick-prev:before,
+      .slick-next:before {
+        font-size: 25px;
+        color: #0f550c;
+      }
+      .card-wrapper .slick-prev:before,
+      .slick-next:before {
+        font-size: 25px !important;
+        color: #0f550c;
+      }
+
+      .revlytic-plan-history h5 {
+        color: #1c5503;
+        font-size: 25px;
+        font-weight: 800;
+        padding-bottom: 0.4rem;
+      }
+      .revlytic-plan-history {
+        margin-bottom: 1rem;
+      }
+      .revlytic-billing-plans .card-wrapper .slick-prev {
+        left: 0;
+        z-index: 1;
+      }
+      .revlytic-billing-plans .card-wrapper .slick-next {
+        right: 15px;
+      }
+      .billing-update-plan {
+        margin-top: 10px;
+        position: absolute;
+        bottom: 20px;
+      }
+      .revlytic-billing-plans {
+        position: relative;
+      }
+      .revlytic-billing-plans-warning {
+        position: absolute;
+        width: 100%;
+        max-width: 400px;
+        top: 80px;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 1;
+        border-radius: 10px;
+        background-color: #ffffff;
+        box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+        align-items: baseline;
+        padding: 20px;
+      }
+      .revlytic-billing-plans-warning .ant-alert-icon {
+        position: relative;
+        top: 2px;
+      }
+
+      .main-div {
+        width: 90%;
+        display: flex;
+        margin: 0 auto;
+        flex-wrap: wrap;
+        justify-content: center;
+        row-gap: 1rem;
+      }
+      .main-div .subscription-card {
+        padding: 20px;
+        position: relative;
+        background-color: #fff;
+        border: 2px solid transparent;
+        border-radius: 14px;
+        width: 100%;
+        box-shadow: 0 0 5px 0px #b5b5b5;
+        margin-right: 11px;
+        max-width: 280px;
+      }
+      .main-div .subscription-card-heading h2 {
+        font-size: 18px;
+        font-weight: 500;
+        line-height: 31px;
+        font-family: "Mulish", sans-serif !important;
+      }
+      .main-div .subscription-card-heading p {
+        color: #888888;
+        font-size: 14px;
+        font-family: "Mulish", sans-serif !important;
+      }
+      .main-div .subscription-card-heading span {
+        /* color: #12600f; */
+        font-size: 20px;
+        margin-top: 64px;
+        font-family: "Mulish", sans-serif !important;
+      }
+      .main-div .subscription-card-listing li {
+        font-family: "Mulish", sans-serif !important;
+      }
+      .head-bill h2 {
+        text-align: center;
+        font-size: 30px;
+        font-family: "Mulish", sans-serif !important;
+      }
+      .foottext p {
+        font-family: "Mulish", sans-serif !important;
+      }
+      /* .main-div {
+        width: 90%;
+        margin: 0 auto;
+      } */
+      .billing-update-plan a {
+        color: #fff;
+        text-align: center;
+        font-size: 14px;
+        font-weight: 700;
+        background: #255500;
+        border-color: #2b5500;
+        border-radius: 6px;
+        border: none;
+        padding: 9px 14px;
+        cursor: pointer;
+        text-decoration: none;
+        font-family: "Mulish", sans-serif;
+      }
+
+      .contactbtn-with-sentmessage h4 {
+        height: 40px;
+        display: flex;
+        align-items: center;
+        width: 100%;
+        border: 1px solid #0f550c;
+        padding: 0 10px;
+        background: #0f550c30;
+        color: #000;
+        font-family: "Mulish", sans-serif;
+        font-weight: 500;
+        border-radius: 5px;
+      }
+
+      .popup-link {
+        display: flex;
+        flex-wrap: wrap;
+      }
+
+      .popup-link a {
+        background: #333;
+        color: #fff;
+        padding: 10px 30px;
+        border-radius: 5px;
+        font-size: 17px;
+        cursor: pointer;
+        margin: 20px;
+        text-decoration: none;
+      }
+
+      .popup-container {
+        visibility: hidden;
+        opacity: 0;
+        transition: all 0.3s ease-in-out;
+        transform: scale(1.3);
+        position: fixed;
+        z-index: 1;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(21, 17, 17, 0.61);
+        display: flex;
+        align-items: center;
+      }
+      .popup-content {
+        background-color: #fefefe;
+        margin: auto;
+        padding: 20px;
+        width: 100%;
+        max-width: 600px;
+        border-radius: 10px;
+      }
+      .popup-content p {
+        font-size: 17px;
+        padding: 10px;
+        line-height: 20px;
+      }
+      .popup-content a.close {
+        color: #aaaaaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+        background: none;
+        padding: 0;
+        margin: 0;
+        text-decoration: none;
+      }
+
+      .popup-content a.close:hover {
+        color: #333;
+      }
+
+      .popup-content span:hover,
+      .popup-content span:focus {
+        color: #000;
+        text-decoration: none;
+        cursor: pointer;
+      }
+
+      .popup-container:target {
+        visibility: visible;
+        opacity: 1;
+        transform: scale(1);
+      }
+
+      .popup-container h3 {
+        margin: 10px;
+        text-align: center;
+        font-size: 25px;
+        font-weight: 700;
+        font-family: "Mulish", sans-serif;
+      }
+      .contact-us-popup-field input {
+        width: 100%;
+        max-width: 97%;
+        min-height: 30px;
+        border: 1px solid #d1d1d1;
+        border-radius: 5px;
+        margin: 6px 0 20px 0;
+        padding: 10px;
+      }
+      .contact-us-popup-field textarea {
+        width: 100%;
+        max-width: 97%;
+        min-height: 80px;
+        padding: 10px;
+        border: 1px solid #d1d1d1;
+      }
+      .contact-us-popup-field label {
+        font-weight: 500;
+        font-size: 16px;
+        line-height: 1.5;
+        letter-spacing: -0.02em;
+        color: #1b1b1b;
+        text-transform: capitalize;
+        font-family: "Mulish", sans-serif;
+      }
+      .contact-us-popup-field button {
+        background: #0f550c;
+        border: 1px solid #0f550c;
+        height: 40px;
+        max-width: 120px;
+        width: 100%;
+        color: #fff;
+        border-radius: 7px;
+        font-size: 17px;
+        cursor: pointer;
+      }
+      .contact-us-popup-field span {
+        color: red;
+      }
+      .contactbtn-with-sentmessage {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+      .contactbtn-with-sentmessage .check-box {
+        background: #0f550c;
+        margin-right: 10px;
+      }
+      #buttonText {
+        color: #fff;
+      }
+      /*End popup styles*/
+      .foottext {
+    width: 90%;
+    margin: auto;
+}
+
+      @media (max-width: 576px) {
+        .popup-content {
+          max-width: 90%;
+        }
+      }
+
+      @media (max-width: 640px) {
+        .main-div .subscription-card {
+          max-width: 100%;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="head-bill"><h2>Plan & Packages</h2></div>
+    <div class="main-div">
+      <div class="subscription-card yellow">
+        <div class="subscription-card-heading">
+          <h2>Free</h2>
+          <p class="price_card_desc">
+            Completely free of charge up to the first $750 of monthly
+            subscription revenue.
+          </p>
+          <span> (<b>$0/</b>month) </span>
+          <p class="price_card_fee">No transaction fees.</p>
+          <div class="billing-update-plan">
+            <a href="https://apps.shopify.com/revlytic" target="_blank">
+              Start Free Trial
+            </a>
+          </div>
+        </div>
+        <div class="subscription-card-list">
+          <ul class="subscription-card-listing">
+            <li>
+              <div class="check-box">
+                <svg
+                  viewBox="64 64 896 896"
+                  focusable="false"
+                  data-icon="check"
+                  width="1em"
+                  height="1em"
+                  fill="currentColor"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M912 190h-69.9c-9.8 0-19.1 4.5-25.1 12.2L404.7 724.5 207 474a32 32 0 00-25.1-12.2H112c-6.7 0-10.4 7.7-6.3 12.9l273.9 347c12.8 16.2 37.4 16.2 50.3 0l488.4-618.9c4.1-5.1.4-12.8-6.3-12.8z"
+                  ></path>
+                </svg>
+              </div>
+              Subscription Creation and Mgmt
+            </li>
+            <li>
+              <div class="check-box">
+                <svg
+                  viewBox="64 64 896 896"
+                  focusable="false"
+                  data-icon="check"
+                  width="1em"
+                  height="1em"
+                  fill="currentColor"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M912 190h-69.9c-9.8 0-19.1 4.5-25.1 12.2L404.7 724.5 207 474a32 32 0 00-25.1-12.2H112c-6.7 0-10.4 7.7-6.3 12.9l273.9 347c12.8 16.2 37.4 16.2 50.3 0l488.4-618.9c4.1-5.1.4-12.8-6.3-12.8z"
+                  ></path>
+                </svg>
+              </div>
+              Pay As You Go Plans
+            </li>
+            <li>
+              <div class="check-box">
+                <svg
+                  viewBox="64 64 896 896"
+                  focusable="false"
+                  data-icon="check"
+                  width="1em"
+                  height="1em"
+                  fill="currentColor"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M912 190h-69.9c-9.8 0-19.1 4.5-25.1 12.2L404.7 724.5 207 474a32 32 0 00-25.1-12.2H112c-6.7 0-10.4 7.7-6.3 12.9l273.9 347c12.8 16.2 37.4 16.2 50.3 0l488.4-618.9c4.1-5.1.4-12.8-6.3-12.8z"
+                  ></path>
+                </svg>
+              </div>
+              Prepaid Plans
+            </li>
+            <li>
+              <div class="check-box">
+                <svg
+                  viewBox="64 64 896 896"
+                  focusable="false"
+                  data-icon="check"
+                  width="1em"
+                  height="1em"
+                  fill="currentColor"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M912 190h-69.9c-9.8 0-19.1 4.5-25.1 12.2L404.7 724.5 207 474a32 32 0 00-25.1-12.2H112c-6.7 0-10.4 7.7-6.3 12.9l273.9 347c12.8 16.2 37.4 16.2 50.3 0l488.4-618.9c4.1-5.1.4-12.8-6.3-12.8z"
+                  ></path>
+                </svg>
+              </div>
+              Payment Retry
+            </li>
+            <li>
+              <div class="check-box">
+                <svg
+                  viewBox="64 64 896 896"
+                  focusable="false"
+                  data-icon="check"
+                  width="1em"
+                  height="1em"
+                  fill="currentColor"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M912 190h-69.9c-9.8 0-19.1 4.5-25.1 12.2L404.7 724.5 207 474a32 32 0 00-25.1-12.2H112c-6.7 0-10.4 7.7-6.3 12.9l273.9 347c12.8 16.2 37.4 16.2 50.3 0l488.4-618.9c4.1-5.1.4-12.8-6.3-12.8z"
+                  ></path>
+                </svg>
+              </div>
+              Quick Create
+            </li>
+            <li>
+              <div class="check-box">
+                <svg
+                  viewBox="64 64 896 896"
+                  focusable="false"
+                  data-icon="check"
+                  width="1em"
+                  height="1em"
+                  fill="currentColor"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M912 190h-69.9c-9.8 0-19.1 4.5-25.1 12.2L404.7 724.5 207 474a32 32 0 00-25.1-12.2H112c-6.7 0-10.4 7.7-6.3 12.9l273.9 347c12.8 16.2 37.4 16.2 50.3 0l488.4-618.9c4.1-5.1.4-12.8-6.3-12.8z"
+                  ></path>
+                </svg>
+              </div>
+              Manual Subscriptions
+            </li>
+            <li>
+              <div class="check-box">
+                <svg
+                  viewBox="64 64 896 896"
+                  focusable="false"
+                  data-icon="check"
+                  width="1em"
+                  height="1em"
+                  fill="currentColor"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M912 190h-69.9c-9.8 0-19.1 4.5-25.1 12.2L404.7 724.5 207 474a32 32 0 00-25.1-12.2H112c-6.7 0-10.4 7.7-6.3 12.9l273.9 347c12.8 16.2 37.4 16.2 50.3 0l488.4-618.9c4.1-5.1.4-12.8-6.3-12.8z"
+                  ></path>
+                </svg>
+              </div>
+              Discounts
+            </li>
+            <li>
+              <div class="check-box">
+                <svg
+                  viewBox="64 64 896 896"
+                  focusable="false"
+                  data-icon="check"
+                  width="1em"
+                  height="1em"
+                  fill="currentColor"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M912 190h-69.9c-9.8 0-19.1 4.5-25.1 12.2L404.7 724.5 207 474a32 32 0 00-25.1-12.2H112c-6.7 0-10.4 7.7-6.3 12.9l273.9 347c12.8 16.2 37.4 16.2 50.3 0l488.4-618.9c4.1-5.1.4-12.8-6.3-12.8z"
+                  ></path>
+                </svg>
+              </div>
+              Free Trials
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="subscription-card green">
+        <div class="subscription-card-heading">
+          <h2>Starter</h2>
+          <p class="price_card_desc">
+            Includes up to $5,000 of monthly subscription revenue.
+          </p>
+          <span> (<b>$7/</b>month) </span>
+          <p class="price_card_fee">No transaction fees.</p>
+          <p class="price_card_fee">14 Days Free Trial</p>
+          <div class="billing-update-plan">
+            <a href="https://apps.shopify.com/revlytic" target="_blank">
+              Start Free Trial
+            </a>
+          </div>
+        </div>
+
+        <div class="subscription-card-list">
+          <ul class="subscription-card-listing">
+            <li>+ All Features from Free</li>
+            <li>
+              <div class="check-box">
+                <svg
+                  viewBox="64 64 896 896"
+                  focusable="false"
+                  data-icon="check"
+                  width="1em"
+                  height="1em"
+                  fill="currentColor"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M912 190h-69.9c-9.8 0-19.1 4.5-25.1 12.2L404.7 724.5 207 474a32 32 0 00-25.1-12.2H112c-6.7 0-10.4 7.7-6.3 12.9l273.9 347c12.8 16.2 37.4 16.2 50.3 0l488.4-618.9c4.1-5.1.4-12.8-6.3-12.8z"
+                  ></path>
+                </svg>
+              </div>
+              Overview Metrics
+            </li>
+            <li>
+              <div class="check-box">
+                <svg
+                  viewBox="64 64 896 896"
+                  focusable="false"
+                  data-icon="check"
+                  width="1em"
+                  height="1em"
+                  fill="currentColor"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M912 190h-69.9c-9.8 0-19.1 4.5-25.1 12.2L404.7 724.5 207 474a32 32 0 00-25.1-12.2H112c-6.7 0-10.4 7.7-6.3 12.9l273.9 347c12.8 16.2 37.4 16.2 50.3 0l488.4-618.9c4.1-5.1.4-12.8-6.3-12.8z"
+                  ></path>
+                </svg>
+              </div>
+              One Click Checkout Link
+            </li>
+            <li>
+              <div class="check-box">
+                <svg
+                  viewBox="64 64 896 896"
+                  focusable="false"
+                  data-icon="check"
+                  width="1em"
+                  height="1em"
+                  fill="currentColor"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M912 190h-69.9c-9.8 0-19.1 4.5-25.1 12.2L404.7 724.5 207 474a32 32 0 00-25.1-12.2H112c-6.7 0-10.4 7.7-6.3 12.9l273.9 347c12.8 16.2 37.4 16.2 50.3 0l488.4-618.9c4.1-5.1.4-12.8-6.3-12.8z"
+                  ></path>
+                </svg>
+              </div>
+
+              Customer Portal
+            </li>
+            <li>
+              <div class="check-box">
+                <svg
+                  viewBox="64 64 896 896"
+                  focusable="false"
+                  data-icon="check"
+                  width="1em"
+                  height="1em"
+                  fill="currentColor"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M912 190h-69.9c-9.8 0-19.1 4.5-25.1 12.2L404.7 724.5 207 474a32 32 0 00-25.1-12.2H112c-6.7 0-10.4 7.7-6.3 12.9l273.9 347c12.8 16.2 37.4 16.2 50.3 0l488.4-618.9c4.1-5.1.4-12.8-6.3-12.8z"
+                  ></path>
+                </svg>
+              </div>
+
+              Invoice Templates
+            </li>
+            <li>
+              <div class="check-box">
+                <svg
+                  viewBox="64 64 896 896"
+                  focusable="false"
+                  data-icon="check"
+                  width="1em"
+                  height="1em"
+                  fill="currentColor"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M912 190h-69.9c-9.8 0-19.1 4.5-25.1 12.2L404.7 724.5 207 474a32 32 0 00-25.1-12.2H112c-6.7 0-10.4 7.7-6.3 12.9l273.9 347c12.8 16.2 37.4 16.2 50.3 0l488.4-618.9c4.1-5.1.4-12.8-6.3-12.8z"
+                  ></path>
+                </svg>
+              </div>
+
+              Early Attempt
+            </li>
+            <li>
+              <div class="check-box">
+                <svg
+                  viewBox="64 64 896 896"
+                  focusable="false"
+                  data-icon="check"
+                  width="1em"
+                  height="1em"
+                  fill="currentColor"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M912 190h-69.9c-9.8 0-19.1 4.5-25.1 12.2L404.7 724.5 207 474a32 32 0 00-25.1-12.2H112c-6.7 0-10.4 7.7-6.3 12.9l273.9 347c12.8 16.2 37.4 16.2 50.3 0l488.4-618.9c4.1-5.1.4-12.8-6.3-12.8z"
+                  ></path>
+                </svg>
+              </div>
+
+              Skip Subscription Orders
+            </li>
+            <li>
+              <div class="check-box">
+                <svg
+                  viewBox="64 64 896 896"
+                  focusable="false"
+                  data-icon="check"
+                  width="1em"
+                  height="1em"
+                  fill="currentColor"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M912 190h-69.9c-9.8 0-19.1 4.5-25.1 12.2L404.7 724.5 207 474a32 32 0 00-25.1-12.2H112c-6.7 0-10.4 7.7-6.3 12.9l273.9 347c12.8 16.2 37.4 16.2 50.3 0l488.4-618.9c4.1-5.1.4-12.8-6.3-12.8z"
+                  ></path>
+                </svg>
+              </div>
+
+              Reschedule Upcoming Deliveries
+            </li>
+            <li>
+              <div class="check-box">
+                <svg
+                  viewBox="64 64 896 896"
+                  focusable="false"
+                  data-icon="check"
+                  width="1em"
+                  height="1em"
+                  fill="currentColor"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M912 190h-69.9c-9.8 0-19.1 4.5-25.1 12.2L404.7 724.5 207 474a32 32 0 00-25.1-12.2H112c-6.7 0-10.4 7.7-6.3 12.9l273.9 347c12.8 16.2 37.4 16.2 50.3 0l488.4-618.9c4.1-5.1.4-12.8-6.3-12.8z"
+                  ></path>
+                </svg>
+              </div>
+
+              Email templates Customization
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="subscription-card blue">
+        <div class="subscription-card-heading">
+          <h2>Premium</h2>
+          <p class="price_card_desc">
+            Includes up to $30,000 of monthly subscription revenue.
+          </p>
+          <span> (<b>$20/</b>month) </span>
+          <p class="price_card_fee">No transaction fees.</p>
+          <p class="price_card_fee">14 Days Free Trial</p>
+          <div class="billing-update-plan">
+            <a href="https://apps.shopify.com/revlytic" target="_blank">
+              Start Free Trial
+            </a>
+          </div>
+        </div>
+        <div class="subscription-card-list">
+          <ul class="subscription-card-listing">
+            <li>+ All Features from Starter</li>
+            <li>
+              <div class="check-box">
+                <svg
+                  viewBox="64 64 896 896"
+                  focusable="false"
+                  data-icon="check"
+                  width="1em"
+                  height="1em"
+                  fill="currentColor"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M912 190h-69.9c-9.8 0-19.1 4.5-25.1 12.2L404.7 724.5 207 474a32 32 0 00-25.1-12.2H112c-6.7 0-10.4 7.7-6.3 12.9l273.9 347c12.8 16.2 37.4 16.2 50.3 0l488.4-618.9c4.1-5.1.4-12.8-6.3-12.8z"
+                  ></path>
+                </svg>
+              </div>
+
+              Customize Widget
+            </li>
+            <li>
+              <div class="check-box">
+                <svg
+                  viewBox="64 64 896 896"
+                  focusable="false"
+                  data-icon="check"
+                  width="1em"
+                  height="1em"
+                  fill="currentColor"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M912 190h-69.9c-9.8 0-19.1 4.5-25.1 12.2L404.7 724.5 207 474a32 32 0 00-25.1-12.2H112c-6.7 0-10.4 7.7-6.3 12.9l273.9 347c12.8 16.2 37.4 16.2 50.3 0l488.4-618.9c4.1-5.1.4-12.8-6.3-12.8z"
+                  ></path>
+                </svg>
+              </div>
+              Email Configuration
+            </li>
+            <li>
+              <div class="check-box">
+                <svg
+                  viewBox="64 64 896 896"
+                  focusable="false"
+                  data-icon="check"
+                  width="1em"
+                  height="1em"
+                  fill="currentColor"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M912 190h-69.9c-9.8 0-19.1 4.5-25.1 12.2L404.7 724.5 207 474a32 32 0 00-25.1-12.2H112c-6.7 0-10.4 7.7-6.3 12.9l273.9 347c12.8 16.2 37.4 16.2 50.3 0l488.4-618.9c4.1-5.1.4-12.8-6.3-12.8z"
+                  ></path>
+                </svg>
+              </div>
+              Product Changes in Existing
+            </li>
+            <li>
+              <div class="check-box">
+                <svg
+                  viewBox="64 64 896 896"
+                  focusable="false"
+                  data-icon="check"
+                  width="1em"
+                  height="1em"
+                  fill="currentColor"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M912 190h-69.9c-9.8 0-19.1 4.5-25.1 12.2L404.7 724.5 207 474a32 32 0 00-25.1-12.2H112c-6.7 0-10.4 7.7-6.3 12.9l273.9 347c12.8 16.2 37.4 16.2 50.3 0l488.4-618.9c4.1-5.1.4-12.8-6.3-12.8z"
+                  ></path>
+                </svg>
+              </div>
+              Subscription
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="subscription-card pink">
+        <div class="subscription-card-heading">
+          <h2>Premiere</h2>
+          <p class="price_card_desc">
+            Includes up to $100,000 of monthly subscription revenue.
+          </p>
+
+          <span> (<b>$50/</b>month) </span>
+          <p class="price_card_fee">No transaction fees.</p>
+          <p class="price_card_fee">14 Days Free Trial</p>
+          <div class="billing-update-plan">
+            <a href="https://apps.shopify.com/revlytic" target="_blank">
+              Start Free Trial
+            </a>
+          </div>
+        </div>
+        <div class="subscription-card-list">
+          <ul class="subscription-card-listing">
+            <li>+ All Features from Premium</li>
+            <li>
+              <div class="check-box">
+                <svg
+                  viewBox="64 64 896 896"
+                  focusable="false"
+                  data-icon="check"
+                  width="1em"
+                  height="1em"
+                  fill="currentColor"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M912 190h-69.9c-9.8 0-19.1 4.5-25.1 12.2L404.7 724.5 207 474a32 32 0 00-25.1-12.2H112c-6.7 0-10.4 7.7-6.3 12.9l273.9 347c12.8 16.2 37.4 16.2 50.3 0l488.4-618.9c4.1-5.1.4-12.8-6.3-12.8z"
+                  ></path>
+                </svg>
+              </div>
+              24/7 Support
+            </li>
+            <li>
+              <div class="check-box">
+                <svg
+                  viewBox="64 64 896 896"
+                  focusable="false"
+                  data-icon="check"
+                  width="1em"
+                  height="1em"
+                  fill="currentColor"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M912 190h-69.9c-9.8 0-19.1 4.5-25.1 12.2L404.7 724.5 207 474a32 32 0 00-25.1-12.2H112c-6.7 0-10.4 7.7-6.3 12.9l273.9 347c12.8 16.2 37.4 16.2 50.3 0l488.4-618.9c4.1-5.1.4-12.8-6.3-12.8z"
+                  ></path>
+                </svg>
+              </div>
+              White Glove Migration Support
+            </li>
+            <li>
+              <div class="check-box">
+                <svg
+                  viewBox="64 64 896 896"
+                  focusable="false"
+                  data-icon="check"
+                  width="1em"
+                  height="1em"
+                  fill="currentColor"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M912 190h-69.9c-9.8 0-19.1 4.5-25.1 12.2L404.7 724.5 207 474a32 32 0 00-25.1-12.2H112c-6.7 0-10.4 7.7-6.3 12.9l273.9 347c12.8 16.2 37.4 16.2 50.3 0l488.4-618.9c4.1-5.1.4-12.8-6.3-12.8z"
+                  ></path>
+                </svg>
+              </div>
+              Early Access to new features
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="subscription-card lightyellow">
+        <div class="subscription-card-heading">
+          <h2>Enterprise</h2>
+          <p class="price_card_desc">
+            Contact us for your own custom plan and tailored servicing of your
+            business needs.
+          </p>
+          <span> (<b>Custom</b>) </span>
+          <p class="price_card_fee">No transaction fees.</p>
+
+          <div class="billing-update-plan">
+            <a href="#popup1">Contact Us</a>
+          </div>
+        </div>
+        <div class="subscription-card-list">
+          <ul class="subscription-card-listing">
+            <li>+ All Features from Premiere</li>
+            <li>
+              <div class="check-box">
+                <svg
+                  viewBox="64 64 896 896"
+                  focusable="false"
+                  data-icon="check"
+                  width="1em"
+                  height="1em"
+                  fill="currentColor"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M912 190h-69.9c-9.8 0-19.1 4.5-25.1 12.2L404.7 724.5 207 474a32 32 0 00-25.1-12.2H112c-6.7 0-10.4 7.7-6.3 12.9l273.9 347c12.8 16.2 37.4 16.2 50.3 0l488.4-618.9c4.1-5.1.4-12.8-6.3-12.8z"
+                  ></path>
+                </svg>
+              </div>
+              App Customization
+            </li>
+            <li>
+              <div class="check-box">
+                <svg
+                  viewBox="64 64 896 896"
+                  focusable="false"
+                  data-icon="check"
+                  width="1em"
+                  height="1em"
+                  fill="currentColor"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M912 190h-69.9c-9.8 0-19.1 4.5-25.1 12.2L404.7 724.5 207 474a32 32 0 00-25.1-12.2H112c-6.7 0-10.4 7.7-6.3 12.9l273.9 347c12.8 16.2 37.4 16.2 50.3 0l488.4-618.9c4.1-5.1.4-12.8-6.3-12.8z"
+                  ></path>
+                </svg>
+              </div>
+              1:1 Consultation
+            </li>
+            <li>
+              <div class="check-box">
+                <svg
+                  viewBox="64 64 896 896"
+                  focusable="false"
+                  data-icon="check"
+                  width="1em"
+                  height="1em"
+                  fill="currentColor"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M912 190h-69.9c-9.8 0-19.1 4.5-25.1 12.2L404.7 724.5 207 474a32 32 0 00-25.1-12.2H112c-6.7 0-10.4 7.7-6.3 12.9l273.9 347c12.8 16.2 37.4 16.2 50.3 0l488.4-618.9c4.1-5.1.4-12.8-6.3-12.8z"
+                  ></path>
+                </svg>
+              </div>
+              Strategy Sessions
+            </li>
+            <li>
+              <div class="check-box">
+                <svg
+                  viewBox="64 64 896 896"
+                  focusable="false"
+                  data-icon="check"
+                  width="1em"
+                  height="1em"
+                  fill="currentColor"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M912 190h-69.9c-9.8 0-19.1 4.5-25.1 12.2L404.7 724.5 207 474a32 32 0 00-25.1-12.2H112c-6.7 0-10.4 7.7-6.3 12.9l273.9 347c12.8 16.2 37.4 16.2 50.3 0l488.4-618.9c4.1-5.1.4-12.8-6.3-12.8z"
+                  ></path>
+                </svg>
+              </div>
+              Early Access to New Features
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="foottext">
+      <p>* All charges are billed in USD.</p>
+      <p>
+        ** Recurring charges, including monthly or usage-based charges, are
+        billed every 30 days.
+      </p>
+    </div>
+
+    <!--contact us popup start here-->
+    <div id="popup1" class="popup-container">
+      <div class="popup-content">
+        <a href="#" class="close">&times;</a>
+        <h3>Get In Touch!</h3>
+        <div class="contact-us-popup-field">
+          <form name="contact-form">
+            <label for="name">Name <span>*</span></label
+            ><br />
+            <input type="text" id="name" name="name" required /><br />
+
+            <label for="email">Email <span>*</span></label
+            ><br />
+            <input type="email" id="email" name="email" required /><br />
+
+            <label for="message">Message <span>*</span></label
+            ><br />
+            <textarea id="message" placeholder="Message" required></textarea
+            ><br /><br />
+
+            <!-- <button type="button" onclick="submitForm()">Send</button> -->
+
+            <div class="contactbtn-with-sentmessage">
+              <button type="button" onclick="submitForm()">
+                <span id="loader" class="loader"></span>
+                <span id="buttonText">Send</span>
+              </button>
+              <h4
+                id="message-success"
+                class="message-success"
+                style="display: none"
+              >
+                <div class="check-box">
+                  <svg
+                    viewBox="64 64 896 896"
+                    focusable="false"
+                    data-icon="check"
+                    width="1em"
+                    height="1em"
+                    fill="currentColor"
+                    aria-hidden="true"
+                  >
+                    <path
+                      d="M912 190h-69.9c-9.8 0-19.1 4.5-25.1 12.2L404.7 724.5 207 474a32 32 0 00-25.1-12.2H112c-6.7 0-10.4 7.7-6.3 12.9l273.9 347c12.8 16.2 37.4 16.2 50.3 0l488.4-618.9c4.1-5.1.4-12.8-6.3-12.8z"
+                    ></path>
+                  </svg>
+                </div>
+                Mail sent successfully
+              </h4>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    <!--contact us popup end here-->
+
+    <script>
+      function submitForm() {
+        // Fetch form elements
+        var name = document.getElementById("name").value;
+        var email = document.getElementById("email").value;
+        var message = document.getElementById("message").value;
+        var frm = document.getElementsByName("contact-form")[0];
+
+        // You can perform additional validation here if needed
+
+        // Example: Check if fields are not empty
+        if (
+          name.trim() === "" ||
+          email.trim() === "" ||
+          message.trim() === ""
+        ) {
+          alert("Please fill in all required fields");
+          return;
+        }
+        let emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+          alert("Please enter a valid email address");
+          return;
+        }
+
+        // Show loading spinner and disable the button
+        document.getElementById("loader").style.display = "inline-block";
+        document.getElementById("buttonText").style.display = "none";
+
+        // Perform your desired actions with the form data
+        // For now, let's just log the data to the console
+        console.log("Name: " + name);
+        console.log("Email: " + email);
+        console.log("Message: " + message);
+
+        // Construct the data to be sent to the server
+        var formData = {
+          name: name,
+          email: email,
+          message: message,
+        };
+
+        // Use the fetch API to send the data to the server
+        fetch(
+          "https://revlytic.co/api/emailSendFromShopifyAppStoreContactPopUp",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(formData),
+          }
+        )
+          .then((response) => response.json())
+          .then((data) => {
+            console.log("response:", data);
+            document.getElementById("loader").style.display = "none";
+            document.getElementById("buttonText").style.display =
+              "inline-block";
+            if (data && data?.message == "success") {
+              frm.reset();
+              document.getElementById("message-success").style.display =
+                "block";
+              // console.log('doccument', document.getElementById('message-success'))
+              setTimeout(function () {
+                document.getElementById("message-success").style.display =
+                  "none";
+              }, 2000);
+              // alert('Mail sent successfully.')
+            } else {
+              alert("Something went wrong!");
+            }
+          })
+          .catch((error) => {
+            document.getElementById("loader").style.display = "none";
+            document.getElementById("buttonText").style.display =
+              "inline-block";
+            console.error("Error:", error);
+            alert("Something went wrong!");
+          });
+      }
+    </script>
+  </body>
+</html>

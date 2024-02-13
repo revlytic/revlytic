@@ -1,5 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { Button, Card, Collapse, Form, Input, Spin, Switch, Tooltip } from "antd";
+import {
+  Button,
+  Card,
+  Collapse,
+  Form,
+  Input,
+  Spin,
+  Switch,
+  Tooltip,
+} from "antd";
 import postApi from "../components/common/postApi";
 import { useAppBridge } from "@shopify/app-bridge-react";
 import UploadImage from "../components/upload";
@@ -7,13 +16,10 @@ import { toast } from "react-toastify";
 import { useAPI } from "../components/common/commonContext";
 import { Link } from "react-router-dom";
 
-// import dotenv from 'dotenv';
-// dotenv.config();
-
 const { Panel } = Collapse;
 function invoice() {
   const app = useAppBridge();
-  const { billingPlan }=useAPI()
+  const { billingPlan } = useAPI();
 
   const [loader, setLoader] = useState(false);
   const [components, setComponents] = useState([
@@ -65,7 +71,8 @@ function invoice() {
   const [signature, setSignature] = useState("");
   const [automaticallySend, setAutomaticallySend] = useState("");
   const [created, setCreated] = useState("");
-
+  const [logoData, setLogoData] = useState("");
+  const [signatureData, setSignatureData] = useState("");
   const [editMode, setEditMode] = useState(false);
   const onChange = (value, index) => {
     console.log(value, index);
@@ -73,9 +80,6 @@ function invoice() {
     arr[index].status = value;
     setComponents(arr);
   };
-
-  const [logoData, setLogoData] = useState("");
-  const [signatureData, setSignatureData] = useState("");
 
   // console.log(process.env.REACT_APP_HOST,"lkj");
   useEffect(async () => {
@@ -115,83 +119,70 @@ function invoice() {
 
   const saveDetails = async () => {
     setLoader(true);
-    console.log(logo,signature,"gh");
-console.log(signatureData,signatureData,"sdasdasdas");
-    let updatedLogo=logo
-    let updatedSignature=signature
-   
-      if (logo && logoData ) {
-        console.log("breakfast")
-        const response = await postApi(
-          "/api/admin/delete",
-          { url: logo },
-          app
-        );
-      }
-      if (signature && signatureData) {
-        console.log("lunch")
-        const response = await postApi(
-          "/api/admin/delete",
-          { url: signature },
-          app
-        );
-      }
+    console.log(logo, signature, "gh");
+    console.log(signatureData, signatureData, "sdasdasdas");
+    let updatedLogo = logo;
+    let updatedSignature = signature;
 
-      if(logoData){
-        console.log("morinig")
-      try {
-      let  savelogo = await postApi("/api/admin/upload", logoData, app);
-      if (savelogo.data.message == "success") {
-        // toast.success("Logo uploaded successfully", {
-        //   position: toast.POSITION.TOP_RIGHT,
-        // });
-      updatedLogo=`https://investor-liable-articles-cutting.trycloudflare.com/images/logo/${savelogo.data.name}`
-        setLogo(
-          `https://investor-liable-articles-cutting.trycloudflare.com/images/logo/${savelogo.data.name}`
-        );
-
-
-      }
-    } catch (error) {
-      // toast.success("File upload failed", {
-      //   position: toast.POSITION.TOP_RIGHT,
-      // });
+    if (logo && logoData) {
+      console.log("breakfast");
+      const response = await postApi("/api/admin/delete", { url: logo }, app);
     }
-  }
-
-
-if(signatureData){
-    try {
-      console.log("evening")
-      let  savesignature = await postApi(
-        "/api/admin/upload",
-        signatureData,
+    if (signature && signatureData) {
+      console.log("lunch");
+      const response = await postApi(
+        "/api/admin/delete",
+        { url: signature },
         app
       );
-      if (savesignature.data.message == "success") {
+    }
+
+    if (logoData) {
+      console.log("morinig");
+      try {
+        let savelogo = await postApi("/api/admin/upload", logoData, app);
+        if (savelogo.data.message == "success") {
+          // toast.success("Logo uploaded successfully", {
+          //   position: toast.POSITION.TOP_RIGHT,
+          // });
+          updatedLogo = `https://investor-liable-articles-cutting.trycloudflare.com/images/logo/${savelogo.data.name}`;
+          setLogo(
+            `https://investor-liable-articles-cutting.trycloudflare.com/images/logo/${savelogo.data.name}`
+          );
+        }
+      } catch (error) {
+        // toast.success("File upload failed", {
+        //   position: toast.POSITION.TOP_RIGHT,
+        // });
+      }
+    }
+
+    if (signatureData) {
+      try {
+        console.log("evening");
+        let savesignature = await postApi(
+          "/api/admin/upload",
+          signatureData,
+          app
+        );
+        if (savesignature.data.message == "success") {
           // toast.success("Signature uploaded successfully", {
           //   position: toast.POSITION.TOP_RIGHT,
           // });
-          updatedSignature=`https://investor-liable-articles-cutting.trycloudflare.com/images/signature/${savesignature.data.name}`;
-        setSignature(
-           `https://investor-liable-articles-cutting.trycloudflare.com/images/signature/${savesignature.data.name}`
-        );
+          updatedSignature = `https://investor-liable-articles-cutting.trycloudflare.com/images/signature/${savesignature.data.name}`;
+          setSignature(
+            `https://investor-liable-articles-cutting.trycloudflare.com/images/signature/${savesignature.data.name}`
+          );
+        }
+      } catch (error) {
+        // toast.success("File upload failed", {
+        //   position: toast.POSITION.TOP_RIGHT,
+        // });
       }
-    } catch (error) {
-      // toast.success("File upload failed", {
-      //   position: toast.POSITION.TOP_RIGHT,
-      // });
     }
 
-  }
-
-
-
-
-
-
     try {
-      console.log(logo,"jh");
+      console.log(logo, "jh");
       let saveData = await postApi(
         "/api/admin/saveinvoiceDetails",
         {
@@ -223,17 +214,15 @@ if(signatureData){
         app
       );
     } catch (err) {
-      console.log(err,"hg");
+      console.log(err, "hg");
     }
     setEditMode(false);
     setLoader(false);
   };
-  console.log(editMode);
-
-  return (
+   return (
     <Spin tip="Loading..." size="large" spinning={loader}>
-        <div className="revlytic plan-group-listing-button">
-      <h1 className="revlytic-plan-switch-heading">Invoice</h1>
+      <div className="revlytic plan-group-listing-button">
+        <h1 className="revlytic-plan-switch-heading">Invoice</h1>
       </div>
       <div
         className={
@@ -244,20 +233,15 @@ if(signatureData){
       >
         {editMode && (
           <Card>
-                  
-                        <div
-                          className="revlytic invoice-components-label"
-                          key={18}
-                        >
-                          <p>{components[18].label}</p>
-                          <Switch
-                            checked={components[18].status}
-                            onChange={(value) => onChange(value, 18)}
-                          />
-                        </div>
+            <div className="revlytic invoice-components-label" key={18}>
+              <p>{components[18].label}</p>
+              <Switch
+                checked={components[18].status}
+                onChange={(value) => onChange(value, 18)}
+              />
+            </div>
             <h1>Invoice Fields</h1>
-           
-                  
+
             <Collapse>
               <Panel header="Header" key="1">
                 <ul className="revlytic invoice-components">
@@ -323,23 +307,43 @@ if(signatureData){
                 </ul>
               </Panel>
             </Collapse>
-            
           </Card>
         )}
         <div>
           <div className="revlytic invoice-edit-container">
             <div className="revlytic invoice-edit-switch">
               <p> Edit Modes</p>{" "}
-             <Tooltip color='#ffffff' title={billingPlan !="starter" && billingPlan != 'premium' ? <Link to={(`/billing?option=invoice`)}>Upgrade your Plan</Link> :""}> <Switch
-                checked={editMode}
-                onChange={(checked) => setEditMode(checked)}
-                disabled={billingPlan !='starter' && billingPlan !='premium' }
-              /></Tooltip>
+              <Tooltip
+                color="#ffffff"
+                title={
+                  billingPlan != "starter" &&
+                  billingPlan != "premium" &&
+                  billingPlan != "premiere" ? (
+                    <Link to={`/billing?option=invoice`}>
+                      Upgrade your Plan
+                    </Link>
+                  ) : (
+                    ""
+                  )
+                }
+              >
+                {" "}
+                <Switch
+                  checked={editMode}
+                  onChange={(checked) => setEditMode(checked)}
+                  disabled={
+                    billingPlan != "starter" &&
+                    billingPlan != "premium" &&
+                    billingPlan != "premiere"
+                  }
+                />
+              </Tooltip>
             </div>
             <div className="revlytic invoice details-save-button">
               {editMode && <Button onClick={saveDetails}>Save</Button>}
-              {editMode && <Button onClick={()=>setEditMode(false)}>Cancel</Button>}
-
+              {editMode && (
+                <Button onClick={() => setEditMode(false)}>Cancel</Button>
+              )}
             </div>
           </div>
           <div
@@ -449,7 +453,7 @@ if(signatureData){
                                               <strong
                                                 style={{
                                                   color: "#000",
-                                                
+
                                                   fontSize: 15,
                                                   margin: 0,
                                                 }}
@@ -469,7 +473,7 @@ if(signatureData){
                                               <p
                                                 style={{
                                                   color: "#5b5b5b",
-                                                
+
                                                   fontSize: 14,
                                                   fontWeight: 500,
                                                   margin: "2px 0 2px",
@@ -506,7 +510,7 @@ if(signatureData){
                                               <strong
                                                 style={{
                                                   color: "#0F550C",
-                                                
+
                                                   fontSize: 45,
                                                   fontStyle: "normal",
                                                   fontWeight: 600,
@@ -591,7 +595,7 @@ if(signatureData){
                                                 </div>
                                               </>
                                             )}
-                                             <br /> 
+                                            <br />
                                             {components[5].status && (
                                               <>
                                                 {" "}
@@ -633,398 +637,398 @@ if(signatureData){
             {/* /Header */}
             {/* Order Details */}
             <div className="revlytic-email-template-table-scroll">
-            <table
-              width="100%"
-              border={0}
-              cellPadding={0}
-              cellSpacing={0}
-              align="center"
-              className="fullTable"
-              bgcolor="#f1f2f4"
-            >
-              <tbody>
-                <tr>
-                  <td>
-                    <table
-                      width="85%"
-                      border={0}
-                      cellPadding={0}
-                      cellSpacing={0}
-                      align="center"
-                      className="fullTable"
-                      bgcolor="#ffffff"
-                    >
-                      <tbody>
-                        <tr></tr>
-                        <tr className="hiddenMobile">
-                          <td height={30} />
-                        </tr>
-                        <tr className="visibleMobile">
-                          <td height={40} />
-                        </tr>
-                        <tr>
-                          <td>
-                            <table
-                              width="95%"
-                              border={0}
-                              cellPadding={0}
-                              cellSpacing={0}
-                              align="center"
-                              className="fullPadding revlytic-scroll-table"
-                            >
-                              <tbody>
-                                <tr className="invoice-table-head">
-                                  <th
-                                    style={{
-                                      fontSize: 15,
-                                      color: "#fff",
-                                      fontWeight: "normal",
+              <table
+                width="100%"
+                border={0}
+                cellPadding={0}
+                cellSpacing={0}
+                align="center"
+                className="fullTable"
+                bgcolor="#f1f2f4"
+              >
+                <tbody>
+                  <tr>
+                    <td>
+                      <table
+                        width="85%"
+                        border={0}
+                        cellPadding={0}
+                        cellSpacing={0}
+                        align="center"
+                        className="fullTable"
+                        bgcolor="#ffffff"
+                      >
+                        <tbody>
+                          <tr></tr>
+                          <tr className="hiddenMobile">
+                            <td height={30} />
+                          </tr>
+                          <tr className="visibleMobile">
+                            <td height={40} />
+                          </tr>
+                          <tr>
+                            <td>
+                              <table
+                                width="95%"
+                                border={0}
+                                cellPadding={0}
+                                cellSpacing={0}
+                                align="center"
+                                className="fullPadding revlytic-scroll-table"
+                              >
+                                <tbody>
+                                  <tr className="invoice-table-head">
+                                    <th
+                                      style={{
+                                        fontSize: 15,
+                                        color: "#fff",
+                                        fontWeight: "normal",
 
-                                      verticalAlign: "top",
-                                      padding: "10px 0 10px 10px",
-                                      width: "10%",
-                                    }}
-                                    align="left"
-                                  >
-                                    {components[6].status &&
-                                      (!editMode ? (
-                                        serialNo
-                                      ) : (
-                                        <input
-                                          placeholder="Serial No. "
-                                          value={serialNo}
-                                          onChange={(e) =>
-                                            setSerialNo(e.target.value)
-                                          }
-                                        />
-                                      ))}
-                                  </th>
-                                  <th
-                                    style={{
-                                      fontSize: 15,
-                                      color: "#fff",
-                                      fontWeight: "normal",
+                                        verticalAlign: "top",
+                                        padding: "10px 0 10px 10px",
+                                        width: "10%",
+                                      }}
+                                      align="left"
+                                    >
+                                      {components[6].status &&
+                                        (!editMode ? (
+                                          serialNo
+                                        ) : (
+                                          <input
+                                            placeholder="Serial No. "
+                                            value={serialNo}
+                                            onChange={(e) =>
+                                              setSerialNo(e.target.value)
+                                            }
+                                          />
+                                        ))}
+                                    </th>
+                                    <th
+                                      style={{
+                                        fontSize: 15,
+                                        color: "#fff",
+                                        fontWeight: "normal",
 
-                                      verticalAlign: "top",
-                                      padding: "10px",
-                                      width: "35%",
-                                    }}
-                                    align="left"
-                                  >
-                                    {components[7].status &&
-                                      (!editMode ? (
-                                        itemDesciption
-                                      ) : (
-                                        <input
-                                          placeholder="Item Description "
-                                          value={itemDesciption}
-                                          onChange={(e) =>
-                                            setItemDesciption(e.target.value)
-                                          }
-                                        />
-                                      ))}
-                                  </th>
-                                  <th
-                                    style={{
-                                      fontSize: 15,
-                                      color: "#fff",
-                                      fontWeight: "normal",
+                                        verticalAlign: "top",
+                                        padding: "10px",
+                                        width: "35%",
+                                      }}
+                                      align="left"
+                                    >
+                                      {components[7].status &&
+                                        (!editMode ? (
+                                          itemDesciption
+                                        ) : (
+                                          <input
+                                            placeholder="Item Description "
+                                            value={itemDesciption}
+                                            onChange={(e) =>
+                                              setItemDesciption(e.target.value)
+                                            }
+                                          />
+                                        ))}
+                                    </th>
+                                    <th
+                                      style={{
+                                        fontSize: 15,
+                                        color: "#fff",
+                                        fontWeight: "normal",
 
-                                      verticalAlign: "top",
-                                      padding: "10px 0 10px 0",
-                                      width: "16%",
-                                      textAlign: "center",
-                                    }}
-                                    align="left"
-                                  >
-                                    {components[9].status &&
-                                      (!editMode ? (
-                                        quantity
-                                      ) : (
-                                        <input
-                                          placeholder="Quantity"
-                                          value={quantity}
-                                          onChange={(e) =>
-                                            setQuantity(e.target.value)
-                                          }
-                                        />
-                                      ))}
-                                  </th>
-                                  <th
-                                    style={{
-                                      fontSize: 15,
-                                      color: "#fff",
-                                      fontWeight: "normal",
+                                        verticalAlign: "top",
+                                        padding: "10px 0 10px 0",
+                                        width: "16%",
+                                        textAlign: "center",
+                                      }}
+                                      align="left"
+                                    >
+                                      {components[9].status &&
+                                        (!editMode ? (
+                                          quantity
+                                        ) : (
+                                          <input
+                                            placeholder="Quantity"
+                                            value={quantity}
+                                            onChange={(e) =>
+                                              setQuantity(e.target.value)
+                                            }
+                                          />
+                                        ))}
+                                    </th>
+                                    <th
+                                      style={{
+                                        fontSize: 15,
+                                        color: "#fff",
+                                        fontWeight: "normal",
 
-                                      verticalAlign: "top",
-                                      padding: 10,
-                                      width: "20%",
-                                    }}
-                                    align="center"
-                                  >
-                                    {components[8].status &&
-                                      (!editMode ? (
-                                        price
-                                      ) : (
-                                        <input
-                                          placeholder="Price"
-                                          value={price}
-                                          onChange={(e) =>
-                                            setPrice(e.target.value)
-                                          }
-                                        />
-                                      ))}
-                                  </th>
-                                  <th
-                                    style={{
-                                      fontSize: 15,
-                                      color: "#fff",
-                                      fontWeight: "normal",
+                                        verticalAlign: "top",
+                                        padding: 10,
+                                        width: "20%",
+                                      }}
+                                      align="center"
+                                    >
+                                      {components[8].status &&
+                                        (!editMode ? (
+                                          price
+                                        ) : (
+                                          <input
+                                            placeholder="Price"
+                                            value={price}
+                                            onChange={(e) =>
+                                              setPrice(e.target.value)
+                                            }
+                                          />
+                                        ))}
+                                    </th>
+                                    <th
+                                      style={{
+                                        fontSize: 15,
+                                        color: "#fff",
+                                        fontWeight: "normal",
 
-                                      verticalAlign: "top",
-                                      padding: 10,
-                                      width: "20%",
-                                    }}
-                                    align="center"
-                                  >
-                                    {components[10].status &&
-                                      (!editMode ? (
-                                        total
-                                      ) : (
-                                        <input
-                                          placeholder="Total"
-                                          value={total}
-                                          onChange={(e) =>
-                                            setTotal(e.target.value)
-                                          }
-                                        />
-                                      ))}
-                                  </th>
-                                </tr>
-                                <tr>
-                                  <td height={10} colSpan={4} />
-                                </tr>
-                                <tr
-                                  style={{
-                                    background:
-                                      "linear-gradient(0deg, #F0F0F0 0%, #F0F0F0 100%)",
-                                  }}
-                                >
-                                  <td
+                                        verticalAlign: "top",
+                                        padding: 10,
+                                        width: "20%",
+                                      }}
+                                      align="center"
+                                    >
+                                      {components[10].status &&
+                                        (!editMode ? (
+                                          total
+                                        ) : (
+                                          <input
+                                            placeholder="Total"
+                                            value={total}
+                                            onChange={(e) =>
+                                              setTotal(e.target.value)
+                                            }
+                                          />
+                                        ))}
+                                    </th>
+                                  </tr>
+                                  <tr>
+                                    <td height={10} colSpan={4} />
+                                  </tr>
+                                  <tr
                                     style={{
-                                      fontSize: 14,
-                                      color: "#000",
-                                      fontWeight: 600,
-
-                                      verticalAlign: "top",
-                                      padding: 10,
-                                      textAlign: "left",
-                                    }}
-                                    className="article"
-                                  >
-                                    1
-                                  </td>
-                                  <td
-                                    style={{
-                                      fontSize: 14,
-                                      color: "#000",
-
-                                      verticalAlign: "top",
-                                      padding: "10px",
+                                      background:
+                                        "linear-gradient(0deg, #F0F0F0 0%, #F0F0F0 100%)",
                                     }}
                                   >
-                                    <small>
-                                      Sed non mauris vel dui aliquam
-                                    </small>
-                                  </td>
-                                  <td
-                                    style={{
-                                      fontSize: 14,
-                                      color: "#000",
+                                    <td
+                                      style={{
+                                        fontSize: 14,
+                                        color: "#000",
+                                        fontWeight: 600,
 
-                                      verticalAlign: "top",
-                                      padding: "10px 0",
-                                      textAlign: "center",
-                                    }}
-                                    align="left"
-                                  >
-                                    1
-                                  </td>
-                                  <td
-                                    style={{
-                                      fontSize: 14,
-                                      color: "#1e2b33",
+                                        verticalAlign: "top",
+                                        padding: 10,
+                                        textAlign: "left",
+                                      }}
+                                      className="article"
+                                    >
+                                      1
+                                    </td>
+                                    <td
+                                      style={{
+                                        fontSize: 14,
+                                        color: "#000",
 
-                                      verticalAlign: "top",
-                                      padding: "10px 10px 0 0",
-                                    }}
-                                    align="center"
-                                  >
-                                    $299.95
-                                  </td>
-                                  <td
-                                    style={{
-                                      fontSize: 14,
-                                      color: "#1e2b33",
+                                        verticalAlign: "top",
+                                        padding: "10px",
+                                      }}
+                                    >
+                                      <small>
+                                        Sed non mauris vel dui aliquam
+                                      </small>
+                                    </td>
+                                    <td
+                                      style={{
+                                        fontSize: 14,
+                                        color: "#000",
 
-                                      verticalAlign: "top",
-                                      padding: "10px 10px 0 0",
-                                    }}
-                                    align="center"
-                                  >
-                                    $299.95
-                                  </td>
-                                </tr>
-                                <tr>
-                                  <td
-                                    style={{
-                                      fontSize: 14,
-                                      color: "#000",
-                                      fontWeight: 600,
+                                        verticalAlign: "top",
+                                        padding: "10px 0",
+                                        textAlign: "center",
+                                      }}
+                                      align="left"
+                                    >
+                                      1
+                                    </td>
+                                    <td
+                                      style={{
+                                        fontSize: 14,
+                                        color: "#1e2b33",
 
-                                      verticalAlign: "top",
-                                      padding: 10,
-                                      textAlign: "left",
-                                    }}
-                                    className="article"
-                                  >
-                                    2
-                                  </td>
-                                  <td
-                                    style={{
-                                      fontSize: 14,
-                                      color: "#000",
+                                        verticalAlign: "top",
+                                        padding: "10px 10px 0 0",
+                                      }}
+                                      align="center"
+                                    >
+                                      $299.95
+                                    </td>
+                                    <td
+                                      style={{
+                                        fontSize: 14,
+                                        color: "#1e2b33",
 
-                                      verticalAlign: "top",
-                                      padding: "10px",
-                                    }}
-                                  >
-                                    <small>
-                                      Sed non mauris vel dui aliquam
-                                    </small>
-                                  </td>
-                                  <td
-                                    style={{
-                                      fontSize: 14,
-                                      color: "#000",
+                                        verticalAlign: "top",
+                                        padding: "10px 10px 0 0",
+                                      }}
+                                      align="center"
+                                    >
+                                      $299.95
+                                    </td>
+                                  </tr>
+                                  <tr>
+                                    <td
+                                      style={{
+                                        fontSize: 14,
+                                        color: "#000",
+                                        fontWeight: 600,
 
-                                      verticalAlign: "top",
-                                      padding: "10px 0",
-                                      textAlign: "center",
-                                    }}
-                                    align="left"
-                                  >
-                                    1
-                                  </td>
-                                  <td
-                                    style={{
-                                      fontSize: 14,
-                                      color: "#1e2b33",
+                                        verticalAlign: "top",
+                                        padding: 10,
+                                        textAlign: "left",
+                                      }}
+                                      className="article"
+                                    >
+                                      2
+                                    </td>
+                                    <td
+                                      style={{
+                                        fontSize: 14,
+                                        color: "#000",
 
-                                      verticalAlign: "top",
-                                      padding: "10px 10px 0 0",
-                                    }}
-                                    align="center"
-                                  >
-                                    $29.95
-                                  </td>
-                                  <td
-                                    style={{
-                                      fontSize: 14,
-                                      color: "#1e2b33",
+                                        verticalAlign: "top",
+                                        padding: "10px",
+                                      }}
+                                    >
+                                      <small>
+                                        Sed non mauris vel dui aliquam
+                                      </small>
+                                    </td>
+                                    <td
+                                      style={{
+                                        fontSize: 14,
+                                        color: "#000",
 
-                                      verticalAlign: "top",
-                                      padding: "10px 10px 0 0",
-                                    }}
-                                    align="center"
-                                  >
-                                    $299.95
-                                  </td>
-                                </tr>
-                                <tr
-                                  style={{
-                                    background:
-                                      "linear-gradient(0deg, #F0F0F0 0%, #F0F0F0 100%)",
-                                  }}
-                                >
-                                  <td
-                                    style={{
-                                      fontSize: 14,
-                                      color: "#000",
-                                      fontWeight: 600,
+                                        verticalAlign: "top",
+                                        padding: "10px 0",
+                                        textAlign: "center",
+                                      }}
+                                      align="left"
+                                    >
+                                      1
+                                    </td>
+                                    <td
+                                      style={{
+                                        fontSize: 14,
+                                        color: "#1e2b33",
 
-                                      verticalAlign: "top",
-                                      padding: 10,
-                                      textAlign: "left",
-                                    }}
-                                    className="article"
-                                  >
-                                    3
-                                  </td>
-                                  <td
-                                    style={{
-                                      fontSize: 14,
-                                      color: "#000",
+                                        verticalAlign: "top",
+                                        padding: "10px 10px 0 0",
+                                      }}
+                                      align="center"
+                                    >
+                                      $29.95
+                                    </td>
+                                    <td
+                                      style={{
+                                        fontSize: 14,
+                                        color: "#1e2b33",
 
-                                      verticalAlign: "top",
-                                      padding: "10px",
-                                    }}
-                                  >
-                                    <small>
-                                      Sed non mauris vel dui aliquam
-                                    </small>
-                                  </td>
-                                  <td
+                                        verticalAlign: "top",
+                                        padding: "10px 10px 0 0",
+                                      }}
+                                      align="center"
+                                    >
+                                      $299.95
+                                    </td>
+                                  </tr>
+                                  <tr
                                     style={{
-                                      fontSize: 14,
-                                      color: "#000",
-
-                                      verticalAlign: "top",
-                                      padding: "10px 0",
-                                      textAlign: "center",
+                                      background:
+                                        "linear-gradient(0deg, #F0F0F0 0%, #F0F0F0 100%)",
                                     }}
-                                    align="left"
                                   >
-                                    1
-                                  </td>
-                                  <td
-                                    style={{
-                                      fontSize: 14,
-                                      color: "#1e2b33",
+                                    <td
+                                      style={{
+                                        fontSize: 14,
+                                        color: "#000",
+                                        fontWeight: 600,
 
-                                      verticalAlign: "top",
-                                      padding: "10px 10px 0 0",
-                                    }}
-                                    align="center"
-                                  >
-                                    $299.95
-                                  </td>
-                                  <td
-                                    style={{
-                                      fontSize: 14,
-                                      color: "#1e2b33",
+                                        verticalAlign: "top",
+                                        padding: 10,
+                                        textAlign: "left",
+                                      }}
+                                      className="article"
+                                    >
+                                      3
+                                    </td>
+                                    <td
+                                      style={{
+                                        fontSize: 14,
+                                        color: "#000",
 
-                                      verticalAlign: "top",
-                                      padding: "10px 10px 0 0",
-                                    }}
-                                    align="center"
-                                  >
-                                    $299.95
-                                  </td>
-                                </tr>
-                              </tbody>
-                            </table>
-                          </td>
-                        </tr>
-                        <tr>
-                          <td height={20} />
-                        </tr>
-                      </tbody>
-                    </table>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+                                        verticalAlign: "top",
+                                        padding: "10px",
+                                      }}
+                                    >
+                                      <small>
+                                        Sed non mauris vel dui aliquam
+                                      </small>
+                                    </td>
+                                    <td
+                                      style={{
+                                        fontSize: 14,
+                                        color: "#000",
+
+                                        verticalAlign: "top",
+                                        padding: "10px 0",
+                                        textAlign: "center",
+                                      }}
+                                      align="left"
+                                    >
+                                      1
+                                    </td>
+                                    <td
+                                      style={{
+                                        fontSize: 14,
+                                        color: "#1e2b33",
+
+                                        verticalAlign: "top",
+                                        padding: "10px 10px 0 0",
+                                      }}
+                                      align="center"
+                                    >
+                                      $299.95
+                                    </td>
+                                    <td
+                                      style={{
+                                        fontSize: 14,
+                                        color: "#1e2b33",
+
+                                        verticalAlign: "top",
+                                        padding: "10px 10px 0 0",
+                                      }}
+                                      align="center"
+                                    >
+                                      $299.95
+                                    </td>
+                                  </tr>
+                                </tbody>
+                              </table>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td height={20} />
+                          </tr>
+                        </tbody>
+                      </table>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
             {/* /Order Details */}
             {/*---custom */}
@@ -1402,24 +1406,21 @@ if(signatureData){
                                           <td width="100%" height={10} />
                                         </tr>
                                         <tr style={{ textAlign: "right" }}>
-                                          <td
-                                            align="right"
-                                         
-                                          >
+                                          <td align="right">
                                             <a
                                               style={{
                                                 color: "#fff",
-                                              
+
                                                 fontSize: 17,
                                                 fontStyle: "normal",
                                                 fontWeight: 400,
                                                 textDecoration: "none",
                                                 verticalAlign: "top",
                                                 background:
-                                                "linear-gradient(0deg, #0F550C 0%, #0F550C 100%)",
-                                              display: "inline-block",
-                                              padding: "10px 20px",
-                                              borderRadius: 5,
+                                                  "linear-gradient(0deg, #0F550C 0%, #0F550C 100%)",
+                                                display: "inline-block",
+                                                padding: "10px 20px",
+                                                borderRadius: 5,
                                               }}
                                             >
                                               {!editMode ? (
@@ -1582,7 +1583,6 @@ if(signatureData){
       </div>
     </Spin>
   );
-                                      
 }
 
 export default invoice;

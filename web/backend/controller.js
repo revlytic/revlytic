@@ -16,11 +16,11 @@ import { DataType } from "@shopify/shopify-api";
 import mime from "mime";
 import fs from "fs";
 import jwt from "jsonwebtoken";
-console.log("utcdate",new Date())
+console.log("utcdate", new Date());
 console.log(process.env.HOST, "envvvvvvvvvvv");
 console.log(process.env.SCOPES, "envvvvvvvvvvv");
 import { ObjectId } from "bson";
-import puppeteer from "puppeteer"
+import puppeteer from "puppeteer";
 import widgetSettingsModal from "./modals/widgetSetting.js";
 import productBundleModal from "./modals/productBundle.js";
 import path from "path";
@@ -29,7 +29,6 @@ import cPortalSettings from "./modals/customerPortalSettings.js";
 import orderOnly from "./modals/contractOrder.js";
 import orderContractDetails from "./modals/contractOrderDetails.js";
 import billingModal from "./modals/billing.js";
-import axios from "axios";
 const __dirname = path.resolve();
 const dirPath = path.join(__dirname, "/frontend/invoiceTemplate");
 // const dirPath2 = path.join(__dirname);
@@ -73,58 +72,63 @@ export async function demo(req, res) {
     console.log("sdasdasdafirst");
 
     const jsonOutput = JSON.stringify(getCustomerDetails, null, 2); // Use null and 2 for pretty-printing
-    let storeData=await getStoreDetails(shop)
-   let  storeEmail=storeData?.store_email
-    const filePath = path.join(`${__dirname}/frontend/assets`, 'customerDt.json');
-    console.log(filePath,"LLKK")
-      fs.writeFile(filePath, jsonOutput,async(err,res)=>{
-        if(err){
-          console.log(err,"<><><><>")
-        }else{
-          console.log(res,"::::::")
-          let options = {
-            from: "sahilagnihotri7@gmail.com",
-            to: storeData?.store_email,
-            subject: "Customer Data",
-            text: "Please find the attached customer data file.",
-            attachments: [{
+    let storeData = await getStoreDetails(shop);
+    let storeEmail = storeData?.store_email;
+    const filePath = path.join(
+      `${__dirname}/frontend/assets`,
+      "customerDt.json"
+    );
+    console.log(filePath, "LLKK");
+    fs.writeFile(filePath, jsonOutput, async (err, res) => {
+      if (err) {
+        console.log(err, "<><><><>");
+      } else {
+        console.log(res, "::::::");
+        let options = {
+          from: "sahilagnihotri7@gmail.com",
+          to: storeData?.store_email,
+          subject: "Customer Data",
+          text: "Please find the attached customer data file.",
+          attachments: [
+            {
               filename: "customerDt.json",
-              path: filePath
-            }]
-          };
-      
-          let emailConfig = {
-            host: "smtp.gmail.com",
-            port: 587, // Convert port number to integer
-            auth: {
-              user: "sahilagnihotri7@gmail.com",
-              pass: "srdvsdnxfmvbrduw",
+              path: filePath,
             },
-            secure: false,
-          };
-      
-          const transporter = nodemailer.createTransport(emailConfig);
-      
-          const sendEmail = (options, emailConfig) => {
-            return new Promise((resolve, reject) => {
-              const transporter = nodemailer.createTransport(emailConfig);
-              transporter.sendMail(options, (error, info) => {
-                if (error) {
-                  console.error("Error sending email:", error);
-                  reject(error);
-                } else {
-                  console.log("Email sent:", info.response);
-                  resolve(info);
-                }
-              });
+          ],
+        };
+
+        let emailConfig = {
+          host: "smtp.gmail.com",
+          port: 587, // Convert port number to integer
+          auth: {
+            user: "sahilagnihotri7@gmail.com",
+            pass: "srdvsdnxfmvbrduw",
+          },
+          secure: false,
+        };
+
+        const transporter = nodemailer.createTransport(emailConfig);
+
+        const sendEmail = (options, emailConfig) => {
+          return new Promise((resolve, reject) => {
+            const transporter = nodemailer.createTransport(emailConfig);
+            transporter.sendMail(options, (error, info) => {
+              if (error) {
+                console.error("Error sending email:", error);
+                reject(error);
+              } else {
+                console.log("Email sent:", info.response);
+                resolve(info);
+              }
             });
-          };
-          const data = await sendEmail(options, emailConfig);
-      
-          console.log("dssdfsdf", path.join(__dirname, "customerDt.json"));
-          console.log("first in last");
-        }
-      })
+          });
+        };
+        const data = await sendEmail(options, emailConfig);
+
+        console.log("dssdfsdf", path.join(__dirname, "customerDt.json"));
+        console.log("first in last");
+      }
+    });
 
     // let options = {
     //   from: "sahilagnihotri7@gmail.com",
@@ -188,440 +192,463 @@ const sendMailCall = async (recipientMails, others, extra) => {
   // if (!data) {
   //   console.log("nodatafound");
   // } else {
-    let emailConfig = {};
+  let emailConfig = {};
 
-    let options = {};
+  let options = {};
 
-    if (data && data.enable == true) {
-      console.log("inenabletrue");
+  if (data && data.enable == true) {
+    console.log("inenabletrue");
 
-      let encryptionConfig = {};
+    let encryptionConfig = {};
 
-      if (data.encryption === "ssl") {
-        encryptionConfig = {
-          secure: true,
+    if (data.encryption === "ssl") {
+      encryptionConfig = {
+        secure: true,
 
-          requireTLS: true,
-        };
-      } else if (data.encryption === "tls") {
-        encryptionConfig = {
-          secure: false, // For TLS, secure should be set to false
-
-          requireTLS: true,
-        };
-      }
-
-      emailConfig = {
-        host: data.host,
-
-        port: parseInt(data.portNumber), // Convert port number to integer
-
-        auth: {
-          user: data.userName,
-
-          pass: data.password,
-        },
-
-        ...(data.encryption === "none" ? {} : encryptionConfig),
+        requireTLS: true,
       };
+    } else if (data.encryption === "tls") {
+      encryptionConfig = {
+        secure: false, // For TLS, secure should be set to false
 
-      options = {
-        from: `${data.fromName}<${data.userName}>`,
-
-        // to: recipientMails.join(", "),
-
-        subject: extra?.selectedTemplateData?.emailSetting?.subject,
-
-        cc: extra?.selectedTemplateData?.emailSetting?.cc,
-
-        bcc: extra?.selectedTemplateData?.emailSetting?.bcc,
-
-        replyTo: extra?.selectedTemplateData?.emailSetting?.replyTo,
-
-        ...others,
+        requireTLS: true,
       };
-
-      // let response = await sendMailMain({emailConfig,options,extra}, app);
-
-      // return response;
-    } else {
-      console.log("inenablefalse");
-
-      emailConfig = {
-        host: "smtp.gmail.com",
-
-        port: 587, // Convert port number to integer
-
-        auth: {
-          user: "sahilagnihotri7@gmail.com",
-
-          pass: "srdvsdnxfmvbrduw",
-        },
-
-        secure: false,
-      };
-
-      options = {
-        from: "sahilagnihotri7@gmail.com",
-
-        // to: recipientMails.join(", "),
-
-        subject: extra?.selectedTemplateData?.emailSetting?.subject,
-
-        cc: extra?.selectedTemplateData?.emailSetting?.cc,
-
-        bcc: extra?.selectedTemplateData?.emailSetting?.bcc,
-
-        replyTo: extra?.selectedTemplateData?.emailSetting?.replyTo,
-
-        ...others,
-      };
-
-      //return response;
-
-      // console.log(
-
-      //   "elseeeemailcall",
-
-      //   emailConfig,
-
-      //   options,
-
-      //   recipientMails.join(", ")
-
-      // );
     }
 
-    const __dirname = path.resolve();
+    emailConfig = {
+      host: data.host,
 
-    console.log(__dirname, "kjh");
+      port: parseInt(data.portNumber), // Convert port number to integer
 
-    const dirPath = path.join(__dirname, "/frontend/components/emailtemplate");
+      auth: {
+        user: data.userName,
 
-    console.log(dirPath, "fsdfdf");
+        pass: data.password,
+      },
 
-    const transporter = nodemailer.createTransport(emailConfig);
+      ...(data.encryption === "none" ? {} : encryptionConfig),
+    };
 
-    let selectedTemplate = extra?.selectedTemplateData;
+    options = {
+      from: `${data.fromName}<${data.userName}>`,
 
-    // console.log("selecetdetemplate",selectedTemplate)
+      // to: recipientMails.join(", "),
 
-    // console.log("extra?.data", extra?.data);
-    console.log("chececkkshipinggggaddress", extra?.data?.shipping_address,extra?.data?.shipping_address);
-    console.log("chececkkshipinggggaddress", extra?.data?.shipping_address,extra?.data?.billing_address);
+      subject: extra?.selectedTemplateData?.emailSetting?.subject,
 
-    let replacements;
+      cc: extra?.selectedTemplateData?.emailSetting?.cc,
 
-    let emailContent;
+      bcc: extra?.selectedTemplateData?.emailSetting?.bcc,
 
-    //  emailContent = await ejs.renderFile(dirPath + "/preview.ejs", {
+      replyTo: extra?.selectedTemplateData?.emailSetting?.replyTo,
 
-    //     selectedTemplate,
+      ...others,
+    };
 
-    //     mode: "real",
+    // let response = await sendMailMain({emailConfig,options,extra}, app);
 
-    //     data: extra?.data,
+    // return response;
+  } else {
+    console.log("inenablefalse");
 
-    //     currencySymbol: extra?.data?.currencySymbol,
+    emailConfig = {
+      host: "smtp.gmail.com",
 
-    //     dateConversion,
+      port: 587, // Convert port number to integer
 
-    //     check:extra?.check,
+      auth: {
+        user: "sahilagnihotri7@gmail.com",
 
-    //     templateType:"subscriptionPurchased"
+        pass: "srdvsdnxfmvbrduw",
+      },
 
-    //   });
+      secure: false,
+    };
 
-    replacements = {
-      "{{customer_email}}": extra?.data?.customer_email,
+    options = {
+      from: "sahilagnihotri7@gmail.com",
 
-      "{{order_number}}": extra?.data?.order_number,
+      // to: recipientMails.join(", "),
 
-      "{{customer_name}}": extra?.data?.customer_name,
+      subject: extra?.selectedTemplateData?.emailSetting?.subject,
 
-      "{{customer_id}}": extra?.data?.customer_id,
+      cc: extra?.selectedTemplateData?.emailSetting?.cc,
 
-      "{{shop_name}}": extra?.data?.shopName,
+      bcc: extra?.selectedTemplateData?.emailSetting?.bcc,
 
-      "{{shop_email}}": extra?.data?.shopEmail,
+      replyTo: extra?.selectedTemplateData?.emailSetting?.replyTo,
 
-      "{{shipping_country}}": extra?.data?.shipping_address?.country,
+      ...others,
+    };
 
-      "{{email_subject}}": selectedTemplate?.emailSetting?.subject,
+    //return response;
 
-      //   // "{{selling_plan_name}}":"23",
+    // console.log(
 
-      "{{shipping_full_name}}":
-        extra?.data?.shipping_address?.firstName != null
-          ? extra?.data?.shipping_address?.firstName
-          : "" + " " + extra?.data?.shipping_address?.lastName != null
-          ? extra?.data?.shipping_address?.lastName
-          : "",
+    //   "elseeeemailcall",
 
-      "{{shipping_address_1}}": extra?.data?.shipping_address?.address1,
+    //   emailConfig,
 
-      "{{shipping_company}}":
-        extra?.data?.shipping_address?.company != null
-          ? extra?.data?.shipping_address?.company
-          : "",
+    //   options,
 
-      "{{shipping_city}}": extra?.data?.shipping_address?.city !=null ? extra?.data?.shipping_address?.city : "" ,
+    //   recipientMails.join(", ")
 
-      "{{shipping_province}}": extra?.data?.shipping_address?.province !=null  ? extra?.data?.shipping_address?.province : extra?.data?.shipping_address?.province ,
+    // );
+  }
 
-      "{{shipping_province_code}}":
-        extra?.data?.shipping_address?.provinceCode !=null  ? extra?.data?.shipping_address?.provinceCode : "" ,
+  const __dirname = path.resolve();
 
-      "{{shipping_zip}}": extra?.data?.shipping_address?.zip !=null ? extra?.data?.shipping_address?.zip : "",
+  console.log(__dirname, "kjh");
 
-      "{{billing_full_name}}":
-        extra?.data?.billing_address?.firstName != null
-          ? extra?.data?.billing_address?.firstName
-          : "" + " " + extra?.data?.billing_address?.lastName != null
-          ? extra?.data?.billing_address?.lastName
-          : "",
+  const dirPath = path.join(__dirname, "/frontend/components/emailtemplate");
 
-      "{{billing_country}}": extra?.data?.billing_address?.country !=null ? extra?.data?.billing_address?.country : "",
+  console.log(dirPath, "fsdfdf");
 
-      "{{billing_address_1}}": extra?.data?.billing_address?.address1 !=null ? extra?.data?.billing_address?.address1 :"",
+  const transporter = nodemailer.createTransport(emailConfig);
 
-      "{{billing_city}}": extra?.data?.billing_address?.city !=null ? extra?.data?.billing_address?.city  : "",
+  let selectedTemplate = extra?.selectedTemplateData;
 
-      "{{billing_province}}": extra?.data?.billing_address?.province !=null ? extra?.data?.billing_address?.province : "",
+  // console.log("selecetdetemplate",selectedTemplate)
 
-      "{{billing_province_code}}": extra?.data?.billing_address?.provinceCode ? extra?.data?.billing_address?.provinceCode : "",
+  // console.log("extra?.data", extra?.data);
+  console.log(
+    "chececkkshipinggggaddress",
+    extra?.data?.shipping_address,
+    extra?.data?.shipping_address
+  );
+  console.log(
+    "chececkkshipinggggaddress",
+    extra?.data?.shipping_address,
+    extra?.data?.billing_address
+  );
 
-      "{{billing_zip}}": extra?.data?.billing_address?.zip ? extra?.data?.billing_address?.zip : "" ,
+  let replacements;
 
-      //   "{{subscription_line_items}}":
+  let emailContent;
 
-      //   "{{card_brand_name}}":"456",
+  //  emailContent = await ejs.renderFile(dirPath + "/preview.ejs", {
 
-      //   "{{last_four_digits}}":"678",
+  //     selectedTemplate,
 
-      //   "{{card_expiry_month}}":"866",
+  //     mode: "real",
 
-      //   "{{card_expiry_year}}":"474",
+  //     data: extra?.data,
 
-      // "{{manage_subscription_link}}":selectedTemplate.subscriptionUrl,
+  //     currencySymbol: extra?.data?.currencySymbol,
 
-      //   // "{{email_subject}}":"633",
+  //     dateConversion,
 
-      "{{card_brand_name}}": extra?.data?.contractDetails?.instrument?.brand
-        ? extra?.data?.contractDetails?.instrument?.brand
+  //     check:extra?.check,
 
-            .charAt(0)
+  //     templateType:"subscriptionPurchased"
 
-            .toUpperCase() +
-          formatVariableName(
-            extra?.data?.contractDetails?.instrument?.brand
+  //   });
 
-              .slice(1)
+  replacements = {
+    "{{customer_email}}": extra?.data?.customer_email,
 
-              .toLowerCase()
-          )
+    "{{order_number}}": extra?.data?.order_number,
+
+    "{{customer_name}}": extra?.data?.customer_name,
+
+    "{{customer_id}}": extra?.data?.customer_id,
+
+    "{{shop_name}}": extra?.data?.shopName,
+
+    "{{shop_email}}": extra?.data?.shopEmail,
+
+    "{{shipping_country}}": extra?.data?.shipping_address?.country,
+
+    "{{email_subject}}": selectedTemplate?.emailSetting?.subject,
+
+    //   // "{{selling_plan_name}}":"23",
+
+    "{{shipping_full_name}}":
+      extra?.data?.shipping_address?.firstName != null
+        ? extra?.data?.shipping_address?.firstName
+        : "" + " " + extra?.data?.shipping_address?.lastName != null
+        ? extra?.data?.shipping_address?.lastName
         : "",
 
-      "{{last_four_digits}}":
-        extra?.data?.contractDetails?.instrument?.lastDigits,
+    "{{shipping_address_1}}": extra?.data?.shipping_address?.address1,
 
-      "{{card_expiry_month}}":
-        extra?.data?.contractDetails?.instrument?.expiryMonth,
+    "{{shipping_company}}":
+      extra?.data?.shipping_address?.company != null
+        ? extra?.data?.shipping_address?.company
+        : "",
 
-      "{{card_expiry_year}}":
-        extra?.data?.contractDetails?.instrument?.expiryYear,
+    "{{shipping_city}}":
+      extra?.data?.shipping_address?.city != null
+        ? extra?.data?.shipping_address?.city
+        : "",
 
-      "{{heading_text}}": selectedTemplate?.headingText,
+    "{{shipping_province}}":
+      extra?.data?.shipping_address?.province != null
+        ? extra?.data?.shipping_address?.province
+        : extra?.data?.shipping_address?.province,
 
-      "{{{logo_image}}": selectedTemplate?.logoUrl,
+    "{{shipping_province_code}}":
+      extra?.data?.shipping_address?.provinceCode != null
+        ? extra?.data?.shipping_address?.provinceCode
+        : "",
 
-      "{{shiiping_address_text}}":
-        selectedTemplate?.subscriptionShippingAddressText,
+    "{{shipping_zip}}":
+      extra?.data?.shipping_address?.zip != null
+        ? extra?.data?.shipping_address?.zip
+        : "",
 
-      "{{billing_address_text}}":
-        selectedTemplate?.subscriptionBillingAddressText,
+    "{{billing_full_name}}":
+      extra?.data?.billing_address?.firstName != null
+        ? extra?.data?.billing_address?.firstName
+        : "" + " " + extra?.data?.billing_address?.lastName != null
+        ? extra?.data?.billing_address?.lastName
+        : "",
 
-      "{{payment_method_text}}": selectedTemplate?.paymentMethodText,
+    "{{billing_country}}":
+      extra?.data?.billing_address?.country != null
+        ? extra?.data?.billing_address?.country
+        : "",
 
-      "{{logo_width}}": selectedTemplate?.logoWidth,
+    "{{billing_address_1}}":
+      extra?.data?.billing_address?.address1 != null
+        ? extra?.data?.billing_address?.address1
+        : "",
 
-      "{{logo_height}}": selectedTemplate?.logoHeight,
+    "{{billing_city}}":
+      extra?.data?.billing_address?.city != null
+        ? extra?.data?.billing_address?.city
+        : "",
 
-      "{{logo_alignment}}": selectedTemplate?.logoAlignment,
-    };
+    "{{billing_province}}":
+      extra?.data?.billing_address?.province != null
+        ? extra?.data?.billing_address?.province
+        : "",
 
-    // Iterate through the replacements object
+    "{{billing_province_code}}": extra?.data?.billing_address?.provinceCode
+      ? extra?.data?.billing_address?.provinceCode
+      : "",
 
-    // for (const key in replacements) {
+    "{{billing_zip}}": extra?.data?.billing_address?.zip
+      ? extra?.data?.billing_address?.zip
+      : "",
 
-    //   if (replacements.hasOwnProperty(key)) {
+    //   "{{subscription_line_items}}":
 
-    //     const pattern = new RegExp(key, "gi");
+    //   "{{card_brand_name}}":"456",
 
-    //    let  text = emailContent.replace(pattern, replacements[key]);
+    //   "{{last_four_digits}}":"678",
 
-    //   }
+    //   "{{card_expiry_month}}":"866",
 
-    //  }
+    //   "{{card_expiry_year}}":"474",
 
-    // const updatedEmailContent = emailContent.replace( new RegExp(Object.keys(replacements).join("|"), "g"), (matched) => replacements[matched] );
+    // "{{manage_subscription_link}}":selectedTemplate.subscriptionUrl,
 
-    // options.html = updatedEmailContent;
+    //   // "{{email_subject}}":"633",
 
-    // try {
+    "{{card_brand_name}}": extra?.data?.contractDetails?.instrument?.brand
+      ? extra?.data?.contractDetails?.instrument?.brand
 
-    //   console.log("first in last");
+          .charAt(0)
 
-    //   let data = await transporter.sendMail(options);
+          .toUpperCase() +
+        formatVariableName(
+          extra?.data?.contractDetails?.instrument?.brand
 
-    //   if (data) {
+            .slice(1)
 
-    //     console.log("Mail sent successfully");
+            .toLowerCase()
+        )
+      : "",
 
-    //   }
+    "{{last_four_digits}}":
+      extra?.data?.contractDetails?.instrument?.lastDigits,
 
-    //   console.log(data, "faaltuu");
+    "{{card_expiry_month}}":
+      extra?.data?.contractDetails?.instrument?.expiryMonth,
 
-    // } catch (err) {
+    "{{card_expiry_year}}":
+      extra?.data?.contractDetails?.instrument?.expiryYear,
 
-    //   console.log(err, "errorr aa gyaa");
+    "{{heading_text}}": selectedTemplate?.headingText,
 
-    // }
+    "{{{logo_image}}": selectedTemplate?.logoUrl,
 
-    ////////////saaahhhillll
+    "{{shiiping_address_text}}":
+      selectedTemplate?.subscriptionShippingAddressText,
 
-    if (extra?.check == "subscriptionInvoice") {
-      
-/////////////////////////////////////
+    "{{billing_address_text}}":
+      selectedTemplate?.subscriptionBillingAddressText,
 
+    "{{payment_method_text}}": selectedTemplate?.paymentMethodText,
 
-async function generatePdf() {
-  const browser = await puppeteer.launch({
-    executablePath: '/usr/bin/chromium-browser',headless: true, args:['--no-sandbox']
-  })
-  const page = await browser.newPage();
-  const options = {
-    format: 'A4',
-    printBackground: true, // To include background colors/images in PDF
+    "{{logo_width}}": selectedTemplate?.logoWidth,
+
+    "{{logo_height}}": selectedTemplate?.logoHeight,
+
+    "{{logo_alignment}}": selectedTemplate?.logoAlignment,
   };
 
-  const filename = String(new Date().getTime());
+  // Iterate through the replacements object
 
-  try {
-    const templatePath = dirPath + '/invoiceTemplate.ejs';
-    const compiledTemplate = ejs.compile(fs.readFileSync(templatePath, 'utf8'));
+  // for (const key in replacements) {
 
-    const content = compiledTemplate({ details:extra.details });
+  //   if (replacements.hasOwnProperty(key)) {
 
-    await page.setContent(content);
-    await page.pdf({
-      path: dirPath + `/${filename}.pdf`,
-      format: options.format,
-    });
+  //     const pattern = new RegExp(key, "gi");
 
-    await browser.close();
+  //    let  text = emailContent.replace(pattern, replacements[key]);
 
-    sendEmail(
-      dirPath + `/${filename}.pdf`,
-      orderDetails.email,
-      getorder.orderId,
-      getorder.shop
-    );
-    //////////////////////////
-    const pdfData = fs.readFileSync(dirPath + `/${filename}.pdf`);
-    const base64Data = Buffer.from(pdfData).toString("base64");
-    const contentType = mime.getType(dirPath + `/${filename}.pdf`);
+  //   }
 
- let attachments=[
-      {
-        filename: "invoice.pdf",
-        content: base64Data,
-        encoding: "base64",
-        contentType: contentType,
-        contentDisposition: "inline",
-      },
-    ]
-    const recipientEmails = recipientMails.join(',')
-    options = {
-      ...options,
+  //  }
 
-      to:recipientEmails,
-    };
+  // const updatedEmailContent = emailContent.replace( new RegExp(Object.keys(replacements).join("|"), "g"), (matched) => replacements[matched] );
 
+  // options.html = updatedEmailContent;
 
-    emailContent = await ejs.renderFile(dirPath + "/preview.ejs", {
-      selectedTemplate,
+  // try {
 
-      mode: "real",
+  //   console.log("first in last");
 
-      data: { ...extra?.data, check: extra?.check },
+  //   let data = await transporter.sendMail(options);
 
-      currencySymbol: extra?.data?.currencySymbol,
+  //   if (data) {
 
-      dateConversion,
+  //     console.log("Mail sent successfully");
 
-      check: extra?.check,
+  //   }
 
-      templateType: "subscriptionInvoice",
+  //   console.log(data, "faaltuu");
 
-    });
+  // } catch (err) {
 
-    const updatedEmailContent = emailContent.replace(
-      new RegExp(Object.keys(replacements).join("|"), "g"),
+  //   console.log(err, "errorr aa gyaa");
 
-      (matched) => replacements[matched]
-    );
+  // }
 
-    options.html = updatedEmailContent;
-    options.attachments = attachments
+  ////////////saaahhhillll
 
+  if (extra?.check == "subscriptionInvoice") {
+    /////////////////////////////////////
 
-    try {
-      console.log("first in last");
+    async function generatePdf() {
+      const browser = await puppeteer.launch({
+        executablePath: "/usr/bin/chromium-browser",
+        headless: true,
+        args: ["--no-sandbox"],
+      });
+      const page = await browser.newPage();
+      const options = {
+        format: "A4",
+        printBackground: true, // To include background colors/images in PDF
+      };
 
-      let data = await transporter.sendMail(options);
-      if (data) {
-        console.log("Mail sent successfully");
-        let updateDb = await orderOnly.findOneAndUpdate(
-          { shop: extra.shop, orderId: extra.orderId },
-          { status: true }
+      const filename = String(new Date().getTime());
+
+      try {
+        const templatePath = dirPath + "/invoiceTemplate.ejs";
+        const compiledTemplate = ejs.compile(
+          fs.readFileSync(templatePath, "utf8")
         );
-        fs.unlink(pdfPath, (err) => {
-          if (err) {
-            console.error("Error deleting PDF file:", err);
-            throw error;
-          } else {
-            console.log("PDF file deleted successfully.");
-          }
+
+        const content = compiledTemplate({ details: extra.details });
+
+        await page.setContent(content);
+        await page.pdf({
+          path: dirPath + `/${filename}.pdf`,
+          format: options.format,
         });
+
+        await browser.close();
+
+        sendEmail(
+          dirPath + `/${filename}.pdf`,
+          orderDetails.email,
+          getorder.orderId,
+          getorder.shop
+        );
+        //////////////////////////
+        const pdfData = fs.readFileSync(dirPath + `/${filename}.pdf`);
+        const base64Data = Buffer.from(pdfData).toString("base64");
+        const contentType = mime.getType(dirPath + `/${filename}.pdf`);
+
+        let attachments = [
+          {
+            filename: "invoice.pdf",
+            content: base64Data,
+            encoding: "base64",
+            contentType: contentType,
+            contentDisposition: "inline",
+          },
+        ];
+        const recipientEmails = recipientMails.join(",");
+        options = {
+          ...options,
+
+          to: recipientEmails,
+        };
+
+        emailContent = await ejs.renderFile(dirPath + "/preview.ejs", {
+          selectedTemplate,
+
+          mode: "real",
+
+          data: { ...extra?.data, check: extra?.check },
+
+          currencySymbol: extra?.data?.currencySymbol,
+
+          dateConversion,
+
+          check: extra?.check,
+
+          templateType: "subscriptionInvoice",
+        });
+
+        const updatedEmailContent = emailContent.replace(
+          new RegExp(Object.keys(replacements).join("|"), "g"),
+
+          (matched) => replacements[matched]
+        );
+
+        options.html = updatedEmailContent;
+        options.attachments = attachments;
+
+        try {
+          console.log("first in last");
+
+          let data = await transporter.sendMail(options);
+          if (data) {
+            console.log("Mail sent successfully");
+            let updateDb = await orderOnly.findOneAndUpdate(
+              { shop: extra.shop, orderId: extra.orderId },
+              { status: true }
+            );
+            fs.unlink(pdfPath, (err) => {
+              if (err) {
+                console.error("Error deleting PDF file:", err);
+                throw error;
+              } else {
+                console.log("PDF file deleted successfully.");
+              }
+            });
+          }
+
+          console.log(data, "faaltuu");
+        } catch (error) {
+          console.log(error, "errorr aa gyaa");
+
+          throw error;
+        }
+        //////////////////////////
+      } catch (err) {
+        console.error(err);
       }
-
-      console.log(data, "faaltuu");
-    } catch (error) {
-      console.log(error, "errorr aa gyaa");
-
-      throw error;
     }
-    //////////////////////////
 
-
-
-
-
-  } catch (err) {
-    console.error(err);
-  }
-}
-
-generatePdf();
-      ///////////////////////////////
-
-
-   
-             
-
-    }
-    else{
+    generatePdf();
+    ///////////////////////////////
+  } else {
     if (recipientMails[0]) {
       console.log("inzerorecipent");
 
@@ -803,7 +830,7 @@ generatePdf();
       ////
     }
   }
-  }
+};
 // };
 
 let subscriptionBillingAttemptCreateMutation = `mutation subscriptionBillingAttemptCreate($subscriptionBillingAttemptInput: SubscriptionBillingAttemptInput!, $subscriptionContractId: ID!) {
@@ -873,51 +900,44 @@ const firstScheduledTime = "*/30 * * * * *"; // Replace with your desired time i
 
 const firstJob = new CronJob(firstScheduledTime, contractCronJob);
 
-const secondJob =new CronJob(firstScheduledTime, sendInvoiceMailAndSaveContract)
+const secondJob = new CronJob(
+  firstScheduledTime,
+  sendInvoiceMailAndSaveContract
+);
 
 firstJob.start();
 
-secondJob.start()
+secondJob.start();
 
 export async function contractCronJob(req, res) {
-
   const currentDate = new Date().toISOString();
 
   const targetDate = new Date(currentDate);
 
-console.log("checking dataess",targetDate)
+  console.log("checking dataess", targetDate);
   let data = await subscriptionDetailsModal.find(
-
     {
       $and: [
-     {
-      $expr: {
+        {
+          $expr: {
+            $eq: [
+              {
+                $dateToString: { format: "%Y-%m-%d", date: "$nextBillingDate" },
+              },
 
-        $eq: [
+              { $dateToString: { format: "%Y-%m-%d", date: targetDate } },
+            ],
+          },
+        },
 
-          { $dateToString: { format: "%Y-%m-%d", date: "$nextBillingDate" } },
-
-          { $dateToString: { format: "%Y-%m-%d", date: targetDate } },
-
-        ],
-
-      },
-
-      },
-
-      { status: "active" }
-
-    ],
-
+        { status: "active" },
+      ],
     },
 
     { shop: 1, subscription_id: 1, product_details: 1, subscription_details: 1 }
-
   );
 
   console.log(data, "Function executed at the scheduled time.");
-
- 
 
   let mutation = `mutation subscriptionBillingAttemptCreate($subscriptionBillingAttemptInput: SubscriptionBillingAttemptInput!, $subscriptionContractId: ID!) {
 
@@ -991,80 +1011,50 @@ console.log("checking dataess",targetDate)
 
   `;
 
- 
-
   if (data.length > 0) {
-
     for (let i = 0; i < data.length; i++) {
-
       const uniqueId =
-
         Date.now().toString(36) + Math.random().toString(36).substring(2, 5);
 
       let Input = {
-
         subscriptionBillingAttemptInput: {
-
           idempotencyKey: uniqueId,
 
           originTime: currentDate,
-
         },
 
         subscriptionContractId: data[i].subscription_id,
-
       };
-
- 
 
       let gettoken = await shopModal.findOne({ shop: data[i].shop });
 
       console.log(gettoken, "cvcvcvcvcv");
 
       const client = new shopify.api.clients.Graphql({
-
         session: {
-
           shop: data[i].shop,
 
           accessToken: gettoken.accessToken,
-
         },
-
       });
-
- 
 
       let billingAttempt = await client.query({
-
         data: { query: mutation, variables: Input },
-
       });
 
- 
-
       console.log(
-
         billingAttempt.body.data.subscriptionBillingAttemptCreate,
 
         "cechk ittt"
-
       );
 
       if (
-
         billingAttempt.body.data.subscriptionBillingAttemptCreate.userErrors
-
           .length < 1
-
       ) {
-
         const currentDate = new Date().toISOString();
 
- 
-
         let saveToBillingAttempt = await billing_Attempt.create({
-
           shop: data[i].shop,
 
           status: "pending",
@@ -1078,13 +1068,10 @@ console.log("checking dataess",targetDate)
           contract_id: data[i].subscription_id,
 
           billing_attempt_id:
-
             billingAttempt.body.data.subscriptionBillingAttemptCreate
-
               .subscriptionBillingAttempt.id,
 
-        idempotencyKey:uniqueId      
-
+          idempotencyKey: uniqueId,
         });
 
         const originalDate = new Date(currentDate); // Assuming currentDate is already in ISO string format
@@ -1094,89 +1081,52 @@ console.log("checking dataess",targetDate)
         let value = data[i]?.subscription_details?.billingLength;
 
         if (
-
           data[i].subscription_details.delivery_billingType.toLowerCase() ===
-
           "day"
-
         ) {
-
           nextDate = new Date(originalDate);
 
-          nextDate.setDate(nextDate.getDate() + (1 * parseInt(value)));
-
+          nextDate.setDate(nextDate.getDate() + 1 * parseInt(value));
         } else if (
-
           data[i].subscription_details.delivery_billingType.toLowerCase() ===
-
           "month"
-
         ) {
-
           nextDate = new Date(originalDate);
 
-          nextDate.setMonth(nextDate.getMonth() + (1 * parseInt(value)));
-
+          nextDate.setMonth(nextDate.getMonth() + 1 * parseInt(value));
         } else if (
-
           data[i].subscription_details.delivery_billingType.toLowerCase() ===
-
           "week"
-
         ) {
-
           nextDate = new Date(originalDate);
 
-          nextDate.setDate(nextDate.getDate() + (7 * parseInt(value)));
-
+          nextDate.setDate(nextDate.getDate() + 7 * parseInt(value));
         } else if (
-
           data[i].subscription_details.delivery_billingType.toLowerCase() ===
-
           "year"
-
         ) {
-
           nextDate = new Date(originalDate);
 
-          nextDate.setFullYear(nextDate.getFullYear() + (1 * parseInt(value)));
-
+          nextDate.setFullYear(nextDate.getFullYear() + 1 * parseInt(value));
         }
-
- 
 
         console.log(nextDate, "kkkkkkkkkk");
 
- 
-
         let updateNextBillingDate =
-
           await subscriptionDetailsModal.findOneAndUpdate(
-
             { shop: data[i].shop, subscription_id: data[i].subscription_id },
 
             {
-
               $set: {
-
                 nextBillingDate: nextDate.toISOString(),
-
               },
-
             }
-
           );
 
         console.log(updateNextBillingDate, "nextupadtae");
-
       }
-
     }
-
   }
-
- 
-
 }
 /////////////////////////////// contract create cron end/////////////////////////////////////////
 
@@ -1875,7 +1825,15 @@ export async function subscriptionContractCreate(req, res) {
           productVariantId: ele.id,
           quantity: parseInt(ele.quantity),
           // currentPrice: parseFloat(ele.price),
-          currentPrice: values?.subscription?.planType== 'prepaid' ? parseFloat(ele.price * ele.quantity * (values?.subscription?.billingLength/values?.subscription?.delivery_billingValue)) : parseFloat(ele.price),
+          currentPrice:
+            values?.subscription?.planType == "prepaid"
+              ? parseFloat(
+                  ele.price *
+                    ele.quantity *
+                    (values?.subscription?.billingLength /
+                      values?.subscription?.delivery_billingValue)
+                )
+              : parseFloat(ele.price),
           sellingPlanName: values?.subscription?.planName,
         },
       });
@@ -2069,12 +2027,17 @@ export async function subscriptionContractCreate(req, res) {
     console.log(response.body.data);
     console.log(
       "28june",
-      response.body.data?.subscriptionContractAtomicCreate?.contract?.lines,
-      
+      response.body.data?.subscriptionContractAtomicCreate?.contract?.lines
     );
-    console.log("holidayy",response.body.data?.subscriptionContractAtomicCreate?.contract?.lines
-    ?.nodes[0]?.currentPrice)
-    console.log("working",response.body.data?.subscriptionContractAtomicCreate?.userErrors);
+    console.log(
+      "holidayy",
+      response.body.data?.subscriptionContractAtomicCreate?.contract?.lines
+        ?.nodes[0]?.currentPrice
+    );
+    console.log(
+      "working",
+      response.body.data?.subscriptionContractAtomicCreate?.userErrors
+    );
     if (
       response.body.data?.subscriptionContractAtomicCreate?.userErrors.length >
       0
@@ -2289,34 +2252,33 @@ export async function getSubscriptionList(req, res) {
   try {
     // console.log(res.locals.shopify.session, "sddfsdfsdffdsk");
 
-    let shop = res.locals.shopify.session.shop; 
-      let session = res.locals.shopify.session;
+    let shop = res.locals.shopify.session.shop;
+    let session = res.locals.shopify.session;
     const client = new shopify.api.clients.Graphql({ session });
 
-//     const fulfillment = new shopify.api.rest.Fulfillment({session: session});
-//     fulfillment.line_items_by_fulfillment_order = [
-//       {
-//         "fulfillment_order_id": 6483766673712
-//       }
-//     ];
-//     // fulfillment.tracking_info = {
-//     //   "number": "MS1562678",
-//     //   "url": "https://www.my-shipping-company.com?tracking_number=MS1562678"
-//     // };
-//     await fulfillment.save({
-//       update: true,
-//     });
+    //     const fulfillment = new shopify.api.rest.Fulfillment({session: session});
+    //     fulfillment.line_items_by_fulfillment_order = [
+    //       {
+    //         "fulfillment_order_id": 6483766673712
+    //       }
+    //     ];
+    //     // fulfillment.tracking_info = {
+    //     //   "number": "MS1562678",
+    //     //   "url": "https://www.my-shipping-company.com?tracking_number=MS1562678"
+    //     // };
+    //     await fulfillment.save({
+    //       update: true,
+    //     });
 
-// console.log("fulfillment",fulfillment)
+    // console.log("fulfillment",fulfillment)
 
-///////below  order cancellation/////
+    ///////below  order cancellation/////
 
-// const order = new shopify.api.rest.Order({session: session});
-// order.id = 5570906652976;
-// let cancelorderdata=await order.cancel({});
-// console.log("cancelorderdata",cancelorderdata)
-///////order cancelation end/////////////
-
+    // const order = new shopify.api.rest.Order({session: session});
+    // order.id = 5570906652976;
+    // let cancelorderdata=await order.cancel({});
+    // console.log("cancelorderdata",cancelorderdata)
+    ///////order cancelation end/////////////
 
     req.body?.listType;
     let query =
@@ -2729,7 +2691,11 @@ export async function subscriptionDraftCommitCommon(req, res, next) {
       console.log("mic check");
       res.send({
         message: "error",
-        data: response.body.data.subscriptionDraftCommit.userErrors[0].message == "Contract draft delivery method can't be blank if any lines require shipping." ? "Please update shipping address first." : response.body.data.subscriptionDraftCommit.userErrors[0].message ,
+        data:
+          response.body.data.subscriptionDraftCommit.userErrors[0].message ==
+          "Contract draft delivery method can't be blank if any lines require shipping."
+            ? "Please update shipping address first."
+            : response.body.data.subscriptionDraftCommit.userErrors[0].message,
       });
     } else {
       console.log(
@@ -2745,9 +2711,13 @@ export async function subscriptionDraftCommitCommon(req, res, next) {
         response.body.data?.subscriptionDraftCommit?.contract?.deliveryMethod
       );
       response.body.data?.subscriptionDraftCommit?.contract?.lines?.edges?.map(
-        (item) =>{ 
-          console.log("itemdec7",item?.node)
-          console.log("sandwich",item?.node?.currentPrice, item?.node?.quantity)
+        (item) => {
+          console.log("itemdec7", item?.node);
+          console.log(
+            "sandwich",
+            item?.node?.currentPrice,
+            item?.node?.quantity
+          );
         }
       );
 
@@ -2825,8 +2795,7 @@ export async function updateSubscriptionInDbCommon(req, res) {
       update = {
         $set: {
           [`product_details.${itemIndex}.quantity`]: req?.body?.input?.quantity,
-          [`product_details.${itemIndex}.price`]:
-            req?.body?.unitPrice,
+          [`product_details.${itemIndex}.price`]: req?.body?.unitPrice,
           // [`product_details.${itemIndex}.computedPrice`]:
           //   req?.body?.computedPrice,
         },
@@ -2870,11 +2839,11 @@ export async function updateSubscriptionInDbCommon(req, res) {
             ...(req?.body?.discount ? { discount: req?.body?.discount } : {}),
             ...(req?.body?.freeTrial
               ? { freeTrial: req?.body?.freeTrial }
-              : {}), 
-              ...(req?.body?.freeTrialCycle
-                ? {freeTrialCycle: req?.body?.freeTrialCycle}
-                : {}),
-              currency:req?.body?.currency
+              : {}),
+            ...(req?.body?.freeTrialCycle
+              ? { freeTrialCycle: req?.body?.freeTrialCycle }
+              : {}),
+            currency: req?.body?.currency,
           },
         },
       };
@@ -3062,24 +3031,18 @@ export async function subscriptionDraftLineAdd(req, res, next) {
 
         // console.log(calculatedPrice, element.id, element.quantity);
 
-
-
-
-
-
-
-
-
-
-
-
-
         const InputSubscriptionDraftLine = {
           draftId: req.draft_id,
           input: {
             // currentPrice: calculatedPrice,
-            currentPrice: req?.body?.subscription_details?.planType=='prepaid' ?  parseFloat( element.price * (req?.body?.subscription_details?.billingLength/req?.body?.subscription_details?.delivery_billingValue))
-            :  parseFloat(element.price),
+            currentPrice:
+              req?.body?.subscription_details?.planType == "prepaid"
+                ? parseFloat(
+                    element.price *
+                      (req?.body?.subscription_details?.billingLength /
+                        req?.body?.subscription_details?.delivery_billingValue)
+                  )
+                : parseFloat(element.price),
             productVariantId: element.id,
             quantity: element.quantity,
           },
@@ -3496,8 +3459,8 @@ export async function getEmailTemplateAndConfigData(req, res) {
     console.log(req.body, "sddfsdfsdffdsk");
 
     let shop = res?.locals?.shopify?.session?.shop
-    ? res?.locals?.shopify?.session?.shop
-    : req?.body?.shop;
+      ? res?.locals?.shopify?.session?.shop
+      : req?.body?.shop;
     let templateType = req.body.templateType;
     // let data= await emailTemplatesModal.findOne({ shop: shop},{[`settings.${templateType}`]:1})
     let data = await emailTemplatesModal
@@ -4031,7 +3994,7 @@ export async function sendMailOnUpdate(req, res) {
             .at(-1)}&mode=view`;
         }
       }
-console.log("testing0ct18")
+      console.log("testing0ct18");
       const emailContent = await ejs.renderFile(dirPath + "/preview2.ejs", {
         selectedTemplate,
         templateType,
@@ -4040,7 +4003,7 @@ console.log("testing0ct18")
         dateConversion,
         url: url,
       });
-      console.log("rrrrrrrtesting0ct18")
+      console.log("rrrrrrrtesting0ct18");
       const updatedEmailContent = emailContent.replace(
         new RegExp(Object.keys(replacements).join("|"), "g"),
         (matched) => replacements[matched]
@@ -4136,7 +4099,7 @@ console.log("testing0ct18")
 
     res.send({ message: "success" });
   } catch (error) {
-    console.log("errr-----",error)
+    console.log("errr-----", error);
     res.send({ message: "error" });
   }
 }
@@ -4727,10 +4690,10 @@ export async function upcomingFulfillment(req, res) {
 
   }`,
       });
-console.log("ordername",orderData?.body?.data?.order?.name);
+      console.log("ordername", orderData?.body?.data?.order?.name);
       console.log("orderData", orderData?.body?.data?.order?.lineItems?.edges);
 
-      let orderNumber=orderData?.body?.data?.order?.name;
+      let orderNumber = orderData?.body?.data?.order?.name;
       let contractIdAndLineItemsData =
         orderData?.body?.data?.order?.lineItems?.edges;
 
@@ -4776,7 +4739,11 @@ console.log("ordername",orderData?.body?.data?.order?.name);
 
       res.send({
         message: "success",
-        data: {orderNumber , contractIdAndLineItemsData, fulfillmentIdAndLineItemsData },
+        data: {
+          orderNumber,
+          contractIdAndLineItemsData,
+          fulfillmentIdAndLineItemsData,
+        },
       });
     } else {
       res.send({ message: "no_data" });
@@ -4920,11 +4887,11 @@ function findDateRange(data) {
       $lt: new Date(new Date().setUTCHours(0, 0, 0, 0)),
     };
   } else if (data.range == "lastmonth") {
-   ///this case is used in billing plan page
+    ///this case is used in billing plan page
 
     console.log("16jan", new Date(new Date().setHours(0, 0, 0, 0)));
     date = new Date();
-    console.log("chekcinnnn",date)
+    console.log("chekcinnnn", date);
     date.setDate(date.getDate() - 30);
 
     dateRange = {
@@ -4981,7 +4948,6 @@ export async function combinedData(req, res) {
   }
 }
 
-
 export async function subscriptionBookings(req, res) {
   try {
     let shop = res.locals.shopify.session.shop;
@@ -4990,7 +4956,7 @@ export async function subscriptionBookings(req, res) {
     // Query for data within the date range
     let data = await subscriptionDetailsModal.countDocuments({
       shop: shop,
-     
+
       createdAt: dateRange,
     });
 
@@ -5002,10 +4968,6 @@ export async function subscriptionBookings(req, res) {
     res.send({ message: "error" });
   }
 }
-
-
-
-
 
 export async function activeCustomers(req, res) {
   try {
@@ -5054,7 +5016,6 @@ export async function addAnnouncement(req, res) {
 
     // Query for data within the date range
     let data = await announcementsModal.create({
-  
       description: req?.body?.description,
       title: req?.body?.title,
       image: req?.body?.image,
@@ -5107,9 +5068,7 @@ export async function getAnnouncements(req, res) {
     let shop = res.locals.shopify.session.shop;
 
     // Query for data within the date range
-    let data = await announcementsModal
-      .find({})
-      .sort({ createdAt: -1 });
+    let data = await announcementsModal.find({}).sort({ createdAt: -1 });
 
     console.log("daaa", data);
 
@@ -5125,7 +5084,6 @@ export async function deleteAnnouncement(req, res) {
     let shop = res.locals.shopify.session.shop;
 
     let data = await announcementsModal.deleteOne({
- 
       _id: new ObjectId(req?.body?._id),
     });
 
@@ -5142,32 +5100,35 @@ export async function deleteAnnouncement(req, res) {
   }
 }
 
-export async function convertStoreProductPriceIntoOrderCurrency(req,res,next){
+export async function convertStoreProductPriceIntoOrderCurrency(
+  req,
+  res,
+  next
+) {
+  try {
+    if (req?.body?.country) {
+      let session = res.locals.shopify.session;
 
-try {
-        
-     if(req?.body?.country ){
+      // let drr= await shopify.api.rest.Variant.find({
+      //   session: session,
+      //   id: 44360463450416,
+      // });
 
- let session = res.locals.shopify.session;
+      // console.log("drrrr",drr)
 
+      const client = new shopify.api.clients.Graphql({ session });
+      console.log("ctry", req.body.country);
 
-// let drr= await shopify.api.rest.Variant.find({
-//   session: session,
-//   id: 44360463450416,
-// });
+      // console.log("oballeballe",req.body.lines)
 
-// console.log("drrrr",drr)
-
- const client = new shopify.api.clients.Graphql({ session })
-console.log("ctry",req.body.country)
-
-// console.log("oballeballe",req.body.lines)
-
-// let lines= req?.body?.check2 == "createProductSubscriptionEdit" ?   ""  : req?.body.lines ;
-let lines= req?.body?.check2 == "createProductSubscriptionEdit"  ?   req?.createProductData?.data  :  req?.body.lines ;
-let flag=false
-const promises = lines.map(async (item, index) => {
-  let currencyConversionQuery = `query{
+      // let lines= req?.body?.check2 == "createProductSubscriptionEdit" ?   ""  : req?.body.lines ;
+      let lines =
+        req?.body?.check2 == "createProductSubscriptionEdit"
+          ? req?.createProductData?.data
+          : req?.body.lines;
+      let flag = false;
+      const promises = lines.map(async (item, index) => {
+        let currencyConversionQuery = `query{
     productVariant(id: "${item?.id}") {
       id
       contextualPricing(context: { country: ${req?.body?.country} }) {
@@ -5177,113 +5138,114 @@ const promises = lines.map(async (item, index) => {
       }
     }
   }`;
- 
-  try {
-    let data = await client.query({
-      data: currencyConversionQuery,
-    });
- 
-    console.log(data?.body?.data?.productVariant, "novv", data?.body?.data?.productVariant?.contextualPricing?.price?.amount);
-    let price = data?.body?.data?.productVariant?.contextualPricing?.price?.amount;
-    lines[index]['price'] = price;
- 
-    return price;
+
+        try {
+          let data = await client.query({
+            data: currencyConversionQuery,
+          });
+
+          console.log(
+            data?.body?.data?.productVariant,
+            "novv",
+            data?.body?.data?.productVariant?.contextualPricing?.price?.amount
+          );
+          let price =
+            data?.body?.data?.productVariant?.contextualPricing?.price?.amount;
+          lines[index]["price"] = price;
+
+          return price;
+        } catch (error) {
+          console.error(
+            `Error fetching data for item at index ${index}: ${error}`
+          );
+          return null;
+        }
+      });
+
+      // Wait for all promises to resolve
+
+      Promise.all(promises)
+        .then((prices) => {
+          console.log("updatedlinesinnrer", lines);
+
+          if (req?.body?.check2 == "createProductSubscriptionEdit") {
+            console.log("dr dang");
+            // req.body.lines=lines
+            req.createProductData.data = lines;
+            console.log(
+              "req?.createProductData?.data",
+              req?.createProductData?.data
+            );
+          } else {
+            console.log("shinchan");
+            req.body.lines = lines;
+          }
+          next();
+          // Now you have access to all prices in the 'prices' array
+        })
+        .catch((error) => {
+          console.error("Error processing promises:", error);
+          throw error;
+        });
+    } else {
+      console.log("inthe-else");
+      next();
+    }
+
+    // res.send("hello")
   } catch (error) {
-    console.error(`Error fetching data for item at index ${index}: ${error}`);
-    return null;
+    console.log("errorr", error);
+    res.send({ message: "error", data: "Something went wrong" });
   }
-});
- 
-// Wait for all promises to resolve
-
-Promise.all(promises)
-  .then((prices) => {
-    console.log("updatedlinesinnrer", lines);
-    
-    if(req?.body?.check2 == "createProductSubscriptionEdit" ){
-      console.log("dr dang")
-      // req.body.lines=lines
-      req.createProductData.data=lines
-      console.log("req?.createProductData?.data",req?.createProductData?.data)
-    }
-    else {
-      console.log("shinchan")
-      req.body.lines=lines
-    }
-    next()
-    // Now you have access to all prices in the 'prices' array
-  })
-  .catch((error) => {
-    console.error('Error processing promises:', error);
-    throw error
-  });
-
-
-}
-else{
-  console.log("inthe-else")
-  next()
 }
 
-// res.send("hello")
-}
-catch(error){
-
-  console.log("errorr",error)
-  res.send({message:"error",data:"Something went wrong"})
-}
-
-
-
-}
-
-export async function  checkAppBlockEmbed (req,res) {
-
-  try{
+export async function checkAppBlockEmbed(req, res) {
+  try {
     let session = res.locals.shopify.session;
-    let storeDetails=await  getStoreDetails(res.locals.shopify.session.shop)
-    let ddd=await shopify.api.rest.Asset.all({
+    let storeDetails = await getStoreDetails(res.locals.shopify.session.shop);
+    let ddd = await shopify.api.rest.Asset.all({
       session: res.locals.shopify.session,
       theme_id: storeDetails?.themeId,
-      asset: {"key": "config/settings_data.json"},
+      asset: { key: "config/settings_data.json" },
     });
     // console.log("ddd",JSON.parse(ddd?.data[0]?.value))
-let z=JSON.parse(ddd?.data[0]?.value)
-console.log("zzz",z?.current?.blocks)
-let searchedBlock=Object.values(z?.current?.blocks).find(item=>item.type==`shopify://apps/${process.env?.APP_NAME}/blocks/${process.env?.APP_EXTENSION_BLOCK}/${process.env?.SHOPIFY_THEME_APP_EXTENSION_ID}`)
+    let z = JSON.parse(ddd?.data[0]?.value);
+    console.log("zzz", z?.current?.blocks);
+    let searchedBlock = Object.values(z?.current?.blocks).find(
+      (item) =>
+        item.type ==
+        `shopify://apps/${process.env?.APP_NAME}/blocks/${process.env?.APP_EXTENSION_BLOCK}/${process.env?.SHOPIFY_THEME_APP_EXTENSION_ID}`
+    );
 
-// console.log("jigjaggggv",searchedBlock)
+    // console.log("jigjaggggv",searchedBlock)
 
-if (searchedBlock){
-
-res.send({message:"success",data:searchedBlock})
-}
-else{
-res.send({message:"noData",data:{}})
-}
-
-    } catch(error) {
-    console.log(error)
-    res.send({message:"error"})
+    if (searchedBlock) {
+      res.send({ message: "success", data: searchedBlock });
+    } else {
+      res.send({ message: "noData", data: {} });
     }
-
+  } catch (error) {
+    console.log(error);
+    res.send({ message: "error" });
+  }
 }
 
 export async function recurringBiling(req, res) {
   try {
-
     const { plan, interval, price } = req.body;
     const session = res.locals.shopify.session;
     const shop = res.locals.shopify.session.shop;
     const API_KEY = process.env.SHOPIFY_API_KEY;
-    console.log("keyyyy",API_KEY)
-    const client = new shopify.api.clients.Graphql({session});
+    console.log("keyyyy", API_KEY);
+    const client = new shopify.api.clients.Graphql({ session });
     let billingInterval = interval == "MONTHLY" ? "EVERY_30_DAYS" : "ANNUAL";
     let testCharge;
-    let trialDays=plan=='premium' ? 14 : 0
+    let trialDays =
+      plan == "premiere" || plan == "starter" || plan == "premium" ? 14 : 0;
     if (
-      shop == "sahil-shine.myshopify.com"  
-       ) {
+      shop == "sahil-shine.myshopify.com" ||
+      shop == "sahilnew.myshopify.com"
+    ) {
       testCharge = true;
     } else {
       testCharge = false;
@@ -5318,15 +5280,27 @@ export async function recurringBiling(req, res) {
     const response = await client.query({
       data: recurringString,
     });
-    
-    console.log("response",response?.body?.data?.appSubscriptionCreate?.userErrors.length > 0)
 
-    if(response && response?.body?.data?.appSubscriptionCreate?.userErrors.length > 0){
-      res.send({message: "error",data:response?.body?.data?.appSubscriptionCreate?.userErrors[0]?.message});
-     }
-else{
-  res.status(200).send({message: "success", url : response, interval : interval});
-}
+    console.log(
+      "response",
+      response?.body?.data?.appSubscriptionCreate?.userErrors.length > 0,
+      response?.body?.data?.appSubscriptionCreate?.userErrors[0]
+    );
+
+    if (
+      response &&
+      response?.body?.data?.appSubscriptionCreate?.userErrors.length > 0
+    ) {
+      res.send({
+        message: "error",
+        data: response?.body?.data?.appSubscriptionCreate?.userErrors[0]
+          ?.message,
+      });
+    } else {
+      res
+        .status(200)
+        .send({ message: "success", url: response, interval: interval });
+    }
   } catch (err) {
     return res.json({ message: "INTERNAL_SERVER_ERROR", err: err.message });
   }
@@ -5336,122 +5310,137 @@ export async function recurringBilingSelected(req, res) {
   try {
     const { charge_id } = req.body;
     const shop = res.locals.shopify.session.shop;
-   const verifyBilling = await shopify.api.rest.RecurringApplicationCharge.find({
-     session : res.locals.shopify.session,
-     id : charge_id
-   })
-console.log("verifyBilling",verifyBilling)
-   if(verifyBilling.status === "active") {
-    const updatePlan = await billingModal.findOneAndUpdate(
-      { shop },
-      { charge_id, plan: verifyBilling.name, price: verifyBilling.price, interval: "MONTHLY",next_billing:verifyBilling.billing_on },
-      { upsert: true, new: true }
-    );
-
-    if (!updatePlan) {
-      return res.json({
-        message: "something went wrong!!!",
-        result: 0,
+    const verifyBilling =
+      await shopify.api.rest.RecurringApplicationCharge.find({
+        session: res.locals.shopify.session,
+        id: charge_id,
       });
+    console.log("verifyBilling", verifyBilling);
+    if (verifyBilling.status === "active") {
+      const updatePlan = await billingModal.findOneAndUpdate(
+        { shop },
+        {
+          charge_id,
+          plan: verifyBilling.name,
+          price: verifyBilling.price,
+          interval: "MONTHLY",
+          next_billing: verifyBilling.billing_on,
+          activated_on: verifyBilling.activated_on,
+        },
+        { upsert: true, new: true }
+      );
+
+      if (!updatePlan) {
+        return res.json({
+          message: "something went wrong!!!",
+          result: 0,
+        });
+      } else {
+        return res
+          .status(202)
+          .json({
+            message: "success",
+            result: 1,
+            plan: verifyBilling.name,
+            interval: "MONTHLY",
+            next_billing: verifyBilling.billing_on,
+            activated_on: verifyBilling.activated_on,
+          });
+      }
     } else {
-      return res
-        .status(202)
-        .json({ message: "success", result: 1, plan: verifyBilling.name, interval : "MONTHLY" ,next_billing : verifyBilling.billing_on });
+      console.log("inthe kelsee");
+      res.json({ message: "something went wrong", result: 0 });
     }
-   } else {
-      res.status(499).json({message : "Payment status is pending!!!", result : 0})
-   }
   } catch (err) {
     return res.json({ message: "INTERNAL_SERVER_ERROR", err: err.message });
   }
 }
 
-export async function getBillingPlanData(req,res){
-  
+export async function getBillingPlanData(req, res) {
   // console.log("oitoo")
-  try{
-  const shop = res.locals.shopify.session.shop;
-  const planData=await billingModal.findOne({shop},{plan:1,updatedAt:1,_id:0,next_billing:1})
-  // console.log("dplandaata",planData)  
-//  let range= planData.updatedAt
-//  range.setHours(0,0,0,0)
+  try {
+    console.log("res--->", res.locals.shopify.session);
+    const shop = res.locals.shopify.session.shop;
+    const planData = await billingModal.findOne(
+      { shop },
+      {
+        plan: 1,
+        updatedAt: 1,
+        _id: 0,
+        next_billing: 1,
+        charge_id: 1,
+        activated_on: 1,
+      }
+    );
+    // console.log("dplandaata",planData)
+    //  let range= planData.updatedAt
+    //  range.setHours(0,0,0,0)
 
-//   // console.log("smckscdclsdll",range)
-  
+    //   // console.log("smckscdclsdll",range)
 
-//       let data = await axios.get(
-//       "https://cdn.shopify.com/s/javascripts/currencies.js"
-//     );
+    //       let data = await axios.get(
+    //       "https://cdn.shopify.com/s/javascripts/currencies.js"
+    //     );
 
-    
+    //     let filtered =await  eval(
+    //       new Function(`
 
-//     let filtered =await  eval(
-//       new Function(`
+    //   ${data?.data}
 
-//   ${data?.data}
+    //   return Currency;
 
-//   return Currency;
+    // `)
+    //     )();
 
-// `)
-//     )();
+    //     // console.log("yyyy", filtered);
+    //     let sum = 0;
+    //         if (filtered) {
 
-//     // console.log("yyyy", filtered);
-//     let sum = 0;
-//         if (filtered) {
+    //       let rates=filtered?.rates ;
 
-      
-//       let rates=filtered?.rates ;
+    //       let data = await billing_Attempt.find(
+    //         {
+    //           shop: shop,
+    //           $or: [{ status: "success" }, { status: "initial" }],
+    //           // createdAt:  { $gte: range },
+    //           createdAt: { $gte: range},
+    //         },
+    //         { new: true, _id: 0, total_amount: 1, currency: 1, status: 1 }
+    //       );
 
-//       let data = await billing_Attempt.find(
-//         {
-//           shop: shop,
-//           $or: [{ status: "success" }, { status: "initial" }],
-//           // createdAt:  { $gte: range },
-//           createdAt: { $gte: range},
-//         },
-//         { new: true, _id: 0, total_amount: 1, currency: 1, status: 1 }
-//       );
+    //       // let countInitialStatus = 0;
 
-    
+    //       if (data.length > 0) {
+    //         data.map((item) => {
+    //           sum =
+    //             sum +
+    //             parseFloat(item.total_amount) *
+    //               parseFloat(rates[item?.currency] / rates["USD"]);
 
-//       // let countInitialStatus = 0;
-  
-//       if (data.length > 0) {
-//         data.map((item) => {
-//           sum =
-//             sum +
-//             parseFloat(item.total_amount) *
-//               parseFloat(rates[item?.currency] / rates["USD"]);
-  
-
-  
-//         });
-//       }
-// // console.log("mysum",sum)
-
+    //         });
+    //       }
+    // // console.log("mysum",sum)
 
     //}
 
-  res.send({message:"success", planData:planData})
-}
-catch(error)
-{
-console.log("errorr",error)
-res.send({message:"error",data:error?.message})
-}
+    res.send({ message: "success", planData: planData });
+  } catch (error) {
+    console.log("errorr", error);
+    res.send({ message: "error", data: error?.message });
+  }
 }
 export async function calculateRevenue(req, res) {
   try {
     let shop = res.locals.shopify.session.shop;
-   let range= req?.body?.range
-      range.setHours(0,0,0,0)
-
+    let range = req?.body?.range;
+    //  console.log("bodyyyyy--->",req?.body)
+    new Date(range).setHours(0, 0, 0, 0);
 
     let data = await billing_Attempt.find(
       {
         shop: shop,
         $or: [{ status: "success" }, { status: "initial" }],
-        createdAt: { $gte: range},
+        createdAt: { $gte: range },
       },
       { new: true, _id: 0, total_amount: 1, currency: 1, status: 1 }
     );
@@ -5465,8 +5454,61 @@ export async function calculateRevenue(req, res) {
   }
 }
 
+export async function deleteRecurringCharge(req, res, next) {
+  try {
+    let session = res.locals.shopify.session;
+    console.log("req.body?.charge_id--->", req.body?.charge_id);
 
-// export async function  
+    let data = await shopify.api.rest.RecurringApplicationCharge.delete({
+      session: session,
+      id: req.body?.charge_id,
+    });
+
+    console.log("dataaaaaassss", data);
+    if (Object.keys(data).length == 0) {
+      console.log("in ifff");
+      next();
+    } else {
+      res.send({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    console.log("error", error);
+    res.send({ message: "error" });
+  }
+}
+export async function freePlanActivation(req, res) {
+  const shop = res.locals.shopify.session.shop;
+  const updatePlan = await billingModal.findOneAndUpdate(
+    { shop },
+    {
+      charge_id: "",
+      plan: "free",
+      price: 0,
+      interval: "",
+      next_billing: "",
+      activated_on: new Date().toISOString(),
+    },
+    { upsert: true, new: true }
+  );
+
+  if (!updatePlan) {
+    return res.json({
+      message: "something went wrong!!!",
+      result: 0,
+    });
+  } else {
+    return res
+      .status(202)
+      .json({
+        message: "success",
+        result: 1,
+        plan: updatePlan.plan,
+        interval: "",
+        next_billing: "",
+      });
+  }
+}
+// export async function
 ///////////////////////////////////////////////
 
 // export async function getProductVarientsIds(req, res) {
@@ -5861,10 +5903,10 @@ export async function addPlansSubscription(req, res) {
             planType: item.planType,
             deliveryEvery: item.deliveryEvery,
           };
-          if(item.freeTrial){
+          if (item.freeTrial) {
             obj.trialCount = item.trialCount;
-            obj.freeTrialCycle = item.freeTrialCycle
-          } 
+            obj.freeTrialCycle = item.freeTrialCycle;
+          }
 
           // item.billingCycle == "cancel_after"
           //   ? (obj.billingCycleCount = item.billingCycleCount)
@@ -6646,10 +6688,10 @@ id      }
         planType: item.planType,
         deliveryEvery: item.deliveryEvery,
       };
-      if(item.freeTrial){
+      if (item.freeTrial) {
         obj.trialCount = item.trialCount;
-        obj.freeTrialCycle = item.freeTrialCycle
-      } 
+        obj.freeTrialCycle = item.freeTrialCycle;
+      }
 
       // item.billingCycle == "cancel_after"
       //   ? (obj.billingCycleCount = item.billingCycleCount)
@@ -6742,10 +6784,10 @@ id      }
         deliveryEvery: item.deliveryEvery,
       };
       item.setupProductId ? (obj.setupProductId = item.setupProductId) : "";
-      if(item.freeTrial){
+      if (item.freeTrial) {
         obj.trialCount = item.trialCount;
-        obj.freeTrialCycle = item.freeTrialCycle
-      } 
+        obj.freeTrialCycle = item.freeTrialCycle;
+      }
       // item.billingCycle == "cancel_after"
       //   ? (obj.billingCycleCount = item.billingCycleCount)
       //   : "";
@@ -7000,7 +7042,7 @@ export async function getPlanGroups(req, res) {
     let data = await planModal
       .find(
         { shop: shop },
-        { plan_group_name: 1, plan_group_id: 1, product_details: 1,plans:1 }
+        { plan_group_name: 1, plan_group_id: 1, product_details: 1, plans: 1 }
       )
       .sort({ _id: -1 });
     if (data) {
@@ -7379,77 +7421,74 @@ export async function createCustomer(req, res) {
 
 export async function sendMail(req, res) {
   let options = req.body.options;
-  let shop=res.locals.shopify.session.shop;
+  let shop = res.locals.shopify.session.shop;
   let configurationData = await emailTemplatesModal.findOne(
-    {shop},
-    {configuration:1}
+    { shop },
+    { configuration: 1 }
   );
   // let configuration=configurationData?.configuration;
-  let configuration="";
+  let configuration = "";
   let emailConfig = {};
 
+  if (configuration && configuration?.enable == true) {
+    console.log("inenabletrue");
 
+    let encryptionConfig = {};
 
-if(configuration && configuration?.enable==true ){
-  console.log("inenabletrue");
+    if (configuration.encryption === "ssl") {
+      encryptionConfig = {
+        secure: true,
 
-  let encryptionConfig = {};
+        requireTLS: true,
+      };
+    } else if (configuration.encryption === "tls") {
+      encryptionConfig = {
+        secure: false, // For TLS, secure should be set to false
 
-  if (configuration.encryption === "ssl") {
-    encryptionConfig = {
-      secure: true,
+        requireTLS: true,
+      };
+    }
 
-      requireTLS: true,
+    emailConfig = {
+      host: configuration.host,
+
+      port: parseInt(configuration.portNumber), // Convert port number to integer
+
+      auth: {
+        user: configuration.userName,
+
+        pass: configuration.password,
+      },
+
+      ...(configuration.encryption === "none" ? {} : encryptionConfig),
     };
-  } else if (configuration.encryption === "tls") {
-    encryptionConfig = {
-      secure: false, // For TLS, secure should be set to false
 
-      requireTLS: true,
+    options.from = `${configuration.fromName}<${configuration.userName}>`;
+
+    // let response = await sendMailMain({emailConfig,options,extra}, app);
+
+    // return response;
+  } else {
+    console.log("inenablefalse");
+
+    emailConfig = {
+      host: "smtp.gmail.com",
+
+      port: 587, // Convert port number to integer
+
+      auth: {
+        user: "sahilagnihotri7@gmail.com",
+
+        pass: "srdvsdnxfmvbrduw",
+      },
+
+      secure: false,
     };
+
+    options.from = "sahilagnihotri7@gmail.com";
   }
 
-  emailConfig = {
-    host: configuration.host,
-
-    port: parseInt(configuration.portNumber), // Convert port number to integer
-
-    auth: {
-      user: configuration.userName,
-
-      pass: configuration.password,
-    },
-
-    ...(configuration.encryption === "none" ? {} : encryptionConfig),
-  };
-
-  options.from=`${configuration.fromName}<${configuration.userName}>`;
-
-  // let response = await sendMailMain({emailConfig,options,extra}, app);
-
-  // return response;
-} else {
-  console.log("inenablefalse");
-
-  emailConfig = {
-    host: "smtp.gmail.com",
-
-    port: 587, // Convert port number to integer
-
-    auth: {
-      user: "sahilagnihotri7@gmail.com",
-
-      pass: "srdvsdnxfmvbrduw",
-    },
-
-    secure: false,
-  };
-
-  options.from="sahilagnihotri7@gmail.com";
- 
-}
-
-console.log("configurationData",configurationData)
+  console.log("configurationData", configurationData);
   // let testAccount = await nodemailer.createTestAccount();
   const transporter = nodemailer.createTransport(emailConfig);
   try {
@@ -7767,14 +7806,13 @@ export async function prodExRemoveVariants(req, res) {
             plan_group_id: SId,
           });
         }
-        
+
         res.send({
           message: "success",
           data: "Details saved successfully",
         });
       }
     } catch (err) {
-    
       res.send({ message: "error", data: "Something went wrong" });
     }
   }
@@ -7861,9 +7899,9 @@ export async function prodExCreatePlan(req, res) {
       let allOptions = [];
       list?.map((item) => {
         let unique =
-      Date.now().toString(36) + Math.random().toString(36).substring(2, 5);
-      console.log("unique--",unique)
-        allOptions?.push(item?.billEvery + " " + item?.interval+ " " + unique);
+          Date.now().toString(36) + Math.random().toString(36).substring(2, 5);
+        console.log("unique--", unique);
+        allOptions?.push(item?.billEvery + " " + item?.interval + " " + unique);
       });
       const topOptions = allOptions.join(",");
       console.log(allOptions, "hbhbhb");
@@ -7896,12 +7934,15 @@ export async function prodExCreatePlan(req, res) {
         //   }
         // }
 
-        
-        if (item.offerDiscount && item.discount != undefined && item.discount != null &&  parseInt(item.discount) != 0) {
+        if (
+          item.offerDiscount &&
+          item.discount != undefined &&
+          item.discount != null &&
+          parseInt(item.discount) != 0
+        ) {
           if (item.freeTrial) {
-
             if (item.discountType == "percentage") {
-              console.log("ckecjj1")
+              console.log("ckecjj1");
               pricingPolicy.push(
                 {
                   fixed: {
@@ -7923,7 +7964,7 @@ export async function prodExCreatePlan(req, res) {
                 }
               );
             } else if (item.discountType == "fixed") {
-              console.log("ckecjj2")
+              console.log("ckecjj2");
 
               pricingPolicy.push(
                 {
@@ -7948,7 +7989,7 @@ export async function prodExCreatePlan(req, res) {
             }
           } else {
             if (item.discountType == "percentage") {
-              console.log("ckecjj3")
+              console.log("ckecjj3");
 
               pricingPolicy.push({
                 fixed: {
@@ -7959,7 +8000,7 @@ export async function prodExCreatePlan(req, res) {
                 },
               });
             } else if (item.discountType == "fixed") {
-              console.log("ckecjj4")
+              console.log("ckecjj4");
 
               pricingPolicy.push({
                 fixed: {
@@ -7973,7 +8014,7 @@ export async function prodExCreatePlan(req, res) {
           }
         } else {
           if (item.freeTrial) {
-            console.log("ckecjj5")
+            console.log("ckecjj5");
             pricingPolicy.push(
               {
                 fixed: {
@@ -7995,17 +8036,23 @@ export async function prodExCreatePlan(req, res) {
               }
             );
           }
-      }
-      
-      console.log(pricingPolicy, "ffff");
+        }
+
+        console.log(pricingPolicy, "ffff");
 
         ////////////////////////////////
         let unique =
-        Date.now().toString(36) + Math.random().toString(36).substring(2, 5);
-       console.log("unique---->",unique)
+          Date.now().toString(36) + Math.random().toString(36).substring(2, 5);
+        console.log("unique---->", unique);
         sellPlan.push({
           name: req.body.planGroupName + "-" + item.frequencyPlanName,
-          options: item?.billEvery + " " + item?.interval + " " + unique + Math.random().toString(10),
+          options:
+            item?.billEvery +
+            " " +
+            item?.interval +
+            " " +
+            unique +
+            Math.random().toString(10),
           position: 1,
           category: "SUBSCRIPTION",
           inventoryPolicy: {
@@ -8131,10 +8178,9 @@ mutation sellingPlanGroupCreate($input: SellingPlanGroupInput!,$resources:Sellin
             maxCycle: item.maxCycle,
             planType: item.planType,
             deliveryEvery: item.deliveryEvery,
-            freeTrial:item.freeTrial,
-            trialCount:item.freeTrialCount,
-            freeTrialCycle:item.freeTrialCycle,
-
+            freeTrial: item.freeTrial,
+            trialCount: item.freeTrialCount,
+            freeTrialCycle: item.freeTrialCycle,
           });
         });
         let variants = [];
@@ -8203,7 +8249,7 @@ export async function prodExPlanDetails(req, res) {
 }
 
 export async function prodExPlanUpdate(req, res) {
-  console.log("checkjan888")
+  console.log("checkjan888");
   const secretOrPublicKey = process.env.SHOPIFY_API_SECRET;
   const token = req.headers.authentication;
   let shop;
@@ -8225,12 +8271,12 @@ export async function prodExPlanUpdate(req, res) {
       let allOptions = [];
       req.body.planList?.map((item) => {
         let unique =
-        Date.now().toString(36) + Math.random().toString(36).substring(2, 5);
+          Date.now().toString(36) + Math.random().toString(36).substring(2, 5);
         allOptions?.push(item?.billEvery + " " + item?.interval + " " + unique);
       });
       req.body.prevPlanList?.map((item) => {
         let unique =
-        Date.now().toString(36) + Math.random().toString(36).substring(2, 5);
+          Date.now().toString(36) + Math.random().toString(36).substring(2, 5);
         allOptions?.push(item?.billEvery + " " + item?.interval + " " + unique);
       });
       const topOptions = allOptions.join(",");
@@ -8264,104 +8310,116 @@ export async function prodExPlanUpdate(req, res) {
           //     },
           //   });
 
-////////////
-if (item.offerDiscount && item.discount != undefined && item.discount != null &&  parseInt(item.discount) != 0) {
-  if (item.freeTrial) {
-    if (item.discountType == "percentage") {
-      pricingPolicy.push(
-        {
-          fixed: {
-            adjustmentType: "PERCENTAGE",
-            adjustmentValue: {
-              percentage: parseFloat(100),
-            },
-          },
-        },
-        {
-          recurring: {
-            adjustmentType: "PERCENTAGE",
-            adjustmentValue: {
-              percentage: parseFloat(item.discount),
-            },
-            afterCycle: parseInt(1),
-            // afterCycle: parseInt(item.trialCount),
-          },
-        }
-      );
-    } else if (item.discountType == "fixed") {
-      pricingPolicy.push(
-        {
-          fixed: {
-            adjustmentType: "PERCENTAGE",
-            adjustmentValue: {
-              percentage: parseFloat(100),
-            },
-          },
-        },
-        {
-          recurring: {
-            adjustmentType: "FIXED_AMOUNT",
-            adjustmentValue: {
-              fixedValue: parseFloat(item.discount),
-            },
-            // afterCycle: parseInt(item.trialCount),
-            afterCycle: parseInt(1),
-          },
-        }
-      );
-    }
-  } else {
-    if (item.discountType == "percentage") {
-      pricingPolicy.push({
-        fixed: {
-          adjustmentType: "PERCENTAGE",
-          adjustmentValue: {
-            percentage: parseFloat(item.discount),
-          },
-        },
-      });
-    } else if (item.discountType == "fixed") {
-      pricingPolicy.push({
-        fixed: {
-          adjustmentType: "FIXED_AMOUNT",
-          adjustmentValue: {
-            fixedValue: parseFloat(item.discount),
-          },
-        },
-      });
-    }
-  }
-} else {
-  if (item.freeTrial) {
-    pricingPolicy.push(
-      {
-        fixed: {
-          adjustmentType: "PERCENTAGE",
-          adjustmentValue: {
-            percentage: parseFloat(100),
-          },
-        },
-      },
-      {
-        recurring: {
-          adjustmentType: "PERCENTAGE",
-          adjustmentValue: {
-            percentage: parseFloat(0),
-          },
-          afterCycle: parseInt(1),
-          // afterCycle: parseInt(item.trialCount),
-        },
-      }
-    );
-  }
-}
-////////
-let unique =
-Date.now().toString(36) + Math.random().toString(36).substring(2, 5);
+          ////////////
+          if (
+            item.offerDiscount &&
+            item.discount != undefined &&
+            item.discount != null &&
+            parseInt(item.discount) != 0
+          ) {
+            if (item.freeTrial) {
+              if (item.discountType == "percentage") {
+                pricingPolicy.push(
+                  {
+                    fixed: {
+                      adjustmentType: "PERCENTAGE",
+                      adjustmentValue: {
+                        percentage: parseFloat(100),
+                      },
+                    },
+                  },
+                  {
+                    recurring: {
+                      adjustmentType: "PERCENTAGE",
+                      adjustmentValue: {
+                        percentage: parseFloat(item.discount),
+                      },
+                      afterCycle: parseInt(1),
+                      // afterCycle: parseInt(item.trialCount),
+                    },
+                  }
+                );
+              } else if (item.discountType == "fixed") {
+                pricingPolicy.push(
+                  {
+                    fixed: {
+                      adjustmentType: "PERCENTAGE",
+                      adjustmentValue: {
+                        percentage: parseFloat(100),
+                      },
+                    },
+                  },
+                  {
+                    recurring: {
+                      adjustmentType: "FIXED_AMOUNT",
+                      adjustmentValue: {
+                        fixedValue: parseFloat(item.discount),
+                      },
+                      // afterCycle: parseInt(item.trialCount),
+                      afterCycle: parseInt(1),
+                    },
+                  }
+                );
+              }
+            } else {
+              if (item.discountType == "percentage") {
+                pricingPolicy.push({
+                  fixed: {
+                    adjustmentType: "PERCENTAGE",
+                    adjustmentValue: {
+                      percentage: parseFloat(item.discount),
+                    },
+                  },
+                });
+              } else if (item.discountType == "fixed") {
+                pricingPolicy.push({
+                  fixed: {
+                    adjustmentType: "FIXED_AMOUNT",
+                    adjustmentValue: {
+                      fixedValue: parseFloat(item.discount),
+                    },
+                  },
+                });
+              }
+            }
+          } else {
+            if (item.freeTrial) {
+              pricingPolicy.push(
+                {
+                  fixed: {
+                    adjustmentType: "PERCENTAGE",
+                    adjustmentValue: {
+                      percentage: parseFloat(100),
+                    },
+                  },
+                },
+                {
+                  recurring: {
+                    adjustmentType: "PERCENTAGE",
+                    adjustmentValue: {
+                      percentage: parseFloat(0),
+                    },
+                    afterCycle: parseInt(1),
+                    // afterCycle: parseInt(item.trialCount),
+                  },
+                }
+              );
+            }
+          }
+          ////////
+          let unique =
+            Date.now().toString(36) +
+            Math.random().toString(36).substring(2, 5);
 
           sellPlan.push({
             name: req.body.planGroupName + "-" + item.frequencyPlanName,
-            options: item?.billEvery + " " + item?.interval + " " + unique +  Math.random().toString(10),
+            options:
+              item?.billEvery +
+              " " +
+              item?.interval +
+              " " +
+              unique +
+              Math.random().toString(10),
             position: 1,
             category: "SUBSCRIPTION",
             inventoryPolicy: {
@@ -8388,7 +8446,10 @@ Date.now().toString(36) + Math.random().toString(36).substring(2, 5);
                 anchors: draftAnchors,
                 preAnchorBehavior: "ASAP",
                 interval: item.interval.toUpperCase(),
-                intervalCount: item.plantype=='prepaid' ? parseInt(item.deliveryEvery) : parseInt(item.billEvery) ,
+                intervalCount:
+                  item.plantype == "prepaid"
+                    ? parseInt(item.deliveryEvery)
+                    : parseInt(item.billEvery),
               },
             },
             pricingPolicies: pricingPolicy,
@@ -8424,102 +8485,119 @@ Date.now().toString(36) + Math.random().toString(36).substring(2, 5);
           //       },
           //     },
           //   });
-///////start//////////
-if (req.body.prevPlanList[item].offerDiscount && req.body.prevPlanList[item].discount != undefined && req.body.prevPlanList[item].discount != null &&  parseInt(req.body.prevPlanList[item].discount) != 0) {
-  if (req.body.prevPlanList[item].freeTrial) {
-    if (req.body.prevPlanList[item].discountType == "percentage") {
-      pricingPolicy.push(
-        {
-          fixed: {
-            adjustmentType: "PERCENTAGE",
-            adjustmentValue: {
-              percentage: parseFloat(100),
-            },
-          },
-        },
-        {
-          recurring: {
-            adjustmentType: "PERCENTAGE",
-            adjustmentValue: {
-              percentage: parseFloat(req.body.prevPlanList[item].discount),
-            },
-            afterCycle: parseInt(1),
-            // afterCycle: parseInt(item.trialCount),
-          },
-        }
-      );
-    } else if (req.body.prevPlanList[item].discountType == "fixed") {
-      pricingPolicy.push(
-        {
-          fixed: {
-            adjustmentType: "PERCENTAGE",
-            adjustmentValue: {
-              percentage: parseFloat(100),
-            },
-          },
-        },
-        {
-          recurring: {
-            adjustmentType: "FIXED_AMOUNT",
-            adjustmentValue: {
-              fixedValue: parseFloat(req.body.prevPlanList[item].discount),
-            },
-            // afterCycle: parseInt(item.trialCount),
-            afterCycle: parseInt(1),
-          },
-        }
-      );
-    }
-  } else {
-    if (req.body.prevPlanList[item].discountType == "percentage") {
-      pricingPolicy.push({
-        fixed: {
-          adjustmentType: "PERCENTAGE",
-          adjustmentValue: {
-            percentage: parseFloat(req.body.prevPlanList[item].discount),
-          },
-        },
-      });
-    } else if (req.body.prevPlanList[item].discountType == "fixed") {
-      pricingPolicy.push({
-        fixed: {
-          adjustmentType: "FIXED_AMOUNT",
-          adjustmentValue: {
-            fixedValue: parseFloat(req.body.prevPlanList[item].discount),
-          },
-        },
-      });
-    }
-  }
-} else {
-  if (req.body.prevPlanList[item].freeTrial) {
-    pricingPolicy.push(
-      {
-        fixed: {
-          adjustmentType: "PERCENTAGE",
-          adjustmentValue: {
-            percentage: parseFloat(100),
-          },
-        },
-      },
-      {
-        recurring: {
-          adjustmentType: "PERCENTAGE",
-          adjustmentValue: {
-            percentage: parseFloat(0),
-          },
-          afterCycle: parseInt(1),
-          // afterCycle: parseInt(item.trialCount),
-        },
-      }
-    );
-  }
-}
+          ///////start//////////
+          if (
+            req.body.prevPlanList[item].offerDiscount &&
+            req.body.prevPlanList[item].discount != undefined &&
+            req.body.prevPlanList[item].discount != null &&
+            parseInt(req.body.prevPlanList[item].discount) != 0
+          ) {
+            if (req.body.prevPlanList[item].freeTrial) {
+              if (req.body.prevPlanList[item].discountType == "percentage") {
+                pricingPolicy.push(
+                  {
+                    fixed: {
+                      adjustmentType: "PERCENTAGE",
+                      adjustmentValue: {
+                        percentage: parseFloat(100),
+                      },
+                    },
+                  },
+                  {
+                    recurring: {
+                      adjustmentType: "PERCENTAGE",
+                      adjustmentValue: {
+                        percentage: parseFloat(
+                          req.body.prevPlanList[item].discount
+                        ),
+                      },
+                      afterCycle: parseInt(1),
+                      // afterCycle: parseInt(item.trialCount),
+                    },
+                  }
+                );
+              } else if (req.body.prevPlanList[item].discountType == "fixed") {
+                pricingPolicy.push(
+                  {
+                    fixed: {
+                      adjustmentType: "PERCENTAGE",
+                      adjustmentValue: {
+                        percentage: parseFloat(100),
+                      },
+                    },
+                  },
+                  {
+                    recurring: {
+                      adjustmentType: "FIXED_AMOUNT",
+                      adjustmentValue: {
+                        fixedValue: parseFloat(
+                          req.body.prevPlanList[item].discount
+                        ),
+                      },
+                      // afterCycle: parseInt(item.trialCount),
+                      afterCycle: parseInt(1),
+                    },
+                  }
+                );
+              }
+            } else {
+              if (req.body.prevPlanList[item].discountType == "percentage") {
+                pricingPolicy.push({
+                  fixed: {
+                    adjustmentType: "PERCENTAGE",
+                    adjustmentValue: {
+                      percentage: parseFloat(
+                        req.body.prevPlanList[item].discount
+                      ),
+                    },
+                  },
+                });
+              } else if (req.body.prevPlanList[item].discountType == "fixed") {
+                pricingPolicy.push({
+                  fixed: {
+                    adjustmentType: "FIXED_AMOUNT",
+                    adjustmentValue: {
+                      fixedValue: parseFloat(
+                        req.body.prevPlanList[item].discount
+                      ),
+                    },
+                  },
+                });
+              }
+            }
+          } else {
+            if (req.body.prevPlanList[item].freeTrial) {
+              pricingPolicy.push(
+                {
+                  fixed: {
+                    adjustmentType: "PERCENTAGE",
+                    adjustmentValue: {
+                      percentage: parseFloat(100),
+                    },
+                  },
+                },
+                {
+                  recurring: {
+                    adjustmentType: "PERCENTAGE",
+                    adjustmentValue: {
+                      percentage: parseFloat(0),
+                    },
+                    afterCycle: parseInt(1),
+                    // afterCycle: parseInt(item.trialCount),
+                  },
+                }
+              );
+            }
+          }
 
-////end///////////
-let unique =
-Date.now().toString(36) + Math.random().toString(36).substring(2, 5);
-console.log("req.body.prevPlanList[item].plan_id===>",req.body.prevPlanList[item])
+          ////end///////////
+          let unique =
+            Date.now().toString(36) +
+            Math.random().toString(36).substring(2, 5);
+          console.log(
+            "req.body.prevPlanList[item].plan_id===>",
+            req.body.prevPlanList[item]
+          );
           sellPlanToUpdate.push({
             name:
               req.body.planGroupName +
@@ -8529,7 +8607,10 @@ console.log("req.body.prevPlanList[item].plan_id===>",req.body.prevPlanList[item
             options:
               req.body.prevPlanList[item]?.billEvery +
               " " +
-              req.body.prevPlanList[item]?.interval + " "+ unique +  Math.random().toString(10),
+              req.body.prevPlanList[item]?.interval +
+              " " +
+              unique +
+              Math.random().toString(10),
             position: 1,
             category: "SUBSCRIPTION",
             inventoryPolicy: {
@@ -8563,15 +8644,20 @@ console.log("req.body.prevPlanList[item].plan_id===>",req.body.prevPlanList[item
                 anchors: draftAnchors,
                 preAnchorBehavior: "ASAP",
                 interval: req.body.prevPlanList[item].interval.toUpperCase(),
-                intervalCount: req.body.prevPlanList[item].planType=='prepaid' ?  parseInt(req.body.prevPlanList[item].deliveryEvery) :  parseInt(req.body.prevPlanList[item].billEvery),
-                
+                intervalCount:
+                  req.body.prevPlanList[item].planType == "prepaid"
+                    ? parseInt(req.body.prevPlanList[item].deliveryEvery)
+                    : parseInt(req.body.prevPlanList[item].billEvery),
               },
             },
             pricingPolicies: pricingPolicy,
           });
         });
-console.log("ssellPlanToUpdate",sellPlanToUpdate)
-console.log("ssellPlanToUpdate1231",sellPlanToUpdate[0]?.deliveryPolicy?.recurring)
+      console.log("ssellPlanToUpdate", sellPlanToUpdate);
+      console.log(
+        "ssellPlanToUpdate1231",
+        sellPlanToUpdate[0]?.deliveryPolicy?.recurring
+      );
       const Input = {
         id: req.body.id,
         input: {
@@ -8591,8 +8677,8 @@ console.log("ssellPlanToUpdate1231",sellPlanToUpdate[0]?.deliveryPolicy?.recurri
 
       const dataString =
         typeof Input === "string" ? Input : JSON.stringify(Input);
-       
-        console.log("jddkk",JSON.stringify(Input))
+
+      console.log("jddkk", JSON.stringify(Input));
 
       fs.writeFile("haha.txt", dataString, (err) => {
         if (err) {
@@ -8669,10 +8755,9 @@ console.log("ssellPlanToUpdate1231",sellPlanToUpdate[0]?.deliveryPolicy?.recurri
               maxCycle: item.maxCycle,
               planType: item.planType,
               deliveryEvery: item.deliveryEvery,
-              freeTrial:item.freeTrial,
-              trialCount:item.freeTrialCount,
-              freeTrialCycle:item.freeTrialCycle,
-  
+              freeTrial: item.freeTrial,
+              trialCount: item.freeTrialCount,
+              freeTrialCycle: item.freeTrialCycle,
             };
             planDetails.push(obj);
 
@@ -8685,7 +8770,7 @@ console.log("ssellPlanToUpdate1231",sellPlanToUpdate[0]?.deliveryPolicy?.recurri
         ///**********************/// previous existing plans to update
         await Promise.all(
           req.body.prevPlanList?.map(async (item, index) => {
-            console.log("jan4item,",item)
+            console.log("jan4item,", item);
             let obj = {
               planName: item.frequencyPlanName,
               plan_id: item.plan_id,
@@ -8699,11 +8784,9 @@ console.log("ssellPlanToUpdate1231",sellPlanToUpdate[0]?.deliveryPolicy?.recurri
               maxCycle: item.maxCycle,
               planType: item.planType,
               deliveryEvery: item.deliveryEvery,
-              freeTrial:item.freeTrial,
-              trialCount:item.freeTrialCount,
-              freeTrialCycle:item.freeTrialCycle,
-  
-
+              freeTrial: item.freeTrial,
+              trialCount: item.freeTrialCount,
+              freeTrialCycle: item.freeTrialCycle,
             };
             updatedPlans.push(obj);
           })
@@ -8868,14 +8951,14 @@ export async function saveCustomerPortalDetails(req, res) {
         cancellation: data.selectedOption,
         options: data.options,
       },
-      { upsert: true ,new:true }
+      { upsert: true, new: true }
     );
-    console.log("saveData",saveData)
+    console.log("saveData", saveData);
     if (saveData) {
       res.send({ message: "success", data: "Settings saved successfully" });
     }
   } catch (err) {
-    console.log("err",err);
+    console.log("err", err);
     res.send({ message: "error", data: "Something went wrong" });
   }
 }
@@ -8899,7 +8982,7 @@ export async function getCustomerPortalDetails(req, res) {
 
 ///////////////////////////////////customrt portal
 
-const sendEmail = async (pdfPath, email, orderId, shop,) => {
+const sendEmail = async (pdfPath, email, orderId, shop) => {
   console.log("oiiiiiiiii");
   const transporter = nodemailer.createTransport({
     host: "smtp.gmail.com",
@@ -8958,14 +9041,16 @@ const sendEmail = async (pdfPath, email, orderId, shop,) => {
   });
 };
 
-
-
-
 export async function sendInvoiceMailAndSaveContract(req, res) {
-  console.log("dfsdkfsjjkdfjksjdfskdlfksldfksldfksjdfksdklfskdjfskjdfksjdkfjskdj")
+  console.log(
+    "dfsdkfsjjkdfjksjdfskdlfksldfksldfksjdfksdklfskdjfskjdfksjdkfjskdj"
+  );
   try {
-    let details
-    let getorder = await orderOnly.findOne({ status: false, orderId: { $ne: null }  });  
+    let details;
+    let getorder = await orderOnly.findOne({
+      status: false,
+      orderId: { $ne: null },
+    });
     if (getorder) {
       let orderId = '"' + getorder.orderId + '"';
 
@@ -9248,7 +9333,10 @@ export async function sendInvoiceMailAndSaveContract(req, res) {
           let contractData = await client.query({
             data: mutation,
           });
-          console.log(contractData.body.data.subscriptionContract?.billingPolicy, "mutationnnnnnnn");
+          console.log(
+            contractData.body.data.subscriptionContract?.billingPolicy,
+            "mutationnnnnnnn"
+          );
           console.log(
             contractData.body.data.subscriptionContract.lines.edges[0].node
               .sellingPlanId,
@@ -9360,14 +9448,14 @@ export async function sendInvoiceMailAndSaveContract(req, res) {
           //   }
           // );
 
+          ////////check max billing value funcionility////////////
 
-////////check max billing value funcionility////////////
-
-if(contractData.body.data.subscriptionContract?.billingPolicy
-?.maxCycles == 1)  {
-
-  console.log("ander aa gya haiiiiii");
-  const mutationQuery = `mutation subscriptionContractUpdate($contractId: ID!) {
+          if (
+            contractData.body.data.subscriptionContract?.billingPolicy
+              ?.maxCycles == 1
+          ) {
+            console.log("ander aa gya haiiiiii");
+            const mutationQuery = `mutation subscriptionContractUpdate($contractId: ID!) {
   subscriptionContractUpdate(contractId: $contractId) {             
     draft {            
      id            
@@ -9378,25 +9466,25 @@ if(contractData.body.data.subscriptionContract?.billingPolicy
     }
   }
 }`;
-  const Input1 = {
-    contractId: contract?.contractID,
-  };
-  let response1 = await client.query({
-    data: { query: mutationQuery, variables: Input1 },
-  });
-  console.log(response1, "response1 hai yee");
-  if (
-    response1.body.data?.subscriptionContractUpdate?.userErrors
-      .length < 1
-  ) {
-    console.log(
-      "drfat id bn gyi hai",
-      response1.body.data.subscriptionContractUpdate?.draft?.id
-    );
-    let draftID =
-      response1.body.data.subscriptionContractUpdate?.draft?.id;
+            const Input1 = {
+              contractId: contract?.contractID,
+            };
+            let response1 = await client.query({
+              data: { query: mutationQuery, variables: Input1 },
+            });
+            console.log(response1, "response1 hai yee");
+            if (
+              response1.body.data?.subscriptionContractUpdate?.userErrors
+                .length < 1
+            ) {
+              console.log(
+                "drfat id bn gyi hai",
+                response1.body.data.subscriptionContractUpdate?.draft?.id
+              );
+              let draftID =
+                response1.body.data.subscriptionContractUpdate?.draft?.id;
 
-    const mutationQuery = `mutation subscriptionDraftUpdate($draftId: ID!, $input: SubscriptionDraftInput!) {
+              const mutationQuery = `mutation subscriptionDraftUpdate($draftId: ID!, $input: SubscriptionDraftInput!) {
     subscriptionDraftUpdate(draftId: $draftId, input: $input) {
       draft {
         id
@@ -9409,21 +9497,21 @@ if(contractData.body.data.subscriptionContract?.billingPolicy
     }
   }`;
 
-    const Input = {
-      draftId: draftID,
-      input: { status: "PAUSED" },
-    };
-    let response2 = await client.query({
-      data: { query: mutationQuery, variables: Input },
-    });
+              const Input = {
+                draftId: draftID,
+                input: { status: "PAUSED" },
+              };
+              let response2 = await client.query({
+                data: { query: mutationQuery, variables: Input },
+              });
 
-    if (
-      response2.body.data?.subscriptionDraftUpdate?.userErrors
-        .length < 1
-    ) {
-      console.log("update hio gyi draftttt");
+              if (
+                response2.body.data?.subscriptionDraftUpdate?.userErrors
+                  .length < 1
+              ) {
+                console.log("update hio gyi draftttt");
 
-      let mutationSubscriptionDraftCommit = `mutation subscriptionDraftCommit($draftId: ID!) {
+                let mutationSubscriptionDraftCommit = `mutation subscriptionDraftCommit($draftId: ID!) {
     subscriptionDraftCommit(draftId: $draftId) {
       contract {
       id
@@ -9436,45 +9524,39 @@ if(contractData.body.data.subscriptionContract?.billingPolicy
     }
   }`;
 
-      const InputMutationSubscriptionDraftCommit = {
-        draftId: draftID,
-      };
-      let response3 = await client.query({
-        data: {
-          query: mutationSubscriptionDraftCommit,
-          variables: InputMutationSubscriptionDraftCommit,
-        },
-      });
+                const InputMutationSubscriptionDraftCommit = {
+                  draftId: draftID,
+                };
+                let response3 = await client.query({
+                  data: {
+                    query: mutationSubscriptionDraftCommit,
+                    variables: InputMutationSubscriptionDraftCommit,
+                  },
+                });
 
-      console.log(
-        "jklmnaop",
-        response3.body.data?.subscriptionDraftCommit?.contract
-          ?.status
-      );
-      if (
-        response2.body.data?.subscriptionDraftCommit?.userErrors
-          .length < 1
-      ) {
-        console.log("atlastl")
-        let updateTable =
-       await  subscriptionDetailsModal.findOneAndUpdate(
-          {
-            shop: getorder.shop,
-            subscription_id: `gid://shopify/SubscriptionContract/${contract.contractID}`,
-          },
-          { status: "PAUSED" }
-        );
+                console.log(
+                  "jklmnaop",
+                  response3.body.data?.subscriptionDraftCommit?.contract?.status
+                );
+                if (
+                  response2.body.data?.subscriptionDraftCommit?.userErrors
+                    .length < 1
+                ) {
+                  console.log("atlastl");
+                  let updateTable =
+                    await subscriptionDetailsModal.findOneAndUpdate(
+                      {
+                        shop: getorder.shop,
+                        subscription_id: `gid://shopify/SubscriptionContract/${contract.contractID}`,
+                      },
+                      { status: "PAUSED" }
+                    );
+                }
+              }
+            }
+          }
 
-       }
-    }
-  }
-
-
-
-
-}
-
-////////////////////////
+          ////////////////////////
 
           let allData = contractData.body.data.subscriptionContract;
           // console.log(allData, "productsswwewesss");
@@ -9493,8 +9575,12 @@ if(contractData.body.data.subscriptionContract?.billingPolicy
           updatedShippingAddress?.countryCodeV2 &&
             delete updatedShippingAddress?.countryCodeV2;
 
-console.log( contractData.body.data.subscriptionContract.originOrder
-  .totalPriceSet.presentmentMoney.currencyCode,"currrrrrr",orderDetails.subtotalPriceSet.presentmentMoney.currencyCode)
+          console.log(
+            contractData.body.data.subscriptionContract.originOrder
+              .totalPriceSet.presentmentMoney.currencyCode,
+            "currrrrrr",
+            orderDetails.subtotalPriceSet.presentmentMoney.currencyCode
+          );
 
           let obj = {
             shop: getorder.shop,
@@ -9544,8 +9630,11 @@ console.log( contractData.body.data.subscriptionContract.originOrder
                 allData?.customerPaymentMethod.instrument,
             },
             nextBillingDate: allData?.nextBillingDate,
-            status:contractData.body.data.subscriptionContract?.billingPolicy
-            ?.maxCycles ==1 ?  'PAUSED'  : "active",
+            status:
+              contractData.body.data.subscriptionContract?.billingPolicy
+                ?.maxCycles == 1
+                ? "PAUSED"
+                : "active",
           };
 
           // console.log("reached at --------------bottom");
@@ -9582,9 +9671,7 @@ console.log( contractData.body.data.subscriptionContract.originOrder
               // obj.subscription_details.freeTrial = freeTrial;
 
               if (parseInt(freeTrial) == 1) {
-
                 obj.subscription_details.freeTrialStatus = true;
-                
 
                 contractData?.body?.data?.subscriptionContract?.lines?.edges.forEach(
                   async (item, index) => {
@@ -9694,31 +9781,33 @@ console.log( contractData.body.data.subscriptionContract.originOrder
                     }
                   }
                 );
-               
-     let updatedDate = dateChange(autoRenewState?.plans[0]?.freeTrialCycle , new Date() , autoRenewState?.plans[0]?.trialCount)
-     console.log("updatedDate",updatedDate)
-     console.log("freeTrialcycle",autoRenewState?.plans[0]?.freeTrialCycle)
-     obj.nextBillingDate=updatedDate;
-     obj.subscription_details.freeTrial=autoRenewState?.plans[0]?.trialCount
-     obj.subscription_details.freeTrialCycle= autoRenewState?.plans[0]?.freeTrialCycle;
-              } 
+
+                let updatedDate = dateChange(
+                  autoRenewState?.plans[0]?.freeTrialCycle,
+                  new Date(),
+                  autoRenewState?.plans[0]?.trialCount
+                );
+                console.log("updatedDate", updatedDate);
+                console.log(
+                  "freeTrialcycle",
+                  autoRenewState?.plans[0]?.freeTrialCycle
+                );
+                obj.nextBillingDate = updatedDate;
+                obj.subscription_details.freeTrial =
+                  autoRenewState?.plans[0]?.trialCount;
+                obj.subscription_details.freeTrialCycle =
+                  autoRenewState?.plans[0]?.freeTrialCycle;
+              }
               // else {
               //   obj.subscription_details.freeTrialStatus = true;
               //   obj.subscription_details.freeTrialCycle= autoRenewState?.plans[0]?.freeTrialCycle;
               // }
-
-
-
             }
 
             obj.subscription_details.discount = {
               type: policies?.adjustmentType,
               value: discountvalue[Object.keys(discountvalue)],
             };
-
-
-
-
           }
 
           // console.log(obj, "ye hai objjj");
@@ -9882,8 +9971,7 @@ console.log( contractData.body.data.subscriptionContract.originOrder
 
       /////////////////////send invoice start
       if (orderDetails) {
-  
-          let addTagMutation = `mutation tagsAdd($id: ID!, $tags: [String!]!) {
+        let addTagMutation = `mutation tagsAdd($id: ID!, $tags: [String!]!) {
               tagsAdd(id: $id, tags: $tags) {
                 node {
                 id
@@ -9895,126 +9983,136 @@ console.log( contractData.body.data.subscriptionContract.originOrder
               }
             }`;
 
-          let customerTagInput = {
-            id: orderDetails.customer.id,
-            tags: ["revlytic-subcription-customer"],
-          };
+        let customerTagInput = {
+          id: orderDetails.customer.id,
+          tags: ["revlytic-subcription-customer"],
+        };
 
-          let orderTagInput = {
-            id: getorder.orderId,
-            tags: ["revlytic-subscription"],
-          };
+        let orderTagInput = {
+          id: getorder.orderId,
+          tags: ["revlytic-subscription"],
+        };
 
-          let addOrderTag = await client.query({
-            data: {
-              query: addTagMutation,
-              variables: orderTagInput,
-            },
-          });
-          let addCustomerTag = await client.query({
-            data: {
-              query: addTagMutation,
-              variables: customerTagInput,
-            },
-          });
+        let addOrderTag = await client.query({
+          data: {
+            query: addTagMutation,
+            variables: orderTagInput,
+          },
+        });
+        let addCustomerTag = await client.query({
+          data: {
+            query: addTagMutation,
+            variables: customerTagInput,
+          },
+        });
 
-          // console.log(saveDetails.invoice_details, "jhsdjjk");
+        // console.log(saveDetails.invoice_details, "jhsdjjk");
 
-           details = {
-            email: orderDetails.email,
-            bill_to: {
-              firstName:
-                orderDetails.billingAddress.firstName != undefined
-                  ? orderDetails.billingAddress.firstName
-                  : "",
-              lastName:
-                orderDetails.billingAddress.lastName != undefined
-                  ? orderDetails.billingAddress.lastName
-                  : "",
-              address1:
-                (orderDetails.billingAddress.address1 != undefined ?  orderDetails.billingAddress.address1 : "") +
+        details = {
+          email: orderDetails.email,
+          bill_to: {
+            firstName:
+              orderDetails.billingAddress.firstName != undefined
+                ? orderDetails.billingAddress.firstName
+                : "",
+            lastName:
+              orderDetails.billingAddress.lastName != undefined
+                ? orderDetails.billingAddress.lastName
+                : "",
+            address1:
+              (orderDetails.billingAddress.address1 != undefined
+                ? orderDetails.billingAddress.address1
+                : "") +
                 " " +
-                orderDetails.billingAddress.address2 != undefined  ?  orderDetails.billingAddress.address2 : "" ,
-              address2:
-                orderDetails.billingAddress.city != undefined  ?  orderDetails.billingAddress.city : "" +
-                "-" +
-                orderDetails.billingAddress.zip != undefined  ? orderDetails.billingAddress.zip : "",
+                orderDetails.billingAddress.address2 !=
+              undefined
+                ? orderDetails.billingAddress.address2
+                : "",
+            address2:
+              orderDetails.billingAddress.city != undefined
+                ? orderDetails.billingAddress.city
+                : "" + "-" + orderDetails.billingAddress.zip != undefined
+                ? orderDetails.billingAddress.zip
+                : "",
 
-              province:orderDetails.billingAddress.province != undefined  ? orderDetails.billingAddress.province : "",
-              country: orderDetails.billingAddress.country != undefined ? orderDetails.billingAddress.country : "",
-            },
-            billing_date: new Date(orderDetails.createdAt)
-              .toISOString()
-              .split("T")[0],
-            subtotal:
-              orderDetails.subtotalPriceSet.presentmentMoney.amount != null
-                ? orderDetails.subtotalPriceSet.presentmentMoney.amount
-                : 0,
-            discount:
-              orderDetails.totalDiscountsSet.presentmentMoney.amount != null
-                ? orderDetails.totalDiscountsSet.presentmentMoney.amount
-                : 0,
-            shipping:
-              orderDetails.totalShippingPriceSet.presentmentMoney.amount != null
-                ? orderDetails.totalShippingPriceSet.presentmentMoney.amount
-                : 0,
-            tax:
-              orderDetails.totalTaxSet.presentmentMoney.amount != null
-                ? orderDetails.totalTaxSet.presentmentMoney.amount
-                : 0,
-            total:
-              orderDetails.totalPriceSet.presentmentMoney.amount != null
-                ? orderDetails.totalPriceSet.presentmentMoney.amount
-                : 0,
-            items: orderDetails.lineItems.edges,
-            labels: saveDetails.invoice_details,
-            components: saveDetails.components,
-            orderno: orderDetails.name,
-            currency: getCurrencySymbol(
-              orderDetails.subtotalPriceSet.presentmentMoney.currencyCode
-            ),
-          };
-          // console.log("labels logo",details.labels)
-        
+            province:
+              orderDetails.billingAddress.province != undefined
+                ? orderDetails.billingAddress.province
+                : "",
+            country:
+              orderDetails.billingAddress.country != undefined
+                ? orderDetails.billingAddress.country
+                : "",
+          },
+          billing_date: new Date(orderDetails.createdAt)
+            .toISOString()
+            .split("T")[0],
+          subtotal:
+            orderDetails.subtotalPriceSet.presentmentMoney.amount != null
+              ? orderDetails.subtotalPriceSet.presentmentMoney.amount
+              : 0,
+          discount:
+            orderDetails.totalDiscountsSet.presentmentMoney.amount != null
+              ? orderDetails.totalDiscountsSet.presentmentMoney.amount
+              : 0,
+          shipping:
+            orderDetails.totalShippingPriceSet.presentmentMoney.amount != null
+              ? orderDetails.totalShippingPriceSet.presentmentMoney.amount
+              : 0,
+          tax:
+            orderDetails.totalTaxSet.presentmentMoney.amount != null
+              ? orderDetails.totalTaxSet.presentmentMoney.amount
+              : 0,
+          total:
+            orderDetails.totalPriceSet.presentmentMoney.amount != null
+              ? orderDetails.totalPriceSet.presentmentMoney.amount
+              : 0,
+          items: orderDetails.lineItems.edges,
+          labels: saveDetails.invoice_details,
+          components: saveDetails.components,
+          orderno: orderDetails.name,
+          currency: getCurrencySymbol(
+            orderDetails.subtotalPriceSet.presentmentMoney.currencyCode
+          ),
+        };
+        // console.log("labels logo",details.labels)
 
-          // async function generatePdf() {
-          //   const browser = await puppeteer.launch();
-          //   const page = await browser.newPage();
-          //   const options = {
-          //     format: 'A4',
-          //     printBackground: true, // To include background colors/images in PDF
-          //   };
-          
-          //   const filename = String(new Date().getTime());
-          
-          //   try {
-          //     const templatePath = dirPath + '/invoiceTemplate.ejs';
-          //     const compiledTemplate = ejs.compile(fs.readFileSync(templatePath, 'utf8'));
-          
-          //     const content = compiledTemplate({ details });
-          
-          //     await page.setContent(content);
-          //     await page.pdf({
-          //       path: dirPath + `/${filename}.pdf`,
-          //       format: options.format,
-          //     });
-          
-          //     await browser.close();
-          
-          //     sendEmail(
-          //       dirPath + `/${filename}.pdf`,
-          //       orderDetails.email,
-          //       getorder.orderId,
-          //       getorder.shop
-          //     );
-          //   } catch (err) {
-          //     console.error(err);
-          //   }
-          // }
-          
-          // generatePdf();
+        // async function generatePdf() {
+        //   const browser = await puppeteer.launch();
+        //   const page = await browser.newPage();
+        //   const options = {
+        //     format: 'A4',
+        //     printBackground: true, // To include background colors/images in PDF
+        //   };
 
+        //   const filename = String(new Date().getTime());
 
+        //   try {
+        //     const templatePath = dirPath + '/invoiceTemplate.ejs';
+        //     const compiledTemplate = ejs.compile(fs.readFileSync(templatePath, 'utf8'));
+
+        //     const content = compiledTemplate({ details });
+
+        //     await page.setContent(content);
+        //     await page.pdf({
+        //       path: dirPath + `/${filename}.pdf`,
+        //       format: options.format,
+        //     });
+
+        //     await browser.close();
+
+        //     sendEmail(
+        //       dirPath + `/${filename}.pdf`,
+        //       orderDetails.email,
+        //       getorder.orderId,
+        //       getorder.shop
+        //     );
+        //   } catch (err) {
+        //     console.error(err);
+        //   }
+        // }
+
+        // generatePdf();
 
         // ////////////////////////////////////bY SAHIL(START) ////////////////////////////////////////////////////////////////////////////
         //  console.log(
@@ -10053,10 +10151,8 @@ console.log( contractData.body.data.subscriptionContract.originOrder
           console.log("sdsdsd14augusts", item.node.sellingPlan);
 
           if (item.node.sellingPlan) {
-           
             emailCheck = true;
             if (flag == false) {
-             
               contractDetails = item?.node?.contract?.customerPaymentMethod;
               flag = true;
             }
@@ -10079,17 +10175,17 @@ console.log( contractData.body.data.subscriptionContract.originOrder
               item?.node?.contract?.deliveryPolicy?.interval;
             newArr.at(-1).nextBillingDate =
               item?.node?.contract?.nextBillingDate;
-
           }
         });
-     
 
-console.log("orderDetails?.customer",orderDetails?.customer)
+        console.log("orderDetails?.customer", orderDetails?.customer);
 
-console.log("sdsdsadas",orderDetails?.shippingAddress)
-console.log("rererreer",orderDetails?.billingAddress)
-console.log("ngyftg",orderDetails?.subtotalPriceSet?.presentmentMoney?.currencyCode)
-
+        console.log("sdsdsadas", orderDetails?.shippingAddress);
+        console.log("rererreer", orderDetails?.billingAddress);
+        console.log(
+          "ngyftg",
+          orderDetails?.subtotalPriceSet?.presentmentMoney?.currencyCode
+        );
 
         let getData = {
           order_number: orderDetails?.name,
@@ -10115,7 +10211,11 @@ console.log("ngyftg",orderDetails?.subtotalPriceSet?.presentmentMoney?.currencyC
           let subscriptionPurchasedTemplateData =
             await emailTemplatesModal.findOne(
               { shop: getorder.shop },
-              { "settings.subscriptionPurchased": 1,"settings.subscriptionInvoice": 1, configuration: 1 }
+              {
+                "settings.subscriptionPurchased": 1,
+                "settings.subscriptionInvoice": 1,
+                configuration: 1,
+              }
             );
           // console.log(
           //   "subscriptionPurchasedTemplateData",
@@ -10170,64 +10270,64 @@ console.log("ngyftg",orderDetails?.subtotalPriceSet?.presentmentMoney?.currencyC
                 }
               );
             }
-          } 
+          }
 
-//////////fro subscription invoic//////
-          
-if (subscriptionPurchasedTemplateData && saveDetails.components[17]) {
-  let sendMailToCustomer =
-    subscriptionPurchasedTemplateData?.settings?.subscriptionInvoice
-      ?.status;
-  let sendMailToMerchant =
-    subscriptionPurchasedTemplateData?.settings?.subscriptionInvoice
-      ?.adminNotification;
+          //////////fro subscription invoic//////
 
-  if (sendMailToCustomer || sendMailToMerchant) {
-    let recipientMails = [];
+          if (subscriptionPurchasedTemplateData && saveDetails.components[17]) {
+            let sendMailToCustomer =
+              subscriptionPurchasedTemplateData?.settings?.subscriptionInvoice
+                ?.status;
+            let sendMailToMerchant =
+              subscriptionPurchasedTemplateData?.settings?.subscriptionInvoice
+                ?.adminNotification;
 
-    if (sendMailToMerchant) {
-      let storeData = await getStoreDetails(getorder.shop);
-      shopEmail = storeData.store_email;
-      shopName = storeData.store_name;
-      // console.log("emailstore", shopEmail);
-      recipientMails.push(shopEmail);
-      getData.shopEmail = shopEmail;
-      getData.shopName = shopName;
-    }
-    if (sendMailToCustomer) {
-      // console.log("customeremail", getData.customer_email);
-      recipientMails.push(getData.customer_email);
-    }
-    // console.log("recipiensmails", recipientMails);
-    let configurationData =
-      subscriptionPurchasedTemplateData?.configuration;
-    let selectedTemplateData =
-      subscriptionPurchasedTemplateData?.settings
-        ?.subscriptionInvoice;
-    //////
+            if (sendMailToCustomer || sendMailToMerchant) {
+              let recipientMails = [];
 
-    ///////
-    let mailCheck = await sendMailCall(
-      recipientMails,
-      {},
-      {
-        shop: getorder.shop,
-        selectedTemplateData,
-        configurationData,
-        data: {
-          ...getData,
-          recipientMails: recipientMails,
-          contractDetails,
-        },
-        check: "subscriptionInvoice",
-        details,
-        orderId:getorder.orderId,
-      }
-    );
-  }
-} 
+              if (sendMailToMerchant) {
+                let storeData = await getStoreDetails(getorder.shop);
+                shopEmail = storeData.store_email;
+                shopName = storeData.store_name;
+                // console.log("emailstore", shopEmail);
+                recipientMails.push(shopEmail);
+                getData.shopEmail = shopEmail;
+                getData.shopName = shopName;
+              }
+              if (sendMailToCustomer) {
+                // console.log("customeremail", getData.customer_email);
+                recipientMails.push(getData.customer_email);
+              }
+              // console.log("recipiensmails", recipientMails);
+              let configurationData =
+                subscriptionPurchasedTemplateData?.configuration;
+              let selectedTemplateData =
+                subscriptionPurchasedTemplateData?.settings
+                  ?.subscriptionInvoice;
+              //////
 
-//////invoiceend//////
+              ///////
+              let mailCheck = await sendMailCall(
+                recipientMails,
+                {},
+                {
+                  shop: getorder.shop,
+                  selectedTemplateData,
+                  configurationData,
+                  data: {
+                    ...getData,
+                    recipientMails: recipientMails,
+                    contractDetails,
+                  },
+                  check: "subscriptionInvoice",
+                  details,
+                  orderId: getorder.orderId,
+                }
+              );
+            }
+          }
+
+          //////invoiceend//////
         } catch (error) {
           console.log("error", error);
         }

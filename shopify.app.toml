@@ -1,8 +1,8 @@
 # Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
 
-name = "Revlytic"
-client_id = "d733a4696305f73394b07285ed5794f6"
-application_url = "https://revlytic.co"
+name = "subscription"
+client_id = "a3fb3d5d86b47a536e7377a9d8b989ca"
+application_url = "https://score-hwy-blank-neural.trycloudflare.com"
 embedded = true
 
 [access_scopes]
@@ -11,23 +11,27 @@ use_legacy_install_flow = true
 
 [auth]
 redirect_urls = [
-  "https://revlytic.co/auth/callback",
-  "https://revlytic.co/auth/shopify/callback",
-  "https://revlytic.co/api/auth/callback"
+  "https://score-hwy-blank-neural.trycloudflare.com/auth/callback",
+  "https://score-hwy-blank-neural.trycloudflare.com/auth/shopify/callback",
+  "https://score-hwy-blank-neural.trycloudflare.com/api/auth/callback"
 ]
 
 [webhooks]
-api_version = "2023-10"
+api_version = "2023-04"
 
   [webhooks.privacy_compliance]
-  customer_deletion_url = "https://revlytic.co/api/webhooks"
-  customer_data_request_url = "https://revlytic.co/api/webhooks"
-  shop_deletion_url = "https://revlytic.co/api/webhooks"
+  customer_deletion_url = "https://festival-yeast-elements-groups.trycloudflare.com/api/webhooks"
+  customer_data_request_url = "https://festival-yeast-elements-groups.trycloudflare.com/api/webhooks"
+  shop_deletion_url = "https://festival-yeast-elements-groups.trycloudflare.com/api/webhooks"
 
 [app_proxy]
-url = "https://revlytic.co/api/storefront/appProxy"
+url = "https://festival-yeast-elements-groups.trycloudflare.com/api/storefront/appProxy"
 subpath = "revlytic-subscriptions"
 prefix = "apps"
 
 [pos]
 embedded = false
+
+[build]
+automatically_update_urls_on_dev = true
+dev_store_url = "sahil-shine.myshopify.com"

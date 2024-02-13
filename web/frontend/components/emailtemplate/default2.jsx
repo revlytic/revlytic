@@ -160,10 +160,10 @@ console.log("morninng",formData)
         <Card>
         
           {/* */}
-          <Tooltip color='#ffffff' title={billingPlan !="starter" && billingPlan !="premium" ? <Link to={(`/billing?option=emailTemplates`)}>Upgrade your Plan</Link> :""}>
+          <Tooltip color='#ffffff' title={billingPlan !="starter" && billingPlan !="premium"  && billingPlan !="premiere" ? <Link to={(`/billing?option=emailTemplates`)}>Upgrade your Plan</Link> :""}>
           <div className="revlytic email-dynamic-field-column"  >
           
-            <Collapse  collapsible={billingPlan !='starter' ? "disabled" : "" }      >
+            <Collapse  collapsible={billingPlan !='starter' && billingPlan !="premium"  && billingPlan !="premiere" ? "disabled" : "" }      >
 
             <Panel header="Enable/Disable Settings" key="11"  >
             <div className="revlytic email-control-input-main">
@@ -401,8 +401,8 @@ console.log("morninng",formData)
       </div>
 }
       <div className="revlytic email-template-setting-button-main">
-      <Tooltip color='#ffffff' title={billingPlan !="starter" && billingPlan !="premium" ?<Link to={(`/billing?option=emailTemplates`)}>Upgrade your Plan</Link> :""}>
-          <Button className="revlytic-save-subscription" htmlType="submit" disabled={ billingPlan !="starter" && billingPlan !="premium"} onClick={handleSubmit}>
+      <Tooltip color='#ffffff' title={billingPlan !="starter" && billingPlan !="premium" && billingPlan !="premiere" ?<Link to={(`/billing?option=emailTemplates`)}>Upgrade your Plan</Link> :""}>
+          <Button className="revlytic-save-subscription" htmlType="submit" disabled={ billingPlan !="starter" && billingPlan !="premium" && billingPlan !="premiere"} onClick={handleSubmit}>
           Submit
         </Button>
         </Tooltip>
