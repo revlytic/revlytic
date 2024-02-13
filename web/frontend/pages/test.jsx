@@ -8,7 +8,7 @@ function Test() {
     const buttonColorRef = useRef(null);
     const [formatHex, setFormatHex] = useState('hex');
     const handleChange=  (e) => {
-
+ 
     //     console.log(e)
        setButtonColor(e.toHexString())
     console.log("buttonvclr",e.toHexString())
