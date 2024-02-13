@@ -3,6 +3,7 @@ import shopify from "../shopify.js";
 import planModal from "./modals/PlanGroupDetails.js";
 import subscriptionDetailsModal from "./modals/subscriptionDetails.js";
 import StoreSchemaModal from "./modals/storeDetails.js";
+
 import checkoutCustomerModal from "./modals/checkoutCustomer.js";
 import nodemailer from "nodemailer";
 import { CronJob } from "cron";
@@ -20,7 +21,15 @@ console.log("utcdate", new Date());
 console.log(process.env.HOST, "envvvvvvvvvvv");
 console.log(process.env.SCOPES, "envvvvvvvvvvv");
 import { ObjectId } from "bson";
+import { PDFDocument, rgb } from "pdf-lib";
+import htmlToPdf from "html-pdf-node";
+// import htmlToPdfmake from "html-to-pdfmake"
+// import pdfMake from 'pdfmake/build/pdfmake';
+// import pdfFonts from 'pdfmake/build/vfs_fonts';
 import puppeteer from "puppeteer";
+
+// pdfMake.vfs = pdfFonts.pdfMake.vfs;
+
 import widgetSettingsModal from "./modals/widgetSetting.js";
 import productBundleModal from "./modals/productBundle.js";
 import path from "path";
@@ -30,8 +39,7 @@ import orderOnly from "./modals/contractOrder.js";
 import orderContractDetails from "./modals/contractOrderDetails.js";
 import billingModal from "./modals/billing.js";
 const __dirname = path.resolve();
-const dirPath = path.join(__dirname, "/frontend/invoiceTemplate");
-// const dirPath2 = path.join(__dirname);
+const dirPath = path.join(__dirname, "/web/frontend/invoiceTemplate");
 function formatVariableName(variableName) {
   // Split the variable name by underscores
   const parts = variableName.split("_");
@@ -85,7 +93,7 @@ export async function demo(req, res) {
       } else {
         console.log(res, "::::::");
         let options = {
-          from: "sahilagnihotri7@gmail.com",
+          from: `Revlytic <revlytic@gmail.com>`,
           to: storeData?.store_email,
           subject: "Customer Data",
           text: "Please find the attached customer data file.",
@@ -101,8 +109,8 @@ export async function demo(req, res) {
           host: "smtp.gmail.com",
           port: 587, // Convert port number to integer
           auth: {
-            user: "sahilagnihotri7@gmail.com",
-            pass: "srdvsdnxfmvbrduw",
+            user: "revlytic@gmail.com",
+            pass: "yiaglckhjmbratox",
           },
           secure: false,
         };
@@ -129,49 +137,6 @@ export async function demo(req, res) {
         console.log("first in last");
       }
     });
-
-    // let options = {
-    //   from: "sahilagnihotri7@gmail.com",
-    //   to: "sahilagnihotri7@gmail.com",
-    //   subject: "Customer Data",
-    //   text: "Please find the attached customer Data file.",
-    //   attachments: [{
-    //     filename: "asass.json",
-    //     path: filePath
-    //   }]
-    // };
-
-    // let emailConfig = {
-    //   host: "smtp.gmail.com",
-    //   port: 587, // Convert port number to integer
-    //   auth: {
-    //     user: "sahilagnihotri7@gmail.com",
-    //     pass: "srdvsdnxfmvbrduw",
-    //   },
-    //   secure: false,
-    // };
-
-    // const transporter = nodemailer.createTransport(emailConfig);
-
-    // const sendEmail = (options, emailConfig) => {
-    //   return new Promise((resolve, reject) => {
-    //     const transporter = nodemailer.createTransport(emailConfig);
-    //     transporter.sendMail(options, (error, info) => {
-    //       if (error) {
-    //         console.error("Error sending email:", error);
-    //         reject(error);
-    //       } else {
-    //         console.log("Email sent:", info.response);
-    //         resolve(info);
-    //       }
-    //     });
-    //   });
-    // };
-    // const data = await sendEmail(options, emailConfig);
-
-    // console.log("dssdfsdf", path.join(__dirname, "customerDt.json"));
-    // console.log("first in last");
-    // res.send("sdasdas");
   } catch (error) {
     console.log("error", error);
     res.send("errr");
@@ -257,16 +222,16 @@ const sendMailCall = async (recipientMails, others, extra) => {
       port: 587, // Convert port number to integer
 
       auth: {
-        user: "sahilagnihotri7@gmail.com",
+        user: "revlytic@gmail.com",
 
-        pass: "srdvsdnxfmvbrduw",
+        pass: "yiaglckhjmbratox",
       },
 
       secure: false,
     };
 
     options = {
-      from: "sahilagnihotri7@gmail.com",
+      from: `Revlytic <revlytic@gmail.com>`,
 
       // to: recipientMails.join(", "),
 
@@ -300,7 +265,10 @@ const sendMailCall = async (recipientMails, others, extra) => {
 
   console.log(__dirname, "kjh");
 
-  const dirPath = path.join(__dirname, "/frontend/components/emailtemplate");
+  const dirPath = path.join(
+    __dirname,
+    "/web/frontend/components/emailtemplate"
+  );
 
   console.log(dirPath, "fsdfdf");
 
@@ -528,7 +496,7 @@ const sendMailCall = async (recipientMails, others, extra) => {
   // }
 
   ////////////saaahhhillll
-
+  console.log(extra?.check, "extra?.check");
   if (extra?.check == "subscriptionInvoice") {
     /////////////////////////////////////
 
@@ -539,7 +507,7 @@ const sendMailCall = async (recipientMails, others, extra) => {
         args: ["--no-sandbox"],
       });
       const page = await browser.newPage();
-      const options = {
+      const options1 = {
         format: "A4",
         printBackground: true, // To include background colors/images in PDF
       };
@@ -547,7 +515,9 @@ const sendMailCall = async (recipientMails, others, extra) => {
       const filename = String(new Date().getTime());
 
       try {
-        const templatePath = dirPath + "/invoiceTemplate.ejs";
+        let dirPath1 = path.join(__dirname, "/web/frontend/invoiceTemplate");
+
+        let templatePath = dirPath1 + "/invoiceTemplate.ejs";
         const compiledTemplate = ejs.compile(
           fs.readFileSync(templatePath, "utf8")
         );
@@ -557,17 +527,17 @@ const sendMailCall = async (recipientMails, others, extra) => {
         await page.setContent(content);
         await page.pdf({
           path: dirPath + `/${filename}.pdf`,
-          format: options.format,
+          format: options1.format,
         });
 
         await browser.close();
 
-        sendEmail(
-          dirPath + `/${filename}.pdf`,
-          orderDetails.email,
-          getorder.orderId,
-          getorder.shop
-        );
+        // sendEmail(
+        //   dirPath + `/${filename}.pdf`,
+        //   orderDetails.email,
+        //   getorder.orderId,
+        //   getorder.shop
+        // );
         //////////////////////////
         const pdfData = fs.readFileSync(dirPath + `/${filename}.pdf`);
         const base64Data = Buffer.from(pdfData).toString("base64");
@@ -582,7 +552,9 @@ const sendMailCall = async (recipientMails, others, extra) => {
             contentDisposition: "inline",
           },
         ];
-        const recipientEmails = recipientMails.join(",");
+
+        let recipientEmails = recipientMails.join(",");
+        console.log(recipientEmails, "rockstar");
         options = {
           ...options,
 
@@ -624,7 +596,7 @@ const sendMailCall = async (recipientMails, others, extra) => {
               { shop: extra.shop, orderId: extra.orderId },
               { status: true }
             );
-            fs.unlink(pdfPath, (err) => {
+            fs.unlink(dirPath + `/${filename}.pdf`, (err) => {
               if (err) {
                 console.error("Error deleting PDF file:", err);
                 throw error;
@@ -897,16 +869,12 @@ async function getshopToken(shop) {
 }
 // ///////////////////////////contract create cron start///////////////////////////////////////////
 const firstScheduledTime = "*/30 * * * * *"; // Replace with your desired time in cron syntax
-
 const firstJob = new CronJob(firstScheduledTime, contractCronJob);
-
 const secondJob = new CronJob(
   firstScheduledTime,
   sendInvoiceMailAndSaveContract
 );
-
 firstJob.start();
-
 secondJob.start();
 
 export async function contractCronJob(req, res) {
@@ -940,75 +908,40 @@ export async function contractCronJob(req, res) {
   console.log(data, "Function executed at the scheduled time.");
 
   let mutation = `mutation subscriptionBillingAttemptCreate($subscriptionBillingAttemptInput: SubscriptionBillingAttemptInput!, $subscriptionContractId: ID!) {
-
     subscriptionBillingAttemptCreate(subscriptionBillingAttemptInput: $subscriptionBillingAttemptInput, subscriptionContractId: $subscriptionContractId) {
-
       subscriptionBillingAttempt {
-
         id
-
               subscriptionContract
-
               {
-
                   nextBillingDate
-
                   billingPolicy{
-
                       interval
-
                       intervalCount
-
                       maxCycles
-
                       minCycles
-
                       anchors{
-
                           day
-
                           type
-
                           month
-
                       }
-
                   }
-
                   deliveryPolicy{
-
                       interval
-
                       intervalCount
-
                       anchors{
-
                           day
-
                           type
-
                           month
-
                       }
-
                   }
-
               }
-
       }
-
       userErrors {
-
         field
-
         message
-
       }
-
     }
-
   }
-
   `;
 
   if (data.length > 0) {
@@ -1062,7 +995,6 @@ export async function contractCronJob(req, res) {
           billing_attempt_date: currentDate,
 
           renewal_date: currentDate,
-
           contract_products: data[i].product_details,
 
           contract_id: data[i].subscription_id,
@@ -3281,7 +3213,7 @@ export async function customerPaymentMethodSendUpdateEmail(req, res) {
     const Input = {
       customerPaymentMethodId: req?.body?.paymentId,
       email: {
-        from: "sahilagnihotri7@gmail.com",
+        from: `Revlytic <revlytic@gmail.com>`,
         to: req?.body?.email,
       },
     };
@@ -3517,7 +3449,10 @@ export async function emailTemplateStatusOrAdminNotificationUpdate(req, res) {
 export async function sendMailCommon(req, res) {
   const __dirname = path.resolve();
   console.log(__dirname, "kjh");
-  const dirPath = path.join(__dirname, "/frontend/components/emailtemplate");
+  const dirPath = path.join(
+    __dirname,
+    "/web/frontend/components/emailtemplate"
+  );
 
   let options = req.body?.options;
   console.log("options", options);
@@ -3785,7 +3720,10 @@ export async function sendMailOnUpdate(req, res) {
   try {
     const __dirname = path.resolve();
     console.log(__dirname, "kjh");
-    const dirPath = path.join(__dirname, "/frontend/components/emailtemplate");
+    const dirPath = path.join(
+      __dirname,
+      "/web/frontend/components/emailtemplate"
+    );
     let shop = res?.locals?.shopify?.session?.shop
       ? res?.locals?.shopify?.session?.shop
       : req?.body?.shop;
@@ -4886,18 +4824,6 @@ function findDateRange(data) {
       $gte: new Date(date.setUTCHours(0, 0, 0, 0)),
       $lt: new Date(new Date().setUTCHours(0, 0, 0, 0)),
     };
-  } else if (data.range == "lastmonth") {
-    ///this case is used in billing plan page
-
-    console.log("16jan", new Date(new Date().setHours(0, 0, 0, 0)));
-    date = new Date();
-    console.log("chekcinnnn", date);
-    date.setDate(date.getDate() - 30);
-
-    dateRange = {
-      $gte: new Date(date.setUTCHours(23, 59, 59, 99)),
-      $lt: new Date(new Date().setUTCHours(23, 59, 59, 999)),
-    };
   }
 
   console.log("daterange", dateRange);
@@ -4908,9 +4834,9 @@ function findDateRange(data) {
 export async function combinedData(req, res) {
   try {
     let shop = res.locals.shopify.session.shop;
-    // console.log("ccd", req.body);
+    console.log("ccd", req.body);
 
-    // console.log(new Date(), new Date(new Date().setUTCHours(23, 59, 59, 999)));
+    console.log(new Date(), new Date(new Date().setUTCHours(23, 59, 59, 999)));
     let dateRange = findDateRange(req.body);
 
     // let data = await billing_Attempt.aggregate([
@@ -4939,7 +4865,7 @@ export async function combinedData(req, res) {
       { new: true, _id: 0, total_amount: 1, currency: 1, status: 1 }
     );
 
-    // console.log("dataaccc", data);
+    console.log("dataac", data);
 
     res.send({ message: "success", data });
   } catch (error) {
@@ -4947,7 +4873,6 @@ export async function combinedData(req, res) {
     res.send({ message: "error" });
   }
 }
-
 export async function subscriptionBookings(req, res) {
   try {
     let shop = res.locals.shopify.session.shop;
@@ -5208,16 +5133,17 @@ export async function checkAppBlockEmbed(req, res) {
       theme_id: storeDetails?.themeId,
       asset: { key: "config/settings_data.json" },
     });
-    // console.log("ddd",JSON.parse(ddd?.data[0]?.value))
+    console.log("ddd", JSON.parse(ddd?.data[0]?.value));
     let z = JSON.parse(ddd?.data[0]?.value);
     console.log("zzz", z?.current?.blocks);
+    // let searchedBlock=Object.values(z?.current?.blocks).find(item=>item.type==`shopify://apps/${process.env?.APP_NAME}/blocks/${process.env?.APP_EXTENSION_BLOCK}/${process.env?.SHOPIFY_REVLYTIC_THEME_EXT_ID}`)
     let searchedBlock = Object.values(z?.current?.blocks).find(
       (item) =>
         item.type ==
-        `shopify://apps/${process.env?.APP_NAME}/blocks/${process.env?.APP_EXTENSION_BLOCK}/${process.env?.SHOPIFY_THEME_APP_EXTENSION_ID}`
+        "shopify://apps/revlytic-subscriptions/blocks/revlytic/ff9f9dca-e79b-4505-a99b-27dc7bd8897c"
     );
 
-    // console.log("jigjaggggv",searchedBlock)
+    console.log("jigjaggggv", searchedBlock);
 
     if (searchedBlock) {
       res.send({ message: "success", data: searchedBlock });
@@ -5243,8 +5169,7 @@ export async function recurringBiling(req, res) {
     let trialDays =
       plan == "premiere" || plan == "starter" || plan == "premium" ? 14 : 0;
     if (
-      shop == "sahil-shine.myshopify.com" ||
-      shop == "sahilnew.myshopify.com"
+      shop == "test-live-app-revlytic.myshopify.com" 
     ) {
       testCharge = true;
     } else {
@@ -5508,7 +5433,6 @@ export async function freePlanActivation(req, res) {
       });
   }
 }
-// export async function
 ///////////////////////////////////////////////
 
 // export async function getProductVarientsIds(req, res) {
@@ -7035,6 +6959,35 @@ export async function getPlanGroups(req, res) {
   ///**********************/// function to get the plan groups from db  for listing
   let shop = res.locals.shopify.session.shop;
   let session = res.locals.shopify.session;
+
+  // const storefront_access_token =
+  // new shopify.api.rest.StorefrontAccessToken({
+  //   session: {
+  //     shop: session.shop,
+  //     accessToken: session.accessToken,
+  //   },
+  // })
+  // storefront_access_token.title = "Test";
+  // await storefront_access_token.save({
+  //   update: true,
+  // });
+  // console.log(storefront_access_token,"lkjhgg");
+
+  // await storeModal.findOne({ shop }).then((data) => {
+  //   if (data) {
+  //     storeModal.updateOne({accessToken: storefront_access_token.accessToken})
+  //     // return data;
+  //   } else {
+  //     storeModal.create({
+  //       shop:shop,
+  //       accessToken:storefront_access_token.access_token
+  //     })
+  //       .then(() => {
+  //         console.log("Store info successfully saved");
+  //       })
+  //       .catch((err) => console.log(err));
+  //   }
+  // });
   const client = new shopify.api.clients.Graphql({ session });
   console.log(session);
   // sendInvoiceMailAndSaveContract();
@@ -7477,15 +7430,15 @@ export async function sendMail(req, res) {
       port: 587, // Convert port number to integer
 
       auth: {
-        user: "sahilagnihotri7@gmail.com",
+        user: "revlytic@gmail.com",
 
-        pass: "srdvsdnxfmvbrduw",
+        pass: "yiaglckhjmbratox",
       },
 
       secure: false,
     };
 
-    options.from = "sahilagnihotri7@gmail.com";
+    options.from = `Revlytic <revlytic@gmail.com>`;
   }
 
   console.log("configurationData", configurationData);
@@ -7806,7 +7759,6 @@ export async function prodExRemoveVariants(req, res) {
             plan_group_id: SId,
           });
         }
-
         res.send({
           message: "success",
           data: "Details saved successfully",
@@ -8982,64 +8934,7 @@ export async function getCustomerPortalDetails(req, res) {
 
 ///////////////////////////////////customrt portal
 
-const sendEmail = async (pdfPath, email, orderId, shop) => {
-  console.log("oiiiiiiiii");
-  const transporter = nodemailer.createTransport({
-    host: "smtp.gmail.com",
-    port: 587,
-    secure: false,
-    auth: {
-      user: "virender.shinedezign@gmail.com",
-      pass: "pqtssvzzmwcrebhl",
-      // user: testAccount.user, // generated ethereal user
-      // pass: testAccount.pass, // generated ethereal password
-    },
-  });
-
-  const pdfData = fs.readFileSync(pdfPath);
-  const base64Data = Buffer.from(pdfData).toString("base64");
-  const contentType = mime.getType(pdfPath);
-
-  const mailOptions = {
-    from: "virender.shinedezign@gmail.com",
-    // to: "nehaa.shinedezign@gmail.com",
-    to: email,
-
-    subject: "Invoice",
-    text: "Please find the attached invoice.",
-    attachments: [
-      {
-        filename: "invoice.pdf",
-        content: base64Data,
-        encoding: "base64",
-        contentType: contentType,
-        contentDisposition: "inline",
-      },
-    ],
-  };
-
-  const send = await transporter.sendMail(mailOptions, async (error, info) => {
-    if (error) {
-      console.error("Error sending email:", error);
-      throw error;
-    } else {
-      console.log("Email sent:", info.response);
-      console.log(orderId, shop, "looooo");
-      let updateDb = await orderOnly.findOneAndUpdate(
-        { shop: shop, orderId: orderId },
-        { status: true }
-      );
-      fs.unlink(pdfPath, (err) => {
-        if (err) {
-          console.error("Error deleting PDF file:", err);
-          throw error;
-        } else {
-          console.log("PDF file deleted successfully.");
-        }
-      });
-    }
-  });
-};
+//////////////////cron for contract save to db and mail and invoice
 
 export async function sendInvoiceMailAndSaveContract(req, res) {
   console.log(
@@ -10023,17 +9918,18 @@ export async function sendInvoiceMailAndSaveContract(req, res) {
               (orderDetails.billingAddress.address1 != undefined
                 ? orderDetails.billingAddress.address1
                 : "") +
-                " " +
-                orderDetails.billingAddress.address2 !=
-              undefined
+              " " +
+              (orderDetails.billingAddress.address2 != undefined
                 ? orderDetails.billingAddress.address2
-                : "",
+                : ""),
             address2:
-              orderDetails.billingAddress.city != undefined
+              (orderDetails.billingAddress.city != undefined
                 ? orderDetails.billingAddress.city
-                : "" + "-" + orderDetails.billingAddress.zip != undefined
+                : "") +
+              "-" +
+              (orderDetails.billingAddress.zip != undefined
                 ? orderDetails.billingAddress.zip
-                : "",
+                : ""),
 
             province:
               orderDetails.billingAddress.province != undefined

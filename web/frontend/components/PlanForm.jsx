@@ -287,48 +287,55 @@ const PlanForm = (props) => {
     });
     setPreviewDropdown(arr);
     setDropdownValue(arr[0]);
-console.log("products[0]?.variants[0]?.price",  products[0]?.variants[0]?.price,)
-    if (arr.length >0 && arr[0].price != undefined) {
+    console.log(
+      "products[0]?.variants[0]?.price",
+      products[0]?.variants[0]?.price
+    );
+    if (arr.length > 0 && arr[0].price != undefined) {
       if (arr[0].value.includes("percentage")) {
-     console.log("first",  (  (products[0]?.variants[0]?.price ?? 100) -
-     ((products[0]?.variants[0]?.price ?? 100) * arr[0].price) / 100))
+        console.log(
+          "first",
+          (products[0]?.variants[0]?.price ?? 100) -
+            ((products[0]?.variants[0]?.price ?? 100) * arr[0].price) / 100
+        );
 
-
-
-
-        arr[0].planType.toLowerCase().includes("prepaid") ? setPlanpreviewPrice(
-           (arr[0].billing/arr[0].delivery ) *(  (products[0]?.variants[0]?.price ?? 100) -
-            ((products[0]?.variants[0]?.price ?? 100) * arr[0].price) / 100)
-        ) :  setPlanpreviewPrice((products[0]?.variants[0]?.price ?? 100) -
-          ((products[0]?.variants[0]?.price ?? 100 )* arr[0].price) / 100) ;
- 
-
-
-
+        arr[0].planType.toLowerCase().includes("prepaid")
+          ? setPlanpreviewPrice(
+              (arr[0].billing / arr[0].delivery) *
+                ((products[0]?.variants[0]?.price ?? 100) -
+                  ((products[0]?.variants[0]?.price ?? 100) * arr[0].price) /
+                    100)
+            )
+          : setPlanpreviewPrice(
+              (products[0]?.variants[0]?.price ?? 100) -
+                ((products[0]?.variants[0]?.price ?? 100) * arr[0].price) / 100
+            );
       } else if (arr[0].value.includes("fixed")) {
+        console.log(
+          "infixxx",
+          (products[0]?.variants[0]?.price ?? 100) - arr[0].price > 0
+            ? (products[0]?.variants[0]?.price ?? 100) - arr[0].price
+            : 0
+        );
 
-        console.log("infixxx",(products[0]?.variants[0]?.price ?? 100) - (arr[0].price) > 0
-        ? ((products[0]?.variants[0]?.price ?? 100) - arr[0].price)
-        : 0)
-
-        arr[0].planType.toLowerCase().includes("prepaid") ? setPlanpreviewPrice(
-           (arr[0].billing/arr[0].delivery) * ((products[0]?.variants[0]?.price ?? 100) - (arr[0].price) > 0
-           ? ((products[0]?.variants[0]?.price ?? 100) - arr[0].price)
-           : 0)
-        ) : setPlanpreviewPrice((products[0]?.variants[0]?.price ?? 100) - (arr[0].price) > 0
-          ? ((products[0]?.variants[0]?.price ?? 100) - arr[0].price)
-          : 0) ;
+        arr[0].planType.toLowerCase().includes("prepaid")
+          ? setPlanpreviewPrice(
+              (arr[0].billing / arr[0].delivery) *
+                ((products[0]?.variants[0]?.price ?? 100) - arr[0].price > 0
+                  ? (products[0]?.variants[0]?.price ?? 100) - arr[0].price
+                  : 0)
+            )
+          : setPlanpreviewPrice(
+              (products[0]?.variants[0]?.price ?? 100) - arr[0].price > 0
+                ? (products[0]?.variants[0]?.price ?? 100) - arr[0].price
+                : 0
+            );
       }
     } else {
-
       setPlanpreviewPrice(products[0]?.variants[0]?.price ?? 100);
       // setPlanpreviewPrice(100);
     }
-
-
-
-
-  }, [initialPlans, plansList,products]);
+  }, [initialPlans, plansList, products]);
   //console.log(dropdownValue, "sdsdsd");
   useEffect(() => {
     setProducts(products);
@@ -367,7 +374,7 @@ console.log("products[0]?.variants[0]?.price",  products[0]?.variants[0]?.price,
       { pid: props.pid },
       app
     );
-    console.log(res,"oo");
+    console.log(res, "oo");
     setLoader(false);
     if (res?.data?.message == "success") {
       setProducts(res?.data?.data?.product_details);
@@ -478,26 +485,24 @@ console.log("products[0]?.variants[0]?.price",  products[0]?.variants[0]?.price,
       //console.log("sahil");
 
       data =
-      `This subscription is a Pay As You Go plan. The customer will receive a delivery and be billed every ` +
-        `${form.getFieldValue(
-          "billingEvery"
-        ) ?  form.getFieldValue(
-          "billingEvery"
-        ) : "{Input for bill every}"}  ${form.getFieldValue(
-          "billingEveryType"
-        )?.toLowerCase()}(s).`;
+        `This subscription is a Pay As You Go plan. The customer will receive a delivery and be billed every ` +
+        `${
+          form.getFieldValue("billingEvery")
+            ? form.getFieldValue("billingEvery")
+            : "{Input for bill every}"
+        }  ${form.getFieldValue("billingEveryType")?.toLowerCase()}(s).`;
     } else {
       //console.log("sahil2");
 
       data =
-      `This subscription is a Prepaid plan. The length of the subscription is `  +
-      `${
+        `This subscription is a Prepaid plan. The length of the subscription is ` +
+        `${
           form.getFieldValue("billingEvery")
             ? form.getFieldValue("billingEvery")
             : "{Input for prepaid length}"
-        }  ${form.getFieldValue(
-          "billingEveryType"
-        )?.toLowerCase()}(s) and the customer will be billed upfront.` +
+        }  ${form
+          .getFieldValue("billingEveryType")
+          ?.toLowerCase()}(s) and the customer will be billed upfront.` +
         ` The customer will receive a delivery every ${
           form.getFieldValue("deliveryEvery")
             ? form.getFieldValue("deliveryEvery")
@@ -506,9 +511,7 @@ console.log("products[0]?.variants[0]?.price",  products[0]?.variants[0]?.price,
             : form.getFieldValue("deliveryEvery") == ""
             ? "{Input for delivery every value}"
             : null
-        } ${form.getFieldValue(
-          "billingEveryType"
-        )?.toLowerCase()}(s).`;
+        } ${form.getFieldValue("billingEveryType")?.toLowerCase()}(s).`;
     }
 
     if (form.getFieldValue("billingCycle") == false) {
@@ -547,11 +550,11 @@ console.log("products[0]?.variants[0]?.price",  products[0]?.variants[0]?.price,
       maxCycle: elements.maxCycle,
       planType: elements.planType,
     };
-    
-    if(elements.freeTrial){
+
+    if (elements.freeTrial) {
       obj.trialCount = elements.trialCount;
-      obj.freeTrialCycle = elements.freeTrialCycle
-    } 
+      obj.freeTrialCycle = elements.freeTrialCycle;
+    }
     // elements.freeTrial ? (obj.trialCount = elements.trialCount) : "";
     elements.deliveryEvery
       ? (obj.deliveryEvery = parseInt(elements.deliveryEvery))
@@ -573,7 +576,7 @@ console.log("products[0]?.variants[0]?.price",  products[0]?.variants[0]?.price,
       obj.setupPrice = elements.setupPrice;
     }
 
-    console.log("cheksjdskjd",obj);
+    console.log("cheksjdskjd", obj);
     form.setFieldsValue(obj);
     setBillingEvery(elements.billingEveryType);
     setOfferPriceSelect(elements.priceType);
@@ -615,10 +618,10 @@ console.log("products[0]?.variants[0]?.price",  products[0]?.variants[0]?.price,
       planType: elements.planType,
     };
 
-    if(elements.freeTrial){
+    if (elements.freeTrial) {
       obj.trialCount = elements.trialCount;
-      obj.freeTrialCycle = elements.freeTrialCycle
-    } 
+      obj.freeTrialCycle = elements.freeTrialCycle;
+    }
 
     // elements.freeTrial ? (obj.trialCount = elements.trialCount) : "";
     elements.deliveryEvery
@@ -674,7 +677,7 @@ console.log("products[0]?.variants[0]?.price",  products[0]?.variants[0]?.price,
     //console.log(values, "kkk");
 
     if (editExistingPlan) {
-      console.log("1check")
+      console.log("1check");
       //console.log(initialPlans);
       let idArr = [...editedArrayIds];
       idArr.push(editIndex);
@@ -696,7 +699,7 @@ console.log("products[0]?.variants[0]?.price",  products[0]?.variants[0]?.price,
       setOpenForm(false);
       setEditExistingPlan(false);
     } else if (editNewPlan) {
-      console.log("2check")
+      console.log("2check");
       let arr = [...plansList];
       arr[editIndex] = form.getFieldsValue();
       // arr[editIndex].billingEveryType = billingEvery;
@@ -710,10 +713,10 @@ console.log("products[0]?.variants[0]?.price",  products[0]?.variants[0]?.price,
       setOpenForm(false);
       setEditNewPlan(false);
     } else {
-      console.log("3check")
+      console.log("3check");
       // values.billingEveryType = billingEvery;
       values.priceType = offerPriceSelect;
-      console.log("values",values);
+      console.log("values", values);
       // //console.log(values.billingEvery.addonAfter);
       let arr = [...plansList];
       arr.push(values);
@@ -860,7 +863,7 @@ console.log("products[0]?.variants[0]?.price",  products[0]?.variants[0]?.price,
             position: toast.POSITION.TOP_RIGHT,
           });
           setOpenForm(false);
-          form.resetFields()
+          form.resetFields();
           setPlansList([]);
           setinitialPlans([]);
           setButtonText(true);
@@ -1166,7 +1169,8 @@ console.log("products[0]?.variants[0]?.price",  products[0]?.variants[0]?.price,
 
   const handleMaxCycle = (rule, value) => {
     if (
-      form.getFieldValue("minCycle") != "" && value &&
+      form.getFieldValue("minCycle") != "" &&
+      value &&
       parseInt(value) < parseInt(form.getFieldValue("minCycle"))
     ) {
       //console.log( "kdjaskdjaskd;sl;dals;dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd");
@@ -1175,7 +1179,10 @@ console.log("products[0]?.variants[0]?.price",  products[0]?.variants[0]?.price,
       );
     } else if (value && (!/^\d+$/.test(value) || Number(value) <= 0)) {
       return Promise.reject(new Error("Must be a number greater than zero!"));
-    } else if (value && (Number(value) < Number(form.getFieldValue("trialCount")))) {
+    } else if (
+      value &&
+      Number(value) < Number(form.getFieldValue("trialCount"))
+    ) {
       return Promise.reject(
         new Error(
           "Maximum Billing Cycles cannot be less than Free trial count!"
@@ -1200,31 +1207,32 @@ console.log("products[0]?.variants[0]?.price",  products[0]?.variants[0]?.price,
 
   const handleMinCycle = (rule, value) => {
     if (
-      form.getFieldValue("maxCycle") != "" && value &&
+      form.getFieldValue("maxCycle") != "" &&
+      value &&
       parseInt(value) > parseInt(form.getFieldValue("maxCycle"))
     ) {
       //console.log( "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd" );
       return Promise.reject(
         "Minimum Billing Cycles cannot be greater than Maximum Billing Cycles!"
       );
-    }
-    
-    else if (value && (!/^\d+$/.test(value) || Number(value) <= 0)) {
+    } else if (value && (!/^\d+$/.test(value) || Number(value) <= 0)) {
       return Promise.reject(new Error("Must be a number greater than zero!"));
-    }
-      
-    else if (form.getFieldValue("maxCycle") && form.getFieldValue("trialCount")  &&  Number(form.getFieldValue("maxCycle")) < Number(form.getFieldValue("trialCount"))) {
+    } else if (
+      form.getFieldValue("maxCycle") &&
+      form.getFieldValue("trialCount") &&
+      Number(form.getFieldValue("maxCycle")) <
+        Number(form.getFieldValue("trialCount"))
+    ) {
       // return Promise.reject(new Error("Maximum Billing Cycles cannot be less than Free trial count!"));
       form.setFields([
         {
           name: "maxCycle",
-          errors: ["Maximum Billing Cycles cannot be less than Free trial count!"],
+          errors: [
+            "Maximum Billing Cycles cannot be less than Free trial count!",
+          ],
         },
       ]);
-      
-    }
-    
-    else {
+    } else {
       form.setFields([
         {
           name: "maxCycle",
@@ -1234,11 +1242,11 @@ console.log("products[0]?.variants[0]?.price",  products[0]?.variants[0]?.price,
       return Promise.resolve();
     }
   };
-  
 
   const handlePrepaidLength = (rule, value) => {
     if (
-      form.getFieldValue("deliveryEvery") != "" && value !="" && 
+      form.getFieldValue("deliveryEvery") != "" &&
+      value != "" &&
       parseInt(value) % parseInt(form.getFieldValue("deliveryEvery")) != 0
     ) {
       //console.log("hhhhhhhhhhhhhhhhhhhhhhhhh");
@@ -1247,7 +1255,8 @@ console.log("products[0]?.variants[0]?.price",  products[0]?.variants[0]?.price,
         "Prepaid Length value must be a multiple of Delivery Every value."
       );
     } else if (
-      form.getFieldValue("deliveryEvery") != "" && value != "" &&
+      form.getFieldValue("deliveryEvery") != "" &&
+      value != "" &&
       parseInt(value) <= parseInt(form.getFieldValue("deliveryEvery"))
     ) {
       return Promise.reject(
@@ -1268,7 +1277,8 @@ console.log("products[0]?.variants[0]?.price",  products[0]?.variants[0]?.price,
   const handlePrepaidDelivery = (rule, value) => {
     // //console.log("sssssssssfirst", parseInt(form.getFieldValue(["subscription", "billingLength"]) % parseInt(value) ))
     if (
-      form.getFieldValue("billingEvery") != "" && value != '' &&
+      form.getFieldValue("billingEvery") != "" &&
+      value != "" &&
       parseInt(form.getFieldValue("billingEvery")) % parseInt(value) != 0
     ) {
       //console.log("hhhhhhhhhhhhhhhhhhhhhhhhh");
@@ -1276,7 +1286,8 @@ console.log("products[0]?.variants[0]?.price",  products[0]?.variants[0]?.price,
         "Delivery Every value must be a factor of Prepaid Length value."
       );
     } else if (
-      form.getFieldValue("billingEvery") != "" && value !='' &&
+      form.getFieldValue("billingEvery") != "" &&
+      value != "" &&
       parseInt(value) >= parseInt(form.getFieldValue("billingEvery"))
     ) {
       return Promise.reject(
@@ -1324,7 +1335,6 @@ console.log("products[0]?.variants[0]?.price",  products[0]?.variants[0]?.price,
         variants: variants,
         subscription_type: "inactive",
       });
-      
     });
     //console.log(sendData, "sebddayta");
     setProducts(sendData);
@@ -1342,24 +1352,23 @@ console.log("products[0]?.variants[0]?.price",  products[0]?.variants[0]?.price,
     });
     setCheckedIds(ids);
 
-// console.log("senddata",sendData)
-
+    // console.log("senddata",sendData)
 
     setpreviewData({
       ...previewData,
       src: sendData[0]?.variants[0]?.image
         ? sendData[0]?.variants[0]?.image
-        : sendData[0]?.image 
+        : sendData[0]?.image
         ? sendData[0]?.image
         : pic,
       price: sendData[0]?.variants[0]?.price,
-      name:  sendData[0]?.hasOnlyDefaultVariant
-        ?  sendData[0]?.product_name
+      name: sendData[0]?.hasOnlyDefaultVariant
+        ? sendData[0]?.product_name
         : sendData[0]?.variants[0]?.title,
     });
 
-// setPlanpreviewPrice(sendData[0]?.variants[0]?.price)
-    
+    // setPlanpreviewPrice(sendData[0]?.variants[0]?.price)
+
     setModal(false);
   };
   // //console.log(checkedIds);
@@ -1447,13 +1456,11 @@ console.log("products[0]?.variants[0]?.price",  products[0]?.variants[0]?.price,
 
     if (data?.planType == "payAsYouGo") {
       data1 =
-      `This subscription is a Pay As You Go plan. The customer will receive a delivery and be billed every ` +
-     `${
-          data?.billingEvery
-        }  ${data?.billingEveryType?.toLowerCase()}(s).`;
+        `This subscription is a Pay As You Go plan. The customer will receive a delivery and be billed every ` +
+        `${data?.billingEvery}  ${data?.billingEveryType?.toLowerCase()}(s).`;
     } else {
       data1 =
-      `This subscription is a Prepaid plan. The length of the subscription is ` +
+        `This subscription is a Prepaid plan. The length of the subscription is ` +
         `${
           data?.billingEvery
         }  ${data?.billingEveryType?.toLowerCase()}(s) and the customer will be billed upfront.` +
@@ -1463,7 +1470,7 @@ console.log("products[0]?.variants[0]?.price",  products[0]?.variants[0]?.price,
     }
 
     if (data?.billingCycle == false) {
-      data2 =  ` Additionally, this plan will not renew automatically.`;
+      data2 = ` Additionally, this plan will not renew automatically.`;
     } else {
       data2 = ` Additionally, this plan will renew automatically until canceled.`;
     }
@@ -1482,13 +1489,14 @@ console.log("products[0]?.variants[0]?.price",  products[0]?.variants[0]?.price,
           
         </div> */}
         <div className="product-section">
-         { products.length > 0 &&<div className="revlytic-product-listing-header">
-            <h5>Product</h5>
-            <h5>Price</h5>
-            <h5>Preview</h5>
-            <h5>Manage</h5>
-
-          </div>}
+          {products.length > 0 && (
+            <div className="revlytic-product-listing-header">
+              <h5>Product</h5>
+              <h5>Price</h5>
+              <h5>Preview</h5>
+              <h5>Manage</h5>
+            </div>
+          )}
           {products.length > 0 ? (
             products.map((el, productIndex) =>
               el?.variants?.map((item, varientIndex) => (
@@ -1517,7 +1525,7 @@ console.log("products[0]?.variants[0]?.price",  products[0]?.variants[0]?.price,
                               `https://admin.shopify.com/store/${storeName}/products/` +
                               el?.product_id?.split("/").at(-1)
                             }
-                            title= {el.product_name}
+                            title={el.product_name}
                           >
                             {" "}
                             {el.product_name}
@@ -1535,7 +1543,9 @@ console.log("products[0]?.variants[0]?.price",  products[0]?.variants[0]?.price,
                     )} */}
                     <p>
                       {currency &&
-                        getCurrencySymbol(currency) + "" + parseFloat(item?.price)?.toFixed(2)}
+                        getCurrencySymbol(currency) +
+                          "" +
+                          parseFloat(item?.price)?.toFixed(2)}
                     </p>
                   </div>
 
@@ -1855,56 +1865,68 @@ console.log("products[0]?.variants[0]?.price",  products[0]?.variants[0]?.price,
               <div className="revlytic create-plan-name-product">
                 <div className="revlytic create-plan-group-productlist">
                   <div className="revlytic plan-groupname-input">
-                  <div className="revlytic plan-groupInput">
-                  <strong className=" revlytic required">Plan Name</strong><Tooltip  className="revlytic subscription-planpage-tooltip" title="Name your subscription plan here. This will allow you to differentiate between your various Subscription Plans."><QuestionCircleOutlined /></Tooltip>
-                    
-                    <div className="revlytic-plan-nameError">
-                    <Input
-                      // placeholder="Enter plan group name"
-                      status={
-                        !allPlanGroupNames.includes(planGroupName.toLowerCase())
-                          ? ""
-                          : "error"
-                      }
-                      onChange={(e) => {
-                        setPlanGroupName(e.target.value);
-                        const isUnique = !allPlanGroupNames.includes(
-                          e.target.value.toLowerCase()
-                        );
-                      }}
-                      value={planGroupName}
-                    />
-                    {!allPlanGroupNames.includes(
-                      planGroupName.toLowerCase()
-                    ) ? (
-                      ""
-                    ) : (
-                      <span className="revlytic-matching-product-error" style={{ color: "red" }}>
-                        Plan with same name already exists.
-                      </span>
-                    )}
+                    <div className="revlytic plan-groupInput">
+                      <strong className=" revlytic required">Plan Name</strong>
+                      <Tooltip
+                        className="revlytic subscription-planpage-tooltip"
+                        title="Name your subscription plan here. This will allow you to differentiate between your various Subscription Plans."
+                      >
+                        <QuestionCircleOutlined />
+                      </Tooltip>
+
+                      <div className="revlytic-plan-nameError">
+                        <Input
+                          // placeholder="Enter plan group name"
+                          status={
+                            !allPlanGroupNames.includes(
+                              planGroupName.toLowerCase()
+                            )
+                              ? ""
+                              : "error"
+                          }
+                          onChange={(e) => {
+                            setPlanGroupName(e.target.value);
+                            const isUnique = !allPlanGroupNames.includes(
+                              e.target.value.toLowerCase()
+                            );
+                          }}
+                          value={planGroupName}
+                        />
+                        {!allPlanGroupNames.includes(
+                          planGroupName.toLowerCase()
+                        ) ? (
+                          ""
+                        ) : (
+                          <span
+                            className="revlytic-matching-product-error"
+                            style={{ color: "red" }}
+                          >
+                            Plan with same name already exists.
+                          </span>
+                        )}
+                      </div>
                     </div>
-                    </div>
-                  <div className="add-and-create-buttons">
-          <Tooltip title='Add products to your Subscription Plan. You can either add all variants of a Product or a specific Product variant as selected.'>
-            <Button
-              className="add"
-              type="primary"
-              onClick={() => {
-                setModal(true);
-              }}
-            >
-              Add Products
-            </Button>
-            </Tooltip>
-            <Tooltip title='This feature allows you to create a new Product directly from within Revlytic! So you never have to log out and back in. You can always go back into Shopify to add additional details if necessary.'><Button
-              type="primary"
-              className="create"
-              onClick={() => setaddproductModal(true)}
-            >
-              Create a Product
-            </Button>
-            </Tooltip>
+                    <div className="add-and-create-buttons">
+                      <Tooltip title="Add products to your Subscription Plan. You can either add all variants of a Product or a specific Product variant as selected.">
+                        <Button
+                          className="add"
+                          type="primary"
+                          onClick={() => {
+                            setModal(true);
+                          }}
+                        >
+                          Add Products
+                        </Button>
+                      </Tooltip>
+                      <Tooltip title="This feature allows you to create a new Product directly from within Revlytic! So you never have to log out and back in. You can always go back into Shopify to add additional details if necessary.">
+                        <Button
+                          type="primary"
+                          className="create"
+                          onClick={() => setaddproductModal(true)}
+                        >
+                          Create a Product
+                        </Button>
+                      </Tooltip>
                     </div>
                   </div>
 
@@ -2162,9 +2184,17 @@ console.log("products[0]?.variants[0]?.price",  products[0]?.variants[0]?.price,
             <div className="revlytic create-plan-group-widget-preview">
               <Card>
                 <div className="revlytic preview-container-1">
-                 <div className="revlytic preview-heading-tooltip"><h2 className="revlytic preview-heading">
-                    Subscription Widget Preview 
-                  </h2><Tooltip  className="revlytic subscription-planpage-tooltip" title='Preview how your Subscription Plan will appear on your Shopify store Product Widget before you submit and create your plan.'><QuestionCircleOutlined/></Tooltip></div> 
+                  <div className="revlytic preview-heading-tooltip">
+                    <h2 className="revlytic preview-heading">
+                      Subscription Widget Preview
+                    </h2>
+                    <Tooltip
+                      className="revlytic subscription-planpage-tooltip"
+                      title="Preview how your Subscription Plan will appear on your Shopify store Product Widget before you submit and create your plan."
+                    >
+                      <QuestionCircleOutlined />
+                    </Tooltip>
+                  </div>
                   <img
                     className="revlytic preview-image"
                     src={previewData.src}
@@ -2174,7 +2204,9 @@ console.log("products[0]?.variants[0]?.price",  products[0]?.variants[0]?.price,
                   </p>
                   <h3 className="revlytic preview-product-price">
                     {currency &&
-                      getCurrencySymbol(currency) + "" + parseFloat(previewData?.price)?.toFixed(2)}
+                      getCurrencySymbol(currency) +
+                        "" +
+                        parseFloat(previewData?.price)?.toFixed(2)}
                   </h3>
                 </div>
                 <div className="revlytic preview-container-2">
@@ -2187,7 +2219,9 @@ console.log("products[0]?.variants[0]?.price",  products[0]?.variants[0]?.price,
                       <p className="revlytic preview-option-price">
                         {" "}
                         {currency &&
-                          getCurrencySymbol(currency) + "" + parseFloat(previewData?.price)?.toFixed(2)}
+                          getCurrencySymbol(currency) +
+                            "" +
+                            parseFloat(previewData?.price)?.toFixed(2)}
                       </p>
                     </div>
                     <div div className="revlytic preview-container-4">
@@ -2197,7 +2231,9 @@ console.log("products[0]?.variants[0]?.price",  products[0]?.variants[0]?.price,
                         </p>
                         <p className="revlytic preview-option-price">
                           {currency &&
-                            getCurrencySymbol(currency) + "" + parseFloat(planpreviewPrice)?.toFixed(2)}
+                            getCurrencySymbol(currency) +
+                              "" +
+                              parseFloat(planpreviewPrice)?.toFixed(2)}
                         </p>
                       </div>
                       <p className="revlytic preview-delivery-frequency">
@@ -2261,9 +2297,9 @@ console.log("products[0]?.variants[0]?.price",  products[0]?.variants[0]?.price,
                         {" "}
                         <EyeOutlined /> Preview In Store
                       </a>
-                    </> 
+                    </>
                   ) : (
-                    <div></div> 
+                    <div></div>
                   )}
                 </div>
               </Card>
@@ -2408,22 +2444,57 @@ console.log("products[0]?.variants[0]?.price",  products[0]?.variants[0]?.price,
                       </Form.Item>
 
                       <Form.Item
-                         label={<div className="revlytic label-tooltip-main"><label>Plan Types</label><Tooltip placement="left"  title={
-                          <div className="revlytic-plan-type-toolTip">
-                                      <p>
-                                      <h2>Supported Subscription Billing Plans</h2>
-                                      <hr/>
-                                 <h2>1. Pay As You Go (Auto Renewal):</h2>
-                          Pay As You Go is a flexible billing plan that bills your customers for whatever billing frequency you select. For example, if you set up a Monthly Pay As You Go Subscription plan, your customer will be charged every month until the plan is canceled. 
-                         </p><p><h1>2. Prepaid (Auto Renewal On):</h1>
-                          With the Prepaid Auto Renewal plan type, you are able to bill your customer in advance for multiple periods in the future. For example, with the Prepaid Length set to 12 Months and the Delivery Every set to 1 month, you can bill the customer for 12 Months of deliveries upfront. At the end of the 12 Months, this plan will Auto Renew for another 12 Month period billed upfront. This will continue until either you or the Customer cancels the subscription.
-                         </p><p> <h1>3. Prepaid (Auto Renewal Off):</h1>
-                          This plan type is exactly the same as the Prepaid with Auto Renewal On, except that it does not renew at the of the billing cycle. 
-                           </p>
-                          </div>}><QuestionCircleOutlined/></Tooltip></div>} 
+                        label={
+                          <div className="revlytic label-tooltip-main">
+                            <label>Plan Types</label>
+                            <Tooltip
+                              placement="left"
+                              title={
+                                <div className="revlytic-plan-type-toolTip">
+                                  <p>
+                                    <h2>
+                                      Supported Subscription Billing Plans
+                                    </h2>
+                                    <hr />
+                                    <h2>1. Pay As You Go (Auto Renewal):</h2>
+                                    Pay As You Go is a flexible billing plan
+                                    that bills your customers for whatever
+                                    billing frequency you select. For example,
+                                    if you set up a Monthly Pay As You Go
+                                    Subscription plan, your customer will be
+                                    charged every month until the plan is
+                                    canceled.
+                                  </p>
+                                  <p>
+                                    <h1>2. Prepaid (Auto Renewal On):</h1>
+                                    With the Prepaid Auto Renewal plan type, you
+                                    are able to bill your customer in advance
+                                    for multiple periods in the future. For
+                                    example, with the Prepaid Length set to 12
+                                    Months and the Delivery Every set to 1
+                                    month, you can bill the customer for 12
+                                    Months of deliveries upfront. At the end of
+                                    the 12 Months, this plan will Auto Renew for
+                                    another 12 Month period billed upfront. This
+                                    will continue until either you or the
+                                    Customer cancels the subscription.
+                                  </p>
+                                  <p>
+                                    {" "}
+                                    <h1>3. Prepaid (Auto Renewal Off):</h1>
+                                    This plan type is exactly the same as the
+                                    Prepaid with Auto Renewal On, except that it
+                                    does not renew at the of the billing cycle.
+                                  </p>
+                                </div>
+                              }
+                            >
+                              <QuestionCircleOutlined />
+                            </Tooltip>
+                          </div>
+                        }
                         name={"planType"}
                         initialValue={"payAsYouGo"}
-                 
                       >
                         <Select placeholder="">
                           <Select.Option value="payAsYouGo">
@@ -2459,7 +2530,7 @@ console.log("products[0]?.variants[0]?.price",  products[0]?.variants[0]?.price,
                             format="YYYY-MM-DD"
                           />
                         </Form.Item>
-                       
+
                         <p className="revlytic preview-label">Preview</p>
                         <p>{preview}</p>
                       </div>
@@ -2492,16 +2563,16 @@ console.log("products[0]?.variants[0]?.price",  products[0]?.variants[0]?.price,
                                     //     billingFreqValidator(rule, value),
                                     // },
                                   ]}
-                                   tooltip="Enter how often you would like to Bill your customers in this plan. For example, if you select Bill Every 3 Months, your customer will be billed every three months, regardless of when they receive deliveries."
->
+                                  tooltip="Enter how often you would like to Bill your customers in this plan. For example, if you select Bill Every 3 Months, your customer will be billed every three months, regardless of when they receive deliveries."
+                                >
                                   <Input
-                                    // addonAfter={selectAfter}
+                                  // addonAfter={selectAfter}
                                   />
                                 </Form.Item>
                                 <Form.Item
                                   label=" "
                                   initialValue="month"
-                                  name = "billingEveryType"
+                                  name="billingEveryType"
                                 >
                                   <Select>
                                     <Select.Option value="day">
@@ -2533,128 +2604,127 @@ console.log("products[0]?.variants[0]?.price",  products[0]?.variants[0]?.price,
                             ) : (
                               <div
                                 className={"revytic billing-delivery-frequency"}
-                                >
-                                  <div className="revlyticbilling-delivery-frequency-container1">
-                                <Form.Item
-                                  label={
-                                    <p className="revlytic required">
-                                      Prepaid Length
-                                    </p>
-                                  }
-                                  name="billingEvery"
-                                  initialValue="1"
-                                  rules={[
-                                    {
-                                      required: true,
-                                      message: "Prepaid Length is required!",
-                                    },
-                                    {
-                                      pattern: /^\d+$/,
-                                      message:
-                                        "Prepaid Length must be a number!",
-                                    },
-                                    {
-                                      validator: (rule, value) =>
-                                        handlePrepaidLength(rule, value),
-                                    },
-                                    // {
-                                    //   validator: (rule, value) =>
-                                    //     prepaidBillingValidator(rule, value),
-                                    // },
-                                  ]}
-                                tooltip="The term of the service that the customer will prepay for."
-                                >
+                              >
+                                <div className="revlyticbilling-delivery-frequency-container1">
+                                  <Form.Item
+                                    label={
+                                      <p className="revlytic required">
+                                        Prepaid Length
+                                      </p>
+                                    }
+                                    name="billingEvery"
+                                    initialValue="1"
+                                    rules={[
+                                      {
+                                        required: true,
+                                        message: "Prepaid Length is required!",
+                                      },
+                                      {
+                                        pattern: /^\d+$/,
+                                        message:
+                                          "Prepaid Length must be a number!",
+                                      },
+                                      {
+                                        validator: (rule, value) =>
+                                          handlePrepaidLength(rule, value),
+                                      },
+                                      // {
+                                      //   validator: (rule, value) =>
+                                      //     prepaidBillingValidator(rule, value),
+                                      // },
+                                    ]}
+                                    tooltip="The term of the service that the customer will prepay for."
+                                  >
                                     <Input
-                                      // addonAfter={selectAfter}
+                                    // addonAfter={selectAfter}
                                     />
                                   </Form.Item>
                                   <Form.Item
-                                  label=" "
-                                  initialValue="month"
-                                  name = "billingEveryType"
-                                >
-                                  <Select>
-                                    <Select.Option value="day">
-                                      Day(s)
-                                    </Select.Option>
-                                    <Select.Option value="week">
-                                      Week(s)
-                                    </Select.Option>
-                                    <Select.Option value="month">
-                                      Month(s)
-                                    </Select.Option>
-                                    <Select.Option value="year">
-                                      Year(s)
-                                    </Select.Option>
-                                  </Select>
-                                </Form.Item>
-                                <Form.Item
-                                className="autorenew-tooltip"
-                                  label="Auto Renew"
-                                  name={"billingCycle"}
-                                  initialValue={false}
-                                  valuePropName="checked"
-                                  tooltip="Subscription plan will not renew automatically if box unchecked and will expire  after the Billing Cycles complete.If box checked,Subscription plan will  renew automatically until cancelled manually"
-                                >
-                                  <Checkbox></Checkbox>
-                               
+                                    label=" "
+                                    initialValue="month"
+                                    name="billingEveryType"
+                                  >
+                                    <Select>
+                                      <Select.Option value="day">
+                                        Day(s)
+                                      </Select.Option>
+                                      <Select.Option value="week">
+                                        Week(s)
+                                      </Select.Option>
+                                      <Select.Option value="month">
+                                        Month(s)
+                                      </Select.Option>
+                                      <Select.Option value="year">
+                                        Year(s)
+                                      </Select.Option>
+                                    </Select>
                                   </Form.Item>
-                                  </div>
-                        <div className="revlyticbilling-delivery-frequency-container2">
-                                <Form.Item
-                                  label={
-                                    <p className="revlytic required">
-                                      Delivery every
-                                    </p>
-                                  }
-                                  name="deliveryEvery"
-                                  initialValue="1"
-                                  rules={[
-                                    {
-                                      required: true,
-                                      message: "Delivery Every is required!",
-                                    },
-                                    {
-                                      pattern: /^\d+$/,
-                                      message:
-                                        "Delivery every must be a number!",
-                                    },
-                                    {
-                                      validator: (rule, value) =>
-                                        handlePrepaidDelivery(rule, value),
-                                    },
-                                    // {
-                                    //   validator: (rule, value) =>
-                                    //     prepaidBillingValidator(rule, value),
-                                    // },
-                                  ]}
-                                  tooltip='For Prepaid Plans, the number of deliveries that will be made to the customer in the defined Prepaid Length. For example, if you set “Prepaid Length” to 12 Months, and “Delivery Every” to 3 Months, you will be delivering to your customer every 3 months for a 12 month period. That equates to 4 Deliveries (4 Deliveries x 3 Months = 12 Months of Deliveries).'
-                                >
+                                  <Form.Item
+                                    className="autorenew-tooltip"
+                                    label="Auto Renew"
+                                    name={"billingCycle"}
+                                    initialValue={false}
+                                    valuePropName="checked"
+                                    tooltip="Subscription plan will not renew automatically if box unchecked and will expire  after the Billing Cycles complete.If box checked,Subscription plan will  renew automatically until cancelled manually"
+                                  >
+                                    <Checkbox></Checkbox>
+                                  </Form.Item>
+                                </div>
+                                <div className="revlyticbilling-delivery-frequency-container2">
+                                  <Form.Item
+                                    label={
+                                      <p className="revlytic required">
+                                        Delivery every
+                                      </p>
+                                    }
+                                    name="deliveryEvery"
+                                    initialValue="1"
+                                    rules={[
+                                      {
+                                        required: true,
+                                        message: "Delivery Every is required!",
+                                      },
+                                      {
+                                        pattern: /^\d+$/,
+                                        message:
+                                          "Delivery every must be a number!",
+                                      },
+                                      {
+                                        validator: (rule, value) =>
+                                          handlePrepaidDelivery(rule, value),
+                                      },
+                                      // {
+                                      //   validator: (rule, value) =>
+                                      //     prepaidBillingValidator(rule, value),
+                                      // },
+                                    ]}
+                                    tooltip="For Prepaid Plans, the number of deliveries that will be made to the customer in the defined Prepaid Length. For example, if you set “Prepaid Length” to 12 Months, and “Delivery Every” to 3 Months, you will be delivering to your customer every 3 months for a 12 month period. That equates to 4 Deliveries (4 Deliveries x 3 Months = 12 Months of Deliveries)."
+                                  >
                                     <Input
-                                      // addonAfter={selectAfter}
+                                    // addonAfter={selectAfter}
                                     />
                                   </Form.Item>
                                   <Form.Item
-                                  label=" "
-                                  initialValue="month"
-                                  name = "billingEveryType"
-                                >
-                                  <Select>
-                                    <Select.Option value="day">
-                                      Day(s)
-                                    </Select.Option>
-                                    <Select.Option value="week">
-                                      Week(s)
-                                    </Select.Option>
-                                    <Select.Option value="month">
-                                      Month(s)
-                                    </Select.Option>
-                                    <Select.Option value="year">
-                                      Year(s)
-                                    </Select.Option>
-                                  </Select>
-                                </Form.Item>
-                               </div>
+                                    label=" "
+                                    initialValue="month"
+                                    name="billingEveryType"
+                                  >
+                                    <Select>
+                                      <Select.Option value="day">
+                                        Day(s)
+                                      </Select.Option>
+                                      <Select.Option value="week">
+                                        Week(s)
+                                      </Select.Option>
+                                      <Select.Option value="month">
+                                        Month(s)
+                                      </Select.Option>
+                                      <Select.Option value="year">
+                                        Year(s)
+                                      </Select.Option>
+                                    </Select>
+                                  </Form.Item>
+                                </div>
                               </div>
                             )
                           }
@@ -2868,105 +2938,99 @@ console.log("products[0]?.variants[0]?.price",  products[0]?.variants[0]?.price,
                                   {({ getFieldValue }) =>
                                     getFieldValue("freeTrial") == true ? (
                                       <div className="revlytic-main-free-trial-input">
-                                      <Form.Item
-                                        label={
-                                          <p className="revlytic required">
-                                            Free Trial Period
-                                          </p>
-                                        }
-                                        name="trialCount"
-                                        rules={[
-                                          {
-                                            required: true,
-                                            message:
-                                              "Free trial period is required!",
-                                          },
-                                          {
-                                            pattern: /^\d+$/,
-                                            message:
-                                              "Free trial period must be a valid number!",
-                                          },
-                                          {
-                                            validator: (rule, value) => {
-                                              console.log(
-                                                form.getFieldValue("maxCycle")
-                                              );
-                                              if (
-                                                form.getFieldValue("maxCycle") &&  (Number(value)  >
-                                                Number(
+                                        <Form.Item
+                                          label={
+                                            <p className="revlytic required">
+                                              Free Trial Period
+                                            </p>
+                                          }
+                                          name="trialCount"
+                                          rules={[
+                                            {
+                                              required: true,
+                                              message:
+                                                "Free trial period is required!",
+                                            },
+                                            {
+                                              pattern: /^\d+$/,
+                                              message:
+                                                "Free trial period must be a valid number!",
+                                            },
+                                            {
+                                              validator: (rule, value) => {
+                                                console.log(
                                                   form.getFieldValue("maxCycle")
-                                                ))
-                                              ) {
-                                                return Promise.reject(
-                                                  "Free trial period cannot be greater than Maximum Billing Cycles!"
                                                 );
-                                              }
-                                              form.setFields([
-                                                {
-                                                  name: "maxCycle",
-                                                  errors: [],
-                                                },
-                                              ]);
-                                              return Promise.resolve();
+                                                if (
+                                                  form.getFieldValue(
+                                                    "maxCycle"
+                                                  ) &&
+                                                  Number(value) >
+                                                    Number(
+                                                      form.getFieldValue(
+                                                        "maxCycle"
+                                                      )
+                                                    )
+                                                ) {
+                                                  return Promise.reject(
+                                                    "Free trial period cannot be greater than Maximum Billing Cycles!"
+                                                  );
+                                                }
+                                                form.setFields([
+                                                  {
+                                                    name: "maxCycle",
+                                                    errors: [],
+                                                  },
+                                                ]);
+                                                return Promise.resolve();
+                                              },
                                             },
-                                          },
-                                          {
-                                            validator: (rule, value) => {
-                                              console.log(
-                                                form.getFieldValue("maxCycle")
-                                              );
-                                              if (
-                                               value && Number(value) < 1
-                                               
-                                              ) {
-                                                return Promise.reject(
-                                                  "Free trial period should be greater than zero!"
+                                            {
+                                              validator: (rule, value) => {
+                                                console.log(
+                                                  form.getFieldValue("maxCycle")
                                                 );
-                                              }
-                                              return Promise.resolve();
+                                                if (
+                                                  value &&
+                                                  Number(value) < 1
+                                                ) {
+                                                  return Promise.reject(
+                                                    "Free trial period should be greater than zero!"
+                                                  );
+                                                }
+                                                return Promise.resolve();
+                                              },
                                             },
-                                          },
-                                        ]}
+                                          ]}
+                                          tooltip=" Enter the number of Free Trials periods you would like to include in this subscription plan. For example, if you select 14 Days, the customer can try the product for the duration specified for free before the subscription starts after 14 days."
+                                        >
+                                          <Input />
+                                        </Form.Item>
 
-                                    tooltip=" Enter the number of Free Trials periods you would like to include in this subscription plan. For example, if you select 14 Days, the customer can try the product for the duration specified for free before the subscription starts after 14 days."
+                                        <Form.Item
+                                          label={
+                                            <p className="revlytic required rev-spacer"></p>
+                                          }
+                                          name="freeTrialCycle"
+                                          initialValue={"day"}
 
-                                        
-                                      >
-                                        <Input     />
-                                      </Form.Item>
-
-
-                                      <Form.Item
-                                        label={
-                                          <p className="revlytic required rev-spacer">
-                                             
-                                          </p>
-                                        }
-                                        name="freeTrialCycle"
-                                      initialValue={"day"}
-
-                                    // tooltip=" "
-
-                                        
-                                      >
-                                         <Select >
-                                    <Select.Option value="day">
-                                      Day(s)
-                                    </Select.Option>
-                                    <Select.Option value="week">
-                                      Week(s)
-                                    </Select.Option>
-                                    <Select.Option value="month">
-                                      Month(s)
-                                    </Select.Option>
-                                    <Select.Option value="year">
-                                      Year(s)
-                                    </Select.Option>
-                                  </Select>
-                                      </Form.Item>
-
-
-
+                                          // tooltip=" "
+                                        >
+                                          <Select>
+                                            <Select.Option value="day">
+                                              Day(s)
+                                            </Select.Option>
+                                            <Select.Option value="week">
+                                              Week(s)
+                                            </Select.Option>
+                                            <Select.Option value="month">
+                                              Month(s)
+                                            </Select.Option>
+                                            <Select.Option value="year">
+                                              Year(s)
+                                            </Select.Option>
+                                          </Select>
+                                        </Form.Item>
                                       </div>
                                     ) : null
                                   }
@@ -3076,8 +3140,9 @@ console.log("products[0]?.variants[0]?.price",  products[0]?.variants[0]?.price,
         className="rev-create-product"
         // title="Create Product "
         open={addproductModal}
-        onCancel={() => {setaddproductModal(false)
-          form1.resetFields()
+        onCancel={() => {
+          setaddproductModal(false);
+          form1.resetFields();
         }}
         footer={
           [
@@ -3159,9 +3224,8 @@ console.log("products[0]?.variants[0]?.price",  products[0]?.variants[0]?.price,
                     },
                   },
                 ]}
-               
               >
-                <Input  prefix={currency && getCurrencySymbol(currency)} />
+                <Input prefix={currency && getCurrencySymbol(currency)} />
               </Form.Item>
             </div>
             <div className="revlytic customer-modal-email-phone">

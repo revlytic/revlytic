@@ -63,14 +63,14 @@ export async function sendMailDefault(recipientMail,others,app,extra) {
         host: "smtp.gmail.com",
         port: 587, // Convert port number to integer
         auth: {
-          user: "sahilagnihotri7@gmail.com",
-          pass: "srdvsdnxfmvbrduw",
+          user: "revlytic@gmail.com",
+          pass: "yiaglckhjmbratox",
         },
         secure: false,
       };
 
       let options = {
-        from: "sahilagnihotri7@gmail.com",
+        from: `Revlytic <revlytic@gmail.com>`,
         to: recipientMail,
         subject:extra?.selectedTemplate?.emailSetting?.subject,
         cc:extra?.selectedTemplate?.emailSetting?.cc,
@@ -191,14 +191,14 @@ export async function sendMailOnUpdate(others,app,extra) {
         host: "smtp.gmail.com",
         port: 587, // Convert port number to integer
         auth: {
-          user: "sahilagnihotri7@gmail.com",
-          pass: "srdvsdnxfmvbrduw",
+          user: "revlytic@gmail.com",
+          pass: "yiaglckhjmbratox",
         },
         secure: false,
       };
 
        options = {
-        from: "sahilagnihotri7@gmail.com",
+        from: `Revlytic <revlytic@gmail.com>`,
         to: recipientMails,
         subject:selectedTemplate?.emailSetting?.subject,
         cc:selectedTemplate?.emailSetting?.cc,

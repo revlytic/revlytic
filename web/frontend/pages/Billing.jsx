@@ -75,7 +75,6 @@ function Billing(props) {
 
   // console.log(props,"====bilingdata===",billingPlan,nextBillingDate,)
   useEffect(async () => {
-    console.log("10fev")
     // console.log(billingPlan)
     setActivePlan(billingPlan=="" ? "free": billingPlan);
     setNextDate(nextBillingDate);

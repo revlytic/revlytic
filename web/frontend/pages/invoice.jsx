@@ -15,12 +15,10 @@ import UploadImage from "../components/upload";
 import { toast } from "react-toastify";
 import { useAPI } from "../components/common/commonContext";
 import { Link } from "react-router-dom";
-
 const { Panel } = Collapse;
 function invoice() {
   const app = useAppBridge();
   const { billingPlan } = useAPI();
-
   const [loader, setLoader] = useState(false);
   const [components, setComponents] = useState([
     { label: "Logo", status: true },
@@ -71,8 +69,10 @@ function invoice() {
   const [signature, setSignature] = useState("");
   const [automaticallySend, setAutomaticallySend] = useState("");
   const [created, setCreated] = useState("");
+
   const [logoData, setLogoData] = useState("");
   const [signatureData, setSignatureData] = useState("");
+
   const [editMode, setEditMode] = useState(false);
   const onChange = (value, index) => {
     console.log(value, index);
@@ -145,10 +145,8 @@ function invoice() {
           // toast.success("Logo uploaded successfully", {
           //   position: toast.POSITION.TOP_RIGHT,
           // });
-          updatedLogo = `https://investor-liable-articles-cutting.trycloudflare.com/images/logo/${savelogo.data.name}`;
-          setLogo(
-            `https://investor-liable-articles-cutting.trycloudflare.com/images/logo/${savelogo.data.name}`
-          );
+          updatedLogo = `https://revlytic.co/images/logo/${savelogo.data.name}`;
+          setLogo(`https://revlytic.co/images/logo/${savelogo.data.name}`);
         }
       } catch (error) {
         // toast.success("File upload failed", {
@@ -169,9 +167,9 @@ function invoice() {
           // toast.success("Signature uploaded successfully", {
           //   position: toast.POSITION.TOP_RIGHT,
           // });
-          updatedSignature = `https://investor-liable-articles-cutting.trycloudflare.com/images/signature/${savesignature.data.name}`;
+          updatedSignature = `https://revlytic.co/images/signature/${savesignature.data.name}`;
           setSignature(
-            `https://investor-liable-articles-cutting.trycloudflare.com/images/signature/${savesignature.data.name}`
+            `https://revlytic.co/images/signature/${savesignature.data.name}`
           );
         }
       } catch (error) {
@@ -219,7 +217,8 @@ function invoice() {
     setEditMode(false);
     setLoader(false);
   };
-   return (
+
+  return (
     <Spin tip="Loading..." size="large" spinning={loader}>
       <div className="revlytic plan-group-listing-button">
         <h1 className="revlytic-plan-switch-heading">Invoice</h1>
