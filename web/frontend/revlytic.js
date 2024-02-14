@@ -1,8 +1,4 @@
-<<<<<<< HEAD:extensions/theme-app-extension/assets/revlytic.js
-console.log(" 20nov");
-=======
 console.log(" dec27");
->>>>>>> d32dde591bf81dec0a4a141e3bdcdb4af172da17:extensions/theme-extension/assets/revlytic.js
 let shop = Shopify.shop;
 
 let currentUrl=window.location.href
@@ -15,18 +11,9 @@ if (currentUrl.includes('account')) {
     let url = item.href;
     if (url.includes("account/addresses")) {
       let button = document.createElement("button");
-      
-      let linebreak = document.createElement("br");
+
+ let linebreak = document.createElement("br");
       button.innerHTML = "Manage Subscriptions";
-<<<<<<< HEAD:extensions/theme-app-extension/assets/revlytic.js
-      // button.id="revlytic-account-button";
-      
-      // console.log(revlytic_customer_id, "idrevlytic_customer_idgg");
-      let id = ShopifyAnalytics.meta.page.customerId
-      button.addEventListener("click", function() {
-        const targetUrl =`https://${shop}/apps/revlytic-subscriptions`; // Replace with your desired URL
-        console.log("targetUrl",targetUrl)
-=======
 // button.id="revlytic-account-button";
   const id = ShopifyAnalytics.meta.page.customerId;
    
@@ -34,7 +21,6 @@ if (currentUrl.includes('account')) {
           // const targetUrl = "https://quick-start-0d1be701.myshopify.com/apps/revlytic-subscriptions"; // Replace with your desired URL
           const targetUrl = `https://${shop}/apps/revlytic-subscriptions?cid=${id}`; // Replace with your desired URL
           console.log("targetUrl",targetUrl)
->>>>>>> d32dde591bf81dec0a4a141e3bdcdb4af172da17:extensions/theme-extension/assets/revlytic.js
           window.location.href = targetUrl;
       });
       // item.appendChild(button);
@@ -46,7 +32,8 @@ button.insertAdjacentHTML('afterend', '<br>');
   });
 }
 
-let serverPath = "https://brandon-wine-shipped-jul.trycloudflare.com";
+
+let serverPath = "https://revlytic.co";
 
 let activeCurrency = Shopify.currency.active;
 console.log("activeeeecrc",activeCurrency)
@@ -954,7 +941,7 @@ console.log("isi",item)
   }
 
   // function updateHiddenInputForAddToCartForm(option) {
-  //   console.log("option20nov",option)
+  //   //console.log("option",option)
   //   const selectedPlan = document.getElementById("revlytic_selectedPlan").value;
 
   //   // var form = document.querySelector(
@@ -965,15 +952,14 @@ console.log("isi",item)
   //     'form[action*="/cart/add"] button[name="add"], form[action*="/cart/add"] input[name="add"]'
   //   );
 
-  //   console.log("formeeeeee", form);
+  //   //console.log("form", form);
   //   // var hiddenInput = form.querySelector('input[name="selling_plan"][data-type="add-to-cart-form"]');
   //   var sellingPlanInputs = form.querySelectorAll('input[name="selling_plan"]');
-  //   console.log("eyrtwerwueiwe",sellingPlanInputs)
+  //   //console.log("33333333",option)
 
   //   if (option == "add") {
   //     //console.log("3octoberrrrrrrr")
   //     if (sellingPlanInputs.length === 0) {
-  //       console.log("tickkkktokl")
   //       var newHiddenInput = document.createElement("input");
   //       newHiddenInput.type = "hidden";
   //       newHiddenInput.name = "selling_plan";
@@ -983,7 +969,6 @@ console.log("isi",item)
   //       //console.log("Created new hidden input:", newHiddenInput);
   //     } else {
   //       //console.log("in3oct else",)
-        
   //       sellingPlanInputs.forEach(function (input) {
   //         input.value = selectedPlan.split("/").at(-1);
   //       });
@@ -996,6 +981,7 @@ console.log("isi",item)
   //     }
   //   }
   // }
+
 
 
   function updateHiddenInputForAddToCartForm(option) {
