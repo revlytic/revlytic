@@ -5744,4 +5744,14 @@ background-color: #6200ea0a;
     left: 0;
     border-radius: 10px;
 }
-  
+
+.revlytic-company-upgrade button {
+    border: 1px solid #d1d1d1;
+    background: #fff;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.revlytic-company-upgradebtn{
+    margin-top: 10px;
+}  

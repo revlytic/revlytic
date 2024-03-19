@@ -117,34 +117,27 @@ function Home() {
 
 setLoader(true)
 
-await checkAppBlockEmbed()
 setLoader(false)
-    await getActiveCustomers({ range: "today" });
+await getActiveCustomers({ range: "today" });
 
-    await getAnnouncements();
+await getAnnouncements();
+await checkAppBlockEmbed()
 
   
   }, []);
 
-async function checkAppBlockEmbed() {
+ async function checkAppBlockEmbed() {
+ 
+    let response = await postApi("/api/admin/checkAppBlockEmbed", {}, app);
 
-let response=await postApi("/api/admin/checkAppBlockEmbed",{},app)
-
-if(response?.data?.message=='success'){
-
-
-console.log(response?.data?.data?.disabled)
-setShowAppBlock(response?.data?.data?.disabled)
-
-
-}
-
-
-
-
-
-
-}
+    if (response?.data?.message == "success") {
+      // console.log(response?.data?.data?.disabled)
+      setShowAppBlock(response?.data?.data?.disabled);
+      
+    } else if(response?.data?.message == 'noData'){
+      setShowAppBlock(true)
+    }
+  }
 
   function thousandsSeparator(input) {
     var output = input
@@ -522,6 +515,38 @@ const newItems= [{
       showIcon={false}
       type="info"
     />}
+
+<Card className="revlytic-company-upgrade">
+        <p>
+          {" "}
+          <strong>Hi {storeDetails?.store_name}!</strong>
+        </p>
+        <p>
+          Thank you for joining Revlytic! To get started please click below to
+          create your first subscription plan! It's that easy!
+        </p>
+        <div className="revlytic-company-upgradebtn">
+          <Button onClick={() => navigate("/createSubscription")}>
+            {" "}
+            Quick Create{" "}
+          </Button>
+        </div>
+      </Card>
+      <Card className="revlytic-company-upgrade">
+        <p>
+          {" "}
+          <strong>Do you have any question or need help setting up?</strong>
+        </p>
+        <p>
+          Click below to chat with our support services, they're ready and
+          willing to help set you up for success!
+        </p>
+        <div className="revlytic-company-upgradebtn">
+          <a href="javascript:void(Tawk_API.toggle())">
+            <Button>Chat With Us!</Button>
+          </a>
+        </div>
+      </Card>
       <div className="revlytic plan-group-listing-button">
         <h1 className="revlytic-plan-switch-heading">Home</h1>
 

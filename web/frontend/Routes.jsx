@@ -2,7 +2,7 @@ import { Routes as ReactRouterRoutes, Route } from "react-router-dom";
 import Sidebar from "./components/common/Sidebar";
 import CreateManualSubscription from "./components/createManualSubscription";
 import ContactUs from "./pages/ContactUs";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 /**
  * File-based routing.
  * @desc File-based routing that uses React Router under the hood.
@@ -25,10 +25,10 @@ export default function Routes({ pages }) {
   ));
 
   const NotFound = routes.find(({ path }) => path === "/notFound").component;
-
+console.log("rrrr",activeContactRoute)
   return (
-    <ReactRouterRoutes>
-      {activeContactRoute && <Route path="/contactus" element={<ContactUs/>}/>}
+  <ReactRouterRoutes>
+      {activeContactRoute != undefined && activeContactRoute == true &&  <Route path="/contactus" element={<ContactUs/>}/>}
       <Route element ={<Sidebar setActiveContactRoute={setActiveContactRoute}/>} >
         {routeComponents}
         {/* <Route  path="/" element={<Home />} /> */}

@@ -142,7 +142,8 @@ function Sidebar(props) {
 
           // console.log("3553")
         } else {
-          if ((billingPlan == "" || billingPlan == "free") && sum >= 750) {
+          // if ((billingPlan == "" || billingPlan == "free") && sum >= 750) {
+            if (( billingPlan == "free") && sum >= 750) {
             setPlanUpdate(true);
             props.setActiveContactRoute(true);
             // console.log("868009")

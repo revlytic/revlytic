@@ -5128,33 +5128,69 @@ export async function checkAppBlockEmbed(req, res) {
   try {
     let session = res.locals.shopify.session;
     let storeDetails = await getStoreDetails(res.locals.shopify.session.shop);
-    let ddd = await shopify.api.rest.Asset.all({
+    let theme_config_data = await shopify.api.rest.Asset.all({
       session: res.locals.shopify.session,
       theme_id: storeDetails?.themeId,
       asset: { key: "config/settings_data.json" },
     });
-    console.log("ddd", JSON.parse(ddd?.data[0]?.value));
-    let z = JSON.parse(ddd?.data[0]?.value);
-    console.log("zzz", z?.current?.blocks);
-    // let searchedBlock=Object.values(z?.current?.blocks).find(item=>item.type==`shopify://apps/${process.env?.APP_NAME}/blocks/${process.env?.APP_EXTENSION_BLOCK}/${process.env?.SHOPIFY_REVLYTIC_THEME_EXT_ID}`)
-    let searchedBlock = Object.values(z?.current?.blocks).find(
+    let currentThemeData = JSON.parse(theme_config_data?.data[0]?.value);
+    // console.log("zzz", currentThemeData?.current?.blocks);
+    let blockData=currentThemeData?.current?.blocks;
+    
+    let searchedBlock ;
+    if (blockData) {
+    searchedBlock=Object?.values(blockData)?.find(
       (item) =>
-        item.type ==
+        item?.type ==
         "shopify://apps/revlytic-subscriptions/blocks/revlytic/ff9f9dca-e79b-4505-a99b-27dc7bd8897c"
-    );
-
-    console.log("jigjaggggv", searchedBlock);
-
-    if (searchedBlock) {
-      res.send({ message: "success", data: searchedBlock });
-    } else {
-      res.send({ message: "noData", data: {} });
+        );
+      }
+     
+      if (searchedBlock) {
+        res.send({ message: "success", data: searchedBlock });
+      } else {
+        res.send({ message: "noData", data: {} });
+      }
+    } catch (error) {
+      console.log(error);
+      res.send({ message: "error" });
     }
-  } catch (error) {
-    console.log(error);
-    res.send({ message: "error" });
   }
-}
+
+// export async function checkAppBlockEmbed(req, res) {
+//   try {
+//     let session = res.locals.shopify.session;
+//     let storeDetails = await getStoreDetails(res.locals.shopify.session.shop);
+//     let theme_config_data = await shopify.api.rest.Asset.all({
+//       session: res.locals.shopify.session,
+//       theme_id: storeDetails?.themeId,
+//       asset: { key: "config/settings_data.json" },
+//     });
+//     let currentThemeData = JSON.parse(theme_config_data?.data[0]?.value);
+//     // console.log("zzz", currentThemeData?.current?.blocks);
+//     let blockData=currentThemeData?.current?.blocks;
+    
+//     let searchedBlock ;
+//     if (blockData) {
+//     searchedBlock=Object?.values(blockData)?.find(
+//       (item) =>
+//         item?.type ==
+//         `shopify://apps/${process.env?.APP_NAME}/blocks/${process.env?.APP_EXTENSION_BLOCK}/${process.env?.SHOPIFY_THEME_APP_EXTENSION_ID}`
+//     );
+//     }
+   
+//     if (searchedBlock) {
+//       res.send({ message: "success", data: searchedBlock });
+//     } else {
+//       res.send({ message: "noData", data: {} });
+//     }
+//   } catch (error) {
+//     console.log(error);
+//     res.send({ message: "error" });
+//   }
+// }
+
+
 
 export async function recurringBiling(req, res) {
   try {
@@ -5169,7 +5205,7 @@ export async function recurringBiling(req, res) {
     let trialDays =
       plan == "premiere" || plan == "starter" || plan == "premium" ? 14 : 0;
     if (
-      shop == "test-live-app-revlytic.myshopify.com" 
+      shop == "test-live-app-revlytic.myshopify.com" || shop == "revlytic-testing.myshopify.com"
     ) {
       testCharge = true;
     } else {
