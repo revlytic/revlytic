@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Outlet } from "react-router-dom";
+import { Outlet ,useOutletContext } from "react-router-dom";
 import { Link, useNavigate } from "react-router-dom";
 import { useAppBridge } from "@shopify/app-bridge-react";
 import { Fullscreen } from "@shopify/app-bridge/actions";
@@ -46,7 +46,7 @@ function Sidebar(props) {
   const [renderSidebar, setRenderSidebar] = useState(false);
   const [planUpdate, setPlanUpdate] = useState(false);
   const [changePlan, setChangePlan] = useState(false);
-  const [revenue, setRevenue] = useState();
+  const [showRevenue, setShowRevenue] = useState(0);
   const [loader, setLoader] = useState(false);
   const {
     billingPlan,
@@ -57,7 +57,7 @@ function Sidebar(props) {
     recurringRevenue,
   } = useAPI();
   useEffect(async () => {
-    //  console.log("ewyewye",billingPlan,planBuyDate)
+     console.log("ewyewye",billingPlan,planBuyDate)
     setLoader(true);
     if (billingPlan != undefined) {
       let data = await axios.get(
@@ -80,30 +80,26 @@ function Sidebar(props) {
             ? new Date(new Date().getTime() - 30 * 24 * 60 * 60 * 1000)
             : billingPlan == "free"
             ? getFreePlanDate(new Date(), new Date(planBuyDate))
-            : planBuyDate;
-        //  console.log("range",range)
+            : new Date(planBuyDate);
+         console.log("range===>",range)
 
-        let response = await getData({ range }, filtered?.rates);
+       if(range !=null && range != "" && range !=undefined)
+           {
+         getData({ range }, filtered?.rates);
+          }
 
         setRenderSidebar(true);
         // count.current = count.current + 1;
       }
     }
     setLoader(false);
-  }, [billingPlan, planBuyDate]);
+  }, [billingPlan,planBuyDate]);
+
 
   const getData = async (body, rates) => {
-    // console.log("getData--->", body);
-
     const response = await postApi("/api/admin/calculateRevenue", body, app);
-
-    // console.log("response", response);
-
     if (response?.data?.message === "success") {
-      // console.log("dfdfd", response?.data?.data);
-
-      // console.log("trates", rates);
-
+      console.log("dfdfd", response?.data?.data);
       let arr = response?.data?.data;
       let sum = 0;
 
@@ -113,19 +109,19 @@ function Sidebar(props) {
             sum +
             parseFloat(item.total_amount) *
               parseFloat(rates[item?.currency] / rates["USD"]);
-          // console.log("checkitemsrev", sum);
-        });
-      }
+            });
+          }
+          console.log("checkitemsrev", sum);
 
       // console.log("insidebarrr--sum", sum,typeof undefined);
       //  sum =10000;
       setRecurringRevenue(sum);
+      setShowRevenue(sum);
       if (billingPlan == undefined) {
         // Billing plan is not available yet
         props.setActiveContactRoute(false);
         console.log("Billing plan not available");
       } else {
-        // Billing plan is available, update the state
         // console.log("billingPlan",billingPlan)
         if (billingPlan == "starter" && sum >= 5000) {
           // console.log("1233")
@@ -134,15 +130,12 @@ function Sidebar(props) {
         } else if (billingPlan === "premium" && sum >= 30000) {
           setPlanUpdate(true);
           props.setActiveContactRoute(true);
-
-          // console.log("3553")
         } else if (billingPlan === "premiere" && sum >= 100000) {
           setPlanUpdate(true);
           props.setActiveContactRoute(true);
-
-          // console.log("3553")
         } else {
-          if ((billingPlan == "" || billingPlan == "free") && sum >= 750) {
+          // if ((billingPlan == "" || billingPlan == "free") && sum >= 750) {
+            if (( billingPlan == "free") && sum >= 750) {
             setPlanUpdate(true);
             props.setActiveContactRoute(true);
             // console.log("868009")
@@ -447,12 +440,15 @@ function Sidebar(props) {
                 )}
 
                 {planUpdate == false ? (
-                  <Outlet setActiveContactRoute={props.setActiveContactRoute} />
+                  <Outlet setActiveContactRoute={props.setActiveContactRoute}  context={{showRevenue,setShowRevenue}} />
                 ) : (
-                  <Billing
+                   <Billing
                     setPlanUpdate={setPlanUpdate}
                     setActiveContactRoute={props.setActiveContactRoute}
+                    showRevenue={showRevenue}
+                    setShowRevenue={setShowRevenue}
                   />
+                
                 )}
               </div>
             </div>

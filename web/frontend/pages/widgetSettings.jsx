@@ -1063,7 +1063,7 @@ function WidgetSettings() {
                         type="color"
                         suffix={formValues?.priceColor}
                         onChange={(e) =>
-                          handleInputChange("priceColor", e.target.value)
+                          handleInputChange("priceColor",e.target.value)
                         }
                       />
                     </div>

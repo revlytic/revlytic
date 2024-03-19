@@ -20,7 +20,6 @@ import {
 import { useState } from "react";
 import { useAppBridge } from "@shopify/app-bridge-react";
 import { toast } from "react-toastify";
-import { setupModalAutoSizing } from "@shopify/app-bridge-utils";
 import postApi from "../components/common/postApi";
 import { useAPI } from "../components/common/commonContext";
 import {

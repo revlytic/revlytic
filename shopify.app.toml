@@ -2,7 +2,7 @@
 
 name = "subscription"
 client_id = "a3fb3d5d86b47a536e7377a9d8b989ca"
-application_url = "https://score-hwy-blank-neural.trycloudflare.com"
+application_url = "https://form-based-rentals-bidder.trycloudflare.com"
 embedded = true
 
 [access_scopes]
@@ -11,21 +11,21 @@ use_legacy_install_flow = true
 
 [auth]
 redirect_urls = [
-  "https://score-hwy-blank-neural.trycloudflare.com/auth/callback",
-  "https://score-hwy-blank-neural.trycloudflare.com/auth/shopify/callback",
-  "https://score-hwy-blank-neural.trycloudflare.com/api/auth/callback"
+  "https://form-based-rentals-bidder.trycloudflare.com/auth/callback",
+  "https://form-based-rentals-bidder.trycloudflare.com/auth/shopify/callback",
+  "https://form-based-rentals-bidder.trycloudflare.com/api/auth/callback"
 ]
 
 [webhooks]
 api_version = "2023-04"
 
   [webhooks.privacy_compliance]
-  customer_deletion_url = "https://festival-yeast-elements-groups.trycloudflare.com/api/webhooks"
-  customer_data_request_url = "https://festival-yeast-elements-groups.trycloudflare.com/api/webhooks"
-  shop_deletion_url = "https://festival-yeast-elements-groups.trycloudflare.com/api/webhooks"
+  customer_deletion_url = "https://chamber-lessons-compressed-guilty.trycloudflare.com/api/webhooks"
+  customer_data_request_url = "https://sparc-brunette-nissan-uncertainty.trycloudflare.com/api/webhooks"
+  shop_deletion_url = "https://chamber-lessons-compressed-guilty.trycloudflare.com/api/webhooks"
 
 [app_proxy]
-url = "https://festival-yeast-elements-groups.trycloudflare.com/api/storefront/appProxy"
+url = "https://folk-tribe-reflections-nations.trycloudflare.com/api/storefront/appProxy"
 subpath = "revlytic-subscriptions"
 prefix = "apps"
 

@@ -849,7 +849,7 @@ async function getshopToken(shop) {
 }
 // ///////////////////////////contract create cron start///////////////////////////////////////////
 const firstScheduledTime = "*/30 * * * * *"; // Replace with your desired time in cron syntax
-
+const cronTimeEvery24hr="0 0 * * *";
 const firstJob = new CronJob(firstScheduledTime, contractCronJob);
 
 const secondJob = new CronJob(
@@ -979,10 +979,9 @@ export async function contractCronJob(req, res) {
       };
 
       let gettoken = await shopModal.findOne({ shop: data[i].shop });
-
-      console.log(gettoken, "cvcvcvcvcv");
-
-      const client = new shopify.api.clients.Graphql({
+    
+       if(gettoken){
+       const client = new shopify.api.clients.Graphql({
         session: {
           shop: data[i].shop,
 
@@ -1078,9 +1077,63 @@ export async function contractCronJob(req, res) {
         console.log(updateNextBillingDate, "nextupadtae");
       }
     }
+    }
   }
 }
 /////////////////////////////// contract create cron end/////////////////////////////////////////
+
+////upcomingordercron-start///////////
+
+async function  upcomingOrders(){
+
+ try {
+   
+    const currentDate = new Date().toISOString();
+    currentDate.setDate(currentDate.getDate() + 2); 
+
+    const targetDate = new Date(currentDate);
+  
+    console.log("checking dataess", targetDate);
+    let data = await subscriptionDetailsModal.find(
+      {
+        $and: [
+          {
+            $expr: {
+              $eq: [
+                {
+                  $dateToString: { format: "%Y-%m-%d", date: "$nextBillingDate"},
+                },
+  
+                { $dateToString: { format: "%Y-%m-%d", date: targetDate }},
+              ],
+            },
+          },
+  
+          { status: "active" },
+        ],
+      },
+  
+      { shop: 1, subscription_id: 1, product_details: 1, subscription_details: 1 }
+    );
+    console.log("data", data);
+
+    console.log("dataaaaddd", data);
+    res.send({ message: "success", data: data });
+  } catch (error) {
+    console.log("error", error);
+    res.send({ message: "error" });
+  }
+
+
+
+}
+
+
+
+
+// //////upcomingordercrin-end///
+
+
 
 const currentDate = new Date().toISOString();
 const targetDate = new Date(currentDate);
@@ -5155,22 +5208,24 @@ export async function checkAppBlockEmbed(req, res) {
   try {
     let session = res.locals.shopify.session;
     let storeDetails = await getStoreDetails(res.locals.shopify.session.shop);
-    let ddd = await shopify.api.rest.Asset.all({
+    let theme_config_data = await shopify.api.rest.Asset.all({
       session: res.locals.shopify.session,
       theme_id: storeDetails?.themeId,
       asset: { key: "config/settings_data.json" },
     });
-    // console.log("ddd",JSON.parse(ddd?.data[0]?.value))
-    let z = JSON.parse(ddd?.data[0]?.value);
-    console.log("zzz", z?.current?.blocks);
-    let searchedBlock = Object.values(z?.current?.blocks).find(
+    let currentThemeData = JSON.parse(theme_config_data?.data[0]?.value);
+    // console.log("zzz", currentThemeData?.current?.blocks);
+    let blockData=currentThemeData?.current?.blocks;
+    
+    let searchedBlock ;
+    if (blockData) {
+    searchedBlock=Object?.values(blockData)?.find(
       (item) =>
-        item.type ==
+        item?.type ==
         `shopify://apps/${process.env?.APP_NAME}/blocks/${process.env?.APP_EXTENSION_BLOCK}/${process.env?.SHOPIFY_THEME_APP_EXTENSION_ID}`
     );
-
-    // console.log("jigjaggggv",searchedBlock)
-
+    }
+   
     if (searchedBlock) {
       res.send({ message: "success", data: searchedBlock });
     } else {
@@ -5385,7 +5440,7 @@ export async function calculateRevenue(req, res) {
   try {
     let shop = res.locals.shopify.session.shop;
     let range = req?.body?.range;
-    //  console.log("bodyyyyy--->",req?.body)
+     console.log("bodyyyyy--->",req?.body)
     new Date(range).setHours(0, 0, 0, 0);
 
     let data = await billing_Attempt.find(
@@ -5397,7 +5452,7 @@ export async function calculateRevenue(req, res) {
       { new: true, _id: 0, total_amount: 1, currency: 1, status: 1 }
     );
 
-    // console.log("dataaccc", data);
+    console.log("dataaccc", data);
 
     res.send({ message: "success", data });
   } catch (error) {

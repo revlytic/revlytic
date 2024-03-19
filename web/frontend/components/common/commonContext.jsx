@@ -13,10 +13,8 @@ const APIContext = createContext();
    const [recurringRevenue,setRecurringRevenue]=useState(0) ;
    const [planBuyDate,setPlanBuyDate]=useState() ;
    const [chargeId,setChargeId]=useState() ;
-  //  const [check,setCheck]=useState(false) ;
    const app=useAppBridge();
   const [getShop, setGetShop] = useState(new URL(location.href).searchParams.get("shop"));
-  // console.log("shop",getShop);
      useEffect(async()=>{
       let result = await postApi("api/admin/getCurrencyCode", {}, app);
       
@@ -28,7 +26,6 @@ const APIContext = createContext();
         setCurrencyCode(result?.data?.data?.currency_code);
         setStoreName(getStoreName)
         setStoreDetails(result?.data?.data)
-        // setCheck(true)     
        }
 
     let billingPlanData=await postApi("api/admin/getBillingPlanData",{},app);
@@ -36,10 +33,8 @@ const APIContext = createContext();
       console.log(billingPlanData?.data?.planData?.next_billing,"ksjaisa",billingPlanData)
       setBillingPlan(billingPlanData?.data?.planData?.plan)
       setBillingPlanDate(billingPlanData?.data?.planData?.next_billing)
-      // setPlanBuyDate(billingPlanData?.data?.planData?.updatedAt)
       setPlanBuyDate(billingPlanData?.data?.planData?.activated_on)
       setChargeId(billingPlanData?.data?.planData?.charge_id)
-      console.log(billingPlanData?.data?.planData?.updatedAt,"kilkill")
     }else{
       setBillingPlan("free")
     }

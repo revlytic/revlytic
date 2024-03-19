@@ -1,7 +1,16 @@
 import React, { useEffect, useState } from "react";
 
-import { Select, DatePicker, Card, Button, Spin, Tabs ,Empty ,Timeline , Alert } from "antd";
-
+import {
+  Select,
+  DatePicker,
+  Card,
+  Button,
+  Spin,
+  Tabs,
+  Empty,
+  Timeline,
+  Alert,
+} from "antd";
 
 import dayjs from "dayjs";
 
@@ -26,7 +35,7 @@ function Home() {
   const app = useAppBridge();
 
   const [loader, setLoader] = useState(false);
-
+  
   // Initialize state for startDate and endDate
 
   const [startDate, setStartDate] = useState(
@@ -68,7 +77,7 @@ function Home() {
 
     // `))()));
 
-    let filtered =await  eval(
+    let filtered = await eval(
       new Function(`
 
   ${data?.data}
@@ -110,67 +119,61 @@ function Home() {
       //   }
     }
     return () => {};
-
   }, [storeDetails]);
 
   useEffect(async () => {
+    setLoader(true);
 
-setLoader(true)
-
-await checkAppBlockEmbed()
-setLoader(false)
+    setLoader(false);
     await getActiveCustomers({ range: "today" });
-
+    
     await getAnnouncements();
-
-  
+    await checkAppBlockEmbed();
   }, []);
 
-async function checkAppBlockEmbed() {
+  async function checkAppBlockEmbed() {
+ 
+    let response = await postApi("/api/admin/checkAppBlockEmbed", {}, app);
 
-let response=await postApi("/api/admin/checkAppBlockEmbed",{},app)
-
-if(response?.data?.message=='success'){
-
-
-// console.log(response?.data?.data?.disabled)
-setShowAppBlock(response?.data?.data?.disabled)
-
-
-}
-
-
-
-
-
-
-}
+    if (response?.data?.message == "success") {
+      // console.log(response?.data?.data?.disabled)
+      setShowAppBlock(response?.data?.data?.disabled);
+      
+    } else if(response?.data?.message == 'noData'){
+      setShowAppBlock(true)
+    }
+  }
 
   function thousandsSeparator(input) {
-    var output = input
+    var output = input;
     if (parseFloat(input)) {
-        input = new String(input);
-        var parts = input.split("."); 
-        parts[0] = parts[0].split("").reverse().join("").replace(/(\d{3})(?!$)/g, "$1,").split("").reverse().join("");
-        output = parts.join(".");
+      input = new String(input);
+      var parts = input.split(".");
+      parts[0] = parts[0]
+        .split("")
+        .reverse()
+        .join("")
+        .replace(/(\d{3})(?!$)/g, "$1,")
+        .split("")
+        .reverse()
+        .join("");
+      output = parts.join(".");
     }
 
     return output;
-}
-
-
-  const getAnnouncements=async()=>{
-
-    let fetchAnnouncements=await postApi("/api/admin/getAnnouncements",{},app)
-  
-    if(fetchAnnouncements?.data?.message=='success'){
-    
-      setAnnouncementList(fetchAnnouncements?.data?.data)
-    }
-  
   }
 
+  const getAnnouncements = async () => {
+    let fetchAnnouncements = await postApi(
+      "/api/admin/getAnnouncements",
+      {},
+      app
+    );
 
+    if (fetchAnnouncements?.data?.message == "success") {
+      setAnnouncementList(fetchAnnouncements?.data?.data);
+    }
+  };
 
   const getData = async (body, rates) => {
     // console.log("getData", body);
@@ -214,17 +217,18 @@ setShowAppBlock(response?.data?.data?.disabled)
       // setSubscriptionBookings(countInitialStatus);
     }
 
+    const subscriptionBookingsData = await axios.post(
+      "/api/admin/subscriptionBookings",
+      body,
+      {
+        headers: { Authorization: `Bearer ${sessionToken}` },
+      }
+    );
 
-    const subscriptionBookingsData = await axios.post("/api/admin/subscriptionBookings", body, {
-      headers: { Authorization: `Bearer ${sessionToken}` },
-    });
-
-// console.log("subscriptionBookingsData",subscriptionBookingsData)
-if (subscriptionBookingsData?.data?.message == "success") {
-
-  setSubscriptionBookings(subscriptionBookingsData?.data?.data)
-
-}
+    // console.log("subscriptionBookingsData",subscriptionBookingsData)
+    if (subscriptionBookingsData?.data?.message == "success") {
+      setSubscriptionBookings(subscriptionBookingsData?.data?.data);
+    }
 
     // return response;
   };
@@ -300,24 +304,16 @@ if (subscriptionBookingsData?.data?.message == "success") {
 
     let date;
 
-        if(e =="customDate" ){
+    if (e == "customDate") {
+      // console.log("saahhhhiiiiii",typeof customDate)
+      await getData({ range: e, customDate }, currencyConversionRates);
 
-          // console.log("saahhhhiiiiii",typeof customDate)
-          await  getData({range:e,customDate},currencyConversionRates)
+      await getActiveCustomers({ range: e, customDate });
+    } else if (e == "customRange") {
+      await getData({ range: e, startDate, endDate }, currencyConversionRates);
 
-          await  getActiveCustomers({range:e,customDate})
-
-        }
-
-     else  if(e =="customRange" ){
-
-          await  getData({range:e,startDate,endDate},currencyConversionRates)
-
-          await  getActiveCustomers({range:e,startDate,endDate})
-
-       }
-
-  else  {
+      await getActiveCustomers({ range: e, startDate, endDate });
+    } else {
       await getData({ range: e }, currencyConversionRates);
 
       await getActiveCustomers({ range: e });
@@ -331,11 +327,27 @@ if (subscriptionBookingsData?.data?.message == "success") {
         <>
           <div className="checklist-tabs-content">
             <p>
-          With Subscription Plans, you have a quick and easy way to set up various recurring billing plans. These billing plans can then be assigned to any of your Products. Once assigned, your customers can self-subscribe to any of the plans you made available on your Products. This can jumpstart your Company’s growth in recurring revenue! </p>
+              With Subscription Plans, you have a quick and easy way to set up
+              various recurring billing plans. These billing plans can then be
+              assigned to any of your Products. Once assigned, your customers
+              can self-subscribe to any of the plans you made available on your
+              Products. This can jumpstart your Company’s growth in recurring
+              revenue!{" "}
+            </p>
 
-<p>
-Among the available features are Prepaid plans, Pay As You Go plans. Automatic Renewals, Discounts, and much more! These are all at your fingertips to make it easy to expand business! We’ve built in a lot of flexibility to meet your needs. Please click   <a href="https://revlytics.gitbook.io/revlytic/quick-create" target='_blank'>HERE</a>  for more Help documentation on Subscription Plans. Click below to start building your Subscription Plans!
-
+            <p>
+              Among the available features are Prepaid plans, Pay As You Go
+              plans. Automatic Renewals, Discounts, and much more! These are all
+              at your fingertips to make it easy to expand business! We’ve built
+              in a lot of flexibility to meet your needs. Please click{" "}
+              <a
+                href="https://revlytics.gitbook.io/revlytic/quick-create"
+                target="_blank"
+              >
+                HERE
+              </a>{" "}
+              for more Help documentation on Subscription Plans. Click below to
+              start building your Subscription Plans!
             </p>
           </div>
 
@@ -359,12 +371,26 @@ Among the available features are Prepaid plans, Pay As You Go plans. Automatic R
       children: (
         <>
           <div className="checklist-tabs-content">
-            <p>With Manual Subscriptions, we give all the control and flexibility to you to create individual subscriptions for any existing or new customers. With this feature you can create one off orders or automatically renew subscriptions for individual customers. We’ve built in the ability to create and send checkout links to your customers so you don’t have to do it! Please click   <a href="https://revlytics.gitbook.io/revlytic/manual-subscription" target='_blank'>HERE</a>  for more Help documentation on Manual Subscriptions. Click below to start building your Manual Subscriptions!
-</p>
+            <p>
+              With Manual Subscriptions, we give all the control and flexibility
+              to you to create individual subscriptions for any existing or new
+              customers. With this feature you can create one off orders or
+              automatically renew subscriptions for individual customers. We’ve
+              built in the ability to create and send checkout links to your
+              customers so you don’t have to do it! Please click{" "}
+              <a
+                href="https://revlytics.gitbook.io/revlytic/manual-subscription"
+                target="_blank"
+              >
+                HERE
+              </a>{" "}
+              for more Help documentation on Manual Subscriptions. Click below
+              to start building your Manual Subscriptions!
+            </p>
           </div>
 
           <div className="checklist-tabs-btns">
-            <Button onClick={() => navigate('/createsubscription?type=manual')}>
+            <Button onClick={() => navigate("/createsubscription?type=manual")}>
               {" "}
               Manual Subscriptions
             </Button>
@@ -377,8 +403,6 @@ Among the available features are Prepaid plans, Pay As You Go plans. Automatic R
       ),
     },
 
-
-
     {
       key: "4",
       label: `Customer Portal`,
@@ -386,8 +410,13 @@ Among the available features are Prepaid plans, Pay As You Go plans. Automatic R
         <>
           <div className="checklist-tabs-content">
             <p>
-            Here, you will have the ability to customize the way your Customer Portal appears to your Customers. You can enable or disable features that you would like for your Customers to have when they access their Customer Portal. The Customer Portal is a feature we’ve built to increase customer satisfaction and to give your customers the ability to manage and view their subscriptions. Please click on the button below to get started.
-
+              Here, you will have the ability to customize the way your Customer
+              Portal appears to your Customers. You can enable or disable
+              features that you would like for your Customers to have when they
+              access their Customer Portal. The Customer Portal is a feature
+              we’ve built to increase customer satisfaction and to give your
+              customers the ability to manage and view their subscriptions.
+              Please click on the button below to get started.
             </p>
           </div>
 
@@ -411,8 +440,15 @@ Among the available features are Prepaid plans, Pay As You Go plans. Automatic R
         <>
           <div className="checklist-tabs-content">
             <p>
-            Customize and preview the subscription widget according to your store’s needs. The widget is displayed on the product page and can be added as an application block from the theme’s template customization in Shopify. We’ve built the subscription widget so that the labels, appearance, purchase options, and subscription details can be easily customized. We have a fantastic support team that can help you if you are having issues with setup. Please click the chat icon on the side for any support or questions. Click below to start customizing your subscription widget!
-
+              Customize and preview the subscription widget according to your
+              store’s needs. The widget is displayed on the product page and can
+              be added as an application block from the theme’s template
+              customization in Shopify. We’ve built the subscription widget so
+              that the labels, appearance, purchase options, and subscription
+              details can be easily customized. We have a fantastic support team
+              that can help you if you are having issues with setup. Please
+              click the chat icon on the side for any support or questions.
+              Click below to start customizing your subscription widget!
             </p>
           </div>
 
@@ -457,14 +493,22 @@ Among the available features are Prepaid plans, Pay As You Go plans. Automatic R
       children: (
         <>
           <div className="checklist-tabs-content">
-            <p>Those are all the crucial steps and information you need to get started! We have additional features and capabilities that you can learn about in our Help Documentation. You can also watch our Video Demonstrations or reach out to us for additional help. Please visit the Settings page if you would like, to see all of the different configuration capabilities you have!
- </p> 
+            <p>
+              Those are all the crucial steps and information you need to get
+              started! We have additional features and capabilities that you can
+              learn about in our Help Documentation. You can also watch our
+              Video Demonstrations or reach out to us for additional help.
+              Please visit the Settings page if you would like, to see all of
+              the different configuration capabilities you have!
+            </p>
           </div>
 
           <div className="checklist-tabs-btns">
-            <Button >
+            <Button>
               {" "}
-             <a href="https://revlytics.gitbook.io/revlytic/" target='_blank'>Help Docs</a> 
+              <a href="https://revlytics.gitbook.io/revlytic/" target="_blank">
+                Help Docs
+              </a>
             </Button>
             {/* <Button className="help">Help</Button> */}
           </div>
@@ -474,64 +518,120 @@ Among the available features are Prepaid plans, Pay As You Go plans. Automatic R
         </>
       ),
     },
-
-
   ];
 
-
-const newItems= [{
-  key: "1",
-  label: `Announcements`,
-  children: (
-    <div className="revlytic-annoucments-inner-section-main">
-    {announcementList.length > 0 ?  announcementList.map((item,index)=>  
-    <div className="revlytic-annoucments-inner-section"> 
-         <div className="revlytic-annoucments-inner-row">
-         <div className="revlytic-annoucments-inner-column">
-          <img src={` https://sorry-canvas-anthony-labels.trycloudflare.com/images/announcement/${item?.image}`} width="100" height="100"  />
-          <div className="revlyticannoucments-inner-content">
-            <h3>{item?.title}</h3>  
-            <p>{item?.description}</p>
-            <a href={item?.buttonUrl} target="_blank"><Button>{item?.buttonText}</Button></a>
-          </div>
-          </div>
-  
-     
-  
-         </div>
-      </div>)
-    :
-    <Empty/>  
-    
-    
-    }
-  
-      </div> 
-  
-  ),
-},
-];
+  const newItems = [
+    {
+      key: "1",
+      label: `Announcements`,
+      children: (
+        <div className="revlytic-annoucments-inner-section-main">
+          {announcementList.length > 0 ? (
+            announcementList.map((item, index) => (
+              <div className="revlytic-annoucments-inner-section">
+                <div className="revlytic-annoucments-inner-row">
+                  <div className="revlytic-annoucments-inner-column">
+                    <img
+                      src={` https://sorry-canvas-anthony-labels.trycloudflare.com/images/announcement/${item?.image}`}
+                      width="100"
+                      height="100"
+                    />
+                    <div className="revlyticannoucments-inner-content">
+                      <h3>{item?.title}</h3>
+                      <p>{item?.description}</p>
+                      <a href={item?.buttonUrl} target="_blank">
+                        <Button>{item?.buttonText}</Button>
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))
+          ) : (
+            <Empty />
+          )}
+        </div>
+      ),
+    },
+  ];
 
   return (
+ <Spin spinning={loader} size="large" tip="Loading...">
+      {showAppBlock == true && (
+        <Alert
+          className="revlytic home-alert-main"
+          message={
+            <div className="">
+              <div className="revlytic home-aleert-heading">
+                <InfoCircleOutlined /> <span>Enable App Embed</span>
+              </div>
+              <div className="revlytic home-alert-message">
+                <span>
+                  Kindly activate the Revlytic embed block in your live theme.
+                  This will allow us to set up a subscription widget on your
+                  product pages, specifically for products configured with
+                  subscription plans.{" "}
+                </span>
+                <a
+                  href={`https://admin.shopify.com/store/${
+                    storeDetails?.shop?.split(".myshopify.com")[0]
+                  }/themes/current/editor?context=apps`}
+                  target="_blank"
+                >
+                  Click here to activate embedded block.
+                </a>{" "}
+              </div>
+            </div>
+          }
+          banner
+          closable={false}
+          showIcon={false}
+          type="info"
+        />
+      )}
 
-    <Spin spinning={loader} size="large" tip="Loading...">
-        {showAppBlock==true &&  <Alert className="revlytic home-alert-main"
-      message={<div className=""><div className="revlytic home-aleert-heading"><InfoCircleOutlined /> <span>Enable App Embed</span></div><div className="revlytic home-alert-message"><span>Kindly activate the Revlytic embed block in your live theme. This will allow us to set up a subscription widget on your product pages, specifically for products configured with subscription plans. </span><a href={`https://admin.shopify.com/store/${storeDetails?.shop?.split(".myshopify.com")[0]}/themes/current/editor?context=apps`} target="_blank">Click here to activate embedded block.</a> </div></div>}
-      banner
-      closable={false}
-      showIcon={false}
-      type="info"
-    />}
+      <Card className="revlytic-company-upgrade">
+        <p>
+          {" "}
+          <strong>Hi {storeDetails?.store_name}!</strong>
+        </p>
+        <p>
+          Thank you for joining Revlytic! To get started please click below to
+          create your first subscription plan! It's that easy!
+        </p>
+        <div className="revlytic-company-upgradebtn">
+          <Button onClick={() => navigate("/createSubscription")}>
+            {" "}
+            Quick Create{" "}
+          </Button>
+        </div>
+      </Card>
+      <Card className="revlytic-company-upgrade">
+        <p>
+          {" "}
+          <strong>Do you have any question or need help setting up?</strong>
+        </p>
+        <p>
+          Click below to chat with our support services, they're ready and
+          willing to help set you up for success!
+        </p>
+        <div className="revlytic-company-upgradebtn">
+          <a href="javascript:void(Tawk_API.toggle())">
+            <Button>Chat With Us!</Button>
+          </a>
+        </div>
+      </Card>
+
       <div className="revlytic plan-group-listing-button">
         <h1 className="revlytic-plan-switch-heading">Home</h1>
 
         {/* <a onClick={() => setIsModalOpen(true)}> </a> */}
       </div>
 
-   
-
-
-      <div className="revlytic daterange-section-main" style={{alignItems:"center"}}>
+      <div
+        className="revlytic daterange-section-main"
+        style={{ alignItems: "center" }}
+      >
         <Select
           onChange={handleRangeSelection}
           value={range}
@@ -604,7 +704,6 @@ Last 6 Months
           </div>
         )}
 
-
         {range == "customDate" && (
           <div className="revlytic custom-date-main">
             <DatePicker
@@ -621,16 +720,21 @@ Last 6 Months
               onChange={(date, dateString) => {
                 // console.log("datestringgggg",typeof dateString)
                 setCustomDate(dateString);
-                getData({ customDate: dateString, range },currencyConversionRates);
+                getData(
+                  { customDate: dateString, range },
+                  currencyConversionRates
+                );
                 getActiveCustomers({ customDate: dateString, range });
               }}
             />
           </div>
         )}
 
-<p style={{color:"#999"}}>Note : Last 7 Days, Last 30 Days, Last 90 Days exclude today</p>
+        <p style={{ color: "#999" }}>
+          Note : Last 7 Days, Last 30 Days, Last 90 Days exclude today
+        </p>
       </div>
-      
+
       <div className="revlytic data-record-main-container">
         <div className="revlytic data-records-main">
           <Card title="Recurring Revenue">
@@ -638,7 +742,9 @@ Last 6 Months
               <div className="data-record-content">
                 <p>
                   {storeDetails?.currency_code +
-                   thousandsSeparator(parseFloat(recurringRevenue)?.toFixed(2))}
+                    thousandsSeparator(
+                      parseFloat(recurringRevenue)?.toFixed(2)
+                    )}
                 </p>
 
                 <p>
@@ -717,31 +823,32 @@ Last 6 Months
 
       <div className="revlytic checklist-infolist-main">
         <div className="tabs-checklist-first-column">
-        <Card className="revlytic checklist-first-column">
-          <div className="revlytic chekclist-greeeting-section">
-            <h3> Hi {storeDetails?.store_name}.</h3>
-            <h5>
-              {" "}
-              Welcome to Revlytic! We’re thankful to have you as a customer and strive to bring you the best tools to help grow your business. We’ve prepared this checklist as a guide to get you started with Revlytic!
+          <Card className="revlytic checklist-first-column">
+            <div className="revlytic chekclist-greeeting-section">
+              <h3> Hi {storeDetails?.store_name}.</h3>
+              <h5>
+                {" "}
+                Welcome to Revlytic! We’re thankful to have you as a customer
+                and strive to bring you the best tools to help grow your
+                business. We’ve prepared this checklist as a guide to get you
+                started with Revlytic!
+              </h5>
+              <Tabs
+                className="revlytic order-main-tabs checklist"
+                defaultActiveKey="1"
+                items={items}
+              />
+            </div>
+          </Card>
 
-            </h5>
-            <Tabs
-              className="revlytic order-main-tabs checklist"
-              defaultActiveKey="1"
-              items={items}
-            />
+          <div className="revlytic-ann_wrapper">
+            <Tabs defaultActiveKey="1" items={newItems} />
           </div>
-        </Card> 
-
-        <div className="revlytic-ann_wrapper">
-      <Tabs defaultActiveKey="1" items={newItems} />
-      </div>
-        
-          </div>
+        </div>
         <div className="revlytic checklist-second-column">
-        <Card>
-          <div className="revlytic-checklist-second-content">
-            {/* <p>
+          <Card>
+            <div className="revlytic-checklist-second-content">
+              {/* <p>
               {" "}
               <svg
                 width="16"
@@ -757,7 +864,7 @@ Last 6 Months
               </svg>
               Help Docs
             </p> */}
-            {/* <p>
+              {/* <p>
               <svg
                 width="17"
                 height="12"
@@ -772,65 +879,61 @@ Last 6 Months
               </svg>
               Video Tutorials
             </p> */}
-            <p>
-              <svg
-                width="16"
-                height="13"
-                viewBox="0 0 16 13"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M13.3333 0.918762H2.66667C1.2 0.918762 0 2.11876 0 3.58543V10.2521C0 11.7188 1.2 12.9188 2.66667 12.9188H13.3333C14.8 12.9188 16 11.7188 16 10.2521V3.58543C16 2.11876 14.8 0.918762 13.3333 0.918762ZM14.4 4.78543L9.13333 8.31876C8.8 8.51876 8.4 8.6521 8 8.6521C7.6 8.6521 7.2 8.51876 6.86667 8.31876L1.6 4.78543C1.33333 4.58543 1.26667 4.18543 1.46667 3.8521C1.66667 3.58543 2.06667 3.51876 2.4 3.71876L7.66667 7.2521C7.86667 7.38543 8.2 7.38543 8.4 7.2521L13.6667 3.71876C14 3.51876 14.4 3.58543 14.6 3.91876C14.7333 4.18543 14.6667 4.58543 14.4 4.78543Z"
-                  fill="#888888"
-                />
-              </svg>
-              <Link onClick={()=>navigate('/contactus')} >support@revlytic.co</Link>
-            </p>
-          </div>
-         
-        </Card>
-        <Card className="revlytic-timeline-wrapper">
-          <h2>Latest Updates </h2>
-          <h3> January 2024</h3>
-          <Link onClick={()=>navigate('/billing')}>Upgrade your Plan</Link>
-        <Timeline
-          items={[
-            // {
-            //   children: 'Revlytic Is Now Live!',
-            // },
-            {
-              children: 'Quick Create - Manual Subscription',
-            },
-            {
-              children: 'Quick Create - Subscription Plans',
-            },
-            {
-              children: 'Manage Plans',
-            },
+              <p>
+                <svg
+                  width="16"
+                  height="13"
+                  viewBox="0 0 16 13"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M13.3333 0.918762H2.66667C1.2 0.918762 0 2.11876 0 3.58543V10.2521C0 11.7188 1.2 12.9188 2.66667 12.9188H13.3333C14.8 12.9188 16 11.7188 16 10.2521V3.58543C16 2.11876 14.8 0.918762 13.3333 0.918762ZM14.4 4.78543L9.13333 8.31876C8.8 8.51876 8.4 8.6521 8 8.6521C7.6 8.6521 7.2 8.51876 6.86667 8.31876L1.6 4.78543C1.33333 4.58543 1.26667 4.18543 1.46667 3.8521C1.66667 3.58543 2.06667 3.51876 2.4 3.71876L7.66667 7.2521C7.86667 7.38543 8.2 7.38543 8.4 7.2521L13.6667 3.71876C14 3.51876 14.4 3.58543 14.6 3.91876C14.7333 4.18543 14.6667 4.58543 14.4 4.78543Z"
+                    fill="#888888"
+                  />
+                </svg>
+                <Link onClick={() => navigate("/contactus")}>
+                  support@revlytic.co
+                </Link>
+              </p>
+            </div>
+          </Card>
+          <Card className="revlytic-timeline-wrapper">
+            <h2>Latest Updates </h2>
+            <h3> January 2024</h3>
+            <Link onClick={() => navigate("/billing")}>Upgrade your Plan</Link>
+            <Timeline
+              items={[
+                // {
+                //   children: 'Revlytic Is Now Live!',
+                // },
+                {
+                  children: "Quick Create - Manual Subscription",
+                },
+                {
+                  children: "Quick Create - Subscription Plans",
+                },
+                {
+                  children: "Manage Plans",
+                },
 
-            {
-
-             children:'Subscription Management',              
-            },
-            {
-              children:'Subscription Widget',
-            },
-            {
-              children:'Customer Portal'
-            },
-            {
-              children:'Email Templates & Invoice'
-            }
-          ]}
-        />
-        </Card>
+                {
+                  children: "Subscription Management",
+                },
+                {
+                  children: "Subscription Widget",
+                },
+                {
+                  children: "Customer Portal",
+                },
+                {
+                  children: "Email Templates & Invoice",
+                },
+              ]}
+            />
+          </Card>
+        </div>
       </div>
-      </div>
-
-     
-
-
     </Spin>
   );
 }
