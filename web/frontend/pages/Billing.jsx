@@ -1,51 +1,34 @@
 import React, { useEffect, useState } from "react";
-import { CheckOutlined, SmileOutlined } from "@ant-design/icons";
+import { CheckOutlined } from "@ant-design/icons";
 import Slider from "react-slick";
-import { Alert, Progress, Spin, notification } from "antd";
+import { Alert, Progress, Spin } from "antd";
 import postApi from "../components/common/postApi";
 import { useAppBridge } from "@shopify/app-bridge-react";
 import { useLocation } from "react-router-dom";
-import axios from "axios";
 import { useAPI } from "../components/common/commonContext";
-import { Link } from "react-router-dom";
 import { useNavigate } from "@shopify/app-bridge-react";
-import { toast } from "react-toastify";
-function Billing(props) {
+import CalculateBillingUsage from "../components/calculateBillingUsage";
+function Billing() {
   const navigate = useNavigate();
   const app = useAppBridge();
   const location = useLocation();
+
   const queryParams = location.search;
   const params = new URLSearchParams(queryParams);
   const charge_id = params.get("charge_id");
+  const upgradePlan = params.get("upgradePlan");
+
   const option = params.get("option");
-  const {
-    billingPlan,
-    setBillingPlan,
-    nextBillingDate,
-    recurringRevenue,
-    chargeId,
-    setChargeId,
-    setRecurringRevenue,
-    check
-  } = useAPI();
+  const [revenue, setRevenue] = useState(0);
+  const [updatePlan, setUpdatePlan] = useState(false);
+  const [billingPlan, setBillingPlan] = useState("");
+
+  let { chargeId, setChargeId } = useAPI();
+  const [activePlan, setActivePlan] = useState("");
   const [loader, setLoader] = useState(false);
-  const [activePlan, setActivePlan] = useState("free");
-  const [checkFree, setCheckFree] = useState(false);
-  
-  //  const [recurringRevenue,setRecurringRevenue]=useState(0)
-  const [currencyConversionRates, setCurrencyConversionRates] = useState({});
+
   const [nextDate, setNextDate] = useState("");
-  const [api, contextHolder] = notification.useNotification();
-  const toastNotification = (type, res, placement) => {
-    // console.log(type,res)
-    return notification[type]({
-      message: `Notification ${type}`,
-      description: `${res}`,
-      placement: `${placement}`,
-      closeIcon: false,
-      maxCount: 1,
-    });
-  };
+  const [freePlanCheck, setFreePlanCheck] = useState(true);
 
   const settings = {
     dots: false,
@@ -73,12 +56,8 @@ function Billing(props) {
     ],
   };
 
-  // console.log(props,"====bilingdata===",billingPlan,nextBillingDate,)
   useEffect(async () => {
-    // console.log(billingPlan)
-    setActivePlan(billingPlan=="" ? "free": billingPlan);
-    setNextDate(nextBillingDate);
-
+    setLoader(true);
     if (charge_id) {
       setLoader(true);
       let response = await postApi(
@@ -86,99 +65,31 @@ function Billing(props) {
         { charge_id: charge_id },
         app
       );
-      // setLoader(false);
-      // console.log("ressponse=====25jan",response)
+
       if (response.data.message == "success") {
         setChargeId(charge_id);
-        // console.log("myclll",response.data.next_billing)
         setActivePlan(response.data.plan);
         setNextDate(response.data.next_billing);
         setBillingPlan(response.data.plan);
-        setRecurringRevenue(0)
-        props.setPlanUpdate && props.setPlanUpdate(false);
-        props.setActiveContactRoute && props.setActiveContactRoute(false);
-        // toast.success("plan updated successfully", {
-        //   position: toast.POSITION.TOP_RIGHT,
-        // });
-
-        // if(checkNotify(response.data.plan,props.revenue)){
-        //   props.setpPlanUpdate(true)
-        //   setMessage(true)
-
-        // }
+        // setRevenue(0)
+      }
+    } else {
+      let billingPlanData = await postApi(
+        "api/admin/getBillingPlanData",
+        {},
+        app
+      );
+      if (billingPlanData && billingPlanData?.data?.message == "success") {
+        setActivePlan(billingPlanData?.data?.planData?.plan);
+        setNextDate(billingPlanData?.data?.planData?.next_billing);
       }
     }
     setLoader(false);
   }, []);
 
-  // console.log("24jan",billingPlan,props.planUpdate)
-
-  const getData = async (body, rates) => {
-    // console.log("getData", body);
-
-    // const sessionToken = await getSessionToken(app);
-
-    const response = await postApi("/api/admin/combinedData", body, app);
-
-    // console.log("response", response);
-
-    if (response?.data?.message == "success") {
-      // console.log("dfdfd", response?.data?.data);
-
-      // console.log("trates", rates);
-
-      let arr = response?.data?.data;
-
-      let sum = 0;
-
-      // let countInitialStatus = 0;
-
-      if (arr.length > 0) {
-        arr.map((item) => {
-          sum =
-            sum +
-            parseFloat(item.total_amount) *
-              parseFloat(rates[item?.currency] / rates["USD"]);
-
-          // console.log("checkitemsrev",sum)
-        });
-      }
-
-      // console.log("sum", sum);
-
-      // setRecurringRevenue(sum);
-    }
-  };
-
-  const checkNotify = (billingPlan, sum) => {
-    // if (billingPlan === false || billingPlan === undefined || billingPlan === null) {
-    //   // Billing plan is not available yet
-    //   console.log("Billing plan not available");
-    // } else {
-    // Billing plan is available, update the state
-    if (billingPlan === "starter" && sum >= 5000) {
-      return true;
-    } else if (billingPlan === "premium" && sum >= 30000) {
-      return true;
-    } else {
-      if (
-        (billingPlan === false ||
-          billingPlan === undefined ||
-          billingPlan === null ||
-          billingPlan == "" ||
-          billingPlan == "free") &&
-        sum >= 1000
-      ) {
-        return true;
-      } else {
-        return false;
-      }
-    }
-    // }
-  };
-
   const handleUpgradePlan = async (planData) => {
     setLoader(true);
+
     if (planData.plan != "free") {
       let response = await postApi("/api/admin/recurringBiling", planData, app);
       if (response?.data?.message == "success") {
@@ -186,35 +97,34 @@ function Billing(props) {
           response.data.url.body.data.appSubscriptionCreate.confirmationUrl;
       }
     } else {
-////////////
-           // Get the current URL
-  let currentUrl = window.location.href;
-  // console.log("ccurl",currentUrl)
- 
-  if (currentUrl.includes('charge_id')) {
-    // Remove the charge_id parameter using regular expression
- var updatedUrl = currentUrl.replace(/[?&]charge_id=([^&#]*)(&|$)/, '?');
-// console.log("uppddurl",updatedUrl)
-  // Update the browser URL without reloading the page
-  history.replaceState(null, '', updatedUrl);
-  window.location.replace(updatedUrl);
-    }
+      ////////////
+      console.log("in12april");
+      // Get the current URL
+      //   let currentUrl = window.location.href;
+      //   // console.log("ccurl",currentUrl)
 
-//////////////
-let response = await postApi(
+      //   if (currentUrl.includes('charge_id') ) {
+      //     // Remove the charge_id parameter using regular expression
+      //  var updatedUrl = currentUrl.replace(/[?&]charge_id=([^&#]*)(&|$)/, '?');
+      // // console.log("uppddurl",updatedUrl)
+      //   // Update the browser URL without reloading the page
+      //   history.replaceState(null, '', updatedUrl);
+      //   window.location.replace(updatedUrl);
+      //     }
+
+      //////////////
+      setFreePlanCheck(false);
+      let response = await postApi(
         "/api/admin/freePlanActivation",
         { charge_id: chargeId },
         app
       );
       if (response?.data?.message == "success") {
+        // setFreePlanCheck(true)
         setActivePlan("free");
         setNextDate("");
         setBillingPlan("free");
-        setRecurringRevenue(0)
-        // setCheckFree(true)
-        props.setPlanUpdate && props.setPlanUpdate(false);
-        props.setActiveContactRoute && props.setActiveContactRoute(false);
-
+        setRevenue(0);
 
         setLoader(false);
       }
@@ -225,6 +135,14 @@ let response = await postApi(
 
   return (
     <Spin spinning={loader} size="large" tip="Loading...">
+      {!params.get("charge_id") && (
+        <CalculateBillingUsage
+          setBillingPlan={setBillingPlan}
+          setRevenue={setRevenue}
+          setUpdatePlan={setUpdatePlan}
+        />
+      )}
+
       <div className="revlytic-billing-plans">
         {/* {message && <Alert className="revlytic-billing-plans-warning" banner closable message="Revenue cap for the monthly plan reached, please upgrade." type="warning"  />} */}
         <div className="container">
@@ -242,18 +160,18 @@ let response = await postApi(
             </div>
             <div className="revlytic-usage-tracker-main">
               <div className="usage-tarcker-content">
-                <h3>${recurringRevenue?.toFixed(2)}</h3>
+                <h3>${revenue?.toFixed(2)}</h3>
                 {/* <p>{activePlan ?  activePlan : "Completely free of charge"}</p> */}
                 <Progress
                   percent={
-                    activePlan=='free'
-                      ? (recurringRevenue / 750) * 100
+                    activePlan == "free"
+                      ? (revenue / 750) * 100
                       : activePlan == "starter"
-                      ? (recurringRevenue / 5000) * 100
+                      ? (revenue / 5000) * 100
                       : activePlan == "premium"
-                      ?  (recurringRevenue / 30000) * 100
-                      : activePlan == "premiere" 
-                      ? (recurringRevenue / 100000) * 100
+                      ? (revenue / 30000) * 100
+                      : activePlan == "premiere"
+                      ? (revenue / 100000) * 100
                       : 0
                   }
                   showInfo={false}
@@ -281,23 +199,25 @@ let response = await postApi(
                     (<b>$0/</b>month)
                   </span>
                   <p className="price_card_fee"> No transaction fees. </p>
-                  
-                  {activePlan != "free" && activePlan != "" && activePlan !=undefined && (
-                    <div className="billing-update-plan">
-                      <button
-                        type="button"
-                        onClick={() =>
-                          handleUpgradePlan({
-                            plan: "free",
-                            interval: "MONTHLY",
-                            price: 0,
-                          })
-                        }
-                      >
-                        Select
-                      </button>
-                    </div>
-                  )}
+
+                  {activePlan != "free" &&
+                    activePlan != "" &&
+                    activePlan != undefined && (
+                      <div className="billing-update-plan">
+                        <button
+                          type="button"
+                          onClick={() =>
+                            handleUpgradePlan({
+                              plan: "free",
+                              interval: "MONTHLY",
+                              price: 0,
+                            })
+                          }
+                        >
+                          Select
+                        </button>
+                      </div>
+                    )}
                 </div>
                 <div className="subscription-card-list">
                   {/* <p>+ All Features from Free PLUS</p> */}
@@ -402,7 +322,7 @@ let response = await postApi(
                       {/* <div className="check-box">
                   <CheckOutlined />
                   </div> */}
-                      + All Features from Free 
+                      + All Features from Free
                     </li>
                     <li>
                       <div className="check-box">
@@ -482,6 +402,16 @@ let response = await postApi(
                       <div className="check-box">
                         <CheckOutlined />
                       </div>
+                      {option == "customiseWidget" ? (
+                        <strong> Customize Widget </strong>
+                      ) : (
+                        "Customize Widget"
+                      )}
+                    </li>
+                    <li>
+                      <div className="check-box">
+                        <CheckOutlined />
+                      </div>
                       {option == "emailTemplates" ? (
                         <strong> Email templates Customization</strong>
                       ) : (
@@ -535,17 +465,6 @@ let response = await postApi(
                   <CheckOutlined />
                   </div> */}
                       + All Features from Starter
-                    </li>
-
-                    <li>
-                      <div className="check-box">
-                        <CheckOutlined />
-                      </div>
-                      {option == "customiseWidget" ? (
-                        <strong> Customize Widget </strong>
-                      ) : (
-                        "Customize Widget"
-                      )}
                     </li>
                     <li>
                       <div className="check-box">
@@ -624,13 +543,13 @@ let response = await postApi(
                       <div className="check-box">
                         <CheckOutlined />
                       </div>
-                      24/7 Support 
+                      24/7 Support
                     </li>
                     <li>
                       <div className="check-box">
                         <CheckOutlined />
                       </div>
-                      White Glove Migration Support 
+                      White Glove Migration Support
                     </li>
                     {/* <li>
                       <div className="check-box">
@@ -653,8 +572,7 @@ let response = await postApi(
             </div> */}
               </div>
 
-
-             <div className="subscription-card lightyellow">
+              <div className="subscription-card lightyellow">
                 <div className="subscription-card-heading">
                   <h2>Enterprise</h2>
                   <p className="price_card_desc">
@@ -714,7 +632,18 @@ let response = await postApi(
           </div>
         </div>
       </div>
-</Spin>
+      <div className="revlytic-top-section">
+        {params.get("upgrade") && freePlanCheck && (
+          <Alert
+            className="revlytic-billing-plans-warning"
+            banner
+            closable
+            message="Revenue cap for the monthly plan reached, please upgrade."
+            type="warning"
+          />
+        )}
+      </div>
+    </Spin>
   );
 }
 

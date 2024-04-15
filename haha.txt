@@ -1,1 +1,1 @@
-{"id":"gid://shopify/SellingPlanGroup/77016858955","input":{"appId":"SdSubscriptionApp2k23virga22luck","merchantCode":"X1 Smoother","name":"X1 Smoother","options":["1 day ltu8rrdbydv,1 month ltu8rrdbqv2"],"sellingPlansToDelete":["gid://shopify/SellingPlan/689359814987"]}}
+{"id":"gid://shopify/SellingPlanGroup/77490487585","input":{"appId":"SdSubscriptionApp2k23virga22luck","merchantCode":"SEAMOSS SELLER","name":"SEAMOSS SELLER","options":["1 month ludfapm2ouk"]}}

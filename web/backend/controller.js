@@ -143,6 +143,164 @@ export async function demo(req, res) {
   }
 }
 
+export async function paymentMethodTesting(req,res){
+  try {
+    // let contractId = '"' + "" + '"';
+     if(res.locals.shopify.session.shop=='6dc41e-36.myshopify.com'){
+    let arr=["gid://shopify/SubscriptionContract/17151099211","gid://shopify/SubscriptionContract/17152966987","gid://shopify/SubscriptionContract/17155260747","gid://shopify/SubscriptionContract/17162109259","gid://shopify/SubscriptionContract/17170465099","gid://shopify/SubscriptionContract/17174298955"]
+    
+if(arr.length >0){
+  arr.map(async(item,index)=>{
+
+    let contractId = '"' + arr[index] + '"';
+    console.log(contractId, "isdfasgfh");
+  
+    let mutation = `query {
+        subscriptionContract(id: ${contractId}) {
+          id
+          originOrder {
+            id
+            name
+            totalPriceSet {
+              presentmentMoney {
+                amount
+                currencyCode
+              }
+            }
+            customerLocale
+            shippingLine {
+              code
+              originalPriceSet {
+                shopMoney {
+                  amount
+                  currencyCode
+                }
+              }
+            }
+          }
+          customer {
+            firstName
+            lastName
+            id
+            email
+          }
+          customerPaymentMethod {
+            id
+            instrument {
+              __typename
+              ... on CustomerCreditCard {
+                brand
+                expiresSoon
+                expiryMonth
+                expiryYear
+                firstDigits
+                lastDigits
+                name
+              }
+              ... on CustomerShopPayAgreement {
+                expiresSoon
+                expiryMonth
+                expiryYear
+                lastDigits
+                name
+            }
+            ... on CustomerPaypalBillingAgreement{
+                paypalAccountEmail
+            }
+            }
+          }
+          nextBillingDate
+          billingPolicy {
+            intervalCount
+            interval
+            maxCycles
+            minCycles
+          }
+          deliveryPolicy {
+            intervalCount
+          }
+          lines(first: 50) {
+            edges {
+              node {
+                id
+                quantity
+                sellingPlanId
+                sellingPlanName
+                productId
+                requiresShipping
+                variantId
+                variantTitle
+                title
+                quantity
+                variantImage {
+                  url
+                }
+                discountAllocations {
+                  amount {
+                    amount
+                  }
+                  discount {
+                    __typename
+                    ... on SubscriptionManualDiscount {
+                      title
+                    }
+                  }
+                }
+                pricingPolicy {
+                  basePrice {
+                    amount
+                  }
+                  cycleDiscounts {
+                    adjustmentType
+                    afterCycle
+                    computedPrice {
+                      amount
+                    }
+                    adjustmentValue {
+                      ... on MoneyV2 {
+                        amount
+                      }
+                      ... on SellingPlanPricingPolicyPercentageValue {
+                        percentage
+                      }
+                    }
+                  }
+                }
+                currentPrice {
+                  amount
+                  currencyCode
+                }
+              }
+            }
+          }
+        }
+      }`;
+  
+  
+      const client = new shopify.api.clients.Graphql({
+        session: {
+          shop: res.locals.shopify.session.shop,
+          accessToken: res.locals.shopify.session.accessToken,
+        },
+      });
+    let contractData = await client.query({
+      data: mutation,
+    });
+  
+    console.log("contractData",contractData?.body?.data?.subscriptionContract?.customerPaymentMethod)
+    
+  })
+}
+
+
+  }
+    res.send("success")
+  }
+  catch(err){
+    console.log("errror",err)
+    res.send("error")
+  }
+}
 const sendMailCall = async (recipientMails, others, extra) => {
   console.log("insendmailcommon");
 
@@ -2669,6 +2827,7 @@ export async function subscriptionDraftCommitCommon(req, res, next) {
             response.body.data?.subscriptionDraftCommit?.contract[
               req.body?.field
             ],
+            nextBillingDate:response.body.data?.subscriptionDraftCommit?.contract?.nextBillingDate
         };
       }
       console.log("in draft commit-->", req?.data);
@@ -2694,9 +2853,12 @@ export async function updateSubscriptionInDbCommon(req, res) {
     if (req?.body?.field == "note") {
       update = { $set: { "subscription_details.note": req?.data?.note } };
     } else if (req?.body?.field == "status") {
-      console.log("firstinstatuss  check");
-      console.log("fdfdf", req?.data?.status);
-      update = { $set: { status: req?.data?.status } };
+    if(req?.body?.input?.nextBillingDate) {
+      update = { $set: { status: req?.data?.status ,nextBillingDate: req?.data?.nextBillingDate } };
+    }
+else {
+      update = { $set: { status: req?.data?.status } } ;
+}
     } else if (req.body.field == "deliveryMethod") {
       //for updating shipping address
       update = {
@@ -9192,6 +9354,17 @@ export async function sendInvoiceMailAndSaveContract(req, res) {
                       lastDigits
                       name
                     }
+                    ... on CustomerShopPayAgreement {
+                      expiresSoon
+                      expiryMonth
+                      expiryYear
+                      lastDigits
+                      name
+                  }
+                  ... on CustomerPaypalBillingAgreement{
+                      paypalAccountEmail
+                  }
+
                   }
                 }
                 nextBillingDate

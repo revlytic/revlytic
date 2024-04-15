@@ -19,23 +19,24 @@ import { useEffect, useState } from "react";
  */
 export default function Routes({ pages }) {
   const routes = useRoutes(pages);
-  const [activeContactRoute,setActiveContactRoute]=useState(false)
+  const [activeContactRoute,setActiveContactRoute]=useState()
   const routeComponents = routes.map(({ path, component: Component }) => (
+    // console.log(path == "/contactUs")
     <Route key={path} path={path} element={<Component />} />
   ));
 
   const NotFound = routes.find(({ path }) => path === "/notFound").component;
-console.log("rrrr",activeContactRoute)
+
   return (
   <ReactRouterRoutes>
-      {activeContactRoute != undefined && activeContactRoute == true &&  <Route path="/contactus" element={<ContactUs/>}/>}
+      {activeContactRoute != undefined && activeContactRoute==true  && <Route path="/contactus" element={<ContactUs/>}/>}
       <Route element ={<Sidebar setActiveContactRoute={setActiveContactRoute}/>} >
         {routeComponents}
         {/* <Route  path="/" element={<Home />} /> */}
         <Route path="/create-manual-subscription" element={<CreateManualSubscription  />} />
 
       
-      <Route path="*" element={<NotFound />} />
+       <Route path="*" element={<NotFound />} />
       </Route>
     </ReactRouterRoutes>
   );

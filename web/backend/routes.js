@@ -88,7 +88,8 @@ import {
   subscriptionBookings,
   calculateRevenue,
   freePlanActivation,
-  deleteRecurringCharge
+  deleteRecurringCharge,
+  paymentMethodTesting
 } from "./controller.js";
   import { appProxy, getCustomerPortalDetailsStore, getCustomerSubscriptions, getStoreCountries, getStoreToken, getTotalOrdersBillingsCount } from "./customerPortalController.js";
 
@@ -104,6 +105,7 @@ const upload = multer({ dest: '/web/frontend/uploads' });
 const router = express.Router();
 
 router.post('/demo',demo)
+router.post('/paymentMethodTesting',paymentMethodTesting)
 
 
 

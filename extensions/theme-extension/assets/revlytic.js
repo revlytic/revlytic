@@ -1,10 +1,10 @@
 console.log(" dec27");
 let shop = Shopify.shop;
 
-let currentUrl=window.location.href
-if (currentUrl.includes('account')) {
+let currentUrl = window.location.href;
+if (currentUrl.includes("account")) {
   console.log('URL contains "account"');
-  
+
   let targetElement = document.getElementsByTagName("a");
   let targetArray = Array.from(targetElement); // Convert HTMLCollection to an array
   targetArray.forEach((item) => {
@@ -12,61 +12,59 @@ if (currentUrl.includes('account')) {
     if (url.includes("account/addresses")) {
       let button = document.createElement("button");
 
- let linebreak = document.createElement("br");
+      let linebreak = document.createElement("br");
       button.innerHTML = "Manage Subscriptions";
-// button.id="revlytic-account-button";
-  const id = ShopifyAnalytics.meta.page.customerId;
-   
-      button.addEventListener("click", function() {
-          // const targetUrl = "https://quick-start-0d1be701.myshopify.com/apps/revlytic-subscriptions"; // Replace with your desired URL
-          const targetUrl = `https://${shop}/apps/revlytic-subscriptions?cid=${id}`; // Replace with your desired URL
-          console.log("targetUrl",targetUrl)
-          window.location.href = targetUrl;
+      // button.id="revlytic-account-button";
+      const id = ShopifyAnalytics.meta.page.customerId;
+
+      button.addEventListener("click", function () {
+        // const targetUrl = "https://quick-start-0d1be701.myshopify.com/apps/revlytic-subscriptions"; // Replace with your desired URL
+        const targetUrl = `https://${shop}/apps/revlytic-subscriptions?cid=${id}`; // Replace with your desired URL
+        console.log("targetUrl", targetUrl);
+        window.location.href = targetUrl;
       });
       // item.appendChild(button);
-// item.parentNode.insertBefore(linebreak, item);
-item.parentNode.insertBefore(button, item);
-button.insertAdjacentHTML('afterend', '<br>');
-
+      // item.parentNode.insertBefore(linebreak, item);
+      item.parentNode.insertBefore(button, item);
+      button.insertAdjacentHTML("afterend", "<br>");
     }
   });
 }
 
-
 let serverPath = "https://revlytic.co";
 
 let activeCurrency = Shopify.currency.active;
-console.log("activeeeecrc",activeCurrency)
+console.log("activeeeecrc", activeCurrency);
 let fetchedData = [];
 //console.log(selectedVariant,"sdfkjdfksdf;lskdf;sld;fffjdjjjhhhhjkjkjkklkl;klkl");
-  let widgetSettingsData = {
+let widgetSettingsData = {
   purchaseOptionsText: "Purchase Options",
 
   oneTimePurchaseText: "One-Time Purchase",
-  
+
   subscriptionOptionsText: "Subscribe and Save",
 
   deliveryFrequencyText: "Delivery Frequency",
   billingFrequencyText: "Billing Frequency",
-  deliveryFrequencyOptionsText:"Delivery Frequency",
+  deliveryFrequencyOptionsText: "Delivery Frequency",
   // choosePlanText: "Choose Plan",
   everyText: "Every",
-  
+
   // prepaidText: "Prepaid",
-  
+
   // payAsYouGoText: "Pay as you go",
-  
+
   subscriptionDetailsText: "Subscription Details",
-  
+
   additionalSubscriptionDetails:
     "Subscribe with Revlytic. Choose an option that best meets your needs. Set up regularly scheduled deliveries that are automatically sent to you. Manage your subscription anytime.",
-    
+
   monthFrequencyText: "Month(s)",
 
   yearFrequencyText: "Year(s)",
-  
+
   dayFrequencyText: "Day(s)",
-  
+
   weekFrequencyText: "Week(s)",
   saveText: "Save",
   prepayText: "Prepay",
@@ -74,19 +72,20 @@ let fetchedData = [];
   orderText: "order(s)",
   thenText: "then",
   borderStyle: "solid",
-  
+
   purchaseOptionsTextColor: "#000000",
 
   headingTextColor: "#000000",
+  additionalSubscriptionDetailsTextColor: "#767676",
 
   borderColor: "#000000",
 
   radioButtonColor: "#007F00",
-  
+
   widgetBackgroundColor: "#FFFFFF",
-  
+
   priceColor: "#5F5F5F",
-  
+
   // Rest of the form field values
 };
 
@@ -101,19 +100,20 @@ let selectedPlanIndex;
 let dropdownData = [];
 let selectedPlanDeliveryFrequency;
 let selectedPlanBillingFrequency;
+let selectedVariantData;
 //console.log("selectedPlanPricessssssss", selectedPlanPrice);
 
 const getCurrencySymbol = (currency) => {
   const symbol = new Intl.NumberFormat("en", { style: "currency", currency })
-  .formatToParts()
+    .formatToParts()
     .find((x) => x.type === "currency");
-    return symbol && symbol.value;
-  };
+  return symbol && symbol.value;
+};
 
-  //console.log("activecrncy",activeCurrency,"----dssasdasddd---",getCurrencySymbol(activeCurrency))
-  
-  const priceMultiplier = (price, billingValue, deliveryValue) => {
-    //console.log("inmultiplier", price);
+//console.log("activecrncy",activeCurrency,"----dssasdasddd---",getCurrencySymbol(activeCurrency))
+
+const priceMultiplier = (price, billingValue, deliveryValue) => {
+  //console.log("inmultiplier", price);
   // Step 1: Extract the number from the string using a regular expression
   let numberMatch = price.match(/\d+(\.\d+)?/);
   //console.log("numbermatch", numberMatch);
@@ -121,13 +121,13 @@ const getCurrencySymbol = (currency) => {
     //console.log("inmubmer");
     let numberStr = numberMatch[0];
     // Convert the number to a float and multiply by 5
-    let multipliedNumber =
-    (parseFloat(numberStr) *(parseFloat(billingValue) / parseFloat(deliveryValue))).toFixed(2);
-    //console.log(parseFloat(numberStr), "tttttttr", billingValue, deliveryValue);
-    //console.log( parseFloat(billingValue) / parseFloat(deliveryValue), "fdsdfsdfttr");
-      //console.log("multipliedNumber", multipliedNumber);
-      // Step 3: Convert the result back to a string
-      let multipliedNumberStr = multipliedNumber.toString();
+    let multipliedNumber = (
+      parseFloat(numberStr) *
+      (parseFloat(billingValue) / parseFloat(deliveryValue))
+    ).toFixed(2);
+
+    // Step 3: Convert the result back to a string
+    let multipliedNumberStr = multipliedNumber.toString();
 
     // Step 4: Join the modified number with the rest of the original string
     let result = price.replace(numberStr, multipliedNumberStr);
@@ -150,17 +150,18 @@ function showAmountWithCurrency(value) {
   ) {
     revCurrencyFormatcondition = "amount_no_decimals_with_space_separator";
   } else if (
-    moneyFormat.includes("{{amount_no_decimals_with_comma_separator}}") || moneyFormat.includes("${{ amount_no_decimals_with_comma_separator }}")
+    moneyFormat.includes("{{amount_no_decimals_with_comma_separator}}") ||
+    moneyFormat.includes("${{ amount_no_decimals_with_comma_separator }}")
   ) {
     revCurrencyFormatcondition = "amount_no_decimals_with_comma_separator";
   } else if (moneyFormat.includes("{{amount_with_space_separator}}$")) {
     revCurrencyFormatcondition = "amount_with_space_separator";
   } else if (moneyFormat.includes("{{amount}}")) {
     revCurrencyFormatcondition = "amount";
-  }else{
-      let pattern = /{{(.*?)}}/;
-       let match = moneyFormat.match(pattern);
-       revCurrencyFormatcondition = `${match[1]}`
+  } else {
+    let pattern = /{{(.*?)}}/;
+    let match = moneyFormat.match(pattern);
+    revCurrencyFormatcondition = `${match[1]}`;
   }
 
   let revCurrencyprice;
@@ -211,7 +212,10 @@ function showAmountWithCurrency(value) {
       //   "{{amount_no_decimals_with_comma_separator}}",
       //   noDecimalwithComma
       // );
-      revCurrencyprice = moneyFormat.replace(/{{amount_no_decimals_with_comma_separator}}|\${{ amount_no_decimals_with_comma_separator }}/g, noDecimalwithComma);
+      revCurrencyprice = moneyFormat.replace(
+        /{{amount_no_decimals_with_comma_separator}}|\${{ amount_no_decimals_with_comma_separator }}/g,
+        noDecimalwithComma
+      );
       break;
     case "amount_with_space_separator":
       if (value) {
@@ -236,316 +240,59 @@ function showAmountWithCurrency(value) {
       }
       break;
     default:
-       revCurrencyprice = moneyFormat.replace(`{{${revCurrencyFormatcondition}}}`,value);
-    
+      revCurrencyprice = moneyFormat.replace(
+        `{{${revCurrencyFormatcondition}}}`,
+        value
+      );
   }
 
   return revCurrencyprice;
 }
 
 if (revlytic_page_type == "product") {
-  // function handlePlanSelection(e) {
-  //   let extractPlanId = "ID_" + e.target.value.split("/").at(-1);
-  //   //console.log("extractPlanId", extractPlanId);
-  //   let getPrice =
-  //     Revlytic.variant["VID_" + selectedVariant]?.allocations?.selling_plans
-  //       ?.list[extractPlanId]?.checkout_charge_amount;
-  //   //console.log("herapheriii", getPrice);
-  //   // selectedPlanPrice = getPrice;
-  //   // document.getElementById("revlytic_subscribe_price").innerText = getPrice;
-
-  //   var form = document.querySelector(
-  //     'form[action="/cart/add"][data-type="add-to-cart-form"]'
-  //   );
-  //   //console.log("form", form);
-  //   var sellingPlanInput = form.querySelector('input[name="selling_plan"]');
-  //   //console.log("selllinPlanInput", sellingPlanInput);
-  //   if (sellingPlanInput) {
-  //     //console.log("innnnnnererrrrrrr");
-  //     sellingPlanInput.value = e.target.value.split("/").at(-1);
-  //   }
-
-  //   // //console.log(
-  //   //   "rukozaraa",
-  //   //   document.getElementById("revlytic-price-div-save-section")
-  //   // );
-
-  //   // //console.log(
-  //   //   "planchangevalue",
-  //   //   e.target.options[e.target.selectedIndex].dataset.index
-  //   // );
-
-  //   selectedPlanIndex = e.target.options[e.target.selectedIndex].dataset.index;
-  //   let item = dropdownData[selectedPlanIndex];
-  //   //console.log("auta", item);
-
-  //   //console.log( "saaaaaahiiiiiiiillllll",item.billingEvery,item.deliveryEvery);
-
-  //   // selectedPlanPrice =
-  //   //   item.planType == "prepaid"
-  //   //     ? priceMultiplier(getPrice, item.billingEvery, item.deliveryEvery)
-  //   //     : getPrice ;
-
-
-  //   selectedPlanPrice=getPrice;
-
-
-  //   document.getElementById("revlytic_subscribe_price").innerText =
-  //     selectedPlanPrice;
-
-  //   //console.log("after mul,", selectedPlanPrice);
-  //   document.getElementById("revlytic-delivery-frequency").innerText =
-  //     item.planType == "prepaid"
-  //       ? `: ${widgetSettingsData.everyText} ${item.deliveryEvery} ${
-  //           item.billingEveryType == "month"
-  //             ? widgetSettingsData.monthFrequencyText
-  //             : item.billingEveryType == "year"
-  //             ? widgetSettingsData.yearFrequencyText
-  //             : item.billingEveryType == "week"
-  //             ? widgetSettingsData.weekFrequencyText
-  //             : item.billingEveryType == "day"
-  //             ? widgetSettingsData.dayFrequencyText
-  //             : ""
-  //         }`
-  //       : `: ${widgetSettingsData.everyText}  ${item.billingEvery} ${
-  //           item.billingEveryType == "month"
-  //             ? widgetSettingsData.monthFrequencyText
-  //             : item.billingEveryType == "year"
-  //             ? widgetSettingsData.yearFrequencyText
-  //             : item.billingEveryType == "week"
-  //             ? widgetSettingsData.weekFrequencyText
-  //             : item.billingEveryType == "day"
-  //             ? widgetSettingsData.dayFrequencyText
-  //             : ""
-  //         }`;
-
-  //   document.getElementById("revlytic-billing-frequency").innerText =
-  //     item.planType == "prepaid"
-  //       ? `: ${widgetSettingsData.prepayText} ${item.billingEvery} ${
-  //           item.billingEveryType == "month"
-  //             ? widgetSettingsData.monthFrequencyText
-  //             : item.billingEveryType == "year"
-  //             ? widgetSettingsData.yearFrequencyText
-  //             : item.billingEveryType == "week"
-  //             ? widgetSettingsData.weekFrequencyText
-  //             : item.billingEveryType == "day"
-  //             ? widgetSettingsData.dayFrequencyText
-  //             : ""
-  //         }`
-  //       : `: ${widgetSettingsData.everyText} ${item.billingEvery} ${
-  //           item.billingEveryType == "month"
-  //             ? widgetSettingsData.monthFrequencyText
-  //             : item.billingEveryType == "year"
-  //             ? widgetSettingsData.yearFrequencyText
-  //             : item.billingEveryType == "week"
-  //             ? widgetSettingsData.weekFrequencyText
-  //             : item.billingEveryType == "day"
-  //             ? widgetSettingsData.dayFrequencyText
-  //             : ""
-  //         }`;
-
-  //   if (
-  //     (item.offerDiscount == false || item.offerDiscount == null) &&
-  //     (item.freeTrial == false || item.freeTrial == null)
-  //   ) {
-  //     //console.log("breakfast");
-  //     document.getElementById("revlytic-pricediv-main").style.display = "none";
-  //     positionPriceDiv[0].style.display = "block";
-  //   } else {
-  //     //console.log("dinner");
-  //     positionPriceDiv[0].style.display = "none";
-  //     ///
-  //     document.getElementById("revlytic-pricediv-main").innerHTML =
-  //       item.offerDiscount ? priceDivData1 : priceDivData2;
-
-  //     if (item.offerDiscount) {
-  //       document.getElementById(
-  //         "revlytic-price-div-selectedPlanPrice"
-  //       ).innerText = getPrice;
-  //     }
-
-  //     // let setPriceSaveHtml1 = `${
-  //     //   item.offerDiscount || item.freeTrial
-  //     //     ? "(" + widgetSettingsData.saveText
-  //     //     : ""
-  //     // }  ${
-  //     //   item.freeTrial && item.offerDiscount
-  //     //     ? "100% " +
-  //     //       widgetSettingsData.onFirstText +
-  //     //       " " +
-  //     //       (item.trialCount == "1" ? "" : item.trialCount) +
-  //     //       " " +
-  //     //       widgetSettingsData.orderText +
-  //     //       ", " +
-  //     //       widgetSettingsData.thenText +
-  //     //       " "
-  //     //     : item.freeTrial &&
-  //     //       (item.offerDiscount == false || item.offerDiscount == null)
-  //     //     ? "100% " +
-  //     //       widgetSettingsData.onFirstText +
-  //     //       " " +
-  //     //       (item.trialCount == "1" ? "" : item.trialCount) +
-  //     //       " " +
-  //     //       widgetSettingsData.orderText +
-  //     //       ")"
-  //     //     : ""
-  //     // }  ${
-  //     //   item.offerDiscount && item.priceType == "percentage"
-  //     //     ? item.price + "%)"
-  //     //     : item.offerDiscount && item.priceType == "fixed"
-  //     //     ? getCurrencySymbol(activeCurrency) +
-  //     //       " " +
-  //     //       item?.price_adjustment?.position_1?.value / 100 +
-  //     //       ") "
-  //     //     : ""
-  //     // }`;
-
-  //     // let setPriceSaveHtml = `${
-  //     //   item?.price_adjustment
-  //     //     ? "(" + widgetSettingsData.saveText
-  //     //     : ""
-  //     // } ${
-  //     //   item?.price_adjustment?.position_1 &&  item?.price_adjustment?.position_2 && parseFloat(item?.price_adjustment?.position_2?.value) > 0
-  //     //     ?  item?.price_adjustment?.position_1?.value + "% " +
-  //     //       widgetSettingsData.onFirstText +
-  //     //       " " +
-  //     //       (item?.price_adjustment?.position_1?.order_count == "1" ? "" :item?.price_adjustment?.position_1?.order_count) +
-  //     //       " " +
-  //     //       widgetSettingsData.orderText +
-  //     //       ", " +
-  //     //       widgetSettingsData.thenText +
-  //     //       " "
-  //     //     :item?.price_adjustment?.position_1 &&  item?.price_adjustment?.position_2 && parseFloat(item?.price_adjustment?.position_2?.value) == 0
-  //     //     ?  item?.price_adjustment?.position_1?.value + "% " +
-  //     //     widgetSettingsData.onFirstText +
-  //     //     " " +
-  //     //     (item?.price_adjustment?.position_1?.order_count == "1" ? "" :item?.price_adjustment?.position_1?.order_count) +
-  //     //     " " +
-  //     //     widgetSettingsData.orderText +
-  //     //       ")"
-  //     //     : ""
-  //     // }`
-
-
-
-  //     let setPriceSaveHtml;
-  
-  //     if(item?.price_adjustment?.position_1 &&  !item?.price_adjustment?.position_2 ){///pos1 contain discount
-      
-  //       setPriceSaveHtml="(" +widgetSettingsData.saveText+ " "+(item?.price_adjustment?.position_1?.type=="percentage" ?  item?.price_adjustment?.position_1?.value + "%" : showAmountWithCurrency(parseFloat(item?.price_adjustment?.position_1?.value)/100)) +")"
-      
-      
-  //     }
-      
-  //     else if(item?.price_adjustment?.position_1 &&  item?.price_adjustment?.position_2 )
-      
-  //     {
-      
-  //       setPriceSaveHtml="(" +widgetSettingsData.saveText+ " "+item?.price_adjustment?.position_1?.value+"%";
-  //     if(parseFloat(item?.price_adjustment?.position_2?.value) > 0) 
-  //     {
-  //       //console.log("iyyiyiyiyis",widgetSettingsData.onFirstText)
-  //       setPriceSaveHtml += widgetSettingsData.onFirstText + " " +(item?.price_adjustment?.position_1?.order_count == "1" ? "" : item?.price_adjustment?.position_1?.order_count) +
-  //       " " +
-  //       widgetSettingsData.orderText +
-  //       ", " +
-  //       widgetSettingsData.thenText +
-  //       " " +
-  //       (item?.price_adjustment?.position_2?.type=="percentage" ?  item?.price_adjustment?.position_2?.value + "%" : showAmountWithCurrency(parseFloat(item?.price_adjustment?.position_2?.value)/100))  +" off)"
-      
-  //     }else{
-  //       setPriceSaveHtml += " "+widgetSettingsData.onFirstText + " " +(item?.price_adjustment?.position_1?.order_count == "1" ? "" : item?.price_adjustment?.position_1?.order_count) +
-  //       " " +
-  //       widgetSettingsData.orderText+ ")"
-  //     }
-  //     }
-
-
-
-
-
-  //     document.getElementById("revlytic-price-div-save-section").innerHTML =
-  //       setPriceSaveHtml;
-  //     document.getElementById("revlytic-pricediv-main").style.display = "block";
-  //   }
-  // }
   function handlePlanSelection(e) {
     let extractPlanId = "ID_" + e.target.value.split("/").at(-1);
     //console.log("extractPlanId", extractPlanId);
     let getPrice =
       Revlytic.variant["VID_" + selectedVariant]?.allocations?.selling_plans
         ?.list[extractPlanId]?.checkout_charge_amount;
- 
-
-    // var form = document.querySelector(
-    //   'form[action="/cart/add"][data-type="add-to-cart-form"]'
-    // );
-    // //console.log("form", form);
-    // var sellingPlanInput = form.querySelector('input[name="selling_plan"]');
-    // //console.log("selllinPlanInput", sellingPlanInput);
-    // if (sellingPlanInput) {
-    //   //console.log("innnnnnererrrrrrr");
-    //   sellingPlanInput.value = e.target.value.split("/").at(-1);
-    // }
 
 
+    //@@@@@@@  18jan   //////////
+    var form = document.querySelectorAll('form[action*="/cart/add"]');
+    form.forEach((item) => {
+      console.log("isi", item);
 
-//@@@@@@@  18jan   //////////
-var form = document.querySelectorAll(
-  'form[action*="/cart/add"]'
-);
-  form.forEach((item)=>
-    {
-console.log("isi",item)
+      var sellingPlanInputs = item.querySelectorAll(
+        'input[name="selling_plan"]'
+      );
+      console.log("e22novm", sellingPlanInputs);
 
-      var sellingPlanInputs = item.querySelectorAll('input[name="selling_plan"]');
-      console.log("e22novm",sellingPlanInputs) 
-  
-   
-        console.log("22nov-sam")
-        if (sellingPlanInputs.length === 0) {
-          console.log("tickkkktokl")
-          var newHiddenInput = document.createElement("input");
-          newHiddenInput.type = "hidden";
-          newHiddenInput.name = "selling_plan";
-          newHiddenInput.value = e.target.value.split("/").at(-1);
-  
-          item.appendChild(newHiddenInput);
-          //console.log("Created new hidden input:", newHiddenInput);
-        } else {
-          console.log("in3oct else",)
-          
-          sellingPlanInputs.forEach(function (input) {
-            input.value = e.target.value.split("/").at(-1);
-          });
-        }
-      
+      console.log("22nov-sam");
+      if (sellingPlanInputs.length === 0) {
+        console.log("tickkkktokl");
+        var newHiddenInput = document.createElement("input");
+        newHiddenInput.type = "hidden";
+        newHiddenInput.name = "selling_plan";
+        newHiddenInput.value = e.target.value.split("/").at(-1);
 
+        item.appendChild(newHiddenInput);
+        //console.log("Created new hidden input:", newHiddenInput);
+      } else {
+        console.log("in3oct else");
 
+        sellingPlanInputs.forEach(function (input) {
+          input.value = e.target.value.split("/").at(-1);
+        });
+      }
+    });
 
-
-    }
-    
-    
-    )
-
-
-
-///////enddddd///////////////////
+    ///////enddddd///////////////////
     selectedPlanIndex = e.target.options[e.target.selectedIndex].dataset.index;
     let item = dropdownData[selectedPlanIndex];
-    //console.log("auta", item);
+   
 
-    //console.log( "saaaaaahiiiiiiiillllll",item.billingEvery,item.deliveryEvery);
-
-    // selectedPlanPrice =
-    //   item.planType == "prepaid"
-    //     ? priceMultiplier(getPrice, item.billingEvery, item.deliveryEvery)
-    //     : getPrice ;
-
-
-    selectedPlanPrice=getPrice;
-
+    selectedPlanPrice = getPrice;
 
     document.getElementById("revlytic_subscribe_price").innerText =
       selectedPlanPrice;
@@ -605,121 +352,87 @@ console.log("isi",item)
       (item.offerDiscount == false || item.offerDiscount == null) &&
       (item.freeTrial == false || item.freeTrial == null)
     ) {
-      //console.log("breakfast");
+      console.log("inplaseletifff-8april");
       document.getElementById("revlytic-pricediv-main").style.display = "none";
       positionPriceDiv[0].style.display = "block";
     } else {
-      //console.log("dinner");
+      console.log("inplanseletelse8april", getPrice);
       positionPriceDiv[0].style.display = "none";
       ///
       document.getElementById("revlytic-pricediv-main").innerHTML =
-        item.offerDiscount ? priceDivData1 : priceDivData2;
+        (item.offerDiscount || item.freeTrial) ? priceDivData1 : priceDivData2;
 
-      if (item.offerDiscount) {
+      console.log("1immed-",selectedVariantData?.onetimepurchaseprice)
+        document.getElementById("revlytic-price-div-onetimepurchaseprice").innerHTML=`<s>${selectedVariantData?.onetimepurchaseprice}</s>` ;
+
+
+      if (item.offerDiscount || item.freeTrial) {
         document.getElementById(
           "revlytic-price-div-selectedPlanPrice"
         ).innerText = getPrice;
       }
-
-      // let setPriceSaveHtml1 = `${
-      //   item.offerDiscount || item.freeTrial
-      //     ? "(" + widgetSettingsData.saveText
-      //     : ""
-      // }  ${
-      //   item.freeTrial && item.offerDiscount
-      //     ? "100% " +
-      //       widgetSettingsData.onFirstText +
-      //       " " +
-      //       (item.trialCount == "1" ? "" : item.trialCount) +
-      //       " " +
-      //       widgetSettingsData.orderText +
-      //       ", " +
-      //       widgetSettingsData.thenText +
-      //       " "
-      //     : item.freeTrial &&
-      //       (item.offerDiscount == false || item.offerDiscount == null)
-      //     ? "100% " +
-      //       widgetSettingsData.onFirstText +
-      //       " " +
-      //       (item.trialCount == "1" ? "" : item.trialCount) +
-      //       " " +
-      //       widgetSettingsData.orderText +
-      //       ")"
-      //     : ""
-      // }  ${
-      //   item.offerDiscount && item.priceType == "percentage"
-      //     ? item.price + "%)"
-      //     : item.offerDiscount && item.priceType == "fixed"
-      //     ? getCurrencySymbol(activeCurrency) +
-      //       " " +
-      //       item?.price_adjustment?.position_1?.value / 100 +
-      //       ") "
-      //     : ""
-      // }`;
-
-      // let setPriceSaveHtml = `${
-      //   item?.price_adjustment
-      //     ? "(" + widgetSettingsData.saveText
-      //     : ""
-      // } ${
-      //   item?.price_adjustment?.position_1 &&  item?.price_adjustment?.position_2 && parseFloat(item?.price_adjustment?.position_2?.value) > 0
-      //     ?  item?.price_adjustment?.position_1?.value + "% " +
-      //       widgetSettingsData.onFirstText +
-      //       " " +
-      //       (item?.price_adjustment?.position_1?.order_count == "1" ? "" :item?.price_adjustment?.position_1?.order_count) +
-      //       " " +
-      //       widgetSettingsData.orderText +
-      //       ", " +
-      //       widgetSettingsData.thenText +
-      //       " "
-      //     :item?.price_adjustment?.position_1 &&  item?.price_adjustment?.position_2 && parseFloat(item?.price_adjustment?.position_2?.value) == 0
-      //     ?  item?.price_adjustment?.position_1?.value + "% " +
-      //     widgetSettingsData.onFirstText +
-      //     " " +
-      //     (item?.price_adjustment?.position_1?.order_count == "1" ? "" :item?.price_adjustment?.position_1?.order_count) +
-      //     " " +
-      //     widgetSettingsData.orderText +
-      //       ")"
-      //     : ""
-      // }`
-
-
+    
 
       let setPriceSaveHtml;
-  
-      if(item?.price_adjustment?.position_1 &&  !item?.price_adjustment?.position_2 ){///pos1 contain discount
-      
-        setPriceSaveHtml="(" +widgetSettingsData.saveText+ " "+(item?.price_adjustment?.position_1?.type=="percentage" ?  item?.price_adjustment?.position_1?.value + "%" : showAmountWithCurrency(parseFloat(item?.price_adjustment?.position_1?.value)/100)) +")"
-      
-      
+
+      if (
+        item?.price_adjustment?.position_1 &&
+        !item?.price_adjustment?.position_2
+      ) {
+        ///pos1 contain discount
+
+        setPriceSaveHtml =
+          "(" +
+          widgetSettingsData.saveText +
+          " " +
+          (item?.price_adjustment?.position_1?.type == "percentage"
+            ? item?.price_adjustment?.position_1?.value + "%"
+            : showAmountWithCurrency(
+                parseFloat(item?.price_adjustment?.position_1?.value) / 100
+              )) +
+          ")";
+      } else if (
+        item?.price_adjustment?.position_1 &&
+        item?.price_adjustment?.position_2
+      ) {
+        setPriceSaveHtml =
+          "(" +
+          widgetSettingsData.saveText +
+          " " +
+          item?.price_adjustment?.position_1?.value +
+          "%";
+        if (parseFloat(item?.price_adjustment?.position_2?.value) > 0) {
+          //console.log("iyyiyiyiyis",widgetSettingsData.onFirstText)
+          setPriceSaveHtml +=
+            widgetSettingsData.onFirstText +
+            " " +
+            (item?.price_adjustment?.position_1?.order_count == "1"
+              ? ""
+              : item?.price_adjustment?.position_1?.order_count) +
+            " " +
+            widgetSettingsData.orderText +
+            ", " +
+            widgetSettingsData.thenText +
+            " " +
+            (item?.price_adjustment?.position_2?.type == "percentage"
+              ? item?.price_adjustment?.position_2?.value + "%"
+              : showAmountWithCurrency(
+                  parseFloat(item?.price_adjustment?.position_2?.value) / 100
+                )) +
+            " off)";
+        } else {
+          setPriceSaveHtml +=
+            " " +
+            widgetSettingsData.onFirstText +
+            " " +
+            (item?.price_adjustment?.position_1?.order_count == "1"
+              ? ""
+              : item?.price_adjustment?.position_1?.order_count) +
+            " " +
+            widgetSettingsData.orderText +
+            ")";
+        }
       }
-      
-      else if(item?.price_adjustment?.position_1 &&  item?.price_adjustment?.position_2 )
-      
-      {
-      
-        setPriceSaveHtml="(" +widgetSettingsData.saveText+ " "+item?.price_adjustment?.position_1?.value+"%";
-      if(parseFloat(item?.price_adjustment?.position_2?.value) > 0) 
-      {
-        //console.log("iyyiyiyiyis",widgetSettingsData.onFirstText)
-        setPriceSaveHtml += widgetSettingsData.onFirstText + " " +(item?.price_adjustment?.position_1?.order_count == "1" ? "" : item?.price_adjustment?.position_1?.order_count) +
-        " " +
-        widgetSettingsData.orderText +
-        ", " +
-        widgetSettingsData.thenText +
-        " " +
-        (item?.price_adjustment?.position_2?.type=="percentage" ?  item?.price_adjustment?.position_2?.value + "%" : showAmountWithCurrency(parseFloat(item?.price_adjustment?.position_2?.value)/100))  +" off)"
-      
-      }else{
-        setPriceSaveHtml += " "+widgetSettingsData.onFirstText + " " +(item?.price_adjustment?.position_1?.order_count == "1" ? "" : item?.price_adjustment?.position_1?.order_count) +
-        " " +
-        widgetSettingsData.orderText+ ")"
-      }
-      }
-
-
-
-
 
       document.getElementById("revlytic-price-div-save-section").innerHTML =
         setPriceSaveHtml;
@@ -835,88 +548,93 @@ console.log("isi",item)
         //console.log("evening");
         positionPriceDiv[0].style.display = "none";
 
-        document.getElementById("revlytic-pricediv-main").style.display =
-          "block";
+       
 
-        //console.log("wait sirji");
+        console.log("wait sirji",selectedVariantData.onetimepurchaseprice);
 
-        // document.getElementById("revlytic-price-div-selectedPlanPrice").innerText="";
-
-        selectedPlanPriceForPriceBlock=  Revlytic.variant["VID_" + selectedVariant]?.allocations
-        .selling_plans.list["ID_" + item.plan_id.split("/").at(-1)]
+        
+        selectedPlanPriceForPriceBlock =
+        Revlytic.variant["VID_" + selectedVariant]?.allocations.selling_plans
+        .list["ID_" + item.plan_id.split("/").at(-1)]
         .checkout_charge_amount;
-
-        // let setPriceSaveHtml = `${
-        //   item.offerDiscount || item.freeTrial
-        //     ? "(" + widgetSettingsData.saveText
-        //     : ""
-        // }  ${
-        //   item.freeTrial && item.offerDiscount
-        //     ? "100 % " +
-        //       widgetSettingsData.onFirstText +
-        //       " " +
-        //       (item.trialCount == "1" ? "" : item.trialCount) +
-        //       " " +
-        //       widgetSettingsData.orderText +
-        //       ", " +
-        //       widgetSettingsData.thenText +
-        //       " "
-        //     : item.freeTrial &&
-        //       (item.offerDiscount == false || item.offerDiscount == null)
-        //     ? "100 % " +
-        //       widgetSettingsData.onFirstText +
-        //       " " +
-        //       (item.trialCount == "1" ? "" : item.trialCount) +
-        //       " " +
-        //       widgetSettingsData.orderText +
-        //       ")"
-        //     : ""
-        // }  ${
-        //   item.offerDiscount && item.priceType == "percentage"
-        //     ? item.price + "%)"
-        //     : item.offerDiscount && item.priceType == "fixed"
-        //     ? getCurrencySymbol(activeCurrency) +
-        //       " " +
-        //       item?.price_adjustment?.position_1?.value / 100 +
-        //       ")"
-        //     : ""
-        // }`;
+        
+        /////////////////
+        document.getElementById("revlytic-pricediv-main").innerHTML =
+        (item.offerDiscount || item.freeTrial) ? priceDivData1 : priceDivData2;
+        
+        document.getElementById("revlytic-price-div-onetimepurchaseprice").innerHTML=`<s>${selectedVariantData?.onetimepurchaseprice}</s>` ;
+          if (item.offerDiscount || item.freeTrial) {
+            document.getElementById(
+              "revlytic-price-div-selectedPlanPrice"
+            ).innerText =   Revlytic.variant["VID_" + selectedVariant]?.allocations.selling_plans
+            .list["ID_" + item.plan_id.split("/").at(-1)]
+            .checkout_charge_amount;;
+          }
+ //////////////////       
 
 
-
+            document.getElementById("revlytic-pricediv-main").style.display =
+            "block";
 
         let setPriceSaveHtml;
-        if(item?.price_adjustment?.position_1 &&  !item?.price_adjustment?.position_2 ){///pos1 contain discount
-        
-          setPriceSaveHtml="(" +widgetSettingsData.saveText+ " "+(item?.price_adjustment?.position_1?.type=="percentage" ?  item?.price_adjustment?.position_1?.value + "%" :showAmountWithCurrency(parseFloat(item?.price_adjustment?.position_1?.value)/100)) +")"
-        
-        
-        }
-        
-        else if(item?.price_adjustment?.position_1 &&  item?.price_adjustment?.position_2 )
-        
-        {
-        
-          setPriceSaveHtml="(" +widgetSettingsData.saveText+ " "+item?.price_adjustment?.position_1?.value+"%";
-        if(parseFloat(item?.price_adjustment?.position_2?.value) > 0) 
-        {
-          //console.log("iyyiyiyiyis",widgetSettingsData.onFirstText)
-          setPriceSaveHtml += widgetSettingsData.onFirstText + " " +(item?.price_adjustment?.position_1?.order_count == "1" ? "" : item?.price_adjustment?.position_1?.order_count) +
-          " " +
-          widgetSettingsData.orderText +
-          ", " +
-          widgetSettingsData.thenText +
-          " " +
-          (item?.price_adjustment?.position_2?.type=="percentage" ?  item?.price_adjustment?.position_2?.value + "%" : showAmountWithCurrency(parseFloat(item?.price_adjustment?.position_2?.value)/100))  +" off)"
-        
-        }else{
-          setPriceSaveHtml += " "+widgetSettingsData.onFirstText + " " +(item?.price_adjustment?.position_1?.order_count == "1" ? "" : item?.price_adjustment?.position_1?.order_count) +
-          " " +
-          widgetSettingsData.orderText+ ")"
-        }
-        }
+        if (
+          item?.price_adjustment?.position_1 &&
+          !item?.price_adjustment?.position_2
+        ) {
+          ///pos1 contain discount
 
-
+          setPriceSaveHtml =
+            "(" +
+            widgetSettingsData.saveText +
+            " " +
+            (item?.price_adjustment?.position_1?.type == "percentage"
+              ? item?.price_adjustment?.position_1?.value + "%"
+              : showAmountWithCurrency(
+                  parseFloat(item?.price_adjustment?.position_1?.value) / 100
+                )) +
+            ")";
+        } else if (
+          item?.price_adjustment?.position_1 &&
+          item?.price_adjustment?.position_2
+        ) {
+          setPriceSaveHtml =
+            "(" +
+            widgetSettingsData.saveText +
+            " " +
+            item?.price_adjustment?.position_1?.value +
+            "%";
+          if (parseFloat(item?.price_adjustment?.position_2?.value) > 0) {
+            //console.log("iyyiyiyiyis",widgetSettingsData.onFirstText)
+            setPriceSaveHtml +=
+              widgetSettingsData.onFirstText +
+              " " +
+              (item?.price_adjustment?.position_1?.order_count == "1"
+                ? ""
+                : item?.price_adjustment?.position_1?.order_count) +
+              " " +
+              widgetSettingsData.orderText +
+              ", " +
+              widgetSettingsData.thenText +
+              " " +
+              (item?.price_adjustment?.position_2?.type == "percentage"
+                ? item?.price_adjustment?.position_2?.value + "%"
+                : showAmountWithCurrency(
+                    parseFloat(item?.price_adjustment?.position_2?.value) / 100
+                  )) +
+              " off)";
+          } else {
+            setPriceSaveHtml +=
+              " " +
+              widgetSettingsData.onFirstText +
+              " " +
+              (item?.price_adjustment?.position_1?.order_count == "1"
+                ? ""
+                : item?.price_adjustment?.position_1?.order_count) +
+              " " +
+              widgetSettingsData.orderText +
+              ")";
+          }
+        }
 
         document.getElementById("revlytic-price-div-save-section").innerHTML =
           setPriceSaveHtml;
@@ -924,7 +642,6 @@ console.log("isi",item)
 
       ////
     } else {
-      //console.log("inelse");
       positionPriceDiv[0].style.display = "block";
       document.getElementById("revlytic-pricediv-main").style.display = "none";
       document.getElementById("revlytic_subscribeAndSave").style.border =
@@ -935,13 +652,17 @@ console.log("isi",item)
       document.getElementById(
         "revlytic-delivery-frequency-main"
       ).style.display = "none";
+      
+      document.getElementById("revlytic_subscribe_price").innerText=Revlytic.variant["VID_" + selectedVariant]?.allocations.selling_plans
+      .list["ID_" + dropdownData[0].plan_id.split("/").at(-1)]
+      .checkout_charge_amount
 
       updateHiddenInputForAddToCartForm("remove");
     }
   }
 
   // function updateHiddenInputForAddToCartForm(option) {
-  //   //console.log("option",option)
+  //   console.log("option20nov",option)
   //   const selectedPlan = document.getElementById("revlytic_selectedPlan").value;
 
   //   // var form = document.querySelector(
@@ -952,14 +673,15 @@ console.log("isi",item)
   //     'form[action*="/cart/add"] button[name="add"], form[action*="/cart/add"] input[name="add"]'
   //   );
 
-  //   //console.log("form", form);
+  //   console.log("formeeeeee", form);
   //   // var hiddenInput = form.querySelector('input[name="selling_plan"][data-type="add-to-cart-form"]');
   //   var sellingPlanInputs = form.querySelectorAll('input[name="selling_plan"]');
-  //   //console.log("33333333",option)
+  //   console.log("eyrtwerwueiwe",sellingPlanInputs)
 
   //   if (option == "add") {
   //     //console.log("3octoberrrrrrrr")
   //     if (sellingPlanInputs.length === 0) {
+  //       console.log("tickkkktokl")
   //       var newHiddenInput = document.createElement("input");
   //       newHiddenInput.type = "hidden";
   //       newHiddenInput.name = "selling_plan";
@@ -969,6 +691,7 @@ console.log("isi",item)
   //       //console.log("Created new hidden input:", newHiddenInput);
   //     } else {
   //       //console.log("in3oct else",)
+
   //       sellingPlanInputs.forEach(function (input) {
   //         input.value = selectedPlan.split("/").at(-1);
   //       });
@@ -982,45 +705,42 @@ console.log("isi",item)
   //   }
   // }
 
-
-
   function updateHiddenInputForAddToCartForm(option) {
-    console.log("option20nov",option)
-    console.log("skkke",theme_block_supported)
+    // console.log("option20nov", option);
+    // console.log("skkke", theme_block_supported);
     const selectedPlan = document.getElementById("revlytic_selectedPlan").value;
 
-    var form = document.querySelectorAll(
-      'form[action*="/cart/add"]'
-    );
+    var form = document.querySelectorAll('form[action*="/cart/add"]');
 
     // var form = document.querySelector(
     //   'form[action*="/cart/add"] button[name="add"], form[action*="/cart/add"] input[name="add"]'
     // );
 
-    console.log("formeeeeee22nov", form);
+    // console.log("formeeeeee22nov", form);
     // var hiddenInput = form.querySelector('input[name="selling_plan"][data-type="add-to-cart-form"]');
 
-    form.forEach((item)=>
-    {
-console.log("iiissssiiii",item)
+    form.forEach((item) => {
+      // console.log("iiissssiiii", item);
 
-      var sellingPlanInputs = item.querySelectorAll('input[name="selling_plan"]');
-      console.log("e22novm",sellingPlanInputs) 
-  
+      var sellingPlanInputs = item.querySelectorAll(
+        'input[name="selling_plan"]'
+      );
+      // console.log("e22novm", sellingPlanInputs);
+
       if (option == "add") {
-        console.log("22nov-sam")
+        // console.log("22nov-sam");
         if (sellingPlanInputs.length === 0) {
-          console.log("tickkkktokl")
+          // console.log("tickkkktokl");
           var newHiddenInput = document.createElement("input");
           newHiddenInput.type = "hidden";
           newHiddenInput.name = "selling_plan";
           newHiddenInput.value = selectedPlan.split("/").at(-1);
-  
+
           item.appendChild(newHiddenInput);
           //console.log("Created new hidden input:", newHiddenInput);
         } else {
-          console.log("in3oct else",)
-          
+          // console.log("in3oct else");
+
           sellingPlanInputs.forEach(function (input) {
             input.value = selectedPlan.split("/").at(-1);
           });
@@ -1032,18 +752,8 @@ console.log("iiissssiiii",item)
           });
         }
       }
-
-
-
-
-    }
-    
-    
-    )
-
-
+    });
   }
-
 
   async function main() {
     //  const createDiv = document.createElement("div");
@@ -1092,11 +802,10 @@ console.log("iiissssiiii",item)
         );
 
         const result = await response.json();
-         
 
-        fetchedData = result?.message == 'success' ? result?.data : [];
+        fetchedData = result?.message == "success" ? result?.data : [];
 
-        console.log("chekc2nov:", fetchedData);
+        // console.log("chekc2nov:", fetchedData);
       } catch (error) {
         //console.error("Error:", error);
       }
@@ -1112,10 +821,11 @@ console.log("iiissssiiii",item)
       });
     }
 
-    let selectedVariantData = Revlytic.variant["VID_" + selectedVariant];
-    console.log("ppppppppppppp", selectedVariantData);
-    console.log("selectedVariant", selectedVariant);
-    if (  
+    // let selectedVariantData = Revlytic.variant["VID_" + selectedVariant];
+    selectedVariantData = Revlytic.variant["VID_" + selectedVariant];
+    // console.log("ppppppppppppp", selectedVariantData);
+    // console.log("selectedVariant", selectedVariant);
+    if (
       selectedVariantData &&
       selectedVariantData.allocations.selling_plans.list != {}
     ) {
@@ -1124,7 +834,7 @@ console.log("iiissssiiii",item)
       );
       sellingPlanIdList.map((item) => {
         let rawId = item.split("ID_")[1];
-        console.log("majhaaa",Revlytic.selling_plans.list[item]);
+        // console.log("majhaaa", Revlytic.selling_plans.list[item]);
         let getData = filterData.find(
           (itm) => itm.plan_id == "gid://shopify/SellingPlan/" + rawId
         );
@@ -1146,95 +856,92 @@ console.log("iiissssiiii",item)
       });
     }
 
-    console.log("dropdownData", dropdownData);
+    // console.log("dropdownData", dropdownData);
 
     function generateOptions() {
       let options = "";
-      
+
       dropdownData.forEach((item, index) => {
+        //console.log("first")
 
-                  //console.log("first")
+        //   let showOption = widgetSettingsData.showPredefinedDeliveryFrequencies== true  ?  ( (item.planType=="prepaid" ? item.deliveryEvery : item.billingEvery) + " "+
+        //   item.billingEveryType == "month"
+        //    ? widgetSettingsData.monthFrequencyText
+        //    : item.billingEveryType == "year"
+        //    ? widgetSettingsData.yearFrequencyText
+        //    : item.billingEveryType == "week"
+        //    ? widgetSettingsData.weekFrequencyText
+        //    : item.billingEveryType == "day"
+        //    ? widgetSettingsData.dayFrequencyText
+        //    : ""
+        //    +
+        //    "(s)"
+        //    +
+        //  item.planType=='prepaid' ?
 
-                //   let showOption = widgetSettingsData.showPredefinedDeliveryFrequencies== true  ?  ( (item.planType=="prepaid" ? item.deliveryEvery : item.billingEvery) + " "+
-                //   item.billingEveryType == "month"
-                //    ? widgetSettingsData.monthFrequencyText
-                //    : item.billingEveryType == "year" 
-                //    ? widgetSettingsData.yearFrequencyText
-                //    : item.billingEveryType == "week"
-                //    ? widgetSettingsData.weekFrequencyText
-                //    : item.billingEveryType == "day"
-                //    ? widgetSettingsData.dayFrequencyText
-                //    : ""
-                //    +
-                //    "(s)"
-                //    +
-                //  item.planType=='prepaid' ? 
+        // (", " + widgetSettingsData.prepayText +" "+item.billingEvery +" "+
+        //   (item.billingEveryType == "month"
+        //     ? widgetSettingsData.monthFrequencyText
+        //     : item.billingEveryType == "year"
+        //     ? widgetSettingsData.yearFrequencyText
+        //     : item.billingEveryType == "week"
+        //     ? widgetSettingsData.weekFrequencyText
+        //     : item.billingEveryType == "day"
+        //     ? widgetSettingsData.dayFrequencyText
+        //     : "")
+        //    +"(s)"
+        // ) : ""
 
-                // (", " + widgetSettingsData.prepayText +" "+item.billingEvery +" "+
-                //   (item.billingEveryType == "month"
-                //     ? widgetSettingsData.monthFrequencyText
-                //     : item.billingEveryType == "year"
-                //     ? widgetSettingsData.yearFrequencyText
-                //     : item.billingEveryType == "week"
-                //     ? widgetSettingsData.weekFrequencyText
-                //     : item.billingEveryType == "day"
-                //     ? widgetSettingsData.dayFrequencyText
-                //     : "")
-                //    +"(s)" 
-                // ) : ""
+        //    ): item.planName
 
-                //    ): item.planName
+        let showOption;
 
+        if (widgetSettingsData.showPredefinedDeliveryFrequencies === true) {
+          if (item.planType === "prepaid") {
+            showOption = item.deliveryEvery + " ";
 
-                let showOption;
+            if (item.billingEveryType === "month") {
+              showOption += widgetSettingsData.monthFrequencyText;
+            } else if (item.billingEveryType === "year") {
+              showOption += widgetSettingsData.yearFrequencyText;
+            } else if (item.billingEveryType === "week") {
+              showOption += widgetSettingsData.weekFrequencyText;
+            } else if (item.billingEveryType === "day") {
+              showOption += widgetSettingsData.dayFrequencyText;
+            }
 
-                if (widgetSettingsData.showPredefinedDeliveryFrequencies === true) {
-                  if (item.planType === "prepaid") {
-                    showOption = item.deliveryEvery + " ";
-                    
-                    if (item.billingEveryType === "month") {
-                      showOption += widgetSettingsData.monthFrequencyText;
-                    } else if (item.billingEveryType === "year") {
-                      showOption += widgetSettingsData.yearFrequencyText;
-                    } else if (item.billingEveryType === "week") {
-                      showOption += widgetSettingsData.weekFrequencyText;
-                    } else if (item.billingEveryType === "day") {
-                      showOption += widgetSettingsData.dayFrequencyText;
-                    }
-                    
-                    showOption += ", " + widgetSettingsData.prepayText + " " + item.billingEvery + " ";
-                    
-                    if (item.billingEveryType === "month") {
-                      showOption += widgetSettingsData.monthFrequencyText;
-                    } else if (item.billingEveryType === "year") {
-                      showOption += widgetSettingsData.yearFrequencyText;
-                    } else if (item.billingEveryType === "week") {
-                      showOption += widgetSettingsData.weekFrequencyText;
-                    } else if (item.billingEveryType === "day") {
-                      showOption += widgetSettingsData.dayFrequencyText;
-                    }
-                    
-                    
-                  } else {
-                   showOption= item.billingEvery + " ";
-                    
-                    if (item.billingEveryType === "month") {
-                      showOption += widgetSettingsData.monthFrequencyText;
-                    } else if (item.billingEveryType === "year") {
-                      showOption += widgetSettingsData.yearFrequencyText;
-                    } else if (item.billingEveryType === "week") {
-                      showOption += widgetSettingsData.weekFrequencyText;
-                    } else if (item.billingEveryType === "day") {
-                      showOption += widgetSettingsData.dayFrequencyText;
-                    }
-                    
-                   
-                  }
-                } else {
-                  showOption = item.planName;
-                }
-                
-              
+            showOption +=
+              ", " +
+              widgetSettingsData.prepayText +
+              " " +
+              item.billingEvery +
+              " ";
+
+            if (item.billingEveryType === "month") {
+              showOption += widgetSettingsData.monthFrequencyText;
+            } else if (item.billingEveryType === "year") {
+              showOption += widgetSettingsData.yearFrequencyText;
+            } else if (item.billingEveryType === "week") {
+              showOption += widgetSettingsData.weekFrequencyText;
+            } else if (item.billingEveryType === "day") {
+              showOption += widgetSettingsData.dayFrequencyText;
+            }
+          } else {
+            showOption = item.billingEvery + " ";
+
+            if (item.billingEveryType === "month") {
+              showOption += widgetSettingsData.monthFrequencyText;
+            } else if (item.billingEveryType === "year") {
+              showOption += widgetSettingsData.yearFrequencyText;
+            } else if (item.billingEveryType === "week") {
+              showOption += widgetSettingsData.weekFrequencyText;
+            } else if (item.billingEveryType === "day") {
+              showOption += widgetSettingsData.dayFrequencyText;
+            }
+          }
+        } else {
+          showOption = item.planName;
+        }
 
         // options += `<option value="${item.plan_id}" data-index="${index}" >${item.planName}</option>`;
         options += `<option value="${item.plan_id}" data-index="${index}" >${showOption}</option>`;
@@ -1245,14 +952,13 @@ console.log("iiissssiiii",item)
               .selling_plans.list["ID_" + item.plan_id.split("/").at(-1)]
               .checkout_charge_amount;
 
-              selectedPlanPriceForPriceBlock=selectedPlanPrice
+          selectedPlanPriceForPriceBlock = selectedPlanPrice;
 
           // selectedPlanPrice =
           //   item.planType == "prepaid"
           //     ? priceMultiplier(selectedPlanPrice, item.billingEvery, item.deliveryEvery)
           //     : selectedPlanPrice;
 
-             
           //console.log(selectedPlanPrice, "checprice");
           // document.getElementById("revlytic_subscribe_price").textContent = selectedPlanPrice;
         }
@@ -1282,7 +988,9 @@ console.log("iiissssiiii",item)
                           widgetSettingsData.oneTimePurchaseText
                         }
                     </label>
-                    <span style="color: ${widgetSettingsData.priceColor}" id="revlytic_oneTimePurchase_price">${
+                    <span style="color: ${
+                      widgetSettingsData.priceColor
+                    }" id="revlytic_oneTimePurchase_price">${
       selectedVariantData.onetimepurchaseprice
     }</span>
                 </div>
@@ -1344,7 +1052,11 @@ console.log("iiissssiiii",item)
     </div>
          <div><h3>${widgetSettingsData.subscriptionDetailsText}</h3></div>
         <div class="revlytic-subscription-details-main">
-        <p>${widgetSettingsData.additionalSubscriptionDetails}</p>
+        <p style="color: ${
+          widgetSettingsData?.additionalSubscriptionDetailsTextColor
+            ? widgetSettingsData?.additionalSubscriptionDetailsTextColor
+            : "#767676"
+        }">${widgetSettingsData?.additionalSubscriptionDetails}</p>
         </div>
     </div>
    
@@ -1366,9 +1078,9 @@ console.log("iiissssiiii",item)
 
     let Revlytic_SIZE_POSITION =
       document.getElementsByClassName("revlytic-app-block");
-    
+
     if (theme_block_supported == true) {
-      console.log("afganistan")
+      // console.log("afganistan");
       if (Revlytic_SIZE_POSITION.length > 0) {
         //console.log("in nested if");
         Revlytic_SIZE_POSITION[0].appendChild(revlytic_div);
@@ -1376,16 +1088,17 @@ console.log("iiissssiiii",item)
         console.log("in nestesd elese");
       }
     } else {
-      console.log("australiaaa")
+      // console.log("australiaaa");
       //console.log("inelseeouter",theme_block_supported);
-      let positionAddToCart = document.querySelector('form[action*="/cart/add"] button[name="add"],form[action*="/cart/add"] input[name="add"]');
-     if(positionAddToCart){
-      console.log("sting",positionAddToCart)
-      positionAddToCart.insertAdjacentElement("beforebegin", tempContainer);
-      console.log("end AFTER ROADDD")
-      }
-      else{
-        console.log("ticktokk")
+      let positionAddToCart = document.querySelector(
+        'form[action*="/cart/add"] button[name="add"],form[action*="/cart/add"] input[name="add"]'
+      );
+      if (positionAddToCart) {
+        // console.log("sting", positionAddToCart);
+        positionAddToCart.insertAdjacentElement("beforebegin", tempContainer);
+        // console.log("end AFTER ROADDD");
+      } else {
+        console.log("ticktokk");
       }
     }
     //   let Revlytic_SIZE_POSITION = document.getElementsByClassName("revlytic-app-block");
@@ -1407,27 +1120,27 @@ console.log("iiissssiiii",item)
     //     //     'form[action*="/cart/add"] button[name="add"], form[action*="/cart/add"] input[name="add"]';
     //     //   const existingElement = document.querySelector(Revlytic_SIZE_SELECTOR);
     //     //   if (existingElement) {
-      //     //     existingElement.insertAdjacentHTML("beforebegin", Revlytic_DIV);
-      //     //   }
-      //     // } else {
-        //     //   let RevlyticSSClass = document.getElementsByClassName(smartClass);
-        //     //   if(SELECTOR_POSITION == "Before") {
-          //     //     RevlyticSSClass[0]?.insertAdjacentHTML("beforebegin", Revlytic_DIV);
-          //     //   } else {
-            //     //     RevlyticSSClass[0]?.insertAdjacentHTML("afterend", Revlytic_DIV);
-            //     //   }
-            
-            //     //}
-            
-            // //console.log("inelsee")
-            
-            //  }
-            
-            // await new Promise((resolve) => setTimeout(resolve, 0));
-            console.log("dropdownData.length",dropdownData.length)
-            
+    //     //     existingElement.insertAdjacentHTML("beforebegin", Revlytic_DIV);
+    //     //   }
+    //     // } else {
+    //     //   let RevlyticSSClass = document.getElementsByClassName(smartClass);
+    //     //   if(SELECTOR_POSITION == "Before") {
+    //     //     RevlyticSSClass[0]?.insertAdjacentHTML("beforebegin", Revlytic_DIV);
+    //     //   } else {
+    //     //     RevlyticSSClass[0]?.insertAdjacentHTML("afterend", Revlytic_DIV);
+    //     //   }
+
+    //     //}
+
+    // //console.log("inelsee")
+
+    //  }
+
+    // await new Promise((resolve) => setTimeout(resolve, 0));
+    // console.log("dropdownData.length", dropdownData.length);
+
     if (dropdownData.length > 0) {
-      console.log("checkinngggggbatalaaa")
+      // console.log("checkinngggggbatalaaa");
       document.getElementById("revlytic-purchase-optn-main").style.display =
         "block";
     }
@@ -1480,12 +1193,12 @@ console.log("iiissssiiii",item)
       divOneTimePurchase.style.display = "none";
       inputSubscribeAndSave.setAttribute("checked", "checked");
       purchaseOption = "subscribeAndSave";
-// 3octoberstart///////
+      // 3octoberstart///////
 
-      let  check={target:{value:"subscribeAndSave"}}
-      handlePurchaseOption(check)
+      let check = { target: { value: "subscribeAndSave" } };
+      handlePurchaseOption(check);
 
-////3rd october end///////
+      ////3rd october end///////
     } else {
       divOneTimePurchase.style.display = "block"; // or "inline-block", "flex", etc.
       var inputOneTimePurchase = document.getElementById(
@@ -1517,7 +1230,6 @@ console.log("iiissssiiii",item)
     //  }
 
     /////
-
 
     //     function updateHiddenInputForAddToCartForm(){
     //     const selectedPlan = document.getElementById("revlytic_selectedPlan").value;
@@ -1599,21 +1311,19 @@ console.log("iiissssiiii",item)
           dropdownData = plan_array;
 
           if (dropdownData.length > 0) {
-
-           
             //console.log("sahil", dropdownData, selectedVariant);
             //console.log("12sept", Revlytic.variant["VID_" + selectedVariant]?.allocations.selling_plans.list["ID_" + dropdownData[0].plan_id.split("/").at(-1)].checkout_charge_amount)
             document.getElementById("revlytic_selectedPlan").innerHTML =
               generateOptions();
 
-            
-            let getPrice = Revlytic.variant["VID_" + selectedVariant]?.allocations.selling_plans.list["ID_" + dropdownData[0].plan_id.split("/").at(-1)].checkout_charge_amount;
-            //console.log("herapheriii", getPrice);
- 
-      
-              selectedPlanPrice=getPrice;
+            let getPrice =
+              Revlytic.variant["VID_" + selectedVariant]?.allocations
+                .selling_plans.list[
+                "ID_" + dropdownData[0].plan_id.split("/").at(-1)
+              ].checkout_charge_amount;
+            // console.log("herapheriii", getPrice);
 
-
+            selectedPlanPrice = getPrice;
 
             var inputOneTimePurchase = document.getElementById(
               "revlytic_oneTimePurchase"
@@ -1628,32 +1338,30 @@ console.log("iiissssiiii",item)
               "4px solid " + widgetSettingsData.radioButtonColor + "";
             inputSubscribeAndSave.style.border = "4px solid #D9D9D9";
             // purchaseOption="oneTimePurchase"
-             document.getElementById("revlytic_oneTimePurchase_price").innerText = selectedVariantData.onetimepurchaseprice;
+            // console.log("5april", selectedVariantData.onetimepurchaseprice);
+            document.getElementById(
+              "revlytic_oneTimePurchase_price"
+            ).innerText = selectedVariantData.onetimepurchaseprice;
 
-
-            document.getElementById("revlytic_subscribe_price").innerText = selectedPlanPrice;
+            document.getElementById("revlytic_subscribe_price").innerText =
+              selectedPlanPrice;
             document.getElementById(
               "revlytic-purchase-optn-main"
             ).style.display = "block";
-            
+
             document.getElementById(
               "revlytic-delivery-frequency-main"
             ).style.display = "none";
 
-           if(requires_selling_plan){
+            if (requires_selling_plan) {
+              document.getElementById(
+                "revlytic-delivery-frequency-main"
+              ).style.display = "block";
 
-            document.getElementById(
-              "revlytic-delivery-frequency-main"
-            ).style.display = "block";
-
-            let  check={target:{value:"subscribeAndSave"}}
-            handlePurchaseOption(check)
-
-           }
-           else{
-
-           }
-
+              let check = { target: { value: "subscribeAndSave" } };
+              handlePurchaseOption(check);
+            } else {
+            }
           } else {
             //console.log("viru");
             document.getElementById(

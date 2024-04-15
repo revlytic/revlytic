@@ -10,7 +10,7 @@ function Preview({ formData,templateType }) {
       .find((x) => x.type === "currency");
     return symbol && symbol.value;
   };
-  console.log("inpreviwe",templateType, formData);
+  
   return (
     <div>
       <>

@@ -20,9 +20,9 @@ import {
 import { useState } from "react";
 import { useAppBridge } from "@shopify/app-bridge-react";
 import { toast } from "react-toastify";
-import { setupModalAutoSizing } from "@shopify/app-bridge-utils";
 import postApi from "../components/common/postApi";
 import { useAPI } from "../components/common/commonContext";
+import CalculateBillingUsage from "../components/calculateBillingUsage";
 import {
   CalendarOutlined,
   CloseOutlined,
@@ -38,8 +38,8 @@ const { Panel } = Collapse;
 function customerPortalSettings() {
   const [form] = Form.useForm();
   const app = useAppBridge();
-  const { billingPlan } = useAPI();
-
+  // const { billingPlan } = useAPI();
+  const [billingPlan,setBillingPlan]=useState('')
   const [loader, setLoader] = useState(false); // for loader
   const [open, setOpen] = useState(false);
   const [selectedOption, setSelectedOption] = useState("simple");
@@ -54,9 +54,7 @@ function customerPortalSettings() {
     setLoader(true);
     let data = await postApi("/api/admin/getCustomerPortalDetails", {}, app);
     setLoader(false);
-    console.log(data);
     if (data.data.message == "success") {
-      console.log(data.data);
       setSelectedOption(data.data.data.cancellation);
       setoptions(data.data.data.options);
       form.setFieldsValue(data.data.data.values);
@@ -71,12 +69,12 @@ function customerPortalSettings() {
   const handleOptionChange = (event) => {
     setSelectedOption(event.target.value);
   };
+
   const handleOk = () => {
     setOpen(false);
   };
 
   const onFinish = async (values) => {
-    console.log("Success:", values);
     setLoader(true);
     let data = await postApi(
       "/api/admin/saveCustomerPortalDetails",
@@ -84,7 +82,6 @@ function customerPortalSettings() {
       app
     );
     setLoader(false);
-    console.log(data);
     if (data.data.message == "success") {
       toast.success(data.data.data, {
         position: toast.POSITION.TOP_RIGHT,
@@ -97,7 +94,6 @@ function customerPortalSettings() {
   };
 
   const handleOptions = (e, name) => {
-    console.log(e, name);
     let arr = { ...options };
     if (name == "one") {
       arr.one = e.target.value;
@@ -110,8 +106,10 @@ function customerPortalSettings() {
     }
     setoptions(arr);
   };
+  
   return (
     <Spin tip="Loading..." size="large" spinning={loader}>
+        <CalculateBillingUsage setBillingPlan={setBillingPlan}/>
       <div className="revlytic customer-portal-settings">
         <h2>Customer Portal </h2>
         <div className="main-container-permissons-side">
