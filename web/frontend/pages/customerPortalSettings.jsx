@@ -49,17 +49,33 @@ function customerPortalSettings() {
     three: "Very Expensive",
     four: "Other",
   });
+  // const [permisssions,setPermissions]=useState({})
+  var [defaultToggleValues,setDefaultToggleValues] = useState({    
+      attemptBilling: false,
+      skipOrder: false,
+      skipUpcomingFullfilment: false,
+      pauseResumeSubscription: false,
+      nextBilldate: false,
+      changeShippingAddress: false,
+      cancelSubscription: false,
+      pauseBeforeCancellation: false,
+      changeProductQuantity: false,
+      addNewContractProduct: false,
+      deleteSubscriptionProduct: false,
+      });
   const { TextArea } = Input;
   useEffect(async () => {
     setLoader(true);
     let data = await postApi("/api/admin/getCustomerPortalDetails", {}, app);
     setLoader(false);
     if (data.data.message == "success") {
+      console.log("data",data)
       setSelectedOption(data.data.data.cancellation);
       setoptions(data.data.data.options);
       form.setFieldsValue(data.data.data.values);
+      setDefaultToggleValues(data.data.data.values)
     } else if (data.data.message == "noData") {
-    } else {
+          } else {
       toast.error(data.data.data, {
         position: toast.POSITION.TOP_RIGHT,
       });
@@ -76,9 +92,10 @@ function customerPortalSettings() {
 
   const onFinish = async (values) => {
     setLoader(true);
+    let obj={...defaultToggleValues,...values}
     let data = await postApi(
       "/api/admin/saveCustomerPortalDetails",
-      { values: values, selectedOption, options },
+      { values: obj, selectedOption, options },
       app
     );
     setLoader(false);

@@ -9086,14 +9086,14 @@ export async function saveCustomerPortalDetails(req, res) {
   let shop = res.locals.shopify.session.shop;
   let data = req.body;
   try {
-    let getdata = await cPortalSettings.findOne({ shop: shop });
-    console.log(getdata, "pp");
+    // let getdata = await cPortalSettings.findOne({ shop: shop });
+    // console.log(getdata, "pp");
     let values = data.values;
-    for (const key in data.values) {
-      if (data.values.hasOwnProperty(key)) {
-        values[key] = data.values[key];
-      }
-    }
+    // for (const key in data.values) {
+    //   if (data.values.hasOwnProperty(key)) {
+    //     values[key] = data.values[key];
+    //   }
+    // }
     let saveData = await cPortalSettings.findOneAndUpdate(
       { shop: shop },
       {

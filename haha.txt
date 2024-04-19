@@ -1,1 +1,1 @@
-{"id":"gid://shopify/SellingPlanGroup/77490487585","input":{"appId":"SdSubscriptionApp2k23virga22luck","merchantCode":"SEAMOSS SELLER","name":"SEAMOSS SELLER","options":["1 month ludfapm2ouk"]}}
+{"id":"gid://shopify/SellingPlanGroup/518815806","input":{"appId":"SdSubscriptionApp2k23virga22luck","merchantCode":"Monthly Subscription","name":"Monthly Subscription","options":["1 month lv4jd497ve7"]}}

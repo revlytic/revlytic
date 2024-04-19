@@ -27,6 +27,7 @@ import { useAPI } from "../components/common/commonContext";
 import { Link } from "react-router-dom";
 import { InfoCircleOutlined } from "@ant-design/icons";
 import CalculateBillingUsage from "../components/calculateBillingUsage";
+import setup_instructions from "../assets/setup_instructions.pdf";
 
 
 function Home() {
@@ -550,6 +551,10 @@ function Home() {
           <a href="javascript:void(Tawk_API.toggle())">
             <Button>Chat With Us!</Button>
           </a>
+          <a href={setup_instructions} target="_blank"
+                   > 
+                  <Button>Tutorial</Button>
+                </a> 
         </div>
       </Card>
       <div className="revlytic plan-group-listing-button">
