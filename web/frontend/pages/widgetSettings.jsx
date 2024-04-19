@@ -25,7 +25,7 @@ import { useAPI } from "../components/common/commonContext";
 
 import dayjs from "dayjs";
 import { Link } from "react-router-dom";
-
+import CalculateBillingUsage from "../components/calculateBillingUsage";
 function WidgetSettings() {
   const [form] = useForm();
   const defaultSettings = {
@@ -69,6 +69,8 @@ function WidgetSettings() {
 
     headingTextColor: "#000000",
 
+    additionalSubscriptionDetailsTextColor: "#767676",
+
     borderColor: "#000000",
 
     radioButtonColor: "#007F00",
@@ -76,11 +78,9 @@ function WidgetSettings() {
     widgetBackgroundColor: "#FFFFFF",
 
     priceColor: "#5F5F5F",
-
-    // Rest of the form field values
   };
-  const { currency, billingPlan } = useAPI();
-
+  const { currency } = useAPI();
+  const [billingPlan, setBillingPlan] = useState("");
   const [loader, setLoader] = useState(false);
   const app = useAppBridge();
 
@@ -97,8 +97,6 @@ function WidgetSettings() {
     setLoader(true);
     let response = await postApi("/api/admin/getWidgetSettings", {}, app);
 
-    console.log("widgesettings", response?.data?.data);
-
     if (response?.data?.message == "success") {
       setFormValues(response?.data?.data?.widgetSettings);
       form.setFieldsValue(response?.data?.data?.widgetSettings);
@@ -114,6 +112,7 @@ function WidgetSettings() {
     priceColor: useRef(null),
     radioButtonColor: useRef(null),
     widgetBackgroundColor: useRef(null),
+    additionalSubscriptionDetailsTextColor: useRef(null),
     // Add refs for other color inputs here
   };
 
@@ -152,7 +151,6 @@ function WidgetSettings() {
   }, []);
 
   const handleInputChange = (fieldName, value) => {
-    console.log("sjhdjkhjsjdj", fieldName, value);
     if (fieldName == "showPredefinedDeliveryFrequencies") {
       if (value == true) {
         setFormValues((prevValues) => ({
@@ -184,7 +182,6 @@ function WidgetSettings() {
   };
 
   const onFinish = async (values) => {
-    console.log(values);
     setLoader(true);
     let response = await postApi(
       "/api/admin/widgetSettings",
@@ -204,27 +201,6 @@ function WidgetSettings() {
     setLoader(false);
   };
 
-  // const onFinish = async (values) => {
-  //   console.log(values);
-  //   setLoader(true);
-  //   let response = await postApi(
-  //     "/api/admin/widgetSettings",
-  //     { ...values },
-  //     app
-  //   );
-
-  //   if (response?.data?.message == "success") {
-  //     toast.success("Data saved successfully", {
-  //       position: toast.POSITION.TOP_RIGHT,
-  //     });
-  //   } else {
-  //     toast.error("Something went wrong", {
-  //       position: toast.POSITION.TOP_RIGHT,
-  //     });
-  //   }
-  //   setLoader(false);
-  // };
-
   const handleResetDefault = () => {
     console.log("inreseting");
     setLoader(true);
@@ -235,32 +211,28 @@ function WidgetSettings() {
 
   return (
     <Spin spinning={loader} size="large" tip="Loading...">
+      <CalculateBillingUsage setBillingPlan={setBillingPlan} />
       <Form
         form={form}
         name="basic"
         layout="vertical"
-        // labelCol={{
-        //   span: 8,
-        // }}
-        // wrapperCol={{
-        //   span: 16,
-        // }}
-        // style={{
-        //   maxWidth: 600,
-        // }}
         initialValues={{
           remember: true,
         }}
         onFinish={onFinish}
-        //   onFinishFailed={onFinishFailedproduct}
-
         autoComplete="off"
-        disabled={billingPlan != "premium" && billingPlan != "premiere"}
+        disabled={
+          billingPlan != "starter" &&
+          billingPlan != "premium" &&
+          billingPlan != "premiere"
+        }
       >
         <div className="revlytic widget-main-container">
           <div className="revlytic widget-card-heading revlytic_ugradeYour_plan1">
             <h3>Widget Settings</h3>
-            {billingPlan != "premium" && billingPlan != "premiere" ? (
+            {billingPlan != "starter" &&
+            billingPlan != "premium" &&
+            billingPlan != "premiere" ? (
               <div className="revlytic_ugradeYour_plan">
                 <Link to="/billing?option=customiseWidget">
                   Upgrade Your Plan
@@ -273,7 +245,9 @@ function WidgetSettings() {
           <Tooltip
             color="#ffffff"
             title={
-              billingPlan != "premium" && billingPlan != "premiere" ? (
+              billingPlan != "starter" &&
+              billingPlan != "premium" &&
+              billingPlan != "premiere" ? (
                 <Link to={`/billing?option=customiseWidget`}>
                   Upgrade your Plan
                 </Link>
@@ -285,7 +259,9 @@ function WidgetSettings() {
             <div className="revlytic widget-inner-container">
               <Card
                 className={`revlytic widget-card-main ${
-                  billingPlan != "premium" && billingPlan != "premiere"
+                  billingPlan != "starter" &&
+                  billingPlan != "premium" &&
+                  billingPlan != "premiere"
                     ? "billing-disable-card"
                     : ""
                 }`}
@@ -467,48 +443,6 @@ function WidgetSettings() {
                       }
                     />
                   </Form.Item>
-
-                  {/* <Form.Item noStyle shouldUpdate>
-                      {({ getFieldValue }) =>
-                        getFieldValue([
-                          "showPredefinedDeliveryFrequencies",
-                          
-                        ]) === true ? 
-                        
-                            <Form.Item
-                              name="deliveryFrequencyOptionsText"
-                                 
-                              // noStyle
-                              label="Delivery Frequency Options Text"
-                              initialValue={formValues?.deliveryFrequencyOptionsText}
-                            >
-                            <Input
-            onChange={(e) =>
-              handleInputChange("deliveryFrequencyOptionsText", e.target.value)
-            }
-          />
-                            </Form.Item>
-                          
-                         :  <Form.Item
-                         name="deliveryFrequencyOptionsText"
-                            
-                         // noStyle
-                         label="Delivery Frequency Options Text"
-                         initialValue={formValues?.deliveryFrequencyOptionsText}
-                       >
-                       <Input
-       onChange={(e) =>
-         handleInputChange("deliveryFrequencyOptionsText", e.target.value)
-       }
-     />
-                       </Form.Item>
-
-
-
-
-
-                      }
-                    </Form.Item> */}
 
                   <Form.Item
                     label="Show Predefined Delivery Frequencies"
@@ -1063,7 +997,7 @@ function WidgetSettings() {
                         type="color"
                         suffix={formValues?.priceColor}
                         onChange={(e) =>
-                          handleInputChange("priceColor",e.target.value)
+                          handleInputChange("priceColor", e.target.value)
                         }
                       />
                     </div>
@@ -1108,97 +1042,43 @@ function WidgetSettings() {
                     </div>
                   </Form.Item>
                 </div>
+
+                <div className="revlytic widget-items">
+                  <Form.Item
+                    label="Additional Subscription Details Text Color"
+                    name="additionalSubscriptionDetailsTextColor"
+                    initialValue={
+                      formValues?.additionalSubscriptionDetailsTextColor
+                    }
+                  >
+                    <div ref={inputRefs.additionalSubscriptionDetailsTextColor}>
+                      <Input
+                        value={
+                          formValues?.additionalSubscriptionDetailsTextColor ??
+                          defaultSettings?.additionalSubscriptionDetailsTextColor
+                        }
+                        type="color"
+                        suffix={
+                          formValues?.additionalSubscriptionDetailsTextColor ??
+                          defaultSettings?.additionalSubscriptionDetailsTextColor
+                        }
+                        onChange={(e) =>
+                          handleInputChange(
+                            "additionalSubscriptionDetailsTextColor",
+                            e.target.value
+                          )
+                        }
+                      />
+                    </div>
+                  </Form.Item>
+                </div>
               </Card>
 
               <Card className="revlytic widget-card-second">
                 <div className="revlytic widget-card-second-heading">
                   <h3>Widget Preview</h3>
                 </div>
-                {/* <div>
-            <h2>Subscription Widget Preview</h2>
-          </div>
 
-           <div>
-            <p>{formValues.purchaseOptionsText}</p>
-
-            <div
-              style={{
-                border:
-                  "1px " +
-                  formValues.borderStyle +
-                  " " +
-                  formValues.borderColor,
-                backgroundColor: formValues.widgetBackgroundColor,
-              }}
-            >
-              <div>
-                <input
-                  type="radio"
-                  name="purchaseOption"
-                  id="purchaseOptionsText"
-                  style={{ backgroundColor: "red" }}
-                />
-
-                <label htmlFor="purchaseOptionsText">
-                  {formValues.oneTimePurchaseText}
-                </label>
-
-            
-
-                <p
-                  className="revlytic preview-option-price"
-                  style={{ color: formValues.priceColor }}
-                >
-                  {" "}
-                 
-                  rs 10
-                </p>
-              </div>
-
-              <div div className="revlytic preview-container-4">
-                <div className="revlytic preview-save">
-                  <input
-                    type="radio"
-                    name="purchaseOption"
-                    id="subscriptionOptionsText"
-                    checked="checked"
-                  />
-
-                  <label htmlFor="subscriptionOptionsText">
-                    {formValues.subscriptionOptionsText}
-                  </label>
-
-                  <p
-                    className="revlytic preview-option-price"
-                    style={{ color: formValues.priceColor }}
-                  >
-                   
-                    rs 8
-                  </p>
-                </div>
-
-                <p>{formValues.deliveryFrequencyText}</p>
-
-                <Select
-                  disabled
-                  value={
-                    "1 " +
-                    formValues.monthFrequencyText +
-                    "(" +
-                    formValues.payAsYouGoText +
-                    ")"
-                  }
-
-                  
-                >
-                  <Select.Option>
-                    1 {formValues.monthFrequencyText}(
-                    {formValues.payAsYouGoText})
-                  </Select.Option>
-                </Select>
-              </div>
-            </div>
-          </div>  */}
                 <div className="widget-card-preview-text">
                   <p style={{ color: formValues?.purchaseOptionsTextColor }}>
                     {formValues?.purchaseOptionsText}
@@ -1274,14 +1154,6 @@ function WidgetSettings() {
                           {formValues?.deliveryFrequencyOptionsText}
                         </p>
                         <Select disabled value="1">
-                          {/* <Select.Option value="1">
-                          1 {formValues?.monthFrequencyText} (
-                          {formValues?.saveText} 100 % {formValues?.onFirstText}{" "}
-                          2 {formValues?.orderText} ,{formValues?.thenText} 10 %
-                          ) {formValues?.prepayText} 2{" "}
-                          {formValues?.monthFrequencyText}
-                        </Select.Option> */}
-
                           <Select.Option value="1"> 1 Month(s)</Select.Option>
                         </Select>
 
@@ -1321,7 +1193,17 @@ function WidgetSettings() {
                     {formValues.subscriptionDetailsText}{" "}
                   </div>
                   <div className="revlytic  widget-subscription-details">
-                    <Card>{formValues.additionalSubscriptionDetails}</Card>
+                    <Card>
+                      <span
+                        style={{
+                          color:
+                            formValues?.additionalSubscriptionDetailsTextColor ??
+                            defaultSettings?.additionalSubscriptionDetailsTextColor,
+                        }}
+                      >
+                        {formValues.additionalSubscriptionDetails}
+                      </span>
+                    </Card>
                   </div>
                 </div>
               </Card>
@@ -1332,7 +1214,9 @@ function WidgetSettings() {
           <Tooltip
             color="#ffffff"
             title={
-              billingPlan != "premium" && billingPlan != "premiere" ? (
+              billingPlan != "starter" &&
+              billingPlan != "premium" &&
+              billingPlan != "premiere" ? (
                 <Link to={`/billing?option=customiseWidget`}>
                   Upgrade your Plan
                 </Link>
@@ -1343,7 +1227,11 @@ function WidgetSettings() {
           >
             <Button
               onClick={handleResetDefault}
-              disabled={billingPlan != "premium" && billingPlan != "premiere"}
+              disabled={
+                billingPlan != "starter" &&
+                billingPlan != "premium" &&
+                billingPlan != "premiere"
+              }
             >
               Reset To Default
             </Button>
@@ -1351,7 +1239,9 @@ function WidgetSettings() {
           <Tooltip
             color="#ffffff"
             title={
-              billingPlan != "premium" && billingPlan != "premiere" ? (
+              billingPlan != "starter" &&
+              billingPlan != "premium" &&
+              billingPlan != "premiere" ? (
                 <Link to={`/billing?option=customiseWidget`}>
                   Upgrade your Plan
                 </Link>
@@ -1362,7 +1252,11 @@ function WidgetSettings() {
           >
             <Button
               htmlType="submit"
-              disabled={billingPlan != "premium" && billingPlan != "premiere"}
+              disabled={
+                billingPlan != "starter" &&
+                billingPlan != "premium" &&
+                billingPlan != "premiere"
+              }
             >
               Save
             </Button>

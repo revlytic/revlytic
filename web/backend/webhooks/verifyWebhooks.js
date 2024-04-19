@@ -19,7 +19,6 @@ import orderContractDetails from "../modals/contractOrderDetails.js";
 import checkoutCustomerModal from "../modals/checkoutCustomer.js";
 import cPortalSettings from "../modals/customerPortalSettings.js";
 import planProductModal from "../modals/planGroupProducts.js";
-import { widgetSettings } from "../controller.js";
 import widgetSettingsModal from "../modals/widgetSetting.js";
 import storeModal from "../modals/storeCredentials.js";
 import uninstallModal from "../modals/uninstall.js";
@@ -148,7 +147,7 @@ const sendPaymentFailureMail = async (recipientMails, others, extra) => {
       console.log(__dirname, "kjh");
       const dirPath = path.join(
         __dirname,
-        "/web/frontend/components/emailtemplate"
+        "/frontend/components/emailtemplate"
       );
       console.log(dirPath, "fsdfdf");
 
@@ -1783,6 +1782,8 @@ if (
                 }
               );
             console.log("beforeeeeifffffff", billing_attempt_failure);
+
+
             if (billing_attempt_failure) {
               //////////////////////////////////by sahil (start)//////////////////////////////////////////
               console.log("iniffffffffffffffffffffffffffffffffffffff");

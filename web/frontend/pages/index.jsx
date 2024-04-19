@@ -26,7 +26,8 @@ import postApi from "../components/common/postApi";
 import { useAPI } from "../components/common/commonContext";
 import { Link } from "react-router-dom";
 import { InfoCircleOutlined } from "@ant-design/icons";
-
+import CalculateBillingUsage from "../components/calculateBillingUsage";
+import setup_instructions from "../assets/setup_instructions.pdf";
 function Home() {
   const { storeDetails } = useAPI();
 
@@ -35,7 +36,7 @@ function Home() {
   const app = useAppBridge();
 
   const [loader, setLoader] = useState(false);
-  
+
   // Initialize state for startDate and endDate
 
   const [startDate, setStartDate] = useState(
@@ -62,20 +63,12 @@ function Home() {
   const [announcementList, setAnnouncementList] = useState([]);
   const [showAppBlock, setShowAppBlock] = useState();
 
-  useEffect(async () => {
-    // console.log("in useEffectwithdependencys   storedetaisl");
+  const [billingPlan, setBillingPlan] = useState("");
 
+  useEffect(async () => {
     let data = await axios.get(
       "https://cdn.shopify.com/s/javascripts/currencies.js"
     );
-
-    // console.log("data", (eval(new Function(`
-
-    //   ${data?.data}
-
-    //   return Currency;
-
-    // `))()));
 
     let filtered = await eval(
       new Function(`
@@ -87,36 +80,10 @@ function Home() {
 `)
     )();
 
-    // console.log("yyyy", filtered);
-
     filtered && setCurrencyConversionRates(filtered.rates);
 
     if (filtered && storeDetails?.currency) {
       let response = await getData({ range: "today" }, filtered?.rates);
-
-      // if(response?.data?.message=="success"){
-
-      //     console.log(response?.data?.data)
-
-      //     let arr=response?.data?.data
-
-      //     if(arr.length>0){
-
-      // let sum = 0 ;
-
-      // arr.map(item=> {
-
-      // sum=sum + (parseFloat(item.total_amount) * parseFloat(filtered.rates[item?.currency] / filtered.rates[storeDetails?.currency]))
-
-      // })
-
-      // console.log("sum",sum)
-
-      // setRecurringRevenue(sum)
-
-      //     }
-
-      //   }
     }
     return () => {};
   }, [storeDetails]);
@@ -126,21 +93,18 @@ function Home() {
 
     setLoader(false);
     await getActiveCustomers({ range: "today" });
-    
+
     await getAnnouncements();
     await checkAppBlockEmbed();
   }, []);
 
   async function checkAppBlockEmbed() {
- 
     let response = await postApi("/api/admin/checkAppBlockEmbed", {}, app);
 
     if (response?.data?.message == "success") {
-      // console.log(response?.data?.data?.disabled)
       setShowAppBlock(response?.data?.data?.disabled);
-      
-    } else if(response?.data?.message == 'noData'){
-      setShowAppBlock(true)
+    } else if (response?.data?.message == "noData") {
+      setShowAppBlock(true);
     }
   }
 
@@ -176,21 +140,13 @@ function Home() {
   };
 
   const getData = async (body, rates) => {
-    // console.log("getData", body);
-
     const sessionToken = await getSessionToken(app);
 
     const response = await axios.post("/api/admin/combinedData", body, {
       headers: { Authorization: `Bearer ${sessionToken}` },
     });
 
-    // console.log("response", response);
-
     if (response?.data?.message == "success") {
-      // console.log("dfdfd", response?.data?.data);
-
-      // console.log("trates", rates);
-
       let arr = response?.data?.data;
 
       let sum = 0;
@@ -210,8 +166,6 @@ function Home() {
         });
       }
 
-      // console.log("sum", sum);
-
       setRecurringRevenue(sum);
 
       // setSubscriptionBookings(countInitialStatus);
@@ -225,7 +179,6 @@ function Home() {
       }
     );
 
-    // console.log("subscriptionBookingsData",subscriptionBookingsData)
     if (subscriptionBookingsData?.data?.message == "success") {
       setSubscriptionBookings(subscriptionBookingsData?.data?.data);
     }
@@ -234,19 +187,13 @@ function Home() {
   };
 
   const getActiveCustomers = async (body) => {
-    // console.log("inactiveeee");
-
     const sessionToken = await getSessionToken(app);
 
     const response = await axios.post("/api/admin/activeCustomers", body, {
       headers: { Authorization: `Bearer ${sessionToken}` },
     });
 
-    // console.log("kikikkik");
-
     if (response?.data?.message == "success") {
-      // console.log("acttcccicccccveee", response?.data?.data);
-
       setActiveCustomers(response?.data?.data);
     }
   };
@@ -259,16 +206,6 @@ function Home() {
       {},
       { headers: { Authorization: `Bearer ${sessionToken}` } }
     );
-
-    console.log("kikikkik");
-
-    // if(response?.data?.message=="success"){
-
-    //   console.log("acttcccicccccveee",response?.data?.data)
-
-    //   setActiveCustomers(response?.data?.data)
-
-    // }
   };
 
   // Handle disabling start date based on end date
@@ -294,18 +231,11 @@ function Home() {
   };
 
   const handleRangeSelection = async (e) => {
-    console.log(e, startDate, endDate, customDate);
-
-    // console.log(dayjs(new Date()))
-
-    // console.log(new Date(new Date().setHours(0, 0, 0, 0)));
-
     setRange(e);
 
     let date;
 
     if (e == "customDate") {
-      // console.log("saahhhhiiiiii",typeof customDate)
       await getData({ range: e, customDate }, currencyConversionRates);
 
       await getActiveCustomers({ range: e, customDate });
@@ -532,7 +462,7 @@ function Home() {
                 <div className="revlytic-annoucments-inner-row">
                   <div className="revlytic-annoucments-inner-column">
                     <img
-                      src={` https://sorry-canvas-anthony-labels.trycloudflare.com/images/announcement/${item?.image}`}
+                      src={`https://revlytic.co/images/announcement/${item?.image}`}
                       width="100"
                       height="100"
                     />
@@ -556,7 +486,7 @@ function Home() {
   ];
 
   return (
- <Spin spinning={loader} size="large" tip="Loading...">
+    <Spin spinning={loader} size="large" tip="Loading...">
       {showAppBlock == true && (
         <Alert
           className="revlytic home-alert-main"
@@ -619,9 +549,13 @@ function Home() {
           <a href="javascript:void(Tawk_API.toggle())">
             <Button>Chat With Us!</Button>
           </a>
+          <a href={setup_instructions} target="_blank"
+                   > 
+                  <Button>Tutorial</Button>
+                </a> 
+
         </div>
       </Card>
-
       <div className="revlytic plan-group-listing-button">
         <h1 className="revlytic-plan-switch-heading">Home</h1>
 
@@ -718,7 +652,6 @@ Last 6 Months
               format="YYYY-MM-DD"
               value={dayjs(customDate)}
               onChange={(date, dateString) => {
-                // console.log("datestringgggg",typeof dateString)
                 setCustomDate(dateString);
                 getData(
                   { customDate: dateString, range },
@@ -730,7 +663,7 @@ Last 6 Months
           </div>
         )}
 
-        <p style={{ color: "#999" }}>
+        <p>
           Note : Last 7 Days, Last 30 Days, Last 90 Days exclude today
         </p>
       </div>
@@ -901,7 +834,6 @@ Last 6 Months
           <Card className="revlytic-timeline-wrapper">
             <h2>Latest Updates </h2>
             <h3> January 2024</h3>
-            <Link onClick={() => navigate("/billing")}>Upgrade your Plan</Link>
             <Timeline
               items={[
                 // {
@@ -934,6 +866,7 @@ Last 6 Months
           </Card>
         </div>
       </div>
+      <CalculateBillingUsage setBillingPlan={setBillingPlan} />
     </Spin>
   );
 }

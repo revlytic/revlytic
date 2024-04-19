@@ -17,8 +17,8 @@ import mime from "mime";
 import fs from "fs";
 import jwt from "jsonwebtoken";
 console.log("utcdate", new Date());
-console.log(process.env.HOST, "envvvvvvvvvvv");
-console.log(process.env.SCOPES, "envvvvvvvvvvv");
+// console.log(process.env.HOST, "envvvvvvvvvvv");
+// console.log(process.env.SCOPES, "envvvvvvvvvvv");
 import { ObjectId } from "bson";
 import puppeteer from "puppeteer";
 import widgetSettingsModal from "./modals/widgetSetting.js";
@@ -29,6 +29,8 @@ import cPortalSettings from "./modals/customerPortalSettings.js";
 import orderOnly from "./modals/contractOrder.js";
 import orderContractDetails from "./modals/contractOrderDetails.js";
 import billingModal from "./modals/billing.js";
+import dunningModal from "./modals/dunning.js";
+import dunningTemplates from './dunningTemplates.json'  with { type: "json" };
 const __dirname = path.resolve();
 const dirPath = path.join(__dirname, "/frontend/invoiceTemplate");
 // const dirPath2 = path.join(__dirname);
@@ -847,6 +849,298 @@ async function getshopToken(shop) {
   });
   return client;
 }
+
+async function sendmailforcrons(recipientMails,emailConfig,options,selectedTemplate,extra,shop){
+
+
+  try{
+  {
+    let flag=false;
+    const __dirname = path.resolve();
+    
+    const dirPath = path.join(__dirname, "/frontend/components/emailtemplate");
+    let templateType = extra?.templateType;
+    const transporter = nodemailer.createTransport(emailConfig);
+    let currencySymbol = getCurrencySymbol(extra?.currency);
+
+    const replacements = {
+      "{{subscription_id}}": extra?.data?.subscription_id?.split("/").at(-1),
+
+      "{{customer_email}}": extra?.data?.customer_details?.email,
+
+      "{{customer_name}}":
+        extra?.data.customer_details.firstName != null
+          ? extra?.data.customer_details.firstName
+          : "",
+
+      "{{customer_id}}": extra?.data?.customer_details?.id?.split("/").at(-1),
+
+      "{{shop_name}}": extra?.shop_name,
+
+      "{{shop_email}}": extra?.shop_email,
+
+      "{{shipping_country}}":
+        extra?.data?.shipping_address?.country != null
+          ? extra?.data?.shipping_address?.country
+          : "",
+
+      "{{shipping_full_name}}":
+        extra?.data?.shipping_address?.firstName != null
+          ? extra?.data?.shipping_address?.firstName
+          : "" + " " + extra?.data?.shipping_address?.lastName != null
+          ? extra?.data?.shipping_address?.lastName
+          : "",
+
+      "{{shipping_address_1}}":
+        extra?.data?.shipping_address?.address1 != null
+          ? extra?.data?.shipping_address?.address1
+          : "",
+
+      "{{shipping_company}}":
+        extra?.data?.shipping_address?.company != null
+          ? extra?.data?.shipping_address?.company
+          : "",
+
+      "{{shipping_city}}":
+        extra?.data?.shipping_address?.city != null
+          ? extra?.data?.shipping_address?.city
+          : "",
+
+      "{{shipping_province}}":
+        extra?.data?.shipping_address?.province != null
+          ? extra?.data?.shipping_address?.province
+          : "",
+
+      "{{shipping_province_code}}":
+        extra?.data?.shipping_address?.provinceCode != null
+          ? extra?.data?.shipping_address?.provinceCode
+          : "",
+
+      "{{shipping_zip}}":
+        extra?.data?.shipping_address?.zip != null
+          ? extra?.data?.shipping_address?.zip
+          : "",
+
+      "{{billing_full_name}}":
+        extra?.data?.billing_address?.firstName != null
+          ? extra?.data?.billing_address?.firstName
+          : "" + " " + extra?.data?.billing_address?.lastName != null
+          ? extra?.data?.billing_address?.lastName
+          : "",
+
+      "{{billing_country}}":
+        extra?.data?.billing_address?.country != null
+          ? extra?.data?.billing_address?.country
+          : "",
+
+      "{{billing_address_1}}":
+        extra?.data?.billing_address?.address1 != null
+          ? extra?.data?.billing_address?.address1
+          : "",
+
+      "{{billing_city}}":
+        extra?.data?.billing_address?.city != null
+          ? extra?.data?.billing_address?.city
+          : "",
+
+      "{{billing_province}}":
+        extra?.data?.billing_address?.province != null
+          ? extra?.data?.billing_address?.province
+          : "",
+
+      "{{billing_province_code}}":
+        extra?.data?.billing_address?.provinceCode != null
+          ? extra?.data?.billing_address?.provinceCode
+          : "",
+
+      "{{billing_zip}}":
+        extra?.data?.billing_address?.zip != null
+          ? extra?.data?.billing_address?.zip
+          : "",
+
+      "{{card_brand_name}}":
+        extra?.data?.payment_details?.payment_instrument_value?.brand,
+
+      "{{last_four_digits}}":
+        extra?.data?.payment_details?.payment_instrument_value?.lastDigits,
+
+      "{{card_expiry_month}}":
+        extra?.data?.payment_details?.payment_instrument_value?.expiryMonth,
+
+      "{{card_expiry_year}}":
+        extra?.data?.payment_details?.payment_instrument_value?.expiryYear,
+
+      "{{heading_text}}": selectedTemplate.headingText,
+      "{{card_brand_name}}": extra?.data?.payment_details
+        ?.payment_instrument_value?.brand
+        ? extra?.data?.payment_details?.payment_instrument_value?.brand
+            .charAt(0)
+            .toUpperCase() +
+          formatVariableName(
+            extra?.data?.payment_details?.payment_instrument_value?.brand
+              .slice(1)
+              .toLowerCase()
+          )
+        : "",
+
+      "{{{logo_image}}": selectedTemplate.logoUrl,
+
+      "{{shiiping_address_text}}":
+        selectedTemplate.subscriptionShippingAddressText,
+
+      "{{billing_address_text}}":
+        selectedTemplate.subscriptionBillingAddressText,
+
+      "{{payment_method_text}}": selectedTemplate.paymentMethodText,
+
+      "{{logo_width}}": selectedTemplate.logoWidth,
+
+      "{{logo_height}}": selectedTemplate.logoHeight,
+
+      "{{logo_alignment}}": selectedTemplate.logoAlignment,
+    };
+
+    //////start/////
+    if (recipientMails[0]) {
+      console.log("inzerorecipent");
+
+      options = {
+        ...options,
+        to: recipientMails[0],
+      };
+
+      let url;
+
+      if (selectedTemplate?.subscriptionUrl) {
+        url = selectedTemplate?.subscriptionUrl;
+      } else {
+        if (recipientMails[0] == extra?.data?.customer_details?.email) {
+            url = url = `https://${shop}/account/login`;
+        } else {
+           url = `https://admin.shopify.com/store/${
+            shop?.split(".myshopify.com")[0]
+          }/apps/revlytic/create-manual-subscription?id=${(extra?.data?.subscription_id)
+            .split("/")
+            .at(-1)}&mode=view`;
+        }
+      }
+               
+       let emailContent = await ejs.renderFile(dirPath + "/preview2.ejs", {
+        selectedTemplate,
+        templateType,
+        currencySymbol,
+        data: { ...extra?.data, recipientMails },
+        dateConversion,
+        url: url,
+      });
+
+      const updatedEmailContent = emailContent.replace(
+        new RegExp(Object.keys(replacements).join("|"), "g"),
+        (matched) => replacements[matched]
+      );
+
+      options.html = updatedEmailContent ;
+      
+
+      try {
+       
+        let data = await transporter.sendMail(options);
+
+        if (data) {
+          console.log("Mail sent successfully");
+          flag=true
+        }
+        console.log(data, "faaltuu");
+      } catch (error) {
+        console.log(error, "errorr aa gyaa");
+        throw error;
+      }
+
+      ////
+    }
+
+    ///////
+
+    if (recipientMails[1]) {
+      console.log("in1recipent");
+      options = {
+        ...options,
+        to: recipientMails[1],
+      };
+
+      let url;
+
+      if (selectedTemplate?.subscriptionUrl) {
+        url = selectedTemplate?.subscriptionUrl;
+        console.log("oiouo");
+      } else {
+        if (recipientMails[1] == extra?.data?.customer_details?.email) {
+          url = url = `https://${shop}/account/login`;
+          console.log(
+            "plok",
+            recipientMails[1],
+            extra?.data?.customer_details?.email,
+            recipientMails[1] == extra?.data?.customer_details?.email
+          );
+        } else {
+          url = `https://admin.shopify.com/store/${
+            shop?.split(".myshopify.com")[0]
+          }/apps/revlytic/create-manual-subscription?id=${(extra?.data?.subscription_id)
+            .split("/")
+            .at(-1)}&mode=view`;
+          console.log(
+            "jikkk",
+            recipientMails[1],
+            extra?.data?.customer_details?.email,
+            recipientMails[1] == extra?.data?.customer_details?.email
+          );
+        }
+      }
+
+
+
+      const emailContent = await ejs.renderFile(dirPath + "/preview2.ejs", {
+        selectedTemplate,
+        templateType,
+        currencySymbol,
+        data: { ...extra?.data, recipientMails},
+        dateConversion,
+        url: url,
+      });
+
+      const updatedEmailContent = emailContent.replace(
+        new RegExp(Object.keys(replacements).join("|"), "g"),
+        (matched) => replacements[matched]
+      );
+
+      options.html = updatedEmailContent;
+
+      try {
+        console.log("first in last");
+
+        let data = await transporter.sendMail(options);
+        if (data) {
+          console.log("Mail sent successfully");
+          flag=true
+        }
+        console.log(data, "faaltuu");
+      } catch (error) {
+        console.log(error, "errorr aa gyaa");
+        throw error;
+      }
+      //
+    }
+
+    ///end//////
+return flag;
+
+  }
+}
+catch(error){
+console.log("error12")
+}
+}
+
 // ///////////////////////////contract create cron start///////////////////////////////////////////
 const firstScheduledTime = "*/30 * * * * *"; // Replace with your desired time in cron syntax
 const cronTimeEvery24hr="0 0 * * *";
@@ -984,7 +1278,6 @@ export async function contractCronJob(req, res) {
        const client = new shopify.api.clients.Graphql({
         session: {
           shop: data[i].shop,
-
           accessToken: gettoken.accessToken,
         },
       });
@@ -1084,47 +1377,219 @@ export async function contractCronJob(req, res) {
 
 ////upcomingordercron-start///////////
 
+const areDatesEqual = (date1, date2) => {
+  const dateString1 = date1.toISOString().split('T')[0];
+  const dateString2 = date2.toISOString().split('T')[0];
+  return dateString1 === dateString2;
+}
+
+
 async function  upcomingOrders(){
 
  try {
-   
-    const currentDate = new Date().toISOString();
-    currentDate.setDate(currentDate.getDate() + 2); 
 
-    const targetDate = new Date(currentDate);
-  
-    console.log("checking dataess", targetDate);
-    let data = await subscriptionDetailsModal.find(
-      {
-        $and: [
-          {
-            $expr: {
-              $eq: [
+ let startRange=new Date(new Date().setUTCHours(0,0,0,0))
+
+let endRange=new Date()
+endRange.setDate(endRange.getDate() + 5)
+endRange.setUTCHours(23,59,59,999)
+
+ let data= await dunningModal.aggregate(
+  [
+    { $match: { enableDunningNotices: true } },
+    {
+      $lookup: {
+        from: 'subscription_details',
+        localField: 'shop',
+        foreignField: 'shop',
+        as: 'result'
+      }
+    },
+    {
+      $addFields: {
+        result: {
+          $filter: {
+            input: '$result',
+            as: 'res',
+            cond: {
+              $and: [
                 {
-                  $dateToString: { format: "%Y-%m-%d", date: "$nextBillingDate"},
+                  $eq: ['$$res.status', 'active']
                 },
-  
-                { $dateToString: { format: "%Y-%m-%d", date: targetDate }},
-              ],
-            },
-          },
-  
-          { status: "active" },
-        ],
-      },
-  
-      { shop: 1, subscription_id: 1, product_details: 1, subscription_details: 1 }
-    );
-    console.log("data", data);
+                {
+                  $and: [
+                    {
+                      $gte: [
+                        '$$res.nextBillingDate',
+                        startRange
+                      ]
+                    },
+                    {
+                      $lte: [
+                        '$$res.nextBillingDate',
+                        endRange
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      }
+    }
+  ],
+  { maxTimeMS: 60000, allowDiskUse: true }
+);
 
-    console.log("dataaaaddd", data);
-    res.send({ message: "success", data: data });
-  } catch (error) {
-    console.log("error", error);
-    res.send({ message: "error" });
+
+if(data.length > 0){
+  let emailTemplate_storeDetail_Obj={};
+data.forEach(async(item)=>{
+if(item?.result?.length > 0 ) {
+  let storedetails={}; 
+    let getTemplateAndStoreData = await emailTemplatesModal.aggregate(
+       [
+         {
+           $match: {
+             shop: item?.shop
+           }
+         },
+         {
+           $lookup: {
+             from: 'store_details',
+             localField: 'shop',
+             foreignField: 'shop',
+             as: 'storedetails'
+           }
+         },
+         {
+           $project: {
+             'settings.upcomingOrderReminder': 1,
+             configuration: 1,
+             storedetails:{ $arrayElemAt: [ "$storedetails", 0 ] }
+           }
+         }
+       ],
+       { maxTimeMS: 60000, allowDiskUse: true }
+     );
+
+if(getTemplateAndStoreData){
+ emailTemplate_storeDetail_Obj =getTemplateAndStoreData[0]
+ storedetails=emailTemplate_storeDetail_Obj?.storedetails 
+
+item.result.map(async(sub_item)=> {
+   const date1 = new Date(sub_item?.nextBillingDate);
+   const date2 = new Date();
+   date2.setDate(date2.getDate() + parseInt(item?.statementsInput))
+   let sendMail=areDatesEqual(date1,date2)
+ 
+   if(sendMail) {      
+    
+   let sendMailToCustomer = emailTemplate_storeDetail_Obj?.settings?.upcomingOrderReminder?.status;
+   let sendMailToMerchant = emailTemplate_storeDetail_Obj?.settings?.upcomingOrderReminder?.adminNotification;
+
+   if (sendMailToCustomer || sendMailToMerchant) {
+        
+    let recipientMails = [];
+
+    if (sendMailToMerchant)
+       {
+            
+      let shopEmail = storedetails?.store_email;
+        recipientMails.push(shopEmail);
+    
+    }
+    if (sendMailToCustomer) {       
+      recipientMails.push(sub_item?.customer_details?.email);
+    }
+
+    let configurationData = emailTemplate_storeDetail_Obj?.configuration;
+    let selectedTemplate = emailTemplate_storeDetail_Obj?.settings?.upcomingOrderReminder;
+
+    let options={};
+    let emailConfig={};
+
+     
+ if (configurationData && configurationData.enable == true) {
+  console.log("inenabletrue");
+  let encryptionConfig = {};
+  if (configurationData.encryption === "ssl") {
+    encryptionConfig = {
+      secure: true,
+      requireTLS: true,
+    };
+  } else if (configurationData.encryption === "tls") {
+    encryptionConfig = {
+      secure: false, // For TLS, secure should be set to false
+      requireTLS: true,
+    };
   }
 
+   emailConfig = {
+    host: configurationData.host,
+    port: parseInt(configurationData.portNumber), // Convert port number to integer
+    auth: {
+      user: configurationData.userName,
+      pass: configurationData.password,
+    },
+    ...(configurationData.encryption === "none" ? {} : encryptionConfig),
+  };
 
+   options = {
+    // from: configurationData.fromName,
+    from:`${configurationData.fromName}<${configurationData.userName}>`,
+    to: recipientMails,
+    subject:selectedTemplate?.emailSetting?.subject,
+    cc:selectedTemplate?.emailSetting?.cc,
+    bcc:selectedTemplate?.emailSetting?.bcc,
+    replyTo:selectedTemplate?.emailSetting?.replyTo,
+    // ...others,
+  };
+
+} else {
+  console.log("inenablefalse");
+
+emailConfig = {
+    host: "smtp.gmail.com",
+    port: 587, // Convert port number to integer
+    auth: {
+      user: "sahilagnihotri7@gmail.com",
+      pass: "srdvsdnxfmvbrduw",
+    },
+    secure: false,
+  };
+
+   options = {
+    from: "sahilagnihotri7@gmail.com",
+    to: recipientMails,
+    subject:selectedTemplate?.emailSetting?.subject,
+    cc:selectedTemplate?.emailSetting?.cc,
+    bcc:selectedTemplate?.emailSetting?.bcc,
+    replyTo:selectedTemplate?.emailSetting?.replyTo,
+    // ...others,
+ };   
+}
+
+ let extra = {
+    templateType: "upcomingOrderReminder",
+    data: sub_item,
+    shop_name: storedetails?.store_name,
+    shop_email: storedetails?.store_email,
+    currency:sub_item?.subscription_details?.currency,
+  };
+  sendmailforcrons(recipientMails,emailConfig,options,selectedTemplate,extra,item.shop)
+  } 
+}
+})
+}
+}
+})
+}
+  }
+  catch (error) {
+    console.log("error", error);
+      }
 
 }
 
@@ -1133,7 +1598,429 @@ async function  upcomingOrders(){
 
 // //////upcomingordercrin-end///
 
+async function paymentFailureCron(){
 
+  try 
+  
+  {
+    let targetDate=new Date()
+    targetDate.setDate(targetDate.getDate() - 25)
+    targetDate.setUTCHours(0,0,0,0)
+   
+  // let getBillingData=await billing_Attempt.find({
+  //   updatedAt:{$gte: targetDate},
+  //   $or: [{ status: "failed" }, { status: "retriedAfterFailure" },{ status: "success" }],
+  //  })
+
+
+ let mainData=await billing_Attempt.aggregate(
+    [
+      {
+        $match: {
+          updatedAt: {$gte: targetDate},
+          $or: [{ status: "failed" }, { status: "retriedAfterFailure" },{ status: "success" }],
+        }
+      },
+      {
+        $lookup: {
+          from: 'subscription_details',
+          localField: 'contract_id',
+          foreignField: 'subscription_id',
+          as: 'result'
+        }
+      },
+      {
+        $match: {
+          'result.status': { $eq: 'active' }
+        }
+      }
+    ],
+    { maxTimeMS: 60000, allowDiskUse: true }
+  );
+
+  let filteredArr=[]; 
+  let contract_idArr=[]
+  let contractIdFailureCountObj={};
+  let  allstore_emailTemplate_storeDetail_Obj={};
+  let lastEmailSentStatusObj={}
+  
+  if(mainData.length > 0){
+    mainData.map((item)=>{
+  if(item?.status=='failed' || item?.status=='retriedAfterFailure'){
+    filteredArr.push(item)
+    contract_idArr.push(item?.contract_id)
+  }
+  else if(item?.status=='success'){
+    filteredArr= filteredArr.filter((itm, index) => !Object.values(itm).includes(item.contract_id))
+      contract_idArr= contract_idArr.filter((value, index) => value != item?.contract_id )
+   
+  }
+    })
+  }
+  else{
+    return;
+  }
+   
+   
+  let dunningDataArray=await dunningModal.find({enablePaymentAttempt:true});
+   
+  if(dunningDataArray.length >0 &&  filteredArr.length > 0){
+    filteredArr.forEach(async(item)=> {
+    
+  if(!Object.keys(contractIdFailureCountObj).includes(item["contract_id"])){
+    // console.log("contract_idArr",contract_idArr)
+    const countDuplicates= contract_idArr.filter((val) => 
+      val==item["contract_id"]    
+    ).length
+    
+    let dunningDataItem=dunningDataArray.find((val)=>
+    val.shop==item["shop"]
+  )
+  
+  contractIdFailureCountObj[item["contract_id"]]={count:countDuplicates,attemptNum:dunningDataItem?.attemptNum};
+  
+  if(dunningDataItem && dunningDataItem.attemptNum) {
+   
+  let currentItemEmailTemplateStoreDetail= allstore_emailTemplate_storeDetail_Obj[item["shop"]];
+    if(! currentItemEmailTemplateStoreDetail){
+            
+      let getTemplateAndStoreData = await emailTemplatesModal.aggregate(
+        [
+          {
+            $match: {
+              shop: item["shop"]
+            }
+          },
+          {
+            $lookup: {
+              from: 'store_details',
+              localField: 'shop',
+              foreignField: 'shop',
+              as: 'storedetails'
+            }
+          },
+          {
+            $project: {
+              [`settings.standardCourtsyNotice`]: 1,
+              [`settings.standardPastDueNotice1`]: 1,
+              [`settings.standardPastDueNotice2`]: 1,
+              [`settings.standardPastDueNotice3`]: 1,
+              [`settings.standardFinalDemand`]: 1,
+              configuration: 1,
+              shop:1,
+              storedetails:{ $arrayElemAt: [ "$storedetails",0] }
+            }
+          }
+        ],
+        { maxTimeMS: 60000, allowDiskUse: true }
+      );
+      
+
+      if(getTemplateAndStoreData) {
+          currentItemEmailTemplateStoreDetail = getTemplateAndStoreData[0] 
+       }
+  
+    }
+      
+    let storedetails=currentItemEmailTemplateStoreDetail["storedetails"]; 
+
+    ///////checkstart/////////////
+
+    let templateOption="";
+
+
+    
+      const lastEmailSentStatusArray = filteredArr.filter(val => val.contract_id == item.contract_id && val.lastEmailSentStatus !== undefined);
+        
+
+      const highestlastEmailSentStatusValue = lastEmailSentStatusArray.reduce((maxvalue, item) => {
+        return item.lastEmailSentStatus > maxvalue ? item.lastEmailSentStatus : maxvalue;
+      }, 0);    
+  
+   console.log("highestlastEmailSentStatusValue",highestlastEmailSentStatusValue)
+
+
+        // if(item?.lastEmailSentStatus>=(contractIdFailureCountObj[item["contract_id"]].count)){
+           if(contractIdFailureCountObj[item["contract_id"]].count==1){
+           return;
+           }
+
+          if(item?.lastEmailSentStatus>=contractIdFailureCountObj[item["contract_id"]].count){
+            console.log("iniffff")
+            return;
+        }
+
+        else
+        {
+           console.log("inemailsentelsee")
+           templateOption=dunningDataItem?.attemptList[contractIdFailureCountObj[item["contract_id"]]?.count - 2]?.selectedTemplate
+        }
+            
+       let sendMailToCustomer = currentItemEmailTemplateStoreDetail?.settings[templateOption]?.status ;
+       let sendMailToMerchant = currentItemEmailTemplateStoreDetail?.settings[templateOption]?.adminNotification ;
+    
+       if (sendMailToCustomer || sendMailToMerchant) {
+            
+        let recipientMails = [];
+    
+        if (sendMailToMerchant)
+           {
+            let shopEmail = storedetails?.store_email;
+            recipientMails.push(shopEmail);
+        }
+        if (sendMailToCustomer) {       
+          recipientMails.push(item["result"][0]?.customer_details?.email);
+        }
+    
+        let configurationData =  currentItemEmailTemplateStoreDetail?.configuration;
+        let selectedTemplate =   currentItemEmailTemplateStoreDetail?.settings[templateOption];
+    
+        let options={};
+        let emailConfig={};
+    
+         
+     if (configurationData && configurationData.enable == true) {
+      console.log("inenabletrue");
+      let encryptionConfig = {};
+      if (configurationData.encryption === "ssl") {
+        encryptionConfig = {
+          secure: true,
+          requireTLS: true,
+        };
+      } else if (configurationData.encryption === "tls") {
+        encryptionConfig = {
+          secure: false, // For TLS, secure should be set to false
+          requireTLS: true,
+        };
+      }
+    
+       emailConfig = {
+        host: configurationData.host,
+        port: parseInt(configurationData.portNumber), // Convert port number to integer
+        auth: {
+          user: configurationData.userName,
+          pass: configurationData.password,
+        },
+        ...(configurationData.encryption === "none" ? {} : encryptionConfig),
+      };
+    
+       options = {
+        // from: configurationData.fromName,
+        from:`${configurationData.fromName}<${configurationData.userName}>`,
+        to: recipientMails,
+        subject:selectedTemplate?.emailSetting?.subject,
+        cc:selectedTemplate?.emailSetting?.cc,
+        bcc:selectedTemplate?.emailSetting?.bcc,
+        replyTo:selectedTemplate?.emailSetting?.replyTo,
+        // ...others,
+      };
+    
+    } else {
+      console.log("inenablefalse");
+    
+    emailConfig = {
+        host: "smtp.gmail.com",
+        port: 587, // Convert port number to integer
+        auth: {
+          user: "sahilagnihotri7@gmail.com",
+          pass: "srdvsdnxfmvbrduw",
+        },
+        secure: false,
+      };
+    
+       options = {
+        from: "sahilagnihotri7@gmail.com",
+        to: recipientMails,
+        subject:selectedTemplate?.emailSetting?.subject,
+        cc:selectedTemplate?.emailSetting?.cc,
+        bcc:selectedTemplate?.emailSetting?.bcc,
+        replyTo:selectedTemplate?.emailSetting?.replyTo,
+        // ...others,
+     };   
+    }
+    
+     let extra = {
+        templateType: templateOption,
+        data:  item["result"][0],
+        shop_name: storedetails?.store_name,
+        shop_email: storedetails?.store_email,
+        currency: item["result"][0]?.subscription_details?.currency,
+      };
+
+    console.log("at the  end",recipientMails)
+
+//     let mailSentCheck=await  sendmailforcrons(recipientMails,emailConfig,options,selectedTemplate,extra,item.shop)
+ 
+//   // for upating 
+// if(mailSentCheck)
+//      {
+//     let updateBillingAttempts=await billing_Attempt.updateMany({ contract_id : item["contract_id"] }, {$set:{lastEmailSentStatus:contractIdFailureCountObj[item["contract_id"]].count-1}}) 
+//     console.log("updateBillingAttempts",updateBillingAttempts) 
+//     }
+      }
+ ///checkend////////
+      }
+  }        
+    })
+  }
+  else{
+    return
+  }
+  }
+  catch(error){
+  console.log("errorpaymentfailure",error)
+  }
+ 
+  }
+
+
+///////cronpayment retry start//////////
+async function failedPaymentRetryCron(){
+
+try
+  {
+    let targetDate=new Date()
+    targetDate.setDate(targetDate.getDate() - 5)
+    targetDate.setUTCHours(0,0,0,0)
+
+
+    let mainData=await billing_Attempt.aggregate(
+      [
+        {
+          $match: {
+            updatedAt: {$gte: targetDate},
+            $or: [{ status: "failed" }, { status: "retriedAfterFailure" },{ status: "success" }],
+          }
+        },
+        {
+          $lookup: {
+            from: 'subscription_details',
+            localField: 'contract_id',
+            foreignField: 'subscription_id',
+            as: 'result'
+          }
+        },
+        {
+          $match: {
+            'result.status': { $eq: 'active' }
+          }
+        }
+      ],
+      { maxTimeMS: 60000, allowDiskUse: true }
+    )
+    
+    let filteredArr=[];
+    let contract_idArr=[];
+    let contractIdFailureCountObj={};
+
+    if(mainData.length > 0){
+      mainData.map((item)=>{
+    if(item?.status=='failed' || item?.status=='retriedAfterFailure'){
+      filteredArr.push(item)
+      contract_idArr.push(item?.contract_id)
+    }
+    else if(item?.status=='success'){
+      filteredArr= filteredArr.filter((itm, index) => !Object.values(itm).includes(item.contract_id))
+        contract_idArr= contract_idArr.filter((value, index) => value != item?.contract_id )
+     
+    }
+      })
+    }
+    else{
+      return;
+    }
+
+let dunningDataArray=await dunningModal.find({enablePaymentAttempt:true});
+   
+if(dunningDataArray.length >0 &&  filteredArr.length > 0){
+ 
+  filteredArr.forEach(async(item)=> {
+  
+if(!Object.keys(contractIdFailureCountObj).includes(item["contract_id"])){
+  
+  const countDuplicates= contract_idArr.filter((val) => 
+    val==item["contract_id"]    
+  ).length
+  
+  let dunningDataItem=dunningDataArray.find((val)=>
+  val.shop==item["shop"]
+)
+contractIdFailureCountObj[item["contract_id"]]={count:countDuplicates,attemptNum:dunningDataItem?.attemptNum};
+if( dunningDataItem && dunningDataItem.attemptNum && countDuplicates <=5 ){
+let today=new Date()
+today.setUTCHours(0,0,0,0)
+
+ let targetDate=item.updatedAt
+ targetDate.setDate(targetDate.getDate()+ parseInt(dunningDataItem?.attemptList[countDuplicates-1]?.retryAfterDays))
+ targetDate.setUTCHours(0,0,0,0)
+
+ let  retryAttempt= areDatesEqual(today,targetDate);
+
+ if(retryAttempt && item.shop !="shine.myshopify.com"){
+
+  let mutation = subscriptionBillingAttemptCreateMutation ;
+
+  const currentDate = new Date().toISOString();
+  const uniqueId =
+    Date.now().toString(36) + Math.random().toString(36).substring(2, 5);
+
+  let Input = {
+    subscriptionBillingAttemptInput: {
+      idempotencyKey: uniqueId,
+      originTime: currentDate,
+    },
+    subscriptionContractId: item.contract_id,
+  };
+
+  let gettoken = await shopModal.findOne({ shop: item?.shop });
+  // console.log(gettoken, "cvcvcvcvcv");
+
+  const client = new shopify.api.clients.Graphql({
+    session: {
+      shop: item?.shop,
+      accessToken: gettoken.accessToken,
+    },
+  });
+
+  let billingAttempt = await client.query({
+    data: { query: mutation, variables: Input },
+  });
+
+  if (billingAttempt.body.data.subscriptionBillingAttemptCreate.userErrors.length < 1 ) {
+
+    let saveToBillingAttempt = await billing_Attempt.create({
+      shop: item?.shop,
+      status: "pending",
+      billing_attempt_date: currentDate,
+      idempotencyKey: uniqueId,
+      renewal_date: item.renewal_date,
+      contract_products: item.contract_products,
+      contract_id: item.contract_id,
+      billing_attempt_id:
+        billingAttempt.body.data.subscriptionBillingAttemptCreate
+          .subscriptionBillingAttempt.id,
+    });
+  
+   
+  }
+
+
+ }
+
+}
+
+   }
+
+  })
+}
+  }
+catch(error){
+console.log('error',error)
+
+}
+} 
+
+/////////cron pament retry end//////
 
 const currentDate = new Date().toISOString();
 const targetDate = new Date(currentDate);
@@ -1156,7 +2043,6 @@ const dateChange = (type, originalDate, value) => {
   if (type.toLowerCase() === "day") {
     let nextDate = new Date(originalDate);
     nextDate.setDate(nextDate.getDate() + 1 * parseInt(value));
-
     return nextDate;
   } else if (type.toLowerCase() === "month") {
     let nextDate = new Date(originalDate);
@@ -1177,7 +2063,7 @@ const dateChange = (type, originalDate, value) => {
 const getCurrencySymbol = (currency) => {
   const symbol = new Intl.NumberFormat("en", { style: "currency", currency })
     .formatToParts()
-    .find((x) => x.type === "currency");
+    .find((x) => x.type === "currency") ;
   return symbol && symbol.value;
 };
 
@@ -1720,9 +2606,7 @@ export async function getCustomerPaymentMethods(req, res) {
     let dataToSend = data.body.data.customer.paymentMethods.edges;
     console.log(dataToSend);
     if (dataToSend.length > 0) {
-      console.log("chekc", dataToSend[0].node.instrument);
-      console.log("chekc", dataToSend[0].node?.customer);
-      res.send({ message: "success", data: dataToSend });
+       res.send({ message: "success", data: dataToSend });
     } else {
       res.send({
         message: "no_data_found",
@@ -2742,6 +3626,7 @@ export async function subscriptionDraftCommitCommon(req, res, next) {
             response.body.data?.subscriptionDraftCommit?.contract[
               req.body?.field
             ],
+            nextBillingDate:response.body.data?.subscriptionDraftCommit?.contract?.nextBillingDate
         };
       }
       console.log("in draft commit-->", req?.data);
@@ -2767,9 +3652,12 @@ export async function updateSubscriptionInDbCommon(req, res) {
     if (req?.body?.field == "note") {
       update = { $set: { "subscription_details.note": req?.data?.note } };
     } else if (req?.body?.field == "status") {
-      console.log("firstinstatuss  check");
-      console.log("fdfdf", req?.data?.status);
-      update = { $set: { status: req?.data?.status } };
+    if(req?.body?.input?.nextBillingDate) {
+      update = { $set: { status: req?.data?.status ,nextBillingDate: req?.data?.nextBillingDate } };
+    }
+else {
+      update = { $set: { status: req?.data?.status } } ;
+}
     } else if (req.body.field == "deliveryMethod") {
       //for updating shipping address
       update = {
@@ -3618,174 +4506,6 @@ export async function sendMailCommon(req, res) {
   }
 }
 
-// export async function sendMailOnUpdate(req, res) {
-//   const __dirname = path.resolve();
-//   console.log(__dirname, "kjh");
-//   const dirPath = path.join(__dirname, "/frontend/components/emailtemplate");
-
-//   let options = req.body?.options;
-//   let emailConfig = req.body?.emailConfig;
-//   let extra = req.body?.extra;
-//   let templateType=extra?.templateType;
-//   console.log("options", options);
-//   console.log("outside try sedmailcommon");
-//   let testAccount = await nodemailer.createTestAccount();
-//   const transporter = nodemailer.createTransport(emailConfig);
-
-//   let selectedTemplate = req.body?.selectedTemplate;
-//   let currencySymbol = getCurrencySymbol(req.body?.extra?.currency);
-
-//   console.log("recipentMails",req?.body?.recipientMails)
-//   // console.log("currencySymbol", currencySymbol);
-//   // console.log("selecetdetemplate", selectedTemplate);
-//   // console.log("crcysymbol", currencySymbol);
-//   // console.log("extra?.data", extra?.data);
-
-//   const emailContent = await ejs.renderFile(dirPath + "/preview2.ejs", {
-//     selectedTemplate,
-//     templateType,
-//     currencySymbol,
-//     data: {...extra?.data,recipientMails:req?.body?.recipientMails},
-//     dateConversion,
-//   });
-
-//   const replacements = {
-//     "{{subscription_id}}" : extra?.data?.subscription_id?.split("/").at(-1),
-
-//     "{{customer_email}}": extra?.data?.customer_details?.email,
-
-//     // "{{order_number}}": extra?.data?.order_number,
-
-//     "{{customer_name}}":
-//       extra?.data.customer_details.firstName != null
-//         ? extra?.data.customer_details.firstName
-//         : "",
-
-//     "{{customer_id}}": extra?.data?.customer_details?.id?.split("/").at(-1),
-
-//     "{{shop_name}}": extra?.shop_name,
-
-//     "{{shop_email}}": extra?.shop_email,
-
-//     "{{shipping_country}}": extra?.data?.shipping_address?.country,
-
-//     //   //   // "{{selling_plan_name}}":"23",
-
-//     "{{shipping_full_name}}":
-//       extra?.data?.shipping_address?.firstName != null
-//         ? extra?.data?.shipping_address?.firstName
-//         : "" + " " + extra?.data?.shipping_address?.lastName != null
-//         ? extra?.data?.shipping_address?.lastName
-//         : "",
-
-//     "{{shipping_address_1}}": extra?.data?.shipping_address?.address1,
-
-//     "{{shipping_company}}":
-//       extra?.data?.shipping_address?.company != null
-//         ? extra?.data?.shipping_address?.company
-//         : "",
-
-//     "{{shipping_city}}": extra?.data?.shipping_address?.city,
-
-//     "{{shipping_province}}": extra?.data?.shipping_address?.province,
-
-//     "{{shipping_province_code}}": extra?.data?.shipping_address?.provinceCode,
-
-//     "{{shipping_zip}}": extra?.data?.shipping_address?.zip,
-
-//     "{{billing_full_name}}":
-//       extra?.data?.billing_address?.firstName != null
-//         ? extra?.data?.billing_address?.firstName
-//         : "" + " " + extra?.data?.billing_address?.lastName != null
-//         ? extra?.data?.billing_address?.lastName
-//         : "",
-
-//     "{{billing_country}}": extra?.data?.billing_address?.country,
-
-//     "{{billing_address_1}}": extra?.data?.billing_address?.address1,
-
-//     "{{billing_city}}": extra?.data?.billing_address?.city,
-
-//     "{{billing_province}}": extra?.data?.billing_address?.province,
-
-//     "{{billing_province_code}}": extra?.data?.billing_address?.provinceCode,
-
-//     "{{billing_zip}}": extra?.data?.billing_address?.zip,
-
-//     //   //   "{{subscription_line_items}}":
-
-//     "{{card_brand_name}}":
-//       extra?.data?.payment_details?.payment_instrument_value?.brand,
-
-//     "{{last_four_digits}}":
-//       extra?.data?.payment_details?.payment_instrument_value?.lastDigits,
-
-//     "{{card_expiry_month}}":
-//       extra?.data?.payment_details?.payment_instrument_value?.expiryMonth,
-
-//     "{{card_expiry_year}}":
-//       extra?.data?.payment_details?.payment_instrument_value?.expiryYear,
-
-//     //     // "{{manage_subscription_link}}":selectedTemplate.subscriptionUrl,
-
-//     //   //   // "{{email_subject}}":"633",
-
-//     "{{heading_text}}": selectedTemplate.headingText,
-//     "{{card_brand_name}}": extra?.data?.payment_details
-//       ?.payment_instrument_value?.brand
-//       ? extra?.data?.payment_details?.payment_instrument_value?.brand
-//           .charAt(0)
-//           .toUpperCase() +
-//         formatVariableName(
-//           extra?.data?.payment_details?.payment_instrument_value?.brand
-//             .slice(1)
-//             .toLowerCase()
-//         )
-//       : "",
-
-//     "{{{logo_image}}": selectedTemplate.logoUrl,
-
-//     "{{shiiping_address_text}}":
-//       selectedTemplate.subscriptionShippingAddressText,
-
-//     "{{billing_address_text}}": selectedTemplate.subscriptionBillingAddressText,
-
-//     "{{payment_method_text}}": selectedTemplate.paymentMethodText,
-
-//     "{{logo_width}}": selectedTemplate.logoWidth,
-
-//     "{{logo_height}}": selectedTemplate.logoHeight,
-
-//     "{{logo_alignment}}": selectedTemplate.logoAlignment,
-//   };
-
-//   const updatedEmailContent = emailContent.replace(
-//     new RegExp(Object.keys(replacements).join("|"), "g"),
-//     (matched) => replacements[matched]
-//   );
-
-//   options.html = updatedEmailContent;
-
-//   console.log("august666666");
-
-//   try {
-//     console.log("first intry sendmailcommon");
-
-//     let data = await transporter.sendMail(options);
-//     if (data) {
-//       res.send({
-//         message: "success",
-//         data: "Mail sent successfully",
-//       });
-//     }
-//     console.log(data, "jhgfds");
-//   } catch (err) {
-//     console.log(err, "errorr aa gyaa");
-//    return res.send({ message: "error", data: "Something went wrong" });
-//   }
-
-// }
-
 export async function sendMailOnUpdate(req, res) {
   try {
     const __dirname = path.resolve();
@@ -3999,7 +4719,7 @@ export async function sendMailOnUpdate(req, res) {
             .at(-1)}&mode=view`;
         }
       }
-      console.log("testing0ct18");
+      console.log("testing0ct18--->",extra?.data);
       const emailContent = await ejs.renderFile(dirPath + "/preview2.ejs", {
         selectedTemplate,
         templateType,
@@ -4223,164 +4943,6 @@ export async function getOrdersDataUpcoming(req, res) {
     res.send({ message: "error" });
   }
 }
-
-// export async function orderNow(req, res) {
-
-// try{
-//   console.log("bodddy",req.body)
-//   let shop = res.locals.shopify.session.shop;
-//   let data =req?.body?.data
-//   console.log("data in ordernow function", data)
-
-//   let mutation = `mutation subscriptionBillingAttemptCreate($subscriptionBillingAttemptInput: SubscriptionBillingAttemptInput!, $subscriptionContractId: ID!) {
-//     subscriptionBillingAttemptCreate(subscriptionBillingAttemptInput: $subscriptionBillingAttemptInput, subscriptionContractId: $subscriptionContractId) {
-//       subscriptionBillingAttempt {
-//         id
-//               subscriptionContract
-//               {
-//                   nextBillingDate
-//                   billingPolicy{
-//                       interval
-//                       intervalCount
-//                       maxCycles
-//                       minCycles
-//                       anchors{
-//                           day
-//                           type
-//                           month
-//                       }
-//                   }
-//                   deliveryPolicy{
-//                       interval
-//                       intervalCount
-//                       anchors{
-//                           day
-//                           type
-//                           month
-//                       }
-//                   }
-//               }
-//       }
-//       userErrors {
-//         field
-//         message
-//       }
-//     }
-//   }
-//   `;
-
-//   const currentDate = new Date().toISOString();
-//       const uniqueId =
-//         Date.now().toString(36) + Math.random().toString(36).substring(2, 5);
-
-//       let Input = {
-//         subscriptionBillingAttemptInput: {
-//           idempotencyKey: uniqueId,
-//           originTime: currentDate,
-//         },
-//         subscriptionContractId: data.subscription_id,
-//       };
-
-//       let gettoken = await shopModal.findOne({ shop: shop });
-//       console.log(gettoken, "cvcvcvcvcv");
-
-//       const client = new shopify.api.clients.Graphql({
-//         session: {
-//           shop: shop,
-//           accessToken: gettoken.accessToken,
-//         },
-//       });
-
-//       let billingAttempt = await client.query({
-//         data: { query: mutation, variables: Input },
-//       });
-
-//       console.log(
-//         billingAttempt.body.data.subscriptionBillingAttemptCreate,
-//         "check it"
-//       );
-
-//       if (
-//         billingAttempt.body.data.subscriptionBillingAttemptCreate.userErrors
-//           .length < 1
-//       ) {
-
-//         console.log("checjingnxtblgdt", billingAttempt.body.data.subscriptionBillingAttemptCreate?.subscriptionBillingAttempt?.subscriptionContract?.nextBillingDate)
-
-//         if(req.body.index==0){
-//           console.log("mohalitowerrr")
-//           let nextDate;
-//           let value =data.subscription_details.planType=="payAsYouGo" ? data.subscription_details.billingLength :data.subscription_details.delivery_billingValue
-//           let type=data.subscription_details.delivery_billingType
-
-//           console.log(value,type)
-
-//           if (
-//             type.toLowerCase() ===
-//             "day"
-//             ) {
-//              nextDate = new Date(data?.nextBillingDate);
-//             nextDate.setDate(nextDate.getDate() + 1 * parseInt(value));
-
-//             } else if (
-//             type.toLowerCase() ===
-//             "month"
-//             ) {
-//              nextDate = new Date(data?.nextBillingDate);
-//             nextDate.setMonth(nextDate.getMonth() + 1 * parseInt(value));
-//             console.log("typedtaechekcc",typeof nextDate)
-
-//             } else if (
-//             type.toLowerCase() ===
-//             "week"
-//             ) {
-//               nextDate = new Date(data?.nextBillingDate);
-//             nextDate.setDate(nextDate.getDate() + (7 * parseInt(value)));
-
-//             } else if (
-//             type.toLowerCase() ===
-//             "year"
-//             ) {
-
-//              nextDate = new Date(data?.nextBillingDate);
-//             nextDate.setFullYear(nextDate.getFullYear() + 1 * parseInt(value)) ;
-
-//             }
-
-//        console.log("hmmmkkkkk",nextDate)
-//         let updateNextBillingDate =await subscriptionDetailsModal.findOneAndUpdate(
-//             { shop: shop, subscription_id: data.subscription_id },
-//             {
-//               $set: {
-//                 nextBillingDate:  nextDate.toISOString(),
-//               },
-//             }
-//           );
-//         console.log(updateNextBillingDate, "nextupdate");
-//           }
-
-//           let saveToBillingAttempt = await billing_Attempt.create({
-//             shop: shop,
-//             status: "pending",
-//             billing_attempt_date: currentDate,
-//             renewal_date: req.body.renewalDate,
-//             contract_products: data.product_details,
-//             contract_id: data.subscription_id,
-//             billing_attempt_id:
-//               billingAttempt.body.data.subscriptionBillingAttemptCreate
-//                 .subscriptionBillingAttempt.id,
-//           });
-
-//         res.send({message:"success"})
-//      }
-//         }
-
-//     catch(error){
-// console.log("error",error)
-// res.send({message:"error",data:"Something went wrong"})
-//     }
-
-// }
 
 export async function orderNow(req, res) {
   try {
@@ -5211,7 +5773,7 @@ export async function checkAppBlockEmbed(req, res) {
     let theme_config_data = await shopify.api.rest.Asset.all({
       session: res.locals.shopify.session,
       theme_id: storeDetails?.themeId,
-      asset: { key: "config/settings_data.json" },
+      asset: { key: "config/settings_data.json"},
     });
     let currentThemeData = JSON.parse(theme_config_data?.data[0]?.value);
     // console.log("zzz", currentThemeData?.current?.blocks);
@@ -5436,6 +5998,7 @@ export async function getBillingPlanData(req, res) {
     res.send({ message: "error", data: error?.message });
   }
 }
+
 export async function calculateRevenue(req, res) {
   try {
     let shop = res.locals.shopify.session.shop;
@@ -5483,6 +6046,7 @@ export async function deleteRecurringCharge(req, res, next) {
     res.send({ message: "error" });
   }
 }
+
 export async function freePlanActivation(req, res) {
   const shop = res.locals.shopify.session.shop;
   const updatePlan = await billingModal.findOneAndUpdate(
@@ -5515,6 +6079,117 @@ export async function freePlanActivation(req, res) {
       });
   }
 }
+
+export async function saveDunningData(req,res){
+  try{
+    const shop = res.locals.shopify.session.shop;
+  console.log('bodyreq',req?.body)
+  const data = await dunningModal.findOneAndUpdate(
+    { shop },
+    {
+     ...req?.body
+    },
+    { upsert: true, new: true }
+  );
+  
+if(data)
+{
+
+  res.send({message: "success"})
+}
+
+
+}
+catch(error){
+    console.log("error", error);
+    res.send({ message: "error" });
+}
+}
+
+export async function fetchDunningData(req,res){
+  try{
+    const shop = res.locals.shopify.session.shop;
+    const data = await dunningModal.findOne({ shop });
+    // upcomingOrders()
+    // failedPaymentRetryCron()
+   if(data)
+   {
+      res.send({message:"success",data:data})
+   }
+   else{
+    res.send({message:"nodata",data:{}})
+   }
+
+}
+catch(error)
+   {
+    console.log("error", error);
+    res.send({ message: "error" });
+  }
+}
+
+
+export async function getEmailTemplatesCount(req,res){
+
+  try {
+       let shop = res.locals.shopify.session.shop;
+       let data = await emailTemplatesModal.findOne({ shop: shop } ,{settings:1});
+   
+    if (data && data.settings) {
+      let templatesLength=Object.keys(data.settings).length ;
+
+      res.send({ message: "success", templatesLength });
+    } else {
+      res.send({ message: "error", data: "No data found" });
+    }
+  } catch (error) {
+    console.log(error);
+    res.send({
+      message: "error",
+      data: "Something went wrong",
+    });
+  }
+
+
+
+}
+
+export async function saveDunningTemplates(req,res){
+      try
+    {
+      let shop=res.locals.shopify.session.shop ;
+
+      let saveTemplatesData=await emailTemplatesModal.findOneAndUpdate(
+        {
+          shop,
+         $set:{
+          'settings.upcomingOrderReminder': dunningTemplates?.upcomingOrderReminder,
+          'settings.standardCourtsyNotice': dunningTemplates?.standardCourtsyNotice,
+          'settings.standardPastDueNotice1': dunningTemplates?.standardPastDueNotice1,
+          'settings.standardPastDueNotice2': dunningTemplates?.standardPastDueNotice2,
+          'settings.standardPastDueNotice3': dunningTemplates?.standardPastDueNotice3,
+          'settings.standardFinalDemand': dunningTemplates?.standardFinalDemand,
+                },                             
+        new:true 
+        }
+        )                            
+    
+     if(saveTemplatesData){
+      res.send({message:'success'})
+     }
+else{
+  res.send({message:"error"})
+}
+      
+
+  }
+ catch(error){
+console.log("error",error)
+res.send({message:"error"})
+ }
+
+}
+
 // export async function
 ///////////////////////////////////////////////
 
@@ -8943,14 +9618,14 @@ export async function saveCustomerPortalDetails(req, res) {
   let shop = res.locals.shopify.session.shop;
   let data = req.body;
   try {
-    let getdata = await cPortalSettings.findOne({ shop: shop });
-    console.log(getdata, "pp");
+    // let getdata = await cPortalSettings.findOne({ shop: shop });
+    // console.log(getdata, "pp");
     let values = data.values;
-    for (const key in data.values) {
-      if (data.values.hasOwnProperty(key)) {
-        values[key] = data.values[key];
-      }
-    }
+    // for (const key in data.values) {
+    //   if (data.values.hasOwnProperty(key)) {
+    //     values[key] = data.values[key];
+    //   }
+    // }
     let saveData = await cPortalSettings.findOneAndUpdate(
       { shop: shop },
       {
@@ -9210,6 +9885,16 @@ export async function sendInvoiceMailAndSaveContract(req, res) {
                       lastDigits
                       name
                     }
+                    ... on CustomerShopPayAgreement {
+                      expiresSoon
+                      expiryMonth
+                      expiryYear
+                      lastDigits
+                      name
+                  }
+                  ... on CustomerPaypalBillingAgreement{
+                      paypalAccountEmail
+                  }
                   }
                 }
                 nextBillingDate
@@ -9815,7 +10500,7 @@ export async function sendInvoiceMailAndSaveContract(req, res) {
                     userErrors {
                     field
                     message
-                  }
+                  }v
                 }
               }`;
               const Input1 = {

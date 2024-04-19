@@ -1,7 +1,10 @@
-import React from "react";
+import React,{useState} from "react";
 import { Link, useNavigate } from "react-router-dom";
+import CalculateBillingUsage from "../components/calculateBillingUsage";
 
 function settings() {
+  const [billingPlan,setBillingPlan]=useState('')
+
   return (
     <div id="revlytic-settings">
       <div className="revlytic-setting-grid">
@@ -198,6 +201,7 @@ function settings() {
           </article>
         </Link>
       </div>
+      <CalculateBillingUsage setBillingPlan={setBillingPlan}/>
     </div>
   );
 }

@@ -88,7 +88,8 @@ try {
 
 });
 
-app.use("/api/storefront/", router);
+
+app.use("/api/storefront", router);
 app.use("/api/prodEx", router);
 app.use("/api/customerPortal", router);
 app.get("/api/customerPortalJs", (req, res) => {
@@ -139,6 +140,7 @@ app.get(
     
     await shopModal.findOne({ shop }).then((data) => {
       if (data) {
+        console.log("17april2024",accessToken)
         shopModal.updateOne({ accessToken });
       } else {
         shopModal

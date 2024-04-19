@@ -5152,14 +5152,13 @@ h4.revlytic.upcoming-orders-header {
 
 .revlytic.chekclist-greeeting-section h3 {
     color: #000;
-    font-size: 15px;
+    font-size: 16px;
     font-weight: 700;
     letter-spacing: -0.3px;
 }
-
 .revlytic.chekclist-greeeting-section h5 {
-    color: #999;
-    font-size: 16px;
+    color: rgba(0, 0, 0, 0.88);
+    font-size: 1em;
     font-style: normal;
     font-weight: 500;
     letter-spacing: -0.3px;
@@ -5449,8 +5448,8 @@ h4.revlytic.upcoming-orders-header {
 
 /* /////////////////////////// */
 .ant-timeline-item-content {
-    color: #888;
-    font-size: 16px;
+    color: rgba(0, 0, 0, 0.88);
+    font-size: 1em;
     font-style: normal;
     font-weight: 500;
     line-height: 1.9;
@@ -5464,8 +5463,8 @@ h4.revlytic.upcoming-orders-header {
     letter-spacing: -0.36px;
 }
 .revlytic-timeline-wrapper h3 {
-    color: #888;
-    font-size: 16px;
+    color: rgba(0, 0, 0, 0.88);
+    font-size: 1em;
     font-style: normal;
     font-weight: 500;
     letter-spacing: -0.3px;
@@ -5572,9 +5571,11 @@ margin: 2px
     left: -3px;
 }
 .revlytic-timeline-wrapper .ant-timeline .ant-timeline-item-head-blue {
-    border-color: #D9D9D9;
+    border-color: rgba(0, 0, 0, 0.88);
 }
-
+.revlytic-timeline-wrapper .ant-timeline .ant-timeline-item-tail {
+    border-inline-start: 2px solid rgba(0, 0, 0, 0.88);
+}
 .checklist-tabs-content p:last-child {
     margin-bottom: 0;
 }
@@ -5690,7 +5691,12 @@ background-color: #6200ea0a;
     /* -webkit-animation: bounce 2s infinite;
     animation: bounce 2s infinite; */
 }
-
+.revlytic-previousbtn-orders {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+    justify-content: center;
+}
 @-webkit-keyframes bounce {
     20%, 53%, 80%, 0%, 100% {
       -webkit-animation-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
@@ -5753,6 +5759,8 @@ background-color: #6200ea0a;
 }
 .revlytic-company-upgradebtn{
     margin-top: 10px;
+    display: flex;
+    gap: 10px;
 }
 
 
@@ -5849,7 +5857,7 @@ background-color: #6200ea0a;
 .revlytic-dunning-section-input.case-stage-dunning span {
     width: 20px;
     height: 20px;
-    border: 1px solid #000;
+    /* border: 1px solid #000; */
     border-radius: 3px;
     display: flex;
     align-items: center;
@@ -5858,6 +5866,9 @@ background-color: #6200ea0a;
     font-weight: 700;
     line-height: 15px;
     letter-spacing: 0em;
+}
+.dunning-disabled-svg {
+    fill: #d1d1d1 !important;
 }
 .revlytic.dunning-main .ant-collapse {
     margin-top: 1rem;
@@ -5891,4 +5902,15 @@ span.case-create-template circle {
 .revlytic-dunning-submitBtn {
     text-align: right;
     margin-top: 1rem;
+}
+.all-field-disable h4, .all-field-disable h3 {
+    color: #d1d1d1;
+}
+
+.disabled-dunning-templatelink{
+    pointer-events: none;
+}
+
+.revlytic-company-upgrade p strong {
+    font-size: 16px;
 }

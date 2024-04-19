@@ -45,12 +45,14 @@ import {
 import SubscriptionProducts from "./SubscriptionProducts";
 import { useAPI } from "../components/common/commonContext";
 import { sendMailOnUpdate } from "./common/helpers";
-
+import CalculateBillingUsage from "./calculateBillingUsage";
 function CreateManualSubscription() {
-  const { currency, storeDetails,billingPlan} = useAPI();
+  const { currency, storeDetails} = useAPI();
   const [form] = useForm();
   const [form2] = useForm();
   const navigate = useNavigate();
+  const [billingPlan,setBillingPlan]=useState('')
+
 
   const location = useLocation();
   const queryParams = location.search;
@@ -124,6 +126,21 @@ function CreateManualSubscription() {
 
     return formattedDate;
   }
+
+  function compareDatesIgnoringTime(date1, date2) {
+    // Create new Date objects with the same date but time set to 00:00:00
+    const newDate1 = new Date(date1.getFullYear(), date1.getMonth(), date1.getDate());
+    const newDate2 = new Date(date2.getFullYear(), date2.getMonth(), date2.getDate());
+
+    // Compare the new Date objects
+    if (newDate1 < newDate2) {
+        return -1;
+    } else if (newDate1 > newDate2) {
+        return 1;
+    } else {
+        return 0;
+    }
+}
 
   const getCurrencySymbol = (currency) => {
     const symbol = new Intl.NumberFormat("en", { style: "currency", currency })
@@ -200,7 +217,7 @@ else if(input?.toLowerCase()=="year"){
 }
 
   async function getPrepaidPastorders() {
-    console.log(subscriptionId)
+  
     let ordersDataUpcoming = await postApi(
       "/api/admin/getOrdersDataUpcoming",
       { contract_id: `gid://shopify/SubscriptionContract/${subscriptionId}` },
@@ -214,7 +231,7 @@ else if(input?.toLowerCase()=="year"){
       let filterPastOrders = arr.filter(
         (item) => item.status == "initial" || item.status == "success"
       );
-      console.log("18sept",filterPastOrders)
+      
 
       setPastOrders(filterPastOrders);
     }
@@ -354,9 +371,7 @@ else if(input?.toLowerCase()=="year"){
       //  setShowDate(true)
       let result = await postApi(
         "/api/admin/getSubscriptionDetails",
-
         { subscriptionId: subscriptionId },
-
         app
       );
 
@@ -427,16 +442,16 @@ else if(input?.toLowerCase()=="year"){
           // (**** **** **** {item?.node?.instrument?.lastDigits})
 
           paymentMethod:
-            data?.payment_details?.payment_instrument_value?.brand
+          data?.payment_details?.payment_instrument_value?.__typename  == "CustomerCreditCard"  ||  data?.payment_details?.payment_instrument_value?.__typename  == "CustomerShopPayAgreement" ?  ((data?.payment_details?.payment_instrument_value?.brand ? data?.payment_details?.payment_instrument_value?.brand
               ?.charAt(0)
-              ?.toUpperCase() +
-            formatVariableName(
+              ?.toUpperCase()  : "" ) +
+             ( data?.payment_details?.payment_instrument_value?.brand ?  formatVariableName(
               data?.payment_details?.payment_instrument_value?.brand?.slice(1)
-            ) +
+            ) : "") +
             " " +
             "(**** **** ****  " +
-            data?.payment_details?.payment_instrument_value?.lastDigits +
-            ")",
+            (data?.payment_details?.payment_instrument_value?.lastDigits ?   data?.payment_details?.payment_instrument_value?.lastDigits  : "") +
+            ")" ): data?.payment_details?.payment_instrument_value?.__typename  == "CustomerPaypalBillingAgreement"  ?  data?.payment_details?.payment_instrument_value?.paypalAccountEmail  : "" ,
 
           customer_details: {
             firstName: data?.customer_details?.firstName,
@@ -577,17 +592,18 @@ else if(input?.toLowerCase()=="year"){
               ? data?.customer_details?.email
               : ""),
 
-          paymentMethod:
-            data?.payment_details?.payment_instrument_value?.brand
-              ?.charAt(0)
-              ?.toUpperCase() +
-            formatVariableName(
-              data?.payment_details?.payment_instrument_value?.brand?.slice(1)
-            ) +
-            " " +
-            "(**** **** ****  " +
-            data?.payment_details?.payment_instrument_value?.lastDigits +
-            ")",
+       
+              paymentMethod:
+              data?.payment_details?.payment_instrument_value?.__typename  == "CustomerCreditCard"  ||  data?.payment_details?.payment_instrument_value?.__typename  == "CustomerShopPayAgreement" ?  ((data?.payment_details?.payment_instrument_value?.brand ? data?.payment_details?.payment_instrument_value?.brand
+                  ?.charAt(0)
+                  ?.toUpperCase()  : "" ) +
+                 ( data?.payment_details?.payment_instrument_value?.brand ?  formatVariableName(
+                  data?.payment_details?.payment_instrument_value?.brand?.slice(1)
+                ) : "") +
+                " " +
+                "(**** **** ****  " +
+                (data?.payment_details?.payment_instrument_value?.lastDigits ?   data?.payment_details?.payment_instrument_value?.lastDigits  : "") +
+                ")" ): data?.payment_details?.payment_instrument_value?.__typename  == "CustomerPaypalBillingAgreement"  ?  data?.payment_details?.payment_instrument_value?.paypalAccountEmail  : "" ,
 
           customer_details: {
             firstName: data?.customer_details?.firstName,
@@ -731,11 +747,11 @@ else if(input?.toLowerCase()=="year"){
   }, [params.get("mode")]);
 
   async function getCountries() {
-    console.log(" in get countriesbxz")
+ 
     let response = await postApi("api/admin/getCountries", {}, app);
     if (response?.data?.message == "success") {
       setCountriesData(response?.data?.data?.data);
-console.log("27cntrydata",response?.data?.data?.data)
+
       let countriesNameArray = [];
 
       response?.data?.data?.data.forEach((element) => {
@@ -882,13 +898,13 @@ console.log("27cntrydata",response?.data?.data?.data)
     let data2;
 
     if (form.getFieldValue(["subscription", "planType"]) == "payAsYouGo") {
-      console.log("sahiloct26666");
+     
       data =
         `This subscription is a Pay As You Go plan. The customer will receive a delivery and be billed every ` +
         `${form.getFieldValue(["subscription", "billingLength"]) ? form.getFieldValue(["subscription", "billingLength"]) :"{Input for bill every}"}  ${form
           .getFieldValue(["subscription", "delivery_billingType"])
           ?.toLowerCase()}(s).`;
-          console.log("sdas26oct",data)
+        
     } else {
       //console.log("sahil2");
       data =
@@ -927,7 +943,7 @@ console.log("27cntrydata",response?.data?.data?.data)
   }
 
   async function getCustomerPaymentMethods(id, country) {
-    console.log("cccccccccccccccccountry", country);
+
     setLoader(true);
     setPaymentLoader(true);
     let result = await postApi(
@@ -941,7 +957,7 @@ console.log("27cntrydata",response?.data?.data?.data)
       let finalData = result?.data?.data;
       //console.log(finalData[0].node.customer?.email);
       //console.log(result?.data?.data);
-      console.log("first-oct27",countriesData)
+ 
       setCustomerPaymentsData(result?.data?.data);
       //console.log("cusssssstttttt", result?.data?.data);
       if (result?.data?.data.length > 0) {
@@ -955,7 +971,7 @@ console.log("27cntrydata",response?.data?.data?.data)
         );
 
         setSelectedCountry(selectedCountryData);
-        console.log("newdelhi", selectedCountryData);
+      
         {
           mode != "edit" && setCountryCode(selectedCountryData.code);
         }
@@ -1228,14 +1244,14 @@ console.log("27cntrydata",response?.data?.data?.data)
     }
     // //console.log(customersList)
   };
-console.log(storeDetails,"billingplan",billingPlan)
+
   const handleMaxCycle = (rule, value) => {
     if (
       form.getFieldValue(["subscription", "billingMinValue"]) != "" &&
       parseInt(value) <
         parseInt(form.getFieldValue(["subscription", "billingMinValue"]))
     ) {
-      //console.log( "kdjaskdjaskd;sl;dals;dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd" );
+
       return Promise.reject(
         "Maximum Billing Cycles cannot be less than Minimum Billing Cycles!"
       );
@@ -1381,7 +1397,7 @@ console.log(storeDetails,"billingplan",billingPlan)
           lastName: data?.lastName,
           phone: data?.phone,
         });
-console.log("value,data.counteruy",value, data?.country)
+
         getCustomerPaymentMethods(value, data?.country);
       }
     } else {
@@ -1763,9 +1779,11 @@ console.log("value,data.counteruy",value, data?.country)
         let updatedData = {
           ...existingSubscription,
           status: result?.data?.data?.status,
+          nextBillingDate: result?.data?.data?.nextBillingDate,
         };
         setExistingSubscription(updatedData);
-        //console.log("5august", result?.data?.data?.status);
+        // console.log("5august", result?.data?.data?.nextBillingDate);
+        form.setFieldValue("startDate",dayjs(result?.data?.data?.nextBillingDate))
         if (result?.data?.data?.status == "CANCELLED") {
           let extra = {
             templateType: "subscriptionCanceled",
@@ -1927,7 +1945,7 @@ console.log("value,data.counteruy",value, data?.country)
           value:existingSubscription?.shipping_address?.company
         }
       ]);
-console.log("sdasdasdakeuwriorioriorioriorioriorioriorioiooppo")
+
       setProvinceError(false);
       // let data = existingSubscription?.shipping_address?.deliveryPrice
       //   ? existingSubscription?.shipping_address
@@ -1952,7 +1970,7 @@ console.log("sdasdasdakeuwriorioriorioriorioriorioriorioiooppo")
       //console.log("newdelhi", selectedCountryData);
 
       if (selectedCountryData && selectedCountryData?.provinces?.length > 0) {
-        console.log("jalndharrrrrr");
+      
         let provincesNameArray = [];
 
         selectedCountryData?.provinces.forEach((element) => {
@@ -1967,7 +1985,7 @@ console.log("sdasdasdakeuwriorioriorioriorioriorioriorioiooppo")
         selectedCountryData &&
         selectedCountryData?.provinces?.length == 0
       ) {
-        console.log("onosnsodfnsodfso")
+     
         setProvincesName([]);
        
       }
@@ -1986,9 +2004,9 @@ console.log("sdasdasdakeuwriorioriorioriorioriorioriorioiooppo")
 //  form.isFieldValidating(['address_details','lastName'])
 
     await    form.validateFields().then(() => {
-      console.log('Validation succeeded for username field.');
+      
     }).catch((error) => {
-      console.log('Validation failed for username field:', error); 
+      // console.log('Validation failed for username field:', error); 
   
     });
   
@@ -2086,7 +2104,7 @@ console.log("sdasdasdakeuwriorioriorioriorioriorioriorioiooppo")
 
         getStatus && setEdit({ ...edit, shippingDetails: false });
       } else {
-        console.log("inelseshipping");
+        // console.log("inelseshipping");
       }
     }
 
@@ -2279,13 +2297,38 @@ console.log("sdasdasdakeuwriorioriorioriorioriorioriorioiooppo")
   };
 
   const handleMenuClick = (e) => {
-    //console.log("click", e);
-
+    // console.log("click", e.key);
+ 
     let body = {
       id: existingSubscription?.subscription_id,
       input: { status: e.key },
       field: "status",
     };
+
+   if(e.key =='ACTIVE') {
+
+    // console.log("sttauscheck",existingSubscription?.nextBillingDate,new Date().toISOString())
+    const dateString1 = new Date(existingSubscription?.nextBillingDate).toISOString();
+    const dateString2 = new Date().toISOString();
+  //  console.log("dateString1, dateString2",dateString1, dateString2)
+   let date1=new Date(dateString1)
+   let date2=new Date(dateString2)
+    const comparisonResult = compareDatesIgnoringTime(date1,date2);
+    
+    if (comparisonResult < 0) {
+      date2.setDate(date2.getDate() + 1);
+      // console.log("date2",new Date(date2).toISOString())
+      body.input.nextBillingDate = new Date(date2)?.toISOString() ;
+      console.log("bodyyy",body)      
+    } else if (comparisonResult > 0) {
+        // console.log("date1 is after date2.");
+    } else {
+        // console.log("Both dates are the same.");
+    }
+
+   }
+
+  
     subscriptionUpdateCommon("subscriptionStatusUpdate", body, "status");
   };
 
@@ -2316,7 +2359,7 @@ console.log("sdasdasdakeuwriorioriorioriorioriorioriorioiooppo")
   const handleStatusChange = (e) => {
     let body = {
       id: existingSubscription?.subscription_id,
-      input: { status: e },
+      input: { status: e  },
       field: "status",
     };
     subscriptionUpdateCommon("subscriptionStatusUpdate", body, "status");
@@ -2324,6 +2367,7 @@ console.log("sdasdasdakeuwriorioriorioriorioriorioriorioiooppo")
 
   return (
     <Spin spinning={loader} size="large" tip="Loading...">
+
       {/* <div className="revlytic-subscription-type-header">
         <p>Subscription Type</p>
         <Radio.Group defaultValue={subscriptionType} buttonStyle="solid">
@@ -2553,7 +2597,7 @@ console.log("sdasdasdakeuwriorioriorioriorioriorioriorioiooppo")
                       </Select.Option>
                     ) : (
                       customerPaymentsData.map((item, index) => (
-                        <Select.Option key={index} value={item?.node?.id}>
+                      item?.node?.instrument?.brand && item?.node?.instrument?.lastDigits ? <Select.Option key={index} value={item?.node?.id}>
                           {item?.node?.instrument?.brand
                             .charAt(0)
                             .toUpperCase() +
@@ -2561,8 +2605,7 @@ console.log("sdasdasdakeuwriorioriorioriorioriorioriorioiooppo")
                               item?.node?.instrument?.brand.slice(1)
                             )}
                           (**** **** **** {item?.node?.instrument?.lastDigits})
-                        </Select.Option>
-                      ))
+                        </Select.Option> : "" ))
                     )}
                   </Select>
                 </Form.Item>
@@ -3907,6 +3950,7 @@ console.log("sdasdasdakeuwriorioriorioriorioriorioriorioiooppo")
       ) : (
         ""
       )}
+          <CalculateBillingUsage setBillingPlan={setBillingPlan}/>
 
       <Modal
         // title="Create Customer "

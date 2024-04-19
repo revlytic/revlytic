@@ -15,11 +15,12 @@ import UploadImage from "../components/upload";
 import { toast } from "react-toastify";
 import { useAPI } from "../components/common/commonContext";
 import { Link } from "react-router-dom";
-
+import CalculateBillingUsage from "../components/calculateBillingUsage";
 const { Panel } = Collapse;
 function invoice() {
   const app = useAppBridge();
-  const { billingPlan } = useAPI();
+  // const { billingPlan } = useAPI();
+  const [billingPlan, setBillingPlan] = useState("");
 
   const [loader, setLoader] = useState(false);
   const [components, setComponents] = useState([
@@ -75,7 +76,6 @@ function invoice() {
   const [signatureData, setSignatureData] = useState("");
   const [editMode, setEditMode] = useState(false);
   const onChange = (value, index) => {
-    console.log(value, index);
     let arr = [...components];
     arr[index].status = value;
     setComponents(arr);
@@ -119,17 +119,13 @@ function invoice() {
 
   const saveDetails = async () => {
     setLoader(true);
-    console.log(logo, signature, "gh");
-    console.log(signatureData, signatureData, "sdasdasdas");
     let updatedLogo = logo;
     let updatedSignature = signature;
 
     if (logo && logoData) {
-      console.log("breakfast");
       const response = await postApi("/api/admin/delete", { url: logo }, app);
     }
     if (signature && signatureData) {
-      console.log("lunch");
       const response = await postApi(
         "/api/admin/delete",
         { url: signature },
@@ -138,7 +134,6 @@ function invoice() {
     }
 
     if (logoData) {
-      console.log("morinig");
       try {
         let savelogo = await postApi("/api/admin/upload", logoData, app);
         if (savelogo.data.message == "success") {
@@ -159,7 +154,6 @@ function invoice() {
 
     if (signatureData) {
       try {
-        console.log("evening");
         let savesignature = await postApi(
           "/api/admin/upload",
           signatureData,
@@ -182,7 +176,6 @@ function invoice() {
     }
 
     try {
-      console.log(logo, "jh");
       let saveData = await postApi(
         "/api/admin/saveinvoiceDetails",
         {
@@ -214,12 +207,12 @@ function invoice() {
         app
       );
     } catch (err) {
-      console.log(err, "hg");
+      // console.log(err, "hg");
     }
     setEditMode(false);
     setLoader(false);
   };
-   return (
+  return (
     <Spin tip="Loading..." size="large" spinning={loader}>
       <div className="revlytic plan-group-listing-button">
         <h1 className="revlytic-plan-switch-heading">Invoice</h1>
@@ -1581,6 +1574,7 @@ function invoice() {
           </div>
         </div>
       </div>
+      <CalculateBillingUsage setBillingPlan={setBillingPlan} />
     </Spin>
   );
 }

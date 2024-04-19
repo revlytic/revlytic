@@ -67,9 +67,7 @@ import {
   getOrdersDataUpcoming,
   skipOrder,
   getSkippedOrdersDetail,
-
   upcomingFulfillment,
-
   fulfillmentOrderRescheduleOrSkip,
   combinedData,
   retryFailedOrder,
@@ -88,24 +86,36 @@ import {
   subscriptionBookings,
   calculateRevenue,
   freePlanActivation,
-  deleteRecurringCharge
+  deleteRecurringCharge,
+  saveDunningData,
+  fetchDunningData,
+  getEmailTemplatesCount,
+  saveDunningTemplates,
 } from "./controller.js";
-  import { appProxy, getCustomerPortalDetailsStore, getCustomerSubscriptions, getStoreCountries, getStoreToken, getTotalOrdersBillingsCount } from "./customerPortalController.js";
+import {
+  appProxy,
+  getCustomerPortalDetailsStore,
+  getCustomerSubscriptions,
+  getStoreCountries,
+  getStoreToken,
+  getTotalOrdersBillingsCount,
+} from "./customerPortalController.js";
 
 import multer from "multer";
-import path from "path"
+import path from "path";
 const __dirname = path.resolve();
 
-import { getPlansForStoreFront, getWidgetSettingsForStoreFront } from "./storeFrontController.js";
+import {
+  getPlansForStoreFront,
+  getWidgetSettingsForStoreFront,
+} from "./storeFrontController.js";
 
-import fs from "fs"
+import fs from "fs";
 
-const upload = multer({ dest: '/frontend/uploads' });
+const upload = multer({ dest: "/frontend/uploads" });
 const router = express.Router();
 
-router.post('/demo',demo)
-
-
+router.post("/demo", demo);
 
 router.post("/getCurrencyCode", getCurrencyCode);
 router.post("/getCountries", getCountries);
@@ -157,7 +167,7 @@ router.post(
 router.post(
   "/subscriptionDraftLineAdd",
   findItemForUpdateSubscription,
-  convertStoreProductPriceIntoOrderCurrency, 
+  convertStoreProductPriceIntoOrderCurrency,
   createSubscriptionDraftCommon,
   subscriptionDraftLineAdd,
   subscriptionDraftCommitCommon,
@@ -217,53 +227,60 @@ router.post(
 router.post(
   "/subscriptionCustomerUpdate",
   findItemForUpdateSubscription,
-  subscriptionCustomerUpdate,
+  subscriptionCustomerUpdate
 );
 
 router.post(
   "/customerUpdate",
- 
-  subscriptionCustomerUpdate,
+
+  subscriptionCustomerUpdate
 );
 
-router.post("/widgetSettings",widgetSettings)
+router.post("/widgetSettings", widgetSettings);
 
-router.post('/getWidgetSettings',getWidgetSettings) 
-router.post('/emailTemplates',emailTemplates)
-router.post('/getEmailTemplateData',getEmailTemplateData)
-router.post('/getEmailTemplatesList',getEmailTemplatesList)
-router.post('/emailConfiguration',emailTemplates)
-router.post('/getEmailConfigurationData',getEmailConfigurationData)
-router.post('/sendMailCommon',sendMailCommon)
-router.post('/emailTemplateStatusOrAdminNotificationUpdate',emailTemplateStatusOrAdminNotificationUpdate)
-router.post('/orderDetailsCheck',orderDetails)
-router.post('/getEmailTemplateAndConfigData',getEmailTemplateAndConfigData)
-router.post('/sendMailonUpdate',sendMailOnUpdate)
-router.post("/getPastOrdersDetail",getPastOrdersDetail)
-router.post("/getSkippedOrdersDetail",getSkippedOrdersDetail)
-router.post("/orderNow",orderNow)
-router.post("/getOrdersDataUpcoming",getOrdersDataUpcoming)
-router.post("/skipOrder",skipOrder)
-router.post("/upcomingfulfillment",upcomingFulfillment)
-router.post('/fulfillmentOrderRescheduleOrSkip',fulfillmentOrderRescheduleOrSkip)
+router.post("/getWidgetSettings", getWidgetSettings);
+router.post("/emailTemplates", emailTemplates);
+router.post("/getEmailTemplateData", getEmailTemplateData);
+router.post("/getEmailTemplatesList", getEmailTemplatesList);
+router.post("/emailConfiguration", emailTemplates);
+router.post("/getEmailConfigurationData", getEmailConfigurationData);
+router.post("/sendMailCommon", sendMailCommon);
+router.post(
+  "/emailTemplateStatusOrAdminNotificationUpdate",
+  emailTemplateStatusOrAdminNotificationUpdate
+);
+router.post("/orderDetailsCheck", orderDetails);
+router.post("/getEmailTemplateAndConfigData", getEmailTemplateAndConfigData);
+router.post("/sendMailonUpdate", sendMailOnUpdate);
+router.post("/getPastOrdersDetail", getPastOrdersDetail);
+router.post("/getSkippedOrdersDetail", getSkippedOrdersDetail);
+router.post("/orderNow", orderNow);
+router.post("/getOrdersDataUpcoming", getOrdersDataUpcoming);
+router.post("/skipOrder", skipOrder);
+router.post("/upcomingfulfillment", upcomingFulfillment);
+router.post(
+  "/fulfillmentOrderRescheduleOrSkip",
+  fulfillmentOrderRescheduleOrSkip
+);
 
-router.post('/retryFailedOrder',retryFailedOrder)
+router.post("/retryFailedOrder", retryFailedOrder);
 router.post("/combinedData", combinedData);
 router.post("/subscriptionBookings", subscriptionBookings);
 router.post("/activeCustomers", activeCustomers);
 router.post("/getUpcomingRevenue", upcomingRevenue);
-router.post("/addAnnouncement",addAnnouncement)
-router.post("/updateAnnouncement",updateAnnouncement)
-router.post("/getAnnouncements",getAnnouncements)
-router.post("/deleteAnnouncement",deleteAnnouncement)
-router.post('/checkAppBlockEmbed',checkAppBlockEmbed)
-router.post('/getBillingPlanData',getBillingPlanData)
-router.post('/calculateRevenue',calculateRevenue)
-
+router.post("/addAnnouncement", addAnnouncement);
+router.post("/updateAnnouncement", updateAnnouncement);
+router.post("/getAnnouncements", getAnnouncements);
+router.post("/deleteAnnouncement", deleteAnnouncement);
+router.post("/checkAppBlockEmbed", checkAppBlockEmbed);
+router.post("/getBillingPlanData", getBillingPlanData);
+router.post("/calculateRevenue", calculateRevenue);
+router.post("/saveDunningData", saveDunningData);
+router.post("/fetchDunningData", fetchDunningData);
+router.post("/getEmailTemplatesCount", getEmailTemplatesCount);
+router.post("/saveDunningTemplates", saveDunningTemplates);
 
 router.post("/getProductPlanList", getProductPlanList);
-
-
 
 // router.post("/getProducts", getProducts);
 // router.post("/getProductVarientsIds", getProductVarientsIds);
@@ -283,51 +300,37 @@ router.post("/getProductPlans", getProductPlans);
 router.post("/createPlanFormForCheckout", CreatePlanFormForCheckout);
 router.post("/createCustomer", createCustomer);
 router.post("/sendMail", sendMail);
-router.post("/saveinvoiceDetails", saveInvoiceDetails)
-router.post("/getinvoiceDetails", getInvoiceDetails)
-router.post("/saveproductbundleDetails", saveproductbundleDetails)
-router.post("/getproductbundle", getproductbundle)
-router.post("/deleteproductbundle", deleteproductbundle)
-router.post("/getproductBundleDetails", getproductBundleDetails)
-router.post("/updateproductbundleDetails", updateproductbundleDetails)
-router.post("/updateproductbundleStatus", updateproductbundleStatus)
-router.post("/saveCustomerPortalDetails", saveCustomerPortalDetails)
-router.post("/getCustomerPortalDetails", getCustomerPortalDetails)
-router.post("/recurringBiling", recurringBiling)
-router.post("/recurringBilingSelected", recurringBilingSelected)
-router.post("/getTotalOrdersBillingsCount", getTotalOrdersBillingsCount)
-router.post("/freePlanActivation",deleteRecurringCharge, freePlanActivation)
-
-
-
-
-
+router.post("/saveinvoiceDetails", saveInvoiceDetails);
+router.post("/getinvoiceDetails", getInvoiceDetails);
+router.post("/saveproductbundleDetails", saveproductbundleDetails);
+router.post("/getproductbundle", getproductbundle);
+router.post("/deleteproductbundle", deleteproductbundle);
+router.post("/getproductBundleDetails", getproductBundleDetails);
+router.post("/updateproductbundleDetails", updateproductbundleDetails);
+router.post("/updateproductbundleStatus", updateproductbundleStatus);
+router.post("/saveCustomerPortalDetails", saveCustomerPortalDetails);
+router.post("/getCustomerPortalDetails", getCustomerPortalDetails);
+router.post("/recurringBiling", recurringBiling);
+router.post("/recurringBilingSelected", recurringBilingSelected);
+router.post("/getTotalOrdersBillingsCount", getTotalOrdersBillingsCount);
+router.post("/freePlanActivation", deleteRecurringCharge, freePlanActivation);
 
 /////////////////////////////prod extension
-router.post("/prodExRemoveVariants", prodExRemoveVariants)
-router.post("/prodExCreatePlan", prodExCreatePlan)
-router.post("/prodExPlanDetails", prodExPlanDetails)
-router.post("/prodExPlanUpdate", prodExPlanUpdate)
-router.post("/prodExAddProduct", prodExAddProduct)
-router.post("/prodExGetallPlans", prodExGetallPlans)
+router.post("/prodExRemoveVariants", prodExRemoveVariants);
+router.post("/prodExCreatePlan", prodExCreatePlan);
+router.post("/prodExPlanDetails", prodExPlanDetails);
+router.post("/prodExPlanUpdate", prodExPlanUpdate);
+router.post("/prodExAddProduct", prodExAddProduct);
+router.post("/prodExGetallPlans", prodExGetallPlans);
 
 ///////////////////////////////customer portal
 
-router.get("/appProxy", appProxy)
-router.post("/getCustomerSubscriptions", getCustomerSubscriptions)
-router.post("/getStoreToken", getStoreToken)
-router.post("/getStoreCountries", getStoreCountries)
-router.post("/getCustomerPortalDetailsStore", getCustomerPortalDetailsStore)
+router.get("/appProxy", appProxy);
 
-
-
-
-
-
-
-
-
-
+router.post("/getCustomerSubscriptions", getCustomerSubscriptions);
+router.post("/getStoreToken", getStoreToken);
+router.post("/getStoreCountries", getStoreCountries);
+router.post("/getCustomerPortalDetailsStore", getCustomerPortalDetailsStore);
 
 // router.post('/upload', upload.single('image'), (req, res) => {
 //   console.log(req.file,'req file')
@@ -340,7 +343,7 @@ router.post("/getCustomerPortalDetailsStore", getCustomerPortalDetailsStore)
 //   const uniqueFilename = `${String(new Date().getTime())}.${fileExtension}`;
 //   const targetFolder =req.body.flag=="logo" ? path.join(__dirname,"frontend/images/logo"):req.body.flag=="announcement"? path.join(__dirname,"frontend/images/announcement"): path.join(__dirname,"frontend/images/signature")// Specify the target folder
 //   console.log(targetFolder,"lkj")
-  
+
 //   if (!fs.existsSync(targetFolder)) {     fs.mkdirSync(targetFolder, { recursive: true });   }
 // // Move the file to the target folder with the unique filename
 // fs.renameSync(req.file.path, path.join(targetFolder, uniqueFilename));
@@ -354,7 +357,6 @@ router.post("/getCustomerPortalDetailsStore", getCustomerPortalDetailsStore)
 // //   const uniqueFilename = `${String(new Date().getTime())}.${fileExtension}`;
 // //   const targetFolder =req.body.flag=="logo"? path.join(__dirname,"frontend/images/logo"): req.body.flag=="announcement"? path.join(__dirname,"frontend/images/announcement") : path.join(__dirname,"frontend/images/signature")// Specify the target folder
 // //   console.log(targetFolder,"lkj")
-  
 
 // // // Move the file to the target folder with the unique filename
 // // fs.renameSync(req.file.path, path.join(targetFolder, uniqueFilename));
@@ -362,7 +364,7 @@ router.post("/getCustomerPortalDetailsStore", getCustomerPortalDetailsStore)
 // // res.send({ message: "success", name:uniqueFilename ,check:req.body.flag });
 // });
 
-router.post('/upload', upload.single('image'), (req, res) => {
+router.post("/upload", upload.single("image"), (req, res) => {
   if (!req.file) {
     res.send({ message: "error", data: "error" });
     return; // Exit the function early if there is no uploaded file
@@ -370,7 +372,7 @@ router.post('/upload', upload.single('image'), (req, res) => {
 
   console.log(req.body, "fileee");
   const { originalname, mimetype } = req.file;
-  const fileExtension = mimetype.split('/')[1];
+  const fileExtension = mimetype.split("/")[1];
   const uniqueFilename = `${String(new Date().getTime())}.${fileExtension}`;
 
   // Specify the target folder based on req.body.flag
@@ -390,38 +392,30 @@ router.post('/upload', upload.single('image'), (req, res) => {
 
   // Move the file to the target folder with the unique filename
   fs.renameSync(req.file.path, path.join(targetFolder, uniqueFilename));
-  console.log("llsdkskkskkss")
+  console.log("llsdkskkskkss");
 
   res.send({ message: "success", name: uniqueFilename, check: req.body.flag });
 
-console.log()
+  console.log();
 });
-
-
 
 router.post("/delete", (req, res) => {
   const imageName = req.body.url.substring(req.body.url.lastIndexOf("images"));
-  console.log(imageName,"kjhk")
+  console.log(imageName, "kjhk");
   fs.unlink(`frontend/${imageName}`, (error) => {
     if (error) {
-      res.send({ message: "error", data: error});
+      res.send({ message: "error", data: error });
       // Handle the error or show a notification to the user
     } else {
-      
-      res.send({ message: "success", data:"Image deleted" });
+      res.send({ message: "success", data: "Image deleted" });
     }
     // Proceed with the upload functionality here
     // Call the function or perform the actions to upload the new image
   });
-})
-
-
-
-
+});
 
 ///////////////////////'//routes for storefront/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-router.post('/getPlansForStoreFront',getPlansForStoreFront)
-router.post('/getWidgetSettingsForStoreFront',getWidgetSettingsForStoreFront)   
-
+router.post("/getPlansForStoreFront", getPlansForStoreFront);
+router.post("/getWidgetSettingsForStoreFront", getWidgetSettingsForStoreFront);
 
 export default router;

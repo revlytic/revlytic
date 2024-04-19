@@ -1,9 +1,7 @@
-import { model } from "mongoose";
 import postApi from "./postApi";
 
-import { useAppBridge } from "@shopify/app-bridge-react";
-
-export async function sendMailDefault(recipientMail,others,app,extra) {
+export async function sendMailDefault(recipientMail, others, app, extra) {
+  
   let getEmailConfigData = await postApi(
     "/api/admin/getEmailConfigurationData",
     {},
@@ -13,7 +11,6 @@ export async function sendMailDefault(recipientMail,others,app,extra) {
   if (getEmailConfigData.data.message == "success") {
     let data = getEmailConfigData.data?.data;
     if (data && data.enable == true) {
-      console.log("inenabletrue");
       let encryptionConfig = {};
       if (data.encryption === "ssl") {
         encryptionConfig = {
@@ -22,14 +19,14 @@ export async function sendMailDefault(recipientMail,others,app,extra) {
         };
       } else if (data.encryption === "tls") {
         encryptionConfig = {
-          secure: false, // For TLS, secure should be set to false
+          secure: false,
           requireTLS: true,
         };
       }
 
       const emailConfig = {
         host: data.host,
-        port: parseInt(data.portNumber), // Convert port number to integer
+        port: parseInt(data.portNumber),
         auth: {
           user: data.userName,
           pass: data.password,
@@ -40,28 +37,23 @@ export async function sendMailDefault(recipientMail,others,app,extra) {
       let options = {
         from: `${data.fromName}<${data.userName}>`,
         to: recipientMail,
-        subject:extra?.selectedTemplate?.emailSetting?.subject,
-        cc:extra?.selectedTemplate?.emailSetting?.cc,
-        bcc:extra?.selectedTemplate?.emailSetting?.bcc,
-        replyTo:extra?.selectedTemplate?.emailSetting?.replyTo
+        subject: extra?.selectedTemplate?.emailSetting?.subject,
+        cc: extra?.selectedTemplate?.emailSetting?.cc,
+        bcc: extra?.selectedTemplate?.emailSetting?.bcc,
+        replyTo: extra?.selectedTemplate?.emailSetting?.replyTo,
       };
 
+      let response = await postApi(
+        "/api/admin/sendMailCommon",
+        { emailConfig, options, extra },
+        app
+      );
 
-
-      console.log("options",options)
-
-
-      let response = await postApi("/api/admin/sendMailCommon",{emailConfig,options,extra}, app);
-      
       return response;
-
-
     } else {
-      console.log("inenablefalse");
-
       const emailConfig = {
         host: "smtp.gmail.com",
-        port: 587, // Convert port number to integer
+        port: 587,
         auth: {
           user: "sahilagnihotri7@gmail.com",
           pass: "srdvsdnxfmvbrduw",
@@ -72,198 +64,123 @@ export async function sendMailDefault(recipientMail,others,app,extra) {
       let options = {
         from: "sahilagnihotri7@gmail.com",
         to: recipientMail,
-        subject:extra?.selectedTemplate?.emailSetting?.subject,
-        cc:extra?.selectedTemplate?.emailSetting?.cc,
-        bcc:extra?.selectedTemplate?.emailSetting?.bcc,
-        replyTo:extra?.selectedTemplate?.emailSetting?.replyTo
+        subject: extra?.selectedTemplate?.emailSetting?.subject,
+        cc: extra?.selectedTemplate?.emailSetting?.cc,
+        bcc: extra?.selectedTemplate?.emailSetting?.bcc,
+        replyTo: extra?.selectedTemplate?.emailSetting?.replyTo,
       };
-     
-    console.log("options",options)
 
-    let response = await postApi("/api/admin/sendMailCommon",{emailConfig,options,extra}, app);
-      
-    return response;
-  
+      let response = await postApi(
+        "/api/admin/sendMailCommon",
+        { emailConfig, options, extra },
+        app
+      );
+
+      return response;
     }
-
   } else {
     toast.error("Something went wrong", {
       position: toast.POSITION.TOP_RIGHT,
     });
   }
-
- 
 }
 
-
-export async function sendMailOnUpdate(others,app,extra) {
+export async function sendMailOnUpdate(others, app, extra) {
   let getEmailTemplateAndConfigData = await postApi(
     "/api/admin/getEmailTemplateAndConfigData",
-    {templateType:extra?.templateType},
+    { templateType: extra?.templateType },
     app
   );
-  
-  let templateType=extra?.templateType ;
-  
-  
+
+  let templateType = extra?.templateType;
+
   if (getEmailTemplateAndConfigData.data.message == "success") {
-    
-   let getData=getEmailTemplateAndConfigData?.data?.data
-   
-      let sendMailToCustomer =
-      getData?.settings[templateType].status;
-      let sendMailToMerchant =
-      getData?.settings[templateType].adminNotification;
+    let getData = getEmailTemplateAndConfigData?.data?.data;
 
-      if (sendMailToCustomer || sendMailToMerchant) {
+    let sendMailToCustomer = getData?.settings[templateType].status;
+    let sendMailToMerchant = getData?.settings[templateType].adminNotification;
 
-        console.log("stredetails",extra?.storeDetails)
-          
-        let recipientMails = [];
+    if (sendMailToCustomer || sendMailToMerchant) {
+      let recipientMails = [];
 
-        if (sendMailToMerchant) {
-               
-          console.log("extra",extra)
-          let shopEmail = extra?.shop_email;
-        
-          recipientMails.push(shopEmail);
-         
+      if (sendMailToMerchant) {
+        let shopEmail = extra?.shop_email;
 
+        recipientMails.push(shopEmail);
+      }
+      if (sendMailToCustomer) {
+        recipientMails.push(extra?.data?.customer_details?.email);
+      }
+
+      let configurationData = getData?.configuration;
+      let selectedTemplate = getData?.settings[templateType];
+
+      let options = {};
+      let emailConfig = {};
+
+      if (configurationData && configurationData.enable == true) {
+        let encryptionConfig = {};
+        if (configurationData.encryption === "ssl") {
+          encryptionConfig = {
+            secure: true,
+            requireTLS: true,
+          };
+        } else if (configurationData.encryption === "tls") {
+          encryptionConfig = {
+            secure: false,
+            requireTLS: true,
+          };
         }
-        if (sendMailToCustomer) {
-         
-          recipientMails.push(extra?.data?.customer_details?.email);
-        }
-    
-        let configurationData = getData?.configuration;
-        let selectedTemplate =
-        getData?.settings[templateType];
 
-                let options={};
-                let emailConfig={};
-
-         
-                if (configurationData && configurationData.enable == true) {
-      console.log("inenabletrue");
-      let encryptionConfig = {};
-      if (configurationData.encryption === "ssl") {
-        encryptionConfig = {
-          secure: true,
-          requireTLS: true,
+        emailConfig = {
+          host: configurationData.host,
+          port: parseInt(configurationData.portNumber),
+          auth: {
+            user: configurationData.userName,
+            pass: configurationData.password,
+          },
+          ...(configurationData.encryption === "none" ? {} : encryptionConfig),
         };
-      } else if (configurationData.encryption === "tls") {
-        encryptionConfig = {
-          secure: false, // For TLS, secure should be set to false
-          requireTLS: true,
+
+        options = {
+          from: `${configurationData.fromName}<${configurationData.userName}>`,
+          to: recipientMails,
+          subject: selectedTemplate?.emailSetting?.subject,
+          cc: selectedTemplate?.emailSetting?.cc,
+          bcc: selectedTemplate?.emailSetting?.bcc,
+          replyTo: selectedTemplate?.emailSetting?.replyTo,
+          ...others,
+        };
+      } else {
+        emailConfig = {
+          host: "smtp.gmail.com",
+          port: 587,
+          auth: {
+            user: "sahilagnihotri7@gmail.com",
+            pass: "srdvsdnxfmvbrduw",
+          },
+          secure: false,
+        };
+
+        options = {
+          from: "sahilagnihotri7@gmail.com",
+          to: recipientMails,
+          subject: selectedTemplate?.emailSetting?.subject,
+          cc: selectedTemplate?.emailSetting?.cc,
+          bcc: selectedTemplate?.emailSetting?.bcc,
+          replyTo: selectedTemplate?.emailSetting?.replyTo,
+          ...others,
         };
       }
 
-       emailConfig = {
-        host: configurationData.host,
-        port: parseInt(configurationData.portNumber), // Convert port number to integer
-        auth: {
-          user: configurationData.userName,
-          pass: configurationData.password,
-        },
-        ...(configurationData.encryption === "none" ? {} : encryptionConfig),
-      };
-
-       options = {
-        // from: configurationData.fromName,
-        from:`${configurationData.fromName}<${configurationData.userName}>`,
-        to: recipientMails,
-        subject:selectedTemplate?.emailSetting?.subject,
-        cc:selectedTemplate?.emailSetting?.cc,
-        bcc:selectedTemplate?.emailSetting?.bcc,
-        replyTo:selectedTemplate?.emailSetting?.replyTo,
-        ...others,
-      };
-
-      // let response = await postApi("/api/admin/sendMailCommon",{emailConfig,options,extra}, app);
-      
-//       return response;
-
-
-   } else {
-      console.log("inenablefalse");
-
-    emailConfig = {
-        host: "smtp.gmail.com",
-        port: 587, // Convert port number to integer
-        auth: {
-          user: "sahilagnihotri7@gmail.com",
-          pass: "srdvsdnxfmvbrduw",
-        },
-        secure: false,
-      };
-
-       options = {
-        from: "sahilagnihotri7@gmail.com",
-        to: recipientMails,
-        subject:selectedTemplate?.emailSetting?.subject,
-        cc:selectedTemplate?.emailSetting?.cc,
-        bcc:selectedTemplate?.emailSetting?.bcc,
-        replyTo:selectedTemplate?.emailSetting?.replyTo,
-        ...others,
-     };
-     
-
+      let finalResponse = await postApi(
+        "/api/admin/sendMailOnUpdate",
+        { recipientMails, emailConfig, options, selectedTemplate, extra },
+        app
+      );
+      return finalResponse;
     }
-
-
-
-
-
-
-
-
-      console.log("finalccheckkk",recipientMails,emailConfig,options,selectedTemplate,extra)    
-
-        
-
-   let finalResponse=await  postApi("/api/admin/sendMailOnUpdate",{recipientMails,emailConfig,options,selectedTemplate,extra},app);
-  
-  console.log("finalResponse",finalResponse)
-return finalResponse;
-      //   ///////
-        //  let mailCheck = await sendMailCall(
-        //   recipientMails,
-        //   {},
-        //   {
-        //      shop,
-        //      selectedTemplateData,
-        //     configurationData,
-        //     extra
-        //    } );
-    
-    
-    
-      }
-    
-
+  } else {
+    return { message: "error" };
   }
-
-
-  else{
-
-     return({message:"error"})
-     
-
-  }
-
-
-
-
-
-
-
-
-
-
-
- 
- }
-
-
-
-
+}

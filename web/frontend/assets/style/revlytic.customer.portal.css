@@ -260,6 +260,9 @@ h5 {
     .revlytic-edit-details-grid {
         grid-template-columns: repeat(auto-fit, minmax(500px, 1fr)) !important;
     }
+    #UpcomingOrders .revlytic-orders-container {
+        max-height: 300px;
+    }
 }
 
 @media (max-width:576px) {
@@ -1596,6 +1599,9 @@ div#revlytic-main-body {
     cursor: pointer;
 }
 
+#UpcomingOrders .revlytic-orders-container {
+    max-height: 500px;
+}
 
 /* ////////////////////////reschedule mmodal css ends */
 

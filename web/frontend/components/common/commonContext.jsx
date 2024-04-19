@@ -36,7 +36,7 @@ const APIContext = createContext();
       setPlanBuyDate(billingPlanData?.data?.planData?.activated_on)
       setChargeId(billingPlanData?.data?.planData?.charge_id)
     }else{
-      setBillingPlan("free")
+      setBillingPlan("")
     }
 
 
