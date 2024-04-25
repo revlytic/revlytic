@@ -2854,10 +2854,10 @@ export async function updateSubscriptionInDbCommon(req, res) {
       update = { $set: { "subscription_details.note": req?.data?.note } };
     } else if (req?.body?.field == "status") {
     if(req?.body?.input?.nextBillingDate) {
-      update = { $set: { status: req?.data?.status ,nextBillingDate: req?.data?.nextBillingDate } };
+      update = { $set: { status: req?.data?.status?.toLowerCase()=="active" ? "active" : req?.data?.status   ,nextBillingDate: req?.data?.nextBillingDate } };
     }
 else {
-      update = { $set: { status: req?.data?.status } } ;
+      update = { $set: { status: req?.data?.status?.toLowerCase()=="active" ? "active" : req?.data?.status } } ;
 }
     } else if (req.body.field == "deliveryMethod") {
       //for updating shipping address

@@ -1,1 +1,1 @@
-{"id":"gid://shopify/SellingPlanGroup/518815806","input":{"appId":"SdSubscriptionApp2k23virga22luck","merchantCode":"Monthly Subscription","name":"Monthly Subscription","options":["1 month lv4jd497ve7"]}}
+{"id":"gid://shopify/SellingPlanGroup/2797240598","input":{"appId":"SdSubscriptionApp2k23virga22luck","merchantCode":"Call Center & Staffing Payment Plan ","name":"Call Center & Staffing Payment Plan ","options":["2 week lvb8h5r78z9,1 week lvb8h5r7df2"]}}

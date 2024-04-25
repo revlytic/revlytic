@@ -19,7 +19,6 @@ import orderContractDetails from "../modals/contractOrderDetails.js";
 import checkoutCustomerModal from "../modals/checkoutCustomer.js";
 import cPortalSettings from "../modals/customerPortalSettings.js";
 import planProductModal from "../modals/planGroupProducts.js";
-import { widgetSettings } from "../controller.js";
 import widgetSettingsModal from "../modals/widgetSetting.js";
 import storeModal from "../modals/storeCredentials.js";
 import uninstallModal from "../modals/uninstall.js";
@@ -64,9 +63,6 @@ function dateConversion(date) {
   return formattedDate;
 }
 
-
-
-
 const sendPaymentFailureMail = async (recipientMails, others, extra) => {
   console.log("insendmailcommon");
   try {
@@ -75,357 +71,356 @@ const sendPaymentFailureMail = async (recipientMails, others, extra) => {
     console.log("selecetdtemplatedata", extra?.selectedTemplateData);
     let data = extra?.configurationData;
 
-      let emailConfig = {};
-      let options = {};
+    let emailConfig = {};
+    let options = {};
 
-      if (data && data.enable == true) {
-        console.log("inenabletrue");
-        let encryptionConfig = {};
-        if (data.encryption === "ssl") {
-          encryptionConfig = {
-            secure: true,
-            requireTLS: true,
-          };
-        } else if (data.encryption === "tls") {
-          encryptionConfig = {
-            secure: false, // For TLS, secure should be set to false
-            requireTLS: true,
-          };
-        }
-
-        emailConfig = {
-          host: data.host,
-          port: parseInt(data.portNumber), // Convert port number to integer
-          auth: {
-            user: data.userName,
-            pass: data.password,
-          },
-          ...(data.encryption === "none" ? {} : encryptionConfig),
+    if (data && data.enable == true) {
+      console.log("inenabletrue");
+      let encryptionConfig = {};
+      if (data.encryption === "ssl") {
+        encryptionConfig = {
+          secure: true,
+          requireTLS: true,
         };
-
-        options = {
-          from: `${data.fromName}<${data.userName}>`,
-          // to: recipientMails.join(", "),
-          subject: extra?.selectedTemplateData?.emailSetting?.subject,
-          cc: extra?.selectedTemplateData?.emailSetting?.cc,
-          bcc: extra?.selectedTemplateData?.emailSetting?.bcc,
-          replyTo: extra?.selectedTemplateData?.emailSetting?.replyTo,
-          ...others,
-        };
-        console.log(
-          "testinggmailcalll",
-          emailConfig,
-          options,
-          recipientMails.join(", ")
-        );
-
-        // let response = await sendMailMain({emailConfig,options,extra}, app);
-        // return response;
-      } else {
-        console.log("inenablefalse");
-
-        options = {
-          from: `Revlytic <revlytic@gmail.com>`,
-          // to: recipientMails[0],
-          subject: extra?.selectedTemplateData?.emailSetting?.subject,
-          cc: extra?.selectedTemplateData?.emailSetting?.cc,
-          bcc: extra?.selectedTemplateData?.emailSetting?.bcc,
-          replyTo: extra?.selectedTemplateData?.emailSetting?.replyTo,
-          ...others,
-        };
-
-        emailConfig = {
-          host: "smtp.gmail.com",
-          port: 587, // Convert port number to integer
-          auth: {
-            user: "revlytic@gmail.com",
-            pass: "yiaglckhjmbratox",
-          },
-          secure: false,
+      } else if (data.encryption === "tls") {
+        encryptionConfig = {
+          secure: false, // For TLS, secure should be set to false
+          requireTLS: true,
         };
       }
 
-      const __dirname = path.resolve();
-      console.log(__dirname, "kjh");
-      const dirPath = path.join(
-        __dirname,
-        "/web/frontend/components/emailtemplate"
-      );
-      console.log(dirPath, "fsdfdf");
-
-      const transporter = nodemailer.createTransport(emailConfig);
-
-      let selectedTemplate = extra?.selectedTemplateData;
-
-      // console.log("selecetdetemplate",selectedTemplate)
-
-      console.log("extra?.data", extra?.data);
-
-      let replacements;
-      let emailContent;
-
-      console.log("mohaliii inelse", selectedTemplate, extra);
-
-      replacements = {
-        "{{subscription_id}}": extra?.data?.subscription_id?.split("/").at(-1),
-        "{{customer_email}}": extra?.data?.customer_details?.email,
-        // "{{order_number}}": extra?.data?.order_number,
-        "{{customer_name}}":
-          extra?.data.customer_details?.firstName != null
-            ? extra?.data.customer_details?.firstName
-            : "",
-        "{{customer_id}}": extra?.data?.customer_details?.id?.split("/").at(-1),
-        "{{shop_name}}": extra?.shop_name,
-        "{{shop_email}}": extra?.shop_email,
-        "{{shipping_country}}": extra?.data?.shipping_address?.country,
-        //   //   // "{{selling_plan_name}}":"23",
-        "{{shipping_full_name}}":
-          extra?.data?.shipping_address?.firstName != null
-            ? extra?.data?.shipping_address?.firstName
-            : "" + " " + extra?.data?.shipping_address?.lastName != null
-            ? extra?.data?.shipping_address?.lastName
-            : "",
-        "{{shipping_address_1}}": extra?.data?.shipping_address?.address1,
-        "{{shipping_company}}":
-          extra?.data?.shipping_address?.company != null
-            ? extra?.data?.shipping_address?.company
-            : "",
-        "{{shipping_city}}":
-          extra?.data?.shipping_address?.city != null
-            ? extra?.data?.shipping_address?.city
-            : "",
-        "{{shipping_province}}":
-          extra?.data?.shipping_address?.province != null
-            ? extra?.data?.shipping_address?.province
-            : "",
-        "{{shipping_province_code}}":
-          extra?.data?.shipping_address?.provinceCode != null
-            ? extra?.data?.shipping_address?.provinceCode
-            : "",
-        "{{shipping_zip}}":
-          extra?.data?.shipping_address?.zip != null
-            ? extra?.data?.shipping_address?.zip
-            : "",
-        "{{billing_full_name}}":
-          extra?.data?.billing_address?.firstName != null
-            ? extra?.data?.billing_address?.firstName
-            : "" + " " + extra?.data?.billing_address?.lastName != null
-            ? extra?.data?.billing_address?.lastName
-            : "",
-        "{{billing_country}}":
-          extra?.data?.billing_address?.country != null
-            ? extra?.data?.billing_address?.country
-            : "",
-
-        "{{billing_address_1}}":
-          extra?.data?.billing_address?.address1 != null
-            ? extra?.data?.billing_address?.address1
-            : "",
-        "{{billing_city}}":
-          extra?.data?.billing_address?.city != null
-            ? extra?.data?.billing_address?.city
-            : "",
-        "{{billing_province}}":
-          extra?.data?.billing_address?.province != null
-            ? extra?.data?.billing_address?.province
-            : "",
-        "{{billing_province_code}}":
-          extra?.data?.billing_address?.provinceCode != null
-            ? extra?.data?.billing_address?.provinceCode
-            : "",
-        "{{billing_zip}}":
-          extra?.data?.billing_address?.zip != null
-            ? extra?.data?.billing_address?.zip
-            : "",
-        //   //   "{{subscription_line_items}}":
-        //   //   "{{card_brand_name}}":"456",
-        //   //   "{{last_four_digits}}":"678",
-        //   //   "{{card_expiry_month}}":"866",
-        //   //   "{{card_expiry_year}}":"474",
-
-        //     // "{{manage_subscription_link}}":selectedTemplate.subscriptionUrl,
-        //   //   // "{{email_subject}}":"633",
-
-        "{{card_brand_name}}": extra?.data?.payment_details
-          ?.payment_instrument_value?.brand
-          ? extra?.data?.payment_details?.payment_instrument_value?.brand
-              .charAt(0)
-              .toUpperCase() +
-            extra?.data?.payment_details?.payment_instrument_value?.brand
-              .slice(1)
-              .toLowerCase()
-          : "",
-
-        "{{last_four_digits}}":
-          extra?.data?.payment_details?.payment_instrument_value?.lastDigits,
-
-        "{{card_expiry_month}}":
-          extra?.data?.payment_details?.payment_instrument_value?.expiryMonth,
-
-        "{{card_expiry_year}}":
-          extra?.data?.payment_details?.payment_instrument_value?.expiryYear,
-
-        "{{heading_text}}": selectedTemplate?.headingText,
-        "{{{logo_image}}": selectedTemplate?.logoUrl,
-        "{{shiiping_address_text}}":
-          selectedTemplate?.subscriptionShippingAddressText,
-        "{{billing_address_text}}":
-          selectedTemplate?.subscriptionBillingAddressText,
-        "{{payment_method_text}}": selectedTemplate?.paymentMethodText,
-        "{{logo_width}}": selectedTemplate?.logoWidth,
-        "{{logo_height}}": selectedTemplate?.logoHeight,
-        "{{logo_alignment}}": selectedTemplate?.logoAlignment,
+      emailConfig = {
+        host: data.host,
+        port: parseInt(data.portNumber), // Convert port number to integer
+        auth: {
+          user: data.userName,
+          pass: data.password,
+        },
+        ...(data.encryption === "none" ? {} : encryptionConfig),
       };
 
-      if (recipientMails[0]) {
-        console.log("inzerorecipent");
+      options = {
+        from: `${data.fromName}<${data.userName}>`,
+        // to: recipientMails.join(", "),
+        subject: extra?.selectedTemplateData?.emailSetting?.subject,
+        cc: extra?.selectedTemplateData?.emailSetting?.cc,
+        bcc: extra?.selectedTemplateData?.emailSetting?.bcc,
+        replyTo: extra?.selectedTemplateData?.emailSetting?.replyTo,
+        ...others,
+      };
+      console.log(
+        "testinggmailcalll",
+        emailConfig,
+        options,
+        recipientMails.join(", ")
+      );
 
-        options = {
-          ...options,
-          to: recipientMails[0],
-        };
+      // let response = await sendMailMain({emailConfig,options,extra}, app);
+      // return response;
+    } else {
+      console.log("inenablefalse");
 
-        let url;
+      options = {
+        from: `Revlytic <revlytic@gmail.com>`,
+        // to: recipientMails[0],
+        subject: extra?.selectedTemplateData?.emailSetting?.subject,
+        cc: extra?.selectedTemplateData?.emailSetting?.cc,
+        bcc: extra?.selectedTemplateData?.emailSetting?.bcc,
+        replyTo: extra?.selectedTemplateData?.emailSetting?.replyTo,
+        ...others,
+      };
 
-        if (extra?.selectedTemplateData?.subscriptionUrl) {
-          url = extra?.selectedTemplateData?.subscriptionUrl;
-          console.log("dsdasda");
+      emailConfig = {
+        host: "smtp.gmail.com",
+        port: 587, // Convert port number to integer
+        auth: {
+          user: "revlytic@gmail.com",
+          pass: "yiaglckhjmbratox",
+        },
+        secure: false,
+      };
+    }
+
+    const __dirname = path.resolve();
+    console.log(__dirname, "kjh");
+    const dirPath = path.join(
+      __dirname,
+      "/web/frontend/components/emailtemplate"
+    );
+    console.log(dirPath, "fsdfdf");
+
+    const transporter = nodemailer.createTransport(emailConfig);
+
+    let selectedTemplate = extra?.selectedTemplateData;
+
+    // console.log("selecetdetemplate",selectedTemplate)
+
+    console.log("extra?.data", extra?.data);
+
+    let replacements;
+    let emailContent;
+
+    console.log("mohaliii inelse", selectedTemplate, extra);
+
+    replacements = {
+      "{{subscription_id}}": extra?.data?.subscription_id?.split("/").at(-1),
+      "{{customer_email}}": extra?.data?.customer_details?.email,
+      // "{{order_number}}": extra?.data?.order_number,
+      "{{customer_name}}":
+        extra?.data.customer_details?.firstName != null
+          ? extra?.data.customer_details?.firstName
+          : "",
+      "{{customer_id}}": extra?.data?.customer_details?.id?.split("/").at(-1),
+      "{{shop_name}}": extra?.shop_name,
+      "{{shop_email}}": extra?.shop_email,
+      "{{shipping_country}}": extra?.data?.shipping_address?.country,
+      //   //   // "{{selling_plan_name}}":"23",
+      "{{shipping_full_name}}":
+        extra?.data?.shipping_address?.firstName != null
+          ? extra?.data?.shipping_address?.firstName
+          : "" + " " + extra?.data?.shipping_address?.lastName != null
+          ? extra?.data?.shipping_address?.lastName
+          : "",
+      "{{shipping_address_1}}": extra?.data?.shipping_address?.address1,
+      "{{shipping_company}}":
+        extra?.data?.shipping_address?.company != null
+          ? extra?.data?.shipping_address?.company
+          : "",
+      "{{shipping_city}}":
+        extra?.data?.shipping_address?.city != null
+          ? extra?.data?.shipping_address?.city
+          : "",
+      "{{shipping_province}}":
+        extra?.data?.shipping_address?.province != null
+          ? extra?.data?.shipping_address?.province
+          : "",
+      "{{shipping_province_code}}":
+        extra?.data?.shipping_address?.provinceCode != null
+          ? extra?.data?.shipping_address?.provinceCode
+          : "",
+      "{{shipping_zip}}":
+        extra?.data?.shipping_address?.zip != null
+          ? extra?.data?.shipping_address?.zip
+          : "",
+      "{{billing_full_name}}":
+        extra?.data?.billing_address?.firstName != null
+          ? extra?.data?.billing_address?.firstName
+          : "" + " " + extra?.data?.billing_address?.lastName != null
+          ? extra?.data?.billing_address?.lastName
+          : "",
+      "{{billing_country}}":
+        extra?.data?.billing_address?.country != null
+          ? extra?.data?.billing_address?.country
+          : "",
+
+      "{{billing_address_1}}":
+        extra?.data?.billing_address?.address1 != null
+          ? extra?.data?.billing_address?.address1
+          : "",
+      "{{billing_city}}":
+        extra?.data?.billing_address?.city != null
+          ? extra?.data?.billing_address?.city
+          : "",
+      "{{billing_province}}":
+        extra?.data?.billing_address?.province != null
+          ? extra?.data?.billing_address?.province
+          : "",
+      "{{billing_province_code}}":
+        extra?.data?.billing_address?.provinceCode != null
+          ? extra?.data?.billing_address?.provinceCode
+          : "",
+      "{{billing_zip}}":
+        extra?.data?.billing_address?.zip != null
+          ? extra?.data?.billing_address?.zip
+          : "",
+      //   //   "{{subscription_line_items}}":
+      //   //   "{{card_brand_name}}":"456",
+      //   //   "{{last_four_digits}}":"678",
+      //   //   "{{card_expiry_month}}":"866",
+      //   //   "{{card_expiry_year}}":"474",
+
+      //     // "{{manage_subscription_link}}":selectedTemplate.subscriptionUrl,
+      //   //   // "{{email_subject}}":"633",
+
+      "{{card_brand_name}}": extra?.data?.payment_details
+        ?.payment_instrument_value?.brand
+        ? extra?.data?.payment_details?.payment_instrument_value?.brand
+            .charAt(0)
+            .toUpperCase() +
+          extra?.data?.payment_details?.payment_instrument_value?.brand
+            .slice(1)
+            .toLowerCase()
+        : "",
+
+      "{{last_four_digits}}":
+        extra?.data?.payment_details?.payment_instrument_value?.lastDigits,
+
+      "{{card_expiry_month}}":
+        extra?.data?.payment_details?.payment_instrument_value?.expiryMonth,
+
+      "{{card_expiry_year}}":
+        extra?.data?.payment_details?.payment_instrument_value?.expiryYear,
+
+      "{{heading_text}}": selectedTemplate?.headingText,
+      "{{{logo_image}}": selectedTemplate?.logoUrl,
+      "{{shiiping_address_text}}":
+        selectedTemplate?.subscriptionShippingAddressText,
+      "{{billing_address_text}}":
+        selectedTemplate?.subscriptionBillingAddressText,
+      "{{payment_method_text}}": selectedTemplate?.paymentMethodText,
+      "{{logo_width}}": selectedTemplate?.logoWidth,
+      "{{logo_height}}": selectedTemplate?.logoHeight,
+      "{{logo_alignment}}": selectedTemplate?.logoAlignment,
+    };
+
+    if (recipientMails[0]) {
+      console.log("inzerorecipent");
+
+      options = {
+        ...options,
+        to: recipientMails[0],
+      };
+
+      let url;
+
+      if (extra?.selectedTemplateData?.subscriptionUrl) {
+        url = extra?.selectedTemplateData?.subscriptionUrl;
+        console.log("dsdasda");
+      } else {
+        if (recipientMails[0] == extra?.data?.customer_details?.email) {
+          console.log(
+            "sagg",
+            recipientMails[0],
+            extra?.data?.customer_details?.email,
+            recipientMails[0] == extra?.data?.customer_details?.email
+          );
+          url = `https://${extra?.shop}/account/login`;
         } else {
-          if (recipientMails[0] == extra?.data?.customer_details?.email) {
-            console.log(
-              "sagg",
-              recipientMails[0],
-              extra?.data?.customer_details?.email,
-              recipientMails[0] == extra?.data?.customer_details?.email
-            );
-            url = `https://${extra?.shop}/account/login`;
-          } else {
-            console.log(
-              "hiaddsss",
-              recipientMails[0],
-              extra?.data?.customer_details?.email,
-              recipientMails[0] == extra?.data?.customer_details?.email
-            );
-            url = `https://admin.shopify.com/store/${
-              extra?.shop?.split(".myshopify.com")[0]
-            }/apps/revlytic/create-manual-subscription?id=${(extra?.data.subscription_id)
-              .split("/")
-              .at(-1)}&mode=view`;
-          }
+          console.log(
+            "hiaddsss",
+            recipientMails[0],
+            extra?.data?.customer_details?.email,
+            recipientMails[0] == extra?.data?.customer_details?.email
+          );
+          url = `https://admin.shopify.com/store/${
+            extra?.shop?.split(".myshopify.com")[0]
+          }/apps/revlytic/create-manual-subscription?id=${(extra?.data.subscription_id)
+            .split("/")
+            .at(-1)}&mode=view`;
         }
-
-        // url =`https://admin.shopify.com/store/${extra?.shop?.split('.myshopify.com')[0]}/apps/subscription-83/subscriptionlist`;
-
-        emailContent = await ejs.renderFile(dirPath + "/preview2.ejs", {
-          selectedTemplate,
-          currencySymbol: extra?.currencySymbol,
-          templateType: "paymentFailure",
-          data: extra?.data,
-          dateConversion,
-          url: url,
-          check: extra?.check,
-        });
-
-        console.log("after emailcontent", extra?.data?.product_details);
-
-        const updatedEmailContent = emailContent.replace(
-          new RegExp(Object.keys(replacements).join("|"), "g"),
-          (matched) => replacements[matched]
-        );
-
-        options.html = updatedEmailContent;
-
-        try {
-          console.log("first in last");
-
-          let data = await transporter.sendMail(options);
-          if (data) {
-            console.log("Mail sent successfully");
-          }
-          console.log(data, "faaltuu");
-        } catch (error) {
-          console.log(error, "errorr aa gyaa");
-          throw error;
-        }
-        ////
       }
 
-      ///////
+      // url =`https://admin.shopify.com/store/${extra?.shop?.split('.myshopify.com')[0]}/apps/subscription-83/subscriptionlist`;
 
-      if (recipientMails[1]) {
-        console.log("in1recipent");
+      emailContent = await ejs.renderFile(dirPath + "/preview2.ejs", {
+        selectedTemplate,
+        currencySymbol: extra?.currencySymbol,
+        templateType: "paymentFailure",
+        data: extra?.data,
+        dateConversion,
+        url: url,
+        check: extra?.check,
+      });
 
-        options = {
-          ...options,
-          to: recipientMails[1],
-        };
-        let url;
+      console.log("after emailcontent", extra?.data?.product_details);
 
-        if (extra?.selectedTemplateData?.subscriptionUrl) {
-          url = extra?.selectedTemplateData?.subscriptionUrl;
-          console.log("oiouo");
+      const updatedEmailContent = emailContent.replace(
+        new RegExp(Object.keys(replacements).join("|"), "g"),
+        (matched) => replacements[matched]
+      );
+
+      options.html = updatedEmailContent;
+
+      try {
+        console.log("first in last");
+
+        let data = await transporter.sendMail(options);
+        if (data) {
+          console.log("Mail sent successfully");
+        }
+        console.log(data, "faaltuu");
+      } catch (error) {
+        console.log(error, "errorr aa gyaa");
+        throw error;
+      }
+      ////
+    }
+
+    ///////
+
+    if (recipientMails[1]) {
+      console.log("in1recipent");
+
+      options = {
+        ...options,
+        to: recipientMails[1],
+      };
+      let url;
+
+      if (extra?.selectedTemplateData?.subscriptionUrl) {
+        url = extra?.selectedTemplateData?.subscriptionUrl;
+        console.log("oiouo");
+      } else {
+        if (recipientMails[1] == extra?.data?.customer_details?.email) {
+          url = `https://${extra?.shop}/account/login`;
+          console.log(
+            "plok",
+            recipientMails[1],
+            extra?.data?.customer_details?.email,
+            recipientMails[1] == extra?.data?.customer_details?.email
+          );
         } else {
-          if (recipientMails[1] == extra?.data?.customer_details?.email) {
-            url = `https://${extra?.shop}/account/login`;
-            console.log(
-              "plok",
-              recipientMails[1],
-              extra?.data?.customer_details?.email,
-              recipientMails[1] == extra?.data?.customer_details?.email
-            );
-          } else {
-            url = `https://admin.shopify.com/store/${
-              extra?.shop?.split(".myshopify.com")[0]
-            }/apps/revlytic/create-manual-subscription?id=${(extra?.data.subscription_id)
-              .split("/")
-              .at(-1)}&mode=view`;
-            console.log(
-              "jikkk",
-              recipientMails[1],
-              extra?.data?.customer_details?.email,
-              recipientMails[1] == extra?.data?.customer_details?.email
-            );
-          }
+          url = `https://admin.shopify.com/store/${
+            extra?.shop?.split(".myshopify.com")[0]
+          }/apps/revlytic/create-manual-subscription?id=${(extra?.data.subscription_id)
+            .split("/")
+            .at(-1)}&mode=view`;
+          console.log(
+            "jikkk",
+            recipientMails[1],
+            extra?.data?.customer_details?.email,
+            recipientMails[1] == extra?.data?.customer_details?.email
+          );
         }
-
-        emailContent = await ejs.renderFile(dirPath + "/preview2.ejs", {
-          selectedTemplate,
-          currencySymbol: extra?.currencySymbol,
-          templateType: "paymentFailure",
-          data: extra?.data,
-          dateConversion,
-          url: url,
-          check: extra?.check,
-        });
-
-        console.log("after emailcontent", extra?.data?.product_details);
-
-        const updatedEmailContent = emailContent.replace(
-          new RegExp(Object.keys(replacements).join("|"), "g"),
-          (matched) => replacements[matched]
-        );
-
-        options.html = updatedEmailContent;
-
-        try {
-          console.log("first in last");
-
-          let data = await transporter.sendMail(options);
-          if (data) {
-            console.log("Mail sent successfully");
-          }
-          console.log(data, "faaltuu");
-        } catch (error) {
-          console.log(error, "errorr aa gyaa");
-          throw error;
-        }
-        ////
       }
 
-      ///////
+      emailContent = await ejs.renderFile(dirPath + "/preview2.ejs", {
+        selectedTemplate,
+        currencySymbol: extra?.currencySymbol,
+        templateType: "paymentFailure",
+        data: extra?.data,
+        dateConversion,
+        url: url,
+        check: extra?.check,
+      });
 
-      ////////end/////
-    
+      console.log("after emailcontent", extra?.data?.product_details);
+
+      const updatedEmailContent = emailContent.replace(
+        new RegExp(Object.keys(replacements).join("|"), "g"),
+        (matched) => replacements[matched]
+      );
+
+      options.html = updatedEmailContent;
+
+      try {
+        console.log("first in last");
+
+        let data = await transporter.sendMail(options);
+        if (data) {
+          console.log("Mail sent successfully");
+        }
+        console.log(data, "faaltuu");
+      } catch (error) {
+        console.log(error, "errorr aa gyaa");
+        throw error;
+      }
+      ////
+    }
+
+    ///////
+
+    ////////end/////
   } catch (error) {
     console.log("error", error);
     throw error;
@@ -465,7 +460,7 @@ export async function verifyWebhooks(req, res) {
     console.log(req.body, "ye hai body");
 
     console.log(topic, "topic", secretKey, hmac_header);
-    
+
     switch (topic) {
       case "products/update":
         try {
@@ -616,102 +611,115 @@ export async function verifyWebhooks(req, res) {
             .update(req.body)
             .digest("base64");
           if (calculated_hmac == hmac_header) {
-          ///oct12///////////
+            ///oct12///////////
 
             let body = JSON.parse(req?.body);
-            console.log("body customer",body)
+            console.log("body customer", body);
 
-let storeData=await getStoreDetails(body?.shop_domain);
+            let storeData = await getStoreDetails(body?.shop_domain);
 
-let storeEmail=storeData?.store_email;
-    
-let filePath ;
-let emailConfig = {
-  host: "smtp.gmail.com",
-  port: 587, // Convert port number to integer
-  auth: {
-    user: "revlytic@gmail.com",
-    pass: "yiaglckhjmbratox",
-  },
-  secure: false,
-};
+            let storeEmail = storeData?.store_email;
 
-const transporter = nodemailer.createTransport(emailConfig);
+            let filePath;
+            let emailConfig = {
+              host: "smtp.gmail.com",
+              port: 587, // Convert port number to integer
+              auth: {
+                user: "revlytic@gmail.com",
+                pass: "yiaglckhjmbratox",
+              },
+              secure: false,
+            };
 
-const sendEmail = (options, emailConfig) => {
-  return new Promise((resolve, reject) => {
-    const transporter = nodemailer.createTransport(emailConfig);
-    transporter.sendMail(options, (error, info) => {
-      if (error) {
-        console.error("Error sending email:", error);
-        reject(error);
-      } else {
-        console.log("Email sent:", info.response);
-        resolve(info);
-      }
-    });
-  });
-};
+            const transporter = nodemailer.createTransport(emailConfig);
 
- let getCustomerDetails = await subscriptionDetailsModal.find({shop :  body?.shop_domain ,"customer_details.id" : `gid://shopify/Customer/${body?.customer?.id}` },{_id:0,"customer_details.firstName":1,"customer_details.lastName" : 1,"payment_details.payment_instrument_value":1,"shipping_address":1,"billing_address":1}).lean();
- 
-            if(getCustomerDetails.length >0 ){
+            const sendEmail = (options, emailConfig) => {
+              return new Promise((resolve, reject) => {
+                const transporter = nodemailer.createTransport(emailConfig);
+                transporter.sendMail(options, (error, info) => {
+                  if (error) {
+                    console.error("Error sending email:", error);
+                    reject(error);
+                  } else {
+                    console.log("Email sent:", info.response);
+                    resolve(info);
+                  }
+                });
+              });
+            };
 
-              console.log("getCustomerDetails",getCustomerDetails)
+            let getCustomerDetails = await subscriptionDetailsModal
+              .find(
+                {
+                  shop: body?.shop_domain,
+                  "customer_details.id": `gid://shopify/Customer/${body?.customer?.id}`,
+                },
+                {
+                  _id: 0,
+                  "customer_details.firstName": 1,
+                  "customer_details.lastName": 1,
+                  "payment_details.payment_instrument_value": 1,
+                  shipping_address: 1,
+                  billing_address: 1,
+                }
+              )
+              .lean();
+
+            if (getCustomerDetails.length > 0) {
+              console.log("getCustomerDetails", getCustomerDetails);
 
               const __dirname = path.resolve();
-       const jsonOutput = JSON.stringify(getCustomerDetails, null, 2); // Use null and 2 for pretty-printing
-        filePath = path.join(`${__dirname}/web/frontend/assets/`, 'customerData.json');
-        fs.writeFile(filePath, jsonOutput,async(err,res)=>{
-          if(err){
-            console.log(err,"<><><><>")
-          }else{
-            console.log(res,"::::::")
-            let options = {
-              from: `Revlytic <revlytic@gmail.com>`,
-              to: storeEmail,
-              subject: "Customer Data",
-              text: "Please find the attached customer data file.",
-              attachments: [{
-                filename: "customerData.json",
-                path: filePath
-              }]
-            };
-        
-      
-            const data = await sendEmail(options, emailConfig);
-           
-         fs.unlink(filePath, (error) => {
-              if (error) {
-                console.error("Error deleting customer data file:", error);
-                throw error;
-              } else {
-                console.log("customer data file deleted successfully.");
-              }
-            });
-           
-          }
-        })
-    
-           }
- else{
-  let options = {
-    from: `Revlytic <revlytic@gmail.com>`,
-    to: storeEmail,
-    subject: "Customer Data",
-    text: "No data stored for this customer.",
-  
-  };
+              const jsonOutput = JSON.stringify(getCustomerDetails, null, 2); // Use null and 2 for pretty-printing
+              filePath = path.join(
+                `${__dirname}/web/frontend/assets/`,
+                "customerData.json"
+              );
+              fs.writeFile(filePath, jsonOutput, async (err, res) => {
+                if (err) {
+                  console.log(err, "<><><><>");
+                } else {
+                  console.log(res, "::::::");
+                  let options = {
+                    from: `Revlytic <revlytic@gmail.com>`,
+                    to: storeEmail,
+                    subject: "Customer Data",
+                    text: "Please find the attached customer data file.",
+                    attachments: [
+                      {
+                        filename: "customerData.json",
+                        path: filePath,
+                      },
+                    ],
+                  };
 
+                  const data = await sendEmail(options, emailConfig);
 
-  const data = await sendEmail(options, emailConfig);
+                  fs.unlink(filePath, (error) => {
+                    if (error) {
+                      console.error(
+                        "Error deleting customer data file:",
+                        error
+                      );
+                      throw error;
+                    } else {
+                      console.log("customer data file deleted successfully.");
+                    }
+                  });
+                }
+              });
+            } else {
+              let options = {
+                from: `Revlytic <revlytic@gmail.com>`,
+                to: storeEmail,
+                subject: "Customer Data",
+                text: "No data stored for this customer.",
+              };
 
- 
-  console.log("first in esle");
+              const data = await sendEmail(options, emailConfig);
 
- }
+              console.log("first in esle");
+            }
 
-          
             ///////////////enddddddd///////////
             // console.log("hmac verified customer data request");
             res.status(200).send("Accepted Customer Data request");
@@ -781,51 +789,53 @@ const sendEmail = (options, emailConfig) => {
             .update(req.body)
             .digest("base64");
           if (calculated_hmac == hmac_header) {
-            let data = await  shopModal.findOne({ shop: shop },{"createdAt":1})
-            console.log(data?.createdAt, "lo")
-            let installDate = data?.createdAt
-            let uninstallDate = new Date().toISOString()
-            let insertData = await uninstallModal.create({shop:shop,installDate:installDate,uninstallDate:uninstallDate})
-            
+            let data = await shopModal.findOne(
+              { shop: shop },
+              { createdAt: 1 }
+            );
+            console.log(data?.createdAt, "lo");
+            let installDate = data?.createdAt;
+            let uninstallDate = new Date().toISOString();
+            let insertData = await uninstallModal.create({
+              shop: shop,
+              installDate: installDate,
+              uninstallDate: uninstallDate,
+            });
 
-            
+            let allCollections = [
+              billing_Attempt,
+              checkoutCustomerModal,
+              orderOnly,
+              orderContractDetails,
+              shopModal,
+              cPortalSettings,
+              emailTemplatesModal,
+              invoice_all_details,
+              planModal,
+              planProductModal,
+              widgetSettingsModal,
+              subscriptionDetailsModal,
+              StoreSchemaModal,
+              storeModal,
+            ];
 
-              let allCollections = [
-                billing_Attempt,
-                checkoutCustomerModal,
-                orderOnly,
-                orderContractDetails,
-                shopModal,
-                cPortalSettings,
-                emailTemplatesModal,
-                invoice_all_details,
-                planModal,
-                planProductModal,
-                widgetSettingsModal,
-                subscriptionDetailsModal,
-                StoreSchemaModal,
-                storeModal,
-              ];
-            
-              // An array to store all deleteMany promises
+            // An array to store all deleteMany promises
             const deletePromises = allCollections.map((collection) => {
-                
-                return collection.deleteMany({ shop: shop });
+              return collection.deleteMany({ shop: shop });
+            });
+
+            // Wait for all promises to resolve
+            Promise.all(deletePromises)
+              .then(() => {
+                res.status(200).send("Shop data deleted");
+              })
+              .catch((err) => {
+                console.error("Error deleting shop data:", error);
+                res.status(200).send("success in catch");
               });
-            
-              // Wait for all promises to resolve
-              Promise.all(deletePromises)
-                .then(() => {
-                  res.status(200).send("Shop data deleted");
-                })
-                .catch((err) => {
-                  console.error("Error deleting shop data:", error);
-                  res.status(200).send("success in catch");
-                });
-            } else {
-              res.status(401).json("Unauthorized Access!");
-            }
-            
+          } else {
+            res.status(401).json("Unauthorized Access!");
+          }
         } catch (err) {
           console.error("Webhook processing error:", err);
           // Respond with an error status code if needed
@@ -866,9 +876,8 @@ const sendEmail = (options, emailConfig) => {
             } else {
               res.status(200).json({ message: "Something went wrong" });
             }
-          }
-          else{
-            res.status(401).json("Unauthorized Access!");   
+          } else {
+            res.status(401).json("Unauthorized Access!");
           }
         } catch (err) {
           console.error("Webhook processing error:", err);
@@ -877,139 +886,121 @@ const sendEmail = (options, emailConfig) => {
         }
         break;
 
+      case "themes/update":
+        try {
+          const calculated_hmac = crypto
+            .createHmac("sha256", secretKey)
+            .update(req.body)
+            .digest("base64");
+          if (calculated_hmac == hmac_header) {
+            let responseWebhook = JSON.parse(req.body);
+            console.log("inthemeupdate", responseWebhook);
 
-     
-     case "themes/update":
-      try {
-        const calculated_hmac = crypto
-          .createHmac("sha256", secretKey)
-          .update(req.body)
-          .digest("base64");
-        if (calculated_hmac == hmac_header) {
-          let responseWebhook = JSON.parse(req.body);
-          console.log("inthemeupdate",responseWebhook);
+            //////////////////
 
-//////////////////
+            console.log("in nested ifff");
 
-console.log("in nested ifff")
+            let getThemeId;
+            var themeType;
 
-let getThemeId;
-var themeType;
+            var meta_field_value;
 
-var meta_field_value;
+            let meta_field_value_not;
 
-let meta_field_value_not;
+            let theme_block_support;
 
-let theme_block_support;
+            let theme_block_support_not;
 
-let theme_block_support_not;
+            console.log("qwertttttyyyyyyyyyyyyyyyyyyyyyyyy");
 
-console.log("qwertttttyyyyyyyyyyyyyyyyyyyyyyyy");
+            const client = new shopify.api.clients.Rest({
+              session: {
+                shop: shop,
+                accessToken: gettoken.accessToken,
+              },
+            });
 
-const client = new shopify.api.clients.Rest({session: {
-  shop: shop,
-  accessToken: gettoken.accessToken,
-}, });
+            try {
+              const theme = await client.get({ path: "themes", type: "json" });
 
-try {
+              const themeId = theme.body.themes.find(
+                (el) => el.role === "main"
+              );
 
-const theme = await client.get({ path: "themes", type: "json" });
+              console.log("theme123", themeId);
 
-const themeId = theme.body.themes.find((el) => el.role === "main");
+              getThemeId = themeId?.id;
 
-console.log("theme123", themeId);
+              const getAssetsData = await client.get({
+                path: `themes/${themeId.id}/assets`,
 
- getThemeId=themeId?.id
+                type: DataType.JSON,
+              });
 
-const getAssetsData = await client.get({
+              const findJsonTemplate = getAssetsData.body.assets.find(
+                (asset) => {
+                  return asset.key === "templates/product.json";
+                }
+              );
 
-path: `themes/${themeId.id}/assets`,
+              console.log("lyyy", findJsonTemplate);
 
-type: DataType.JSON,
+              themeType = findJsonTemplate === undefined ? "vintage" : "modern";
 
-});
+              console.log("themeTypeaaaaaaa", themeType);
 
+              if (themeType === "modern") {
+                theme_block_support = "support_theme_block";
 
-const findJsonTemplate = getAssetsData.body.assets.find((asset) => {
+                theme_block_support_not = "support_theme_block_not";
 
-return asset.key === "templates/product.json";
+                meta_field_value_not = "false";
 
-});
+                meta_field_value = "true";
+              } else {
+                theme_block_support = "support_theme_block";
 
-console.log("lyyy", findJsonTemplate);
+                meta_field_value = "false";
 
-themeType = findJsonTemplate === undefined ? "vintage" : "modern";
+                theme_block_support_not = "support_theme_block_not";
 
-console.log("themeTypeaaaaaaa", themeType);
+                meta_field_value_not = "true";
+              }
+            } catch (error) {
+              console.log("incACHHHHH");
 
+              // theme_block_support = "support_theme_block";
 
-if (themeType === "modern") {
+              // meta_field_value = "false";
 
-theme_block_support = "support_theme_block";
+              // theme_block_support_not = "support_theme_block_not";
 
-theme_block_support_not = "support_theme_block_not";
+              // meta_field_value_not = "true";
 
-meta_field_value_not = "false";
+              theme_block_support = "support_theme_block";
 
-meta_field_value = "true";
+              meta_field_value = "false";
 
-} else {
+              theme_block_support_not = "support_theme_block_not";
 
-theme_block_support = "support_theme_block";
+              meta_field_value_not = "true";
+            }
 
-meta_field_value = "false";
+            console.log(
+              "checkinggg--->",
 
-theme_block_support_not = "support_theme_block_not";
+              themeType,
 
-meta_field_value_not = "true";
+              meta_field_value,
 
-}
+              meta_field_value_not,
 
-} catch (error) {
+              theme_block_support,
 
-console.log("incACHHHHH")
+              theme_block_support_not
+            );
 
-// theme_block_support = "support_theme_block";
-
-// meta_field_value = "false";
-
-// theme_block_support_not = "support_theme_block_not";
-
-// meta_field_value_not = "true";
-
-theme_block_support = "support_theme_block";
-
-meta_field_value = "false";
-
-theme_block_support_not = "support_theme_block_not";
-
-meta_field_value_not = "true";
-
-}
-
-
-
-
-console.log(
-
-"checkinggg--->",
-
-themeType,
-
-meta_field_value,
-
-meta_field_value_not,
-
-theme_block_support,
-
-theme_block_support_not
-
-);
-
-
-
-
-const app_query = `{
+            const app_query = `{
 
 appInstallation {
 
@@ -1019,29 +1010,24 @@ id
 
 }`;
 
+            const Client = new shopify.api.clients.Graphql({
+              session: {
+                shop: shop,
+                accessToken: gettoken.accessToken,
+              },
+            });
 
+            try {
+              const response = await Client.query({
+                data: { query: app_query },
+              });
 
+              if (response.body.data.appInstallation.id) {
+                let app_installation_id = response.body.data.appInstallation.id;
 
-const Client = new shopify.api.clients.Graphql({  session: {
-  shop: shop,
-  accessToken: gettoken.accessToken,
-},});
+                console.log("app_installation_id", app_installation_id);
 
-try {
-
-const response = await Client.query({
-
-data: { query: app_query },
-
-});
-
-if (response.body.data.appInstallation.id) {
-
-let app_installation_id = response.body.data.appInstallation.id;
-
-console.log("app_installation_id", app_installation_id);
-
-let createAppDataMetafieldMutation = `mutation CreateAppDataMetafield($metafieldsSetInput: [MetafieldsSetInput!]!) {
+                let createAppDataMetafieldMutation = `mutation CreateAppDataMetafield($metafieldsSetInput: [MetafieldsSetInput!]!) {
 
   metafieldsSet(metafields: $metafieldsSetInput) {
 
@@ -1071,117 +1057,98 @@ let createAppDataMetafieldMutation = `mutation CreateAppDataMetafield($metafield
 
 }`;
 
-console.log(
+                console.log(
+                  "checkinggg123455--->",
 
-  "checkinggg123455--->",
+                  themeType,
 
-  themeType,
+                  meta_field_value,
 
-  meta_field_value,
+                  meta_field_value_not,
 
-  meta_field_value_not,
+                  theme_block_support,
 
-  theme_block_support,
+                  theme_block_support_not
+                );
 
-  theme_block_support_not
+                const Input = {
+                  metafieldsSetInput: [
+                    {
+                      namespace: "theme_support",
 
-);
+                      key: theme_block_support,
 
-const Input = {
+                      type: "boolean",
 
-  metafieldsSetInput: [
+                      value: meta_field_value,
 
-    {
+                      ownerId: app_installation_id,
+                    },
 
-      namespace: "theme_support",
+                    {
+                      namespace: "theme_not_support",
 
-      key: theme_block_support,
+                      key: theme_block_support_not,
 
-      type: "boolean",
+                      type: "boolean",
 
-      value: meta_field_value,
+                      value: meta_field_value_not,
 
-      ownerId: app_installation_id,
+                      ownerId: app_installation_id,
+                    },
+                  ],
+                };
 
-    },
+                console.log("errorinput checking", Input);
 
-    {
+                try {
+                  const result = await Client.query({
+                    data: {
+                      query: createAppDataMetafieldMutation,
+                      variables: Input,
+                    },
+                  });
 
-      namespace: "theme_not_support",
+                  console.log("response--->", result.body.data);
 
-      key: theme_block_support_not,
+                  console.log(
+                    "response--->",
+                    result.body.data.metafieldsSet.metafields
+                  );
+                } catch (error) {
+                  console.log("errror1233");
+                  throw error;
+                }
+              }
+            } catch (error) {
+              console.log("error4565");
+              throw error;
+            }
 
-      type: "boolean",
+            StoreSchemaModal.updateOne(
+              { shop },
+              { $set: { themeType: themeType, themeId: getThemeId } }
+            )
+              .then((data) => console.log("theme stored in db"))
+              .catch((error) => {
+                console.log("error1290");
+                throw error;
+              });
 
-      value: meta_field_value_not,
+            ////////
 
-      ownerId: app_installation_id,
-
-    },
-
-  ],
-
-};
-
-console.log("errorinput checking", Input);
-
-try {
-
-  const result = await Client.query({
-
-    data: { query: createAppDataMetafieldMutation, variables: Input },
-
-  });
-
-
-
-
-  console.log("response--->", result.body.data);
-
-  console.log("response--->", result.body.data.metafieldsSet.metafields);
-
-} catch (error) {
-
-  console.log("errror1233");
-  throw error
-
-}
-
-}
-
-} catch (error) {
-
-console.log("error4565");
-throw error
-
-}
-
-StoreSchemaModal.updateOne({shop},{$set:{themeType:themeType,themeId:getThemeId}})
-                                                            .then((data)=>console.log("theme stored in db"))
-                                                            .catch(error=>{
-                                                              console.log("error1290");
-                                                              throw error
-                                                            })
-
-
-
-
-
-////////
-
-         res.status(200).send("success")
+            res.status(200).send("success");
+          } else {
+            res.status(401).json("Unauthorized Access!");
+          }
+        } catch (err) {
+          console.error("Webhook processing error:", err);
+          // Respond with an error status code if needed
+          res.status(200).send("success in catch");
         }
-        else{
-          res.status(401).json("Unauthorized Access!");   
-        }
-      } catch (err) {
-        console.error("Webhook processing error:", err);
-        // Respond with an error status code if needed
-        res.status(200).send("success in catch");
-      }
-      break;
-     /////////////
-        case "subscription_contracts/create":
+        break;
+      /////////////
+      case "subscription_contracts/create":
         try {
           console.log("kljljkl", req.body);
           const calculated_hmac = crypto
@@ -1213,8 +1180,7 @@ StoreSchemaModal.updateOne({shop},{$set:{themeType:themeType,themeId:getThemeId}
             console.log("contract ID saved:", savecontractDetails);
 
             res.status(200).json({ message: "Updated Successfully!" });
-          }
-          else{
+          } else {
             res.status(401).json("Unauthorized Access!");
           }
         } catch (err) {
@@ -1283,7 +1249,7 @@ StoreSchemaModal.updateOne({shop},{$set:{themeType:themeType,themeId:getThemeId}
           if (calculated_hmac == hmac_header) {
             let body = JSON.parse(req?.body);
             const currentDate = new Date().toISOString();
-            console.log("body",body)
+            console.log("body", body);
             console.log(
               body.subscription_contract_id,
               "success vali webhook hai ayyee"
@@ -1311,7 +1277,7 @@ StoreSchemaModal.updateOne({shop},{$set:{themeType:themeType,themeId:getThemeId}
                   shop: shop,
                   contract_id: `gid://shopify/SubscriptionContract/${body.subscription_contract_id}`,
                   status: "pending",
-                  idempotencyKey:body?.idempotency_key
+                  idempotencyKey: body?.idempotency_key,
                 },
                 {
                   status: "success",
@@ -1340,12 +1306,10 @@ StoreSchemaModal.updateOne({shop},{$set:{themeType:themeType,themeId:getThemeId}
               "ye hai maxxxxx"
             );
 
-////////////////////////////////////////auto renew check
-if (
-  getMaxCycle?.subscription_details?.autoRenew ==false
-) {
-  console.log("ander aa gya haiiiiii");
-  const mutationQuery = `mutation subscriptionContractUpdate($contractId: ID!) {
+            ////////////////////////////////////////auto renew check
+            if (getMaxCycle?.subscription_details?.autoRenew == false) {
+              console.log("ander aa gya haiiiiii");
+              const mutationQuery = `mutation subscriptionContractUpdate($contractId: ID!) {
   subscriptionContractUpdate(contractId: $contractId) {             
     draft {            
      id            
@@ -1356,25 +1320,25 @@ if (
     }
   }
 }`;
-  const Input1 = {
-    contractId: body.admin_graphql_api_subscription_contract_id,
-  };
-  let response1 = await client.query({
-    data: { query: mutationQuery, variables: Input1 },
-  });
-  console.log(response1, "response1 hai yee");
-  if (
-    response1.body.data?.subscriptionContractUpdate?.userErrors
-      .length < 1
-  ) {
-    console.log(
-      "drfat id bn gyi hai",
-      response1.body.data.subscriptionContractUpdate?.draft?.id
-    );
-    let draftID =
-      response1.body.data.subscriptionContractUpdate?.draft?.id;
+              const Input1 = {
+                contractId: body.admin_graphql_api_subscription_contract_id,
+              };
+              let response1 = await client.query({
+                data: { query: mutationQuery, variables: Input1 },
+              });
+              console.log(response1, "response1 hai yee");
+              if (
+                response1.body.data?.subscriptionContractUpdate?.userErrors
+                  .length < 1
+              ) {
+                console.log(
+                  "drfat id bn gyi hai",
+                  response1.body.data.subscriptionContractUpdate?.draft?.id
+                );
+                let draftID =
+                  response1.body.data.subscriptionContractUpdate?.draft?.id;
 
-    const mutationQuery = `mutation subscriptionDraftUpdate($draftId: ID!, $input: SubscriptionDraftInput!) {
+                const mutationQuery = `mutation subscriptionDraftUpdate($draftId: ID!, $input: SubscriptionDraftInput!) {
     subscriptionDraftUpdate(draftId: $draftId, input: $input) {
       draft {
         id
@@ -1387,21 +1351,21 @@ if (
     }
   }`;
 
-    const Input = {
-      draftId: draftID,
-      input: { status: "PAUSED" },
-    };
-    let response2 = await client.query({
-      data: { query: mutationQuery, variables: Input },
-    });
+                const Input = {
+                  draftId: draftID,
+                  input: { status: "PAUSED" },
+                };
+                let response2 = await client.query({
+                  data: { query: mutationQuery, variables: Input },
+                });
 
-    if (
-      response2.body.data?.subscriptionDraftUpdate?.userErrors
-        .length < 1
-    ) {
-      console.log("update hio gyi draftttt");
+                if (
+                  response2.body.data?.subscriptionDraftUpdate?.userErrors
+                    .length < 1
+                ) {
+                  console.log("update hio gyi draftttt");
 
-      let mutationSubscriptionDraftCommit = `mutation subscriptionDraftCommit($draftId: ID!) {
+                  let mutationSubscriptionDraftCommit = `mutation subscriptionDraftCommit($draftId: ID!) {
     subscriptionDraftCommit(draftId: $draftId) {
       contract {
       id
@@ -1414,48 +1378,45 @@ if (
     }
   }`;
 
-      const InputMutationSubscriptionDraftCommit = {
-        draftId: draftID,
-      };
-      let response3 = await client.query({
-        data: {
-          query: mutationSubscriptionDraftCommit,
-          variables: InputMutationSubscriptionDraftCommit,
-        },
-      });
+                  const InputMutationSubscriptionDraftCommit = {
+                    draftId: draftID,
+                  };
+                  let response3 = await client.query({
+                    data: {
+                      query: mutationSubscriptionDraftCommit,
+                      variables: InputMutationSubscriptionDraftCommit,
+                    },
+                  });
 
-      console.log(
-        "jklmnaop",
-        response3.body.data?.subscriptionDraftCommit?.contract
-          ?.status
-      );
-      if (
-        response2.body.data?.subscriptionDraftCommit?.userErrors
-          .length < 1
-      ) {
-        console.log("atlastl")
-        let updateTable =
-       await  subscriptionDetailsModal.findOneAndUpdate(
-          {
-            shop: shop,
-            subscription_id: `gid://shopify/SubscriptionContract/${body.subscription_contract_id}`,
-          },
-          { status: "PAUSED" }
-        );
-
-       }
-    }
-  }
-}
+                  console.log(
+                    "jklmnaop",
+                    response3.body.data?.subscriptionDraftCommit?.contract
+                      ?.status
+                  );
+                  if (
+                    response2.body.data?.subscriptionDraftCommit?.userErrors
+                      .length < 1
+                  ) {
+                    console.log("atlastl");
+                    let updateTable =
+                      await subscriptionDetailsModal.findOneAndUpdate(
+                        {
+                          shop: shop,
+                          subscription_id: `gid://shopify/SubscriptionContract/${body.subscription_contract_id}`,
+                        },
+                        { status: "PAUSED" }
+                      );
+                  }
+                }
+              }
+            }
             //////////////////////////////////////
-
 
             if (
               getMaxCycle.subscription_details.billingMaxValue != undefined &&
               getMaxCycle.subscription_details.billingMaxValue != null
             ) {
               let count = await billing_Attempt.countDocuments({
-               
                 shop: shop,
                 contract_id: body.admin_graphql_api_subscription_contract_id,
                 status: { $in: ["success", "initial"] },
@@ -1555,40 +1516,32 @@ if (
                         .length < 1
                     ) {
                       let updateTable =
-                      subscriptionDetailsModal.findOneAndUpdate(
-                        {
-                          shop: shop,
-                          subscription_id: `gid://shopify/SubscriptionContract/${body.subscription_contract_id}`,
-                        },
-                        { status: "PAUSED" }
-                      );
-
-                     }
+                        subscriptionDetailsModal.findOneAndUpdate(
+                          {
+                            shop: shop,
+                            subscription_id: `gid://shopify/SubscriptionContract/${body.subscription_contract_id}`,
+                          },
+                          { status: "PAUSED" }
+                        );
+                    }
                   }
                 }
               }
             }
 
-
             if (
-                getMaxCycle.subscription_details.freeTrial != undefined &&
-                getMaxCycle.subscription_details.freeTrial != null &&
-                getMaxCycle.subscription_details.freeTrialStatus
-              ) {
-                   
-                
-                      let updateTable =
-                          subscriptionDetailsModal.findOneAndUpdate(
-                            {
-                              shop: shop,
-                              subscription_id: `gid://shopify/SubscriptionContract/${body.subscription_contract_id}`,
-                            },
-                            { "subscription_details.freeTrialStatus": false }
-                          );
-                      
-
-
-              }
+              getMaxCycle.subscription_details.freeTrial != undefined &&
+              getMaxCycle.subscription_details.freeTrial != null &&
+              getMaxCycle.subscription_details.freeTrialStatus
+            ) {
+              let updateTable = subscriptionDetailsModal.findOneAndUpdate(
+                {
+                  shop: shop,
+                  subscription_id: `gid://shopify/SubscriptionContract/${body.subscription_contract_id}`,
+                },
+                { "subscription_details.freeTrialStatus": false }
+              );
+            }
             // if (
             //   getMaxCycle.subscription_details.freeTrial != undefined &&
             //   getMaxCycle.subscription_details.freeTrial != null &&
@@ -1606,9 +1559,9 @@ if (
             //   ) {
             //     getMaxCycle.product_details.forEach(async (item) => {
             //       const mutationQuery = `mutation subscriptionContractUpdate($contractId: ID!) {
-            //           subscriptionContractUpdate(contractId: $contractId) {             
-            //             draft {            
-            //              id            
+            //           subscriptionContractUpdate(contractId: $contractId) {
+            //             draft {
+            //              id
             //             }
             //               userErrors {
             //               field
@@ -1738,8 +1691,7 @@ if (
             // }
 
             res.status(200).json({ message: "Updated Successfully!" });
-          }
-          else{
+          } else {
             res.status(401).json("Unauthorized Access!");
           }
         } catch (err) {
@@ -1765,12 +1717,6 @@ if (
             let admin_graphql_api_order_id =
               '"' + body.admin_graphql_api_order_id + '"';
 
-            console.log(
-              "julllyyyyyyyy",
-              body.admin_graphql_api_subscription_contract_id,
-              shop
-            );
-
             let billing_attempt_failure =
               await billing_Attempt.findOneAndUpdate(
                 {
@@ -1780,10 +1726,13 @@ if (
                   status: "pending",
                 },
                 {
-                  $set: { status: "failed" },
+                  $set: {
+                    status: "failed",
+                    billing_response_date: currentDate,
+                  },
                 }
               );
-            console.log("beforeeeeifffffff", billing_attempt_failure);
+
             if (billing_attempt_failure) {
               //////////////////////////////////by sahil (start)//////////////////////////////////////////
               console.log("iniffffffffffffffffffffffffffffffffffffff");
@@ -1873,8 +1822,7 @@ if (
             }
 
             console.log("afterriffffffffffffffffffffff");
-          }
-          else{
+          } else {
             res.status(401).json("Unauthorized Access!");
           }
         } catch (err) {
@@ -1893,8 +1841,7 @@ if (
 
           if (calculated_hmac == hmac_header) {
             res.status(200).json({ message: "Updated Successfully!" });
-          }
-          else{
+          } else {
             res.status(401).json("Unauthorized Access!");
           }
         } catch (err) {
@@ -1903,7 +1850,6 @@ if (
           res.status(200).send("success in catch");
         }
         break;
-
 
       case "orders/create":
         try {
@@ -1915,8 +1861,7 @@ if (
 
           if (calculated_hmac == hmac_header) {
             res.status(200).json({ message: "Updated Successfully!" });
-          }
-          else{
+          } else {
             res.status(401).json("Unauthorized Access!");
           }
         } catch (err) {

@@ -17,6 +17,7 @@ let billing_Attempts = new Schema(
     idempotencyKey: String,
     numberOfAttempts: Number,
     lastEmailSentStatus: String,
+    retriedAttemptStatus: String,
   },
   { timestamps: true }
 );
