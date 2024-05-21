@@ -22,8 +22,6 @@ shopify.app.revlytic-css.toml
 # vite build output
 dist/
 
-extensions/*
-
 # extensions build output
 extensions/*/build
 
