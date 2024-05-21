@@ -87,7 +87,7 @@ let planBuyDate ;
           }
     
           // console.log("insidebarrr--sum", sum,typeof undefined);
-          //  sum =10000;
+          //  sum =100000;
          if(props?.setRevenue)
          {
              console.log("inifprops")

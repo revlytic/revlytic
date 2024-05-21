@@ -39,61 +39,52 @@ app.post(
 
 // app.post("/api/storefront/getPlansForStoreFront", getPlansForStoreFront);
 app.use(express.json());
-app.use("/api/emailSendFromShopifyAppStoreContactPopUp", async(req,res)=>{
-console.log("demo",req.body)
-let options={
-  to: "cd@yopmail.com",
-  subject: "Revlytic Customer Enquiry",
-  from : "sahilagnihotri7@gmail.com",
-  html: `<div>Name :  <strong> ${req?.body?.name}</strong> <div>
+app.use("/api/emailSendFromShopifyAppStoreContactPopUp", async (req, res) => {
+  console.log("demo", req.body);
+  let options = {
+    to: "cd@yopmail.com",
+    subject: "Revlytic Customer Enquiry",
+    from: "sahilagnihotri7@gmail.com",
+    html: `<div>Name :  <strong> ${req?.body?.name}</strong> <div>
   <div>Email :  <strong> ${req?.body?.email}</strong> <div>
   <div>Message :  <strong> ${req?.body?.message}</strong> <div>
   `,
-};
+  };
 
+  let emailConfig = {
+    host: "smtp.gmail.com",
 
-let emailConfig = {
-  host: "smtp.gmail.com",
+    port: 587,
 
-  port: 587, 
+    auth: {
+      user: "sahilagnihotri7@gmail.com",
 
-  auth: {
-    user: "sahilagnihotri7@gmail.com",
+      pass: "srdvsdnxfmvbrduw",
+    },
 
-    pass: "srdvsdnxfmvbrduw",
-  },
+    secure: false,
+  };
 
-  secure: false,
-};
-
-
-let  transporter = nodemailer.createTransport(emailConfig);
-try {
-  let data = await transporter.sendMail(options);
-  if (data) {
-    res.send({
-      message: "success",
-      data: "Mail sent successfully",
-    });
+  let transporter = nodemailer.createTransport(emailConfig);
+  try {
+    let data = await transporter.sendMail(options);
+    if (data) {
+      res.send({
+        message: "success",
+        data: "Mail sent successfully",
+      });
+    }
+    console.log(data, "jhgfds");
+  } catch (err) {
+    console.log(err, "errorr aa gyaa");
+    res.send({ message: "error", data: "Something went wrong" });
   }
-  console.log(data, "jhgfds");
-} catch (err) {
-  console.log(err, "errorr aa gyaa");
-  res.send({ message: "error", data: "Something went wrong" });
-}
-
-
-
-
-
 });
-
 
 app.use("/api/storefront", router);
 app.use("/api/prodEx", router);
 app.use("/api/customerPortal", router);
 app.get("/api/customerPortalJs", (req, res) => {
-
   const customerPortalScriptPath = path.join(
     __dirname,
     "/frontend/assets/js/",
@@ -129,24 +120,24 @@ app.get("/api/pricing-details", (req, res) => {
   res.render(`${templatePath}`);
 });
 
-
 app.get(shopify.config.auth.path, shopify.auth.begin());
 app.get(
   shopify.config.auth.callbackPath,
   shopify.auth.callback(),
   async (req, res, next) => {
     const session = res.locals.shopify.session;
-    const {shop, accessToken} = session;
-    
+    const { shop, accessToken } = session;
+
     await shopModal.findOne({ shop }).then((data) => {
       if (data) {
-        console.log("17april2024",accessToken)
+        console.log("17april2024", accessToken);
         shopModal.updateOne({ accessToken });
       } else {
         shopModal
           .create({
             shop,
             accessToken,
+            setUpGuide:false
           })
           .then(() => {
             console.log("Shop info successfully saved");
@@ -184,7 +175,6 @@ app.get(
       }
     });
 
- 
     let settings = {
       subscriptionCanceled: {
         status: true,
@@ -197,7 +187,7 @@ app.get(
         showLineItems: true,
         showSubscriptionId: true,
         logoUrl:
-          "https://cdn.shopify.com/s/files/1/0753/8068/7139/files/revlytic-logo.png?v=1695819688",
+          "https://cdn.shopify.com/s/files/1/0753/8068/7139/files/revlytic.c679902f_1.svg?v=1701756753",
         logoHeight: "70",
         logoWidth: "170",
         logoAlignment: "center",
@@ -246,7 +236,7 @@ app.get(
         showLineItems: true,
         showSubscriptionId: true,
         logoUrl:
-          "https://cdn.shopify.com/s/files/1/0753/8068/7139/files/revlytic-logo.png?v=1695819688",
+          "https://cdn.shopify.com/s/files/1/0753/8068/7139/files/revlytic.c679902f_1.svg?v=1701756753",
         logoHeight: "50",
         logoWidth: "170",
         logoAlignment: "right",
@@ -292,7 +282,7 @@ app.get(
         showLineItems: true,
         showSubscriptionId: true,
         logoUrl:
-          "https://cdn.shopify.com/s/files/1/0753/8068/7139/files/revlytic-logo.png?v=1695819688",
+          "https://cdn.shopify.com/s/files/1/0753/8068/7139/files/revlytic.c679902f_1.svg?v=1701756753",
         logoHeight: "50",
         logoWidth: "170",
         logoAlignment: "center",
@@ -343,7 +333,7 @@ app.get(
         showLineItems: true,
         showSubscriptionId: true,
         logoUrl:
-          "https://cdn.shopify.com/s/files/1/0753/8068/7139/files/revlytic-logo.png?v=1695819688",
+          "https://cdn.shopify.com/s/files/1/0753/8068/7139/files/revlytic.c679902f_1.svg?v=1701756753",
         logoHeight: "50",
         logoWidth: "170",
         logoAlignment: "center",
@@ -394,7 +384,7 @@ app.get(
         showLineItems: true,
         showSubscriptionId: true,
         logoUrl:
-          "https://cdn.shopify.com/s/files/1/0753/8068/7139/files/revlytic-logo.png?v=1695819688",
+          "https://cdn.shopify.com/s/files/1/0753/8068/7139/files/revlytic.c679902f_1.svg?v=1701756753",
         logoHeight: "50",
         logoWidth: "170",
         logoAlignment: "center",
@@ -444,7 +434,7 @@ app.get(
         showLineItems: true,
         showSubscriptionId: true,
         logoUrl:
-          "https://cdn.shopify.com/s/files/1/0753/8068/7139/files/revlytic-logo.png?v=1695819688",
+          "https://cdn.shopify.com/s/files/1/0753/8068/7139/files/revlytic.c679902f_1.svg?v=1701756753",
         logoHeight: "50",
         logoWidth: "170",
         logoAlignment: "center",
@@ -493,7 +483,7 @@ app.get(
         showOrderNumber: true,
         showLineItems: true,
         logoUrl:
-          "https://cdn.shopify.com/s/files/1/0753/8068/7139/files/revlytic-logo.png?v=1695819688",
+          "https://cdn.shopify.com/s/files/1/0753/8068/7139/files/revlytic.c679902f_1.svg?v=1701756753",
         logoHeight: "50",
         logoWidth: "170",
         logoAlignment: "center",
@@ -543,7 +533,7 @@ app.get(
         showOrderNumber: true,
         showLineItems: false,
         logoUrl:
-          "https://cdn.shopify.com/s/files/1/0753/8068/7139/files/revlytic-logo.png?v=1695819688",
+          "https://cdn.shopify.com/s/files/1/0753/8068/7139/files/revlytic.c679902f_1.svg?v=1701756753",
         logoHeight: "50",
         logoWidth: "170",
         logoAlignment: "center",
@@ -623,7 +613,7 @@ app.get(
               { label: "Automatically send when order created", status: true },
             ],
             invoice_details: {
-              Logo: "",
+              Logo: "https://cdn.shopify.com/s/files/1/0753/8068/7139/files/revlytic.c679902f_1.svg?v=1701756753",
               Bill_To: "Bill To",
               Invoice_Heading: "Invoice Heading",
               Invoice_Number: "Invoice Number",
@@ -640,7 +630,8 @@ app.get(
               Tax: "Tax",
               Shipping: "Shipping",
               Discount: "Discount",
-              Signature: "Signature",
+              Signature:
+                "https://cdn.shopify.com/s/files/1/0753/8068/7139/files/revlytic.c679902f_1.svg?v=1701756753",
             },
           })
           .then(() => {
@@ -810,7 +801,6 @@ app.post(
   shopify.config.webhooks.path,
   shopify.processWebhooks({ webhookHandlers: GDPRWebhookHandlers })
 );
-
 
 app.use("/api/*", shopify.validateAuthenticatedSession());
 

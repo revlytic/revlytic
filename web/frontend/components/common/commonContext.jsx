@@ -30,7 +30,7 @@ const APIContext = createContext();
 
     let billingPlanData=await postApi("api/admin/getBillingPlanData",{},app);
     if(billingPlanData && billingPlanData?.data?.message=='success') {
-      console.log(billingPlanData?.data?.planData?.next_billing,"ksjaisa",billingPlanData)
+      
       setBillingPlan(billingPlanData?.data?.planData?.plan)
       setBillingPlanDate(billingPlanData?.data?.planData?.next_billing)
       setPlanBuyDate(billingPlanData?.data?.planData?.activated_on)
@@ -38,9 +38,6 @@ const APIContext = createContext();
     }else{
       setBillingPlan("")
     }
-
-
-
        
    },[])
  

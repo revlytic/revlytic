@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
   console.log("21novmber");
   let apiPath =
-    "https://showers-acts-delegation-retrieve.trycloudflare.com/";
+    "https://emperor-scott-alto-notification.trycloudflare.com/";
   const urlParams = new URLSearchParams(window.location.search);
   const customerId = urlParams.get("cid");
   // const customerId = ShopifyAnalytics.meta.page.customerId;
@@ -606,6 +606,7 @@ document.addEventListener("DOMContentLoaded", () => {
         console.error("Error fetching data:", error);
       });
   }
+
   let loaderData = `<div class="overlay" id="revlytic-overlay">
   <div className='revlytic-loader'>
   <svg width="20vh" height="20vh" viewBox="0 0 512 512" fill="#44e74473" overflow="hidden" xmlns="http://www.w3.org/2000/svg">
@@ -811,7 +812,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (param1 == null) {
     containerDiv.innerHTML = bodyData;
+
   }
+
   getBillingsTotal();
   getPermissions();
   getstoreDetails();
@@ -1656,6 +1659,10 @@ document.addEventListener("DOMContentLoaded", () => {
               }
             }
             console.log("end", newArray);
+
+   
+
+
             function getStatusSVG(status) {
               let color = "";
               switch (status) {
@@ -1718,7 +1725,7 @@ document.addEventListener("DOMContentLoaded", () => {
                   : ` <div class="order-now-and-skip">
 </div>`;
 
-              return ` <div class="order-conformation-inner">
+              return item.status != "failed"  ? `<div class="order-conformation-inner">
               <div class="order-date">
                   <h5>${dateConversion(item?.renewal_date)}</h5>
               </div>
@@ -1726,7 +1733,7 @@ document.addEventListener("DOMContentLoaded", () => {
                   <h5>
                       ${svg}
                       ${
-                        item.status == "upcoming"
+                        item.status == "upcoming" 
                           ? "Queued"
                           : item.status == "pending"
                           ? "Pending"
@@ -1738,7 +1745,7 @@ document.addEventListener("DOMContentLoaded", () => {
               </div>
               
                   ${buttons}
-          </div>`;
+          </div>` : '' 
             });
             let skipHtml = filterSkippedOrders.map((item) => {
               return ` <div class="order-conformation-inner">
@@ -1761,6 +1768,45 @@ ${item?.order_no}
 
           </div>`;
             });
+
+            let failedOrdersArray=arr.filter((item)=>
+        (item.status=='failed' ||  item.status=='retriedAfterFailure'  )
+   && (!filterPastOrders.some((itm)=> itm?.renewal_date==item?.renewal_date)) && (!newArray.some((itm)=> itm?.renewal_date==item?.renewal_date && itm.status=='pending'))
+          )
+          let failedOrderHtml = failedOrdersArray.map((item) => {
+            return ( mainDetails?.status?.toLowerCase()=='active' ? `<div class="order-conformation-inner">
+            <div class="order-date">
+                <h5>${dateConversion(item?.renewal_date)}</h5>
+            </div>
+            <div class="order-now-and-skip">
+            <button
+              class="retry-button"
+              data-renewal-date="${item.renewal_date}"
+            >
+              Retry
+            </button>
+          </div> 
+        </div>` : `<div class="order-conformation-inner">
+        <div class="order-date">
+            <h5>${dateConversion(item?.renewal_date)}</h5>
+        </div>` );
+        
+          });
+          const failedOrdersMain = document.querySelector(
+            ".revlytic.failed-order-container"
+          );
+          console.log(failedOrdersMain, "failedOrdersMain");
+          console.log(failedOrderHtml, "failedOrderHtml");
+          const failedOrdersContainer = document.createElement("div");
+          failedOrdersContainer.classList.add("revlytic-orders-container");
+        
+          failedOrdersContainer.innerHTML = failedOrderHtml.join("");
+          failedOrdersMain.parentNode.insertBefore(
+            failedOrdersContainer,
+            failedOrdersMain.nextSibling
+          );
+
+
             //////upcomingg
 
             if (mainDetails.status.toLowerCase() == "active") {
@@ -2611,6 +2657,45 @@ ${item?.order_no}
               (item) => item.status == "success" || item.status == "initial"
             );
             console.log(filterPastOrders, "passsssstt");
+             ////////sahil1may////////////
+             let failedOrdersArray=arr.filter((item)=>
+             (item.status=='failed' ||  item.status=='retriedAfterFailure'  )
+        && (!filterPastOrders.some((itm)=> itm?.renewal_date==item?.renewal_date))
+               )
+                       
+               let failedOrderHtml = failedOrdersArray.map((item) => {
+                 return `<div class="order-conformation-inner">
+                 <div class="order-date">
+                     <h5>${dateConversion(item?.renewal_date)}</h5>
+                 </div>
+                  <div class="order-now-and-skip">
+                 <button
+                   class="retry-button"
+                   data-renewal-date="${item.renewal_date}"
+                 >
+                   Retry
+                 </button>
+               </div>
+             </div>`;
+             
+               });
+               const failedOrdersMain = document.querySelector(
+                 ".revlytic.failed-order-container"
+               );
+               console.log(failedOrdersMain, "failedOrdersMain");
+               console.log(failedOrderHtml, "failedOrderHtml");
+               const failedOrdersContainer = document.createElement("div");
+               failedOrdersContainer.classList.add("revlytic-orders-container");
+             
+               failedOrdersContainer.innerHTML = failedOrderHtml.join("");
+               failedOrdersMain.parentNode.insertBefore(
+                 failedOrdersContainer,
+                 failedOrdersMain.nextSibling
+               );
+
+
+
+/////////sahilend1may///////
             if (filterPastOrders.length > 0) {
               // let filtered = completed.filter((item) =>
               //   Object.values(item)[0].lineItems.some((lineItem) =>
@@ -2662,6 +2747,53 @@ ${item?.order_no}
                 );
               }
             }
+
+            const retryButtons = document.querySelectorAll(".retry-button");
+            retryButtons.length > 0 &&
+            retryButtons.forEach((button) => {
+              button.addEventListener("click", () => {
+                const renewal_date = button.getAttribute("data-renewal-date");
+                let loader = document.getElementById("revlytic-overlay");
+                loader.style.display = "flex";
+
+                fetch(`${apiPath}api/customerPortal/retryFailedOrder`, {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json",
+                  },
+                  body: JSON.stringify({
+                    shop: shop,
+                    renewal_date: renewal_date,
+                    product_details: mainDetails?.product_details,
+                    subscription_id: mainDetails.subscription_id,
+                  }),
+                })
+                  .then((response) => response.json())
+                  .then((data) => {
+                    loader.style.display = "none";
+                    if (data.message == "success") {
+                      console.log(data);
+                      getDataFromDb();
+                      showToast(
+                        "Your order was successfully submitted",
+                        3000
+                      );
+                    } else {
+                      showToast(data?.data, 3000);
+                    }
+                  })
+                  .catch((error) => {
+                    showToast("Something went wrong", 3000);
+                    loader.style.display = "none";
+                    console.log(`Error  ${JSON.stringify(error)}`);
+                  });
+              });
+
+              // setUpcomingOrders(newArray);
+            });
+
+
+
           })
           .catch((error) => {
             showToast("Something went wrong", 3000);
@@ -3247,99 +3379,92 @@ ${cancelReasonModal}
     
       </div>
       <!--edit shiping details section end-->
-    
-      <div class="upcoming-order tabset">
-      <!-- Tab 1 -->
-      ${` <input type="radio" name="tabset" id="tab1" aria-controls="UpcomingOrders" checked>
-      <label for="tab1">${
+      <div class="revlytic-tabs-newmain">
+      <ul class="revlytic-tabs-new tabs">
+      <li class="active" data-cont=".one">${
         mainDetails.subscription_details.planType == "payAsYouGo"
           ? "Upcoming Orders"
           : "Scheduled"
-      }</label>`}
-      <!-- Tab 2 -->
-      <input type="radio" name="tabset" id="tab2" aria-controls="PastOrders" >
-      <label for="tab2">${
+      }</li>
+      <li data-cont=".two">${
         mainDetails.subscription_details.planType == "payAsYouGo"
           ? "Past Orders"
           : "Open"
-      }</label>
-      <!-- Tab 3 -->
-      <input type="radio" name="tabset" id="tab3" aria-controls="SkippedOrders">
-      <label for="tab3">${
+      }</li>
+      <li data-cont=".three">${
         mainDetails.subscription_details.planType == "payAsYouGo"
           ? "Skipped Orders"
           : "Closed"
-      }</label>
-      <input type="radio" name="tabset" id="tab4" aria-controls="PrepaidPastOrders">
-      ${
-        mainDetails.subscription_details.planType == "prepaid"
-          ? `<label for="tab4">Past Orders</label>`
-          : ""
-      }
+      }</li>
+      
 
-      <div class="tab-panels">
-          <section id="UpcomingOrders" class="tab-panel">
-              <div class="revlytic upcoming-orders-main upcoming-order-container">
-                  <h4>${
-                    mainDetails.subscription_details.planType == "payAsYouGo"
-                      ? "Order Date"
-                      : "Fulfillment Date"
-                  }</h4>
-                  <h4 class="status">${
-                    mainDetails.subscription_details.planType == "payAsYouGo"
-                      ? "Status"
-                      : "Order Number"
-                  }</h4>
-                  <h4 class="manage">${"Manage"}</h4>
-              </div>
 
-          </section>
-          <section id="PastOrders" class="tab-panel">
-          <div class="revlytic upcoming-orders-main past-order-container">
-          <h4>${
-            mainDetails.subscription_details.planType == "payAsYouGo"
-              ? "Order Date"
-              : "Fulfillment Date"
-          }</h4>
-          <h4 class="status">${
-            mainDetails.subscription_details.planType == "payAsYouGo"
-              ? "Order Number"
-              : "Order Number"
-          }</h4>
-              </div>
-              
-          </section>
-          <section id="SkippedOrders" class="tab-panel">
-          <div class="revlytic upcoming-orders-main skip-order-container">
-                  <h4>${
-                    mainDetails.subscription_details.planType == "payAsYouGo"
-                      ? "Order Date"
-                      : "Fulfillment Date"
-                  }</h4>
-                  <h4 class="status">${
-                    mainDetails.subscription_details.planType == "payAsYouGo"
-                      ? ""
-                      : "Order Number"
-                  }</h4>
-              </div>
-          </section>
+      ${mainDetails.subscription_details.planType == "prepaid" ? `
+      <li data-cont=".four">
+        Past orders
+      </li>
+    ` : ''}
 
-          ${
-            mainDetails.subscription_details.planType == "prepaid"
-              ? `         
-           <section id="PrepaidPastOrders" class="tab-panel">
-          <div class="revlytic upcoming-orders-main prepaid-past-order-container">
-              <h4>Order Date</h4>
-              <h4 class="status">Order Number</h4>
-                  </div>
+    <li data-cont=".five">Failed orders</li>
+      
+    </ul>
+    <div class="revlytictabs-content content">
+    <div class="one"> <div class="revlytic upcoming-orders-main upcoming-order-container">
+    <h4>${
+    mainDetails.subscription_details.planType == "payAsYouGo"
+      ? "Order Date"
+      : "Fulfillment Date"
+    }</h4>
+    <h4 class="status">${
+    mainDetails.subscription_details.planType == "payAsYouGo"
+      ? "Status"
+      : "Order Number"
+    }</h4>
+    <h4 class="manage">${"Manage"}</h4>
+    </div></div>
+    <div class="two">   <div class="revlytic upcoming-orders-main past-order-container">
+    <h4>${
+    mainDetails.subscription_details.planType == "payAsYouGo"
+      ? "Order Date"
+      : "Fulfillment Date"
+    }</h4>
+    <h4 class="status">${
+    mainDetails.subscription_details.planType == "payAsYouGo"
+      ? "Order Number"
+      : "Order Number"
+    }</h4>
+      </div></div>
+    <div class="three"> <div class="revlytic upcoming-orders-main skip-order-container">
+    <h4>${
+    mainDetails.subscription_details.planType == "payAsYouGo"
+      ? "Order Date"
+      : "Fulfillment Date"
+    }</h4>
+    <h4 class="status">${
+    mainDetails.subscription_details.planType == "payAsYouGo"
+      ? ""
+      : "Order Number"
+    }</h4>
+    </div></div>
 
-      </section>`
-              : ""
-          }
-      </div>
 
-  </div>
-    
+    ${
+      mainDetails.subscription_details.planType == "prepaid"
+        ? `         
+        <div class = "four"> <div class="revlytic upcoming-orders-main prepaid-past-order-container">
+        <h4>Order Date</h4>
+        <h4 class="status">Order Number</h4>
+            </div></div>`
+        : ""
+    }
+    <div class = "five"><div class="revlytic upcoming-orders-main failed-order-container">
+    <h4>Failed  On</h4>
+</div></div>
+
+
+    </div>
+
+    </div>
       <!--upcoming order section end-->
     
       <div class="revlytic-subscription-status">
@@ -3358,7 +3483,29 @@ ${cancelReasonModal}
     </div>`;
 
     containerDiv.innerHTML = detailsData;
-    ////////////////////reschedule datepicker listner
+    // latest event listner
+    let tabs = document.querySelectorAll(".tabs li");
+    let tabsArray = Array.from(tabs);
+    let divs = document.querySelectorAll(".content > div");
+    let divsArray = Array.from(divs);
+    
+    // console.log(tabsArray);
+    
+    tabsArray.forEach((ele) => {
+      ele.addEventListener("click", function (e) {
+        // console.log(ele);
+        tabsArray.forEach((ele) => {
+          ele.classList.remove("active");
+        });
+        e.currentTarget.classList.add("active");
+        divsArray.forEach((div) => {
+          div.style.display = "none";
+        });
+        // console.log(e.currentTarget.dataset.cont);
+        document.querySelector(e.currentTarget.dataset.cont).style.display = "block";
+      });
+    });
+    //////////////////reschedule datepicker listner
     document
       .getElementById("reschedule-datepicker")
       .addEventListener("change", function () {
@@ -3435,72 +3582,6 @@ ${cancelReasonModal}
       }
   }
   
-
-    // function changeSubStatus(key, reason) {
-    //   let loader = document.getElementById("revlytic-overlay");
-    //   loader.style.display = "flex";
-
-    //   fetch(`${apiPath}api/customerPortal/subscriptionStatusUpdate`, {
-    //     method: "POST",
-    //     headers: {
-    //       "Content-Type": "application/json",
-    //     },
-    //     body: JSON.stringify({
-    //       shop: shop,
-    //       id: `gid://shopify/SubscriptionContract/${param1}`,
-    //       input: { status: key },
-    //       field: "status",
-    //       reason: reason,
-    //     }),
-    //   })
-    //     .then((response) => response.json())
-    //     .then(async (data) => {
-    //       loader.style.display = "none";
-    //       if (data.message == "success") {
-    //         if (data?.data?.status == "CANCELLED") {
-    //           let extra = {
-    //             templateType: "subscriptionCanceled",
-    //             data: data?.data,
-    //             shop_name: store_name,
-    //             shop_email: store_email,
-    //             currency: mainDetails?.subscription_details?.currency,
-    //           };
-
-    //           let resp = await sendMailOnUpdate({}, extra);
-    //         } else if (data?.data?.status == "PAUSED") {
-    //           let extra = {
-    //             templateType: "subscriptionPaused",
-    //             data: data?.data,
-    //             shop_name: store_name,
-    //             shop_email: store_email,
-    //             currency: mainDetails?.subscription_details?.currency,
-    //           };
-
-    //           let resp = await sendMailOnUpdate({}, extra);
-    //         } else if (data?.data?.status == "ACTIVE") {
-    //           let extra = {
-    //             templateType: "subscriptionResumed",
-    //             data: data?.data,
-    //             shop_name: store_name,
-    //             shop_email: store_email,
-    //             currency: mainDetails?.subscription_details?.currency,
-    //           };
-
-    //           let resp = await sendMailOnUpdate({}, extra);
-    //         }
-    //         console.log(data);
-    //         getDataFromDb();
-    //         showToast("Subscription updated successfully", 3000);
-    //       } else {
-    //         showToast(data?.data, 3000);
-    //       }
-    //     })
-    //     .catch((error) => {
-    //       showToast("Something went wrong", 3000);
-    //       loader.style.display = "none";
-    //       console.log(`Error  ${JSON.stringify(error)}`);
-    //     });
-    // }
 
     function changeSubStatus(key, reason) {
       let loader = document.getElementById("revlytic-overlay");
@@ -3744,16 +3825,6 @@ ${cancelReasonModal}
                   console.log(`Error  ${JSON.stringify(error)}`);
                 });
 
-              //   ///////
-              //  let mailCheck = await sendMailCall(
-              //   recipientMails,
-              //   {},
-              //   {
-              //      shop,
-              //      selectedTemplateData,
-              //     configurationData,
-              //     extra
-              //    } );
             }
 
             getDataFromDb();
@@ -4190,54 +4261,6 @@ ${cancelReasonModal}
       }
     });
 
-    // const minValidationInput = document.getElementById("rev-min-input");
-    // const maxValidationInput = document.getElementById("rev-max-input");
-    // const validationMessageMin = document.getElementById(
-    //   "validation-message-min"
-    // );
-    // const validationMessageMax = document.getElementById(
-    //   "validation-message-max"
-    // );
-
-    // minValidationInput.addEventListener("input", () => {
-    //   validateMin();
-    // });
-
-    // maxValidationInput.addEventListener("input", () => {
-    //   validateMax();
-    // });
-
-    // function validateMin() {
-    //   const minValue = parseFloat(minInput.value);
-    //   const maxValue = parseFloat(maxInput.value);
-
-    //   if (isNaN(minValue) || minValue <= 0 || maxValue <= 0) {
-    //     validationMessageMin.textContent =
-    //       "Must be a number greater than zero!";
-    //   } else if (maxValue < minValue) {
-    //     validationMessageMin.textContent =
-    //       "Minimum Billing Cycles cannot be greater than Maximum Billing Cycles!";
-    //   } else {
-    //     validationMessageMin.textContent = "";
-    //   }
-    // }
-    // function validateMax() {
-    //   const minValue = parseFloat(minInput.value);
-    //   const maxValue = parseFloat(maxInput.value);
-
-    //   if (isNaN(maxValue) || minValue <= 0 || maxValue <= 0) {
-    //     validationMessageMax.textContent =
-    //       "Must be a number greater than zero!";
-    //   } else if (maxValue < minValue) {
-    //     validationMessageMax.textContent =
-    //       "Maximum Billing Cycles cannot be less than Free trial count!";
-    //   } else {
-    //     validationMessageMax.textContent = "";
-    //   }
-    // }
-
-    /////////////////////// subscription details listners
-    // plannameInput.value = mainDetails.subscription_details.planType;
     billfreqType.value =
       mainDetails.subscription_details.delivery_billingType.toLowerCase();
     DeliveryFreqType.value =
@@ -4246,44 +4269,7 @@ ${cancelReasonModal}
     deliveryfreqInput.value =
       mainDetails.subscription_details.delivery_billingValue;
     let message = document.getElementById("validation-freq");
-    // plannameInput.addEventListener("change", () => {
-    //   if (plannameInput.value == "payAsYouGo") {
-    //     if (!isNaN(billingfreqInput.value) && !isNaN(deliveryfreqInput.value)) {
-    //       if (billingfreqInput.value != deliveryfreqInput.value) {
-    //         console.log("444444");
-    //         message.textContent =
-    //           "Delivery frequency must be  same as billing frequency";
-    //       } else {
-    //         message.textContent = "";
-    //       }
-    //     } else {
-    //       message.textContent =
-    //         "Delivery frequency and Billing frequency must be valid numbers ";
-    //     }
-    //   } else {
-    //     if (!isNaN(billingfreqInput.value) && !isNaN(deliveryfreqInput.value)) {
-    //       console.log("2222");
-
-    //       if (billingfreqInput.value % deliveryfreqInput.value !== 0) {
-    //         console.log("3333");
-
-    //         message.textContent =
-    //           "Delivery frequency must be a multiple of billing frequency";
-    //       } else if (billingfreqInput.value === deliveryfreqInput.value) {
-    //         console.log("444444");
-    //         message.textContent =
-    //           "Delivery frequency cannot be the same as billing frequency";
-    //       } else {
-    //         console.log("5555555555");
-    //         message.textContent = " ";
-    //       }
-    //     } else {
-    //       message.textContent =
-    //         "Delivery frequency and Billing frequency must be valid numbers ";
-    //     }
-    //   }
-    // });
-
+   
     deliveryfreqInput.addEventListener("input", (event) => {
       let message = document.getElementById("validation-freq");
       if (mainDetails.subscription_details.planType == "payAsYouGo") {

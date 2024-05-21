@@ -47,7 +47,7 @@ function Home() {
 
   const [customDate, setCustomDate] = useState(dayjs().format("YYYY-MM-DD"));
 
-  const [range, setRange] = useState("today");
+  const [range, setRange] = useState("last90Days");
 
   const [recurringRevenue, setRecurringRevenue] = useState(0);
 
@@ -83,7 +83,7 @@ function Home() {
     filtered && setCurrencyConversionRates(filtered.rates);
 
     if (filtered && storeDetails?.currency) {
-      let response = await getData({ range: "today" }, filtered?.rates);
+      let response = await getData({ range: "last90Days" }, filtered?.rates);
     }
     return () => {};
   }, [storeDetails]);
@@ -92,7 +92,7 @@ function Home() {
     setLoader(true);
 
     setLoader(false);
-    await getActiveCustomers({ range: "today" });
+    await getActiveCustomers({ range: "last90Days" });
 
     await getAnnouncements();
     await checkAppBlockEmbed();
@@ -148,7 +148,7 @@ function Home() {
 
     if (response?.data?.message == "success") {
       let arr = response?.data?.data;
-
+       
       let sum = 0;
 
       // let countInitialStatus = 0;

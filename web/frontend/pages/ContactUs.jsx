@@ -11,7 +11,6 @@ function ContactUs() {
   const [loader, setLoader] = useState(false);
   const { storeDetails } = useAPI();
 
-
   const onFinish = async (values) => {
     // console.log("onfinish",values)
     setLoader(true);
@@ -122,8 +121,17 @@ function ContactUs() {
           </Button>
         </Card>
       </Form>
+      
+      <Button onClick={()=> open("https://sahil-shine.myshopify.com/admin/themes/current/editor?context=apps&template=settings_data&activateAppId=02743a62-f002-483e-9249-db21ddf2fb51/revlytic", "_blank")}></Button> 
+      {/* <Button onClick={()=> open("https://sahil-shine.myshopify.com/admin/themes/current/editor?template=product&addAppBlockId=02743a62-f002-483e-9249-db21ddf2fb51/revlytic_app_bock", "_blank")}></Button> */}
+     
+
     </Spin>
   );
 }
 
+
 export default ContactUs;
+
+                
+                

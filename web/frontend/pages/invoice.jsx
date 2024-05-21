@@ -140,9 +140,9 @@ function invoice() {
           // toast.success("Logo uploaded successfully", {
           //   position: toast.POSITION.TOP_RIGHT,
           // });
-          updatedLogo = `https://investor-liable-articles-cutting.trycloudflare.com/images/logo/${savelogo.data.name}`;
+          updatedLogo = `https://stated-carnival-sara-circuits.trycloudflare.com/images/logo/${savelogo.data.name}`;
           setLogo(
-            `https://investor-liable-articles-cutting.trycloudflare.com/images/logo/${savelogo.data.name}`
+            `https://stated-carnival-sara-circuits.trycloudflare.com/images/logo/${savelogo.data.name}`
           );
         }
       } catch (error) {
@@ -163,9 +163,9 @@ function invoice() {
           // toast.success("Signature uploaded successfully", {
           //   position: toast.POSITION.TOP_RIGHT,
           // });
-          updatedSignature = `https://investor-liable-articles-cutting.trycloudflare.com/images/signature/${savesignature.data.name}`;
+          updatedSignature = `https://stated-carnival-sara-circuits.trycloudflare.com/images/signature/${savesignature.data.name}`;
           setSignature(
-            `https://investor-liable-articles-cutting.trycloudflare.com/images/signature/${savesignature.data.name}`
+            `https://stated-carnival-sara-circuits.trycloudflare.com/images/signature/${savesignature.data.name}`
           );
         }
       } catch (error) {

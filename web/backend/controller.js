@@ -52,6 +52,7 @@ function formatVariableName(variableName) {
 
   return formattedVariableName;
 }
+
 const getStoreDetails = async (shop) => {
   try {
     let data = await StoreSchemaModal.findOne({ shop: shop });
@@ -493,6 +494,7 @@ const sendMailCall = async (recipientMails, others, extra) => {
     /////////////////////////////////////
 
     async function generatePdf() {
+   
       const browser = await puppeteer.launch({
         executablePath: "/usr/bin/chromium-browser",
         headless: true,
@@ -511,6 +513,7 @@ const sendMailCall = async (recipientMails, others, extra) => {
         const compiledTemplate = ejs.compile(
           fs.readFileSync(templatePath, "utf8")
         );
+       
 
         const content = compiledTemplate({ details: extra.details });
 
@@ -852,7 +855,6 @@ async function getshopToken(shop) {
 
 async function sendmailforcrons(recipientMails,emailConfig,options,selectedTemplate,extra,shop){
 
-
   try{
   {
     let flag=false;
@@ -1096,9 +1098,7 @@ async function sendmailforcrons(recipientMails,emailConfig,options,selectedTempl
           );
         }
       }
-
-
-
+      
       const emailContent = await ejs.renderFile(dirPath + "/preview2.ejs", {
         selectedTemplate,
         templateType,
@@ -1143,8 +1143,9 @@ console.log("error12")
 
 // ///////////////////////////contract create cron start///////////////////////////////////////////
 const firstScheduledTime = "*/30 * * * * *"; // Replace with your desired time in cron syntax
+const cronTimeEvery1hr = "0 * * * *"; // Replace with your desired time in cron syntax
 const cronTimeEvery24hr="0 0 * * *";
-const firstJob = new CronJob(firstScheduledTime, contractCronJob);
+const firstJob = new CronJob(cronTimeEvery1hr, contractCronJob);
 
 const secondJob = new CronJob(
   firstScheduledTime,
@@ -1157,9 +1158,8 @@ secondJob.start();
 
 export async function contractCronJob(req, res) {
   const currentDate = new Date().toISOString();
-
   const targetDate = new Date(currentDate);
-
+  
   console.log("checking dataess", targetDate);
   let data = await subscriptionDetailsModal.find(
     {
@@ -1180,11 +1180,18 @@ export async function contractCronJob(req, res) {
       ],
     },
 
-    { shop: 1, subscription_id: 1, product_details: 1, subscription_details: 1 }
+    { shop: 1, subscription_id: 1, product_details: 1, subscription_details: 1 ,nextBillingDate:1 }
   );
 
   console.log(data, "Function executed at the scheduled time.");
 
+
+     // const dataString =
+      //   typeof CreateInput === "string"
+      //     ? CreateInput
+      //     : JSON.stringify(CreateInput);
+  
+     
   let mutation = `mutation subscriptionBillingAttemptCreate($subscriptionBillingAttemptInput: SubscriptionBillingAttemptInput!, $subscriptionContractId: ID!) {
 
     subscriptionBillingAttemptCreate(subscriptionBillingAttemptInput: $subscriptionBillingAttemptInput, subscriptionContractId: $subscriptionContractId) {
@@ -1258,6 +1265,7 @@ export async function contractCronJob(req, res) {
   `;
 
   if (data.length > 0) {
+  
     for (let i = 0; i < data.length; i++) {
       const uniqueId =
         Date.now().toString(36) + Math.random().toString(36).substring(2, 5);
@@ -1383,8 +1391,9 @@ const areDatesEqual = (date1, date2) => {
   return dateString1 === dateString2;
 }
 
+async function  upcomingOrders()
 
-async function  upcomingOrders(){
+{
 
  try {
 
@@ -1448,6 +1457,7 @@ if(data.length > 0){
 data.forEach(async(item)=>{
 if(item?.result?.length > 0 ) {
   let storedetails={}; 
+  
     let getTemplateAndStoreData = await emailTemplatesModal.aggregate(
        [
          {
@@ -1593,10 +1603,279 @@ emailConfig = {
 
 }
 
-
-
-
 // //////upcomingordercrin-end///
+
+// async function paymentFailureCron(){
+
+//   try 
+  
+//   {
+//     let targetDate=new Date()
+//     targetDate.setDate(targetDate.getDate() - 25)
+//     targetDate.setUTCHours(0,0,0,0)
+   
+//   // let getBillingData=await billing_Attempt.find({
+//   //   updatedAt:{$gte: targetDate},
+//   //   $or: [{ status: "failed" }, { status: "retriedAfterFailure" },{ status: "success" }],
+//   //  })
+
+
+//  let mainData=await billing_Attempt.aggregate(
+//     [
+//       {
+//         $match: {
+//           updatedAt: {$gte: targetDate},
+//           $or: [{ status: "failed" }, { status: "retriedAfterFailure" },{ status: "success" }],
+//         }
+//       },
+//       {
+//         $lookup: {
+//           from: 'subscription_details',
+//           localField: 'contract_id',
+//           foreignField: 'subscription_id',
+//           as: 'result'
+//         }
+//       },
+//       {
+//         $match: {
+//           'result.status': { $eq: 'active' }
+//         }
+//       }
+//     ],
+//     { maxTimeMS: 60000, allowDiskUse: true }
+//   );
+
+//   let filteredArr=[]; 
+//   let contract_idArr=[]
+//   let contractIdFailureCountObj={};
+//   let  allstore_emailTemplate_storeDetail_Obj={};
+//   let lastEmailSentStatusObj={}
+  
+//   if(mainData.length > 0){
+//     mainData.map((item)=>{
+//   if(item?.status=='failed' || item?.status=='retriedAfterFailure'){
+//     filteredArr.push(item)
+//     contract_idArr.push(item?.contract_id)
+//   }
+//   else if(item?.status=='success'){
+//     filteredArr= filteredArr.filter((itm, index) => !Object.values(itm).includes(item.contract_id))
+//       contract_idArr= contract_idArr.filter((value, index) => value != item?.contract_id )
+   
+//   }
+//     })
+//   }
+//   else{
+//     return;
+//   }
+//   let dunningDataArray=await dunningModal.find({enablePaymentAttempt:true});
+//    if(dunningDataArray.length >0 &&  filteredArr.length > 0){
+//     filteredArr.forEach(async(item)=> {    
+//   if(!Object.keys(contractIdFailureCountObj).includes(item["contract_id"])){
+//     const countDuplicates= contract_idArr.filter((val) => 
+//       val==item["contract_id"]    
+//     ).length
+    
+//     let dunningDataItem=dunningDataArray.find((val)=>
+//     val.shop==item["shop"]
+//   )
+  
+//   contractIdFailureCountObj[item["contract_id"]]={count:countDuplicates,attemptNum:dunningDataItem?.attemptNum};
+  
+//   if(dunningDataItem && dunningDataItem.attemptNum) {
+   
+//   let currentItemEmailTemplateStoreDetail= allstore_emailTemplate_storeDetail_Obj[item["shop"]];
+//     if(! currentItemEmailTemplateStoreDetail){
+            
+//       let getTemplateAndStoreData = await emailTemplatesModal.aggregate(
+//         [
+//           {
+//             $match: {
+//               shop: item["shop"]
+//             }
+//           },
+//           {
+//             $lookup: {
+//               from: 'store_details',
+//               localField: 'shop',
+//               foreignField: 'shop',
+//               as: 'storedetails'
+//             }
+//           },
+//           {
+//             $project: {
+//               [`settings.standardCourtsyNotice`]: 1,
+//               [`settings.standardPastDueNotice1`]: 1,
+//               [`settings.standardPastDueNotice2`]: 1,
+//               [`settings.standardPastDueNotice3`]: 1,
+//               [`settings.standardFinalDemand`]: 1,
+//               configuration: 1,
+//               shop:1,
+//               storedetails:{ $arrayElemAt: [ "$storedetails",0] }
+//             }
+//           }
+//         ],
+//         { maxTimeMS: 60000, allowDiskUse: true }
+//       );
+      
+
+//       if(getTemplateAndStoreData) {
+//           currentItemEmailTemplateStoreDetail = getTemplateAndStoreData[0] 
+//        }
+  
+//     }
+      
+//     let storedetails=currentItemEmailTemplateStoreDetail["storedetails"]; 
+
+//     ///////checkstart/////////////
+
+//     let templateOption="";
+
+
+    
+//       const lastEmailSentStatusArray = filteredArr.filter(val => val.contract_id == item.contract_id && val.lastEmailSentStatus !== undefined);
+        
+
+//       const highestlastEmailSentStatusValue = lastEmailSentStatusArray.reduce((maxvalue, item) => {
+//         return item.lastEmailSentStatus > maxvalue ? item.lastEmailSentStatus : maxvalue;
+//       }, 0);    
+  
+//    console.log("highestlastEmailSentStatusValue",highestlastEmailSentStatusValue)
+
+
+//         // if(item?.lastEmailSentStatus>=(contractIdFailureCountObj[item["contract_id"]].count)){
+//            if(contractIdFailureCountObj[item["contract_id"]].count==1){
+//            return;
+//            }
+
+//           if(item?.lastEmailSentStatus>=contractIdFailureCountObj[item["contract_id"]].count){
+//             console.log("iniffff")
+//             return;
+//         }
+
+//         else
+//         {
+//            console.log("inemailsentelsee")
+//           //  templateOption=dunningDataItem?.attemptList[contractIdFailureCountObj[item["contract_id"]]?.count - 2]?.selectedTemplate
+//            templateOption=dunningDataItem?.attemptList[highestlastEmailSentStatusValue]?.selectedTemplate
+//         }
+            
+//        let sendMailToCustomer = currentItemEmailTemplateStoreDetail?.settings[templateOption]?.status ;
+//        let sendMailToMerchant = currentItemEmailTemplateStoreDetail?.settings[templateOption]?.adminNotification ;
+    
+//        if (sendMailToCustomer || sendMailToMerchant) {
+            
+//         let recipientMails = [];
+    
+//         if (sendMailToMerchant)
+//            {
+//             let shopEmail = storedetails?.store_email;
+//             recipientMails.push(shopEmail);
+//         }
+//         if (sendMailToCustomer) {       
+//           recipientMails.push(item["result"][0]?.customer_details?.email);
+//         }
+    
+//         let configurationData =  currentItemEmailTemplateStoreDetail?.configuration;
+//         let selectedTemplate =   currentItemEmailTemplateStoreDetail?.settings[templateOption];
+    
+//         let options={};
+//         let emailConfig={};
+    
+         
+//      if (configurationData && configurationData.enable == true) {
+//       console.log("inenabletrue");
+//       let encryptionConfig = {};
+//       if (configurationData.encryption === "ssl") {
+//         encryptionConfig = {
+//           secure: true,
+//           requireTLS: true,
+//         };
+//       } else if (configurationData.encryption === "tls") {
+//         encryptionConfig = {
+//           secure: false, // For TLS, secure should be set to false
+//           requireTLS: true,
+//         };
+//       }
+    
+//        emailConfig = {
+//         host: configurationData.host,
+//         port: parseInt(configurationData.portNumber), // Convert port number to integer
+//         auth: {
+//           user: configurationData.userName,
+//           pass: configurationData.password,
+//         },
+//         ...(configurationData.encryption === "none" ? {} : encryptionConfig),
+//       };
+    
+//        options = {
+//         // from: configurationData.fromName,
+//         from:`${configurationData.fromName}<${configurationData.userName}>`,
+//         to: recipientMails,
+//         subject:selectedTemplate?.emailSetting?.subject,
+//         cc:selectedTemplate?.emailSetting?.cc,
+//         bcc:selectedTemplate?.emailSetting?.bcc,
+//         replyTo:selectedTemplate?.emailSetting?.replyTo,
+//         // ...others,
+//       };
+    
+//     } else {
+//       console.log("inenablefalse");
+    
+//     emailConfig = {
+//         host: "smtp.gmail.com",
+//         port: 587, // Convert port number to integer
+//         auth: {
+//           user: "sahilagnihotri7@gmail.com",
+//           pass: "srdvsdnxfmvbrduw",
+//         },
+//         secure: false,
+//       };
+    
+//        options = {
+//         from: "sahilagnihotri7@gmail.com",
+//         to: recipientMails,
+//         subject:selectedTemplate?.emailSetting?.subject,
+//         cc:selectedTemplate?.emailSetting?.cc,
+//         bcc:selectedTemplate?.emailSetting?.bcc,
+//         replyTo:selectedTemplate?.emailSetting?.replyTo,
+//         // ...others,
+//      };   
+//     }
+    
+//      let extra = {
+//         templateType: templateOption,
+//         data:  item["result"][0],
+//         shop_name: storedetails?.store_name,
+//         shop_email: storedetails?.store_email,
+//         currency: item["result"][0]?.subscription_details?.currency,
+//       };
+
+//     console.log("at the  end",recipientMails)
+
+//     let mailSentCheck=await  sendmailforcrons(recipientMails,emailConfig,options,selectedTemplate,extra,item.shop)
+ 
+//   // for upating 
+// if(mailSentCheck)
+//      {
+//     // let updateBillingAttempts=await billing_Attempt.updateMany({ contract_id : item["contract_id"] }, {$set:{lastEmailSentStatus:contractIdFailureCountObj[item["contract_id"]].count-1}}) 
+//     let updateBillingAttempts=await billing_Attempt.updateMany({ contract_id : item["contract_id"] }, {$set:{lastEmailSentStatus:highestlastEmailSentStatusValue}}) 
+//     console.log("updateBillingAttempts",updateBillingAttempts) 
+//     }
+//       }
+//  ///checkend////////
+//       }
+//   }        
+//     })
+//   }
+//   else{
+//     return
+//   }
+//   }
+//   catch(error){
+//   console.log("errorpaymentfailure",error)
+//   }
+ 
+//   }
 
 async function paymentFailureCron(){
 
@@ -1617,7 +1896,7 @@ async function paymentFailureCron(){
     [
       {
         $match: {
-          updatedAt: {$gte: targetDate},
+          billing_response_date: {$gte: targetDate},
           $or: [{ status: "failed" }, { status: "retriedAfterFailure" },{ status: "success" }],
         }
       },
@@ -1653,22 +1932,17 @@ async function paymentFailureCron(){
   else if(item?.status=='success'){
     filteredArr= filteredArr.filter((itm, index) => !Object.values(itm).includes(item.contract_id))
       contract_idArr= contract_idArr.filter((value, index) => value != item?.contract_id )
-   
   }
     })
   }
   else{
     return;
   }
-   
-   
   let dunningDataArray=await dunningModal.find({enablePaymentAttempt:true});
-   
-  if(dunningDataArray.length >0 &&  filteredArr.length > 0){
-    filteredArr.forEach(async(item)=> {
-    
+   if(dunningDataArray.length >0 &&  filteredArr.length > 0){
+     console.log("filteredArr",filteredArr)
+    filteredArr.forEach(async(item)=> {    
   if(!Object.keys(contractIdFailureCountObj).includes(item["contract_id"])){
-    // console.log("contract_idArr",contract_idArr)
     const countDuplicates= contract_idArr.filter((val) => 
       val==item["contract_id"]    
     ).length
@@ -1679,7 +1953,7 @@ async function paymentFailureCron(){
   
   contractIdFailureCountObj[item["contract_id"]]={count:countDuplicates,attemptNum:dunningDataItem?.attemptNum};
   
-  if(dunningDataItem && dunningDataItem.attemptNum) {
+  if(dunningDataItem && dunningDataItem.attemptNum && parseInt(dunningDataItem.attemptNum) > 0) {
    
   let currentItemEmailTemplateStoreDetail= allstore_emailTemplate_storeDetail_Obj[item["shop"]];
     if(! currentItemEmailTemplateStoreDetail){
@@ -1715,7 +1989,6 @@ async function paymentFailureCron(){
         { maxTimeMS: 60000, allowDiskUse: true }
       );
       
-
       if(getTemplateAndStoreData) {
           currentItemEmailTemplateStoreDetail = getTemplateAndStoreData[0] 
        }
@@ -1725,37 +1998,53 @@ async function paymentFailureCron(){
     let storedetails=currentItemEmailTemplateStoreDetail["storedetails"]; 
 
     ///////checkstart/////////////
+let checkIsNewEntryInLast24hr= filteredArr.find(val => val.contract_id == item.contract_id && val.lastEmailSentStatus == undefined)   
+console.log("checkNewEntryInLast24hr",checkIsNewEntryInLast24hr)
 
-    let templateOption="";
+if(!checkIsNewEntryInLast24hr){
+return
+}
+const lastEmailSentStatusArray = filteredArr.filter(val => val.contract_id == item.contract_id && val.lastEmailSentStatus !== undefined);
+let selectedTemplateIndex;
 
 
-    
-      const lastEmailSentStatusArray = filteredArr.filter(val => val.contract_id == item.contract_id && val.lastEmailSentStatus !== undefined);
-        
-
-      const highestlastEmailSentStatusValue = lastEmailSentStatusArray.reduce((maxvalue, item) => {
+if(lastEmailSentStatusArray.length > 0 ) {
+  let highestlastEmailSentStatusValue = lastEmailSentStatusArray.reduce((maxvalue, item) => {
         return item.lastEmailSentStatus > maxvalue ? item.lastEmailSentStatus : maxvalue;
-      }, 0);    
-  
-   console.log("highestlastEmailSentStatusValue",highestlastEmailSentStatusValue)
+      }, 0);   
+      console.log("highestlastEmailSentStatusValue",highestlastEmailSentStatusValue)
+      if(parseInt(dunningDataItem?.attemptNum)==highestlastEmailSentStatusValue+1) {
+        return ;
+      }
+      selectedTemplateIndex = parseInt(highestlastEmailSentStatusValue) + 1
+     }
+    else
+    {
+      console.log("inelse24pail")
+      selectedTemplateIndex = 0 ;
+    }
+  console.log("22april-checkcron",selectedTemplateIndex,lastEmailSentStatusArray)
 
 
         // if(item?.lastEmailSentStatus>=(contractIdFailureCountObj[item["contract_id"]].count)){
-           if(contractIdFailureCountObj[item["contract_id"]].count==1){
-           return;
-           }
+          //  if(contractIdFailureCountObj[item["contract_id"]].count==1){
+          //  return;
+          //  }
 
-          if(item?.lastEmailSentStatus>=contractIdFailureCountObj[item["contract_id"]].count){
-            console.log("iniffff")
-            return;
-        }
+        //   if(item?.lastEmailSentStatus>=contractIdFailureCountObj[item["contract_id"]].count){
+        //     console.log("iniffff")
+        //     return;
+        // }
 
-        else
-        {
-           console.log("inemailsentelsee")
-           templateOption=dunningDataItem?.attemptList[contractIdFailureCountObj[item["contract_id"]]?.count - 2]?.selectedTemplate
-        }
+        // else
+        // {
+        //    console.log("inemailsentelsee")
+        //   //  templateOption=dunningDataItem?.attemptList[contractIdFailureCountObj[item["contract_id"]]?.count - 2]?.selectedTemplate
+        //    templateOption=dunningDataItem?.attemptList[highestlastEmailSentStatusValue]?.selectedTemplate
+        // }
             
+             let templateOption=dunningDataItem?.attemptList[selectedTemplateIndex]?.selectedTemplate
+
        let sendMailToCustomer = currentItemEmailTemplateStoreDetail?.settings[templateOption]?.status ;
        let sendMailToMerchant = currentItemEmailTemplateStoreDetail?.settings[templateOption]?.adminNotification ;
     
@@ -1849,14 +2138,15 @@ async function paymentFailureCron(){
 
     console.log("at the  end",recipientMails)
 
-//     let mailSentCheck=await  sendmailforcrons(recipientMails,emailConfig,options,selectedTemplate,extra,item.shop)
+    let mailSentCheck=await  sendmailforcrons(recipientMails,emailConfig,options,selectedTemplate,extra,item.shop)
  
-//   // for upating 
-// if(mailSentCheck)
-//      {
-//     let updateBillingAttempts=await billing_Attempt.updateMany({ contract_id : item["contract_id"] }, {$set:{lastEmailSentStatus:contractIdFailureCountObj[item["contract_id"]].count-1}}) 
-//     console.log("updateBillingAttempts",updateBillingAttempts) 
-//     }
+  // for upating 
+if(mailSentCheck)
+     {
+    // let updateBillingAttempts=await billing_Attempt.updateMany({ contract_id : item["contract_id"] }, {$set:{lastEmailSentStatus:contractIdFailureCountObj[item["contract_id"]].count-1}}) 
+    let updateBillingAttempts=await billing_Attempt.updateMany({ contract_id : item["contract_id"] , status : { $in: ["failed", "retriedAfterFailure"] } } ,{$set:{lastEmailSentStatus:selectedTemplateIndex}}) 
+    // console.log("updateBillingAttempts",updateBillingAttempts) 
+    }
       }
  ///checkend////////
       }
@@ -1875,150 +2165,301 @@ async function paymentFailureCron(){
 
 
 ///////cronpayment retry start//////////
+// async function failedPaymentRetryCron(){
+
+// try
+//   {
+//     let targetDate=new Date()
+//     targetDate.setDate(targetDate.getDate() - 5)
+//     targetDate.setUTCHours(0,0,0,0)
+
+
+//     let mainData=await billing_Attempt.aggregate(
+//       [
+//         {
+//           $match: {
+//             billing_response_date: {$gte: targetDate},
+//             $or: [{ status: "failed" }, { status: "retriedAfterFailure" },{ status: "success" }],
+//           }
+//         },
+//         {
+//           $lookup: {
+//             from: 'subscription_details',
+//             localField: 'contract_id',
+//             foreignField: 'subscription_id',
+//             as: 'result'
+//           }
+//         },
+//         {
+//           $match: {
+//             'result.status': { $eq: 'active' }
+//           }
+//         }
+//       ],
+//       { maxTimeMS: 60000, allowDiskUse: true }
+//     )
+    
+//     let filteredArr=[];
+//     let contract_idArr=[];
+//     let contractIdFailureCountObj={};
+
+//     if(mainData.length > 0){
+//       mainData.map((item)=>{
+//     if(item?.status=='failed' || item?.status=='retriedAfterFailure'){
+//       filteredArr.push(item)
+//       contract_idArr.push(item?.contract_id)
+//     }
+//     else if(item?.status=='success'){
+//       filteredArr= filteredArr.filter((itm, index) => !Object.values(itm).includes(item.contract_id))
+//         contract_idArr= contract_idArr.filter((value, index) => value != item?.contract_id )
+     
+//     }
+//       })
+//     }
+//     else{
+//       return;
+//     }
+
+// let dunningDataArray=await dunningModal.find({enablePaymentAttempt:true});
+   
+// if(dunningDataArray.length >0 &&  filteredArr.length > 0){
+ 
+//   filteredArr.forEach(async(item)=> {
+  
+// if(!Object.keys(contractIdFailureCountObj).includes(item["contract_id"])){
+  
+//   const countDuplicates= contract_idArr.filter((val) => 
+//     val==item["contract_id"]     
+//   ).length
+  
+//   let dunningDataItem=dunningDataArray.find((val)=>
+//   val.shop==item["shop"]
+// )
+// contractIdFailureCountObj[item["contract_id"]]={count:countDuplicates,attemptNum:dunningDataItem?.attemptNum};
+// if( dunningDataItem && dunningDataItem.attemptNum && countDuplicates <=5 ){
+// let today=new Date()
+// today.setUTCHours(0,0,0,0)
+
+//  let targetDate=item?.billing_response_date
+//  targetDate.setDate(targetDate.getDate()+ parseInt(dunningDataItem?.attemptList[countDuplicates-1]?.retryAfterDays))
+//  targetDate.setUTCHours(0,0,0,0)
+
+//  let  retryAttempt= areDatesEqual(today,targetDate);
+
+//  if(retryAttempt && item.shop !="shine.myshopify.com"){
+
+//   let mutation = subscriptionBillingAttemptCreateMutation ;
+
+//   const currentDate = new Date().toISOString();
+//   const uniqueId =
+//     Date.now().toString(36) + Math.random().toString(36).substring(2, 5);
+
+//   let Input = {
+//     subscriptionBillingAttemptInput: {
+//       idempotencyKey: uniqueId,
+//       originTime: currentDate,
+//     },
+//     subscriptionContractId: item.contract_id,
+//   };
+
+//   let gettoken = await shopModal.findOne({ shop: item?.shop });
+//   // console.log(gettoken, "cvcvcvcvcv");
+
+//   const client = new shopify.api.clients.Graphql({
+//     session: {
+//       shop: item?.shop,
+//       accessToken: gettoken.accessToken,
+//     },
+//   });
+
+//   let billingAttempt = await client.query({
+//     data: { query: mutation, variables: Input },
+//   });
+
+//   if (billingAttempt.body.data.subscriptionBillingAttemptCreate.userErrors.length < 1 ) {
+
+//     let saveToBillingAttempt = await billing_Attempt.create({
+//       shop: item?.shop,
+//       status: "pending",
+//       billing_attempt_date: currentDate,
+//       idempotencyKey: uniqueId,
+//       renewal_date: item.renewal_date,
+//       contract_products: item.contract_products,
+//       contract_id: item.contract_id,
+//       billing_attempt_id:
+//         billingAttempt.body.data.subscriptionBillingAttemptCreate
+//           .subscriptionBillingAttempt.id,
+//     });
+  
+   
+//   }
+
+
+//  }
+
+// }
+
+//    }
+
+//   })
+// }
+//   }
+// catch(error){
+// console.log('error',error)
+
+// }
+// } 
+
 async function failedPaymentRetryCron(){
 
-try
-  {
-    let targetDate=new Date()
-    targetDate.setDate(targetDate.getDate() - 5)
-    targetDate.setUTCHours(0,0,0,0)
-
-
-    let mainData=await billing_Attempt.aggregate(
-      [
-        {
-          $match: {
-            updatedAt: {$gte: targetDate},
-            $or: [{ status: "failed" }, { status: "retriedAfterFailure" },{ status: "success" }],
+  try
+    {
+      let targetDate=new Date()
+      targetDate.setDate(targetDate.getDate() - 5)
+      targetDate.setUTCHours(0,0,0,0)
+  
+  
+      let mainData=await billing_Attempt.aggregate(
+        [
+          {
+            $match: {
+              billing_response_date: {$gte: targetDate},
+              $or: [{ status: "failed" }, { status: "retriedAfterFailure" },{ status: "success" }],
+            }
+          },
+          {
+            $lookup: {
+              from: 'subscription_details',
+              localField: 'contract_id',
+              foreignField: 'subscription_id',
+              as: 'result'
+            }
+          },
+          {
+            $match: {
+              'result.status': { $eq: 'active' }
+            }
           }
-        },
-        {
-          $lookup: {
-            from: 'subscription_details',
-            localField: 'contract_id',
-            foreignField: 'subscription_id',
-            as: 'result'
-          }
-        },
-        {
-          $match: {
-            'result.status': { $eq: 'active' }
-          }
-        }
-      ],
-      { maxTimeMS: 60000, allowDiskUse: true }
-    )
-    
-    let filteredArr=[];
-    let contract_idArr=[];
-    let contractIdFailureCountObj={};
-
-    if(mainData.length > 0){
-      mainData.map((item)=>{
-    if(item?.status=='failed' || item?.status=='retriedAfterFailure'){
-      filteredArr.push(item)
-      contract_idArr.push(item?.contract_id)
-    }
-    else if(item?.status=='success'){
-      filteredArr= filteredArr.filter((itm, index) => !Object.values(itm).includes(item.contract_id))
+        ],
+        { maxTimeMS: 60000, allowDiskUse: true }
+      )
+      
+      let filteredArr=[];
+      let contract_idArr=[];
+      let contractIdFailureCountObj={};
+  
+      if(mainData.length > 0){
+        mainData.map((item)=>{
+      if(item?.status=='failed' || item?.status=='retriedAfterFailure'){
+        filteredArr.push(item)
+        contract_idArr.push(item?.contract_id)
+      }
+      else if(item?.status=='success'){
+        filteredArr= filteredArr.filter((itm, index) => !Object.values(itm).includes(item.contract_id))
         contract_idArr= contract_idArr.filter((value, index) => value != item?.contract_id )
+      }
+        })
+      }
+      else{
+        return;
+      }
+  
+  let dunningDataArray=await dunningModal.find({enablePaymentAttempt:true});
      
-    }
-      })
-    }
-    else{
-      return;
-    }
-
-let dunningDataArray=await dunningModal.find({enablePaymentAttempt:true});
+  if(dunningDataArray.length >0 &&  filteredArr.length > 0){
    
-if(dunningDataArray.length >0 &&  filteredArr.length > 0){
+    filteredArr.forEach(async(item)=> {
+    
+  if(!Object.keys(contractIdFailureCountObj).includes(item["contract_id"])){
+    
+    const countDuplicates= contract_idArr.filter((val) => 
+      val==item["contract_id"]     
+    ).length 
+    
+    let dunningDataItem=dunningDataArray.find((val)=>
+    val.shop==item["shop"]
+  )
+  contractIdFailureCountObj[item["contract_id"]]={count:countDuplicates,attemptNum:dunningDataItem?.attemptNum};
+  
+  if( dunningDataItem && dunningDataItem.attemptNum && parseInt(dunningDataItem.attemptNum) > 0 && item.lastEmailSentStatus ){
  
-  filteredArr.forEach(async(item)=> {
+  let today=new Date()
+  today.setUTCHours(0,0,0,0)  
+   let targetDate=item?.billing_response_date
+   targetDate.setDate(targetDate.getDate() + parseInt(dunningDataItem?.attemptList[item.lastEmailSentStatus]?.retryAfterDays))
+   targetDate.setUTCHours(0,0,0,0)  
+   let  retryAttempt= areDatesEqual(today,targetDate);
+  // let retriedAttemptStatus=item.retriedAttemptStatus ;
+   
+   if ( retryAttempt && item.lastEmailSentStatus != item.retriedAttemptStatus   && item.shop !="shine.myshopify.com"){
   
-if(!Object.keys(contractIdFailureCountObj).includes(item["contract_id"])){
+    let mutation = subscriptionBillingAttemptCreateMutation ;
   
-  const countDuplicates= contract_idArr.filter((val) => 
-    val==item["contract_id"]    
-  ).length
+    const currentDate = new Date().toISOString();
+    const uniqueId =
+      Date.now().toString(36) + Math.random().toString(36).substring(2, 5);
   
-  let dunningDataItem=dunningDataArray.find((val)=>
-  val.shop==item["shop"]
-)
-contractIdFailureCountObj[item["contract_id"]]={count:countDuplicates,attemptNum:dunningDataItem?.attemptNum};
-if( dunningDataItem && dunningDataItem.attemptNum && countDuplicates <=5 ){
-let today=new Date()
-today.setUTCHours(0,0,0,0)
-
- let targetDate=item.updatedAt
- targetDate.setDate(targetDate.getDate()+ parseInt(dunningDataItem?.attemptList[countDuplicates-1]?.retryAfterDays))
- targetDate.setUTCHours(0,0,0,0)
-
- let  retryAttempt= areDatesEqual(today,targetDate);
-
- if(retryAttempt && item.shop !="shine.myshopify.com"){
-
-  let mutation = subscriptionBillingAttemptCreateMutation ;
-
-  const currentDate = new Date().toISOString();
-  const uniqueId =
-    Date.now().toString(36) + Math.random().toString(36).substring(2, 5);
-
-  let Input = {
-    subscriptionBillingAttemptInput: {
-      idempotencyKey: uniqueId,
-      originTime: currentDate,
-    },
-    subscriptionContractId: item.contract_id,
-  };
-
-  let gettoken = await shopModal.findOne({ shop: item?.shop });
-  // console.log(gettoken, "cvcvcvcvcv");
-
-  const client = new shopify.api.clients.Graphql({
-    session: {
-      shop: item?.shop,
-      accessToken: gettoken.accessToken,
-    },
-  });
-
-  let billingAttempt = await client.query({
-    data: { query: mutation, variables: Input },
-  });
-
-  if (billingAttempt.body.data.subscriptionBillingAttemptCreate.userErrors.length < 1 ) {
-
-    let saveToBillingAttempt = await billing_Attempt.create({
-      shop: item?.shop,
-      status: "pending",
-      billing_attempt_date: currentDate,
-      idempotencyKey: uniqueId,
-      renewal_date: item.renewal_date,
-      contract_products: item.contract_products,
-      contract_id: item.contract_id,
-      billing_attempt_id:
-        billingAttempt.body.data.subscriptionBillingAttemptCreate
-          .subscriptionBillingAttempt.id,
+    let Input = {
+      subscriptionBillingAttemptInput: {
+        idempotencyKey: uniqueId,
+        originTime: currentDate,
+      },
+      subscriptionContractId: item.contract_id,
+    };
+  
+    let gettoken = await shopModal.findOne({ shop: item?.shop });
+  
+  
+    const client = new shopify.api.clients.Graphql({
+      session: {
+        shop: item?.shop,
+        accessToken: gettoken.accessToken,
+      },
     });
   
-   
-  }
+    let billingAttempt = await client.query({
+      data: { query: mutation, variables: Input },
+    });
+  
+    if (billingAttempt.body.data.subscriptionBillingAttemptCreate.userErrors.length < 1 ) {
+  
+      let saveToBillingAttempt = await billing_Attempt.create({
+        shop: item?.shop,
+        status: "pending",
+        billing_attempt_date: currentDate,
+        idempotencyKey: uniqueId,
+        renewal_date: item.renewal_date,
+        contract_products: item.contract_products,
+        contract_id: item.contract_id,
+        billing_attempt_id:
+          billingAttempt.body.data.subscriptionBillingAttemptCreate
+            .subscriptionBillingAttempt.id,
+        retriedAttemptStatus:item.lastEmailSentStatus 
+      });
 
-
- }
-
-}
-
+    
+      let updateBillingAttempts=await billing_Attempt.updateMany({ contract_id : item["contract_id"] , status : { $in: ["failed", "retriedAfterFailure"] } } ,{$set:{retriedAttemptStatus:item.lastEmailSentStatus}}) 
+    
+    }
+  
+  
    }
-
-  })
-}
+  
   }
-catch(error){
-console.log('error',error)
 
-}
-} 
+  
+     }
+  
+    })
+  }
+    }
+  catch(error){
+  console.log('error',error)
+  
+  }
+  } 
+
+
 
 /////////cron pament retry end//////
 
@@ -3653,10 +4094,10 @@ export async function updateSubscriptionInDbCommon(req, res) {
       update = { $set: { "subscription_details.note": req?.data?.note } };
     } else if (req?.body?.field == "status") {
     if(req?.body?.input?.nextBillingDate) {
-      update = { $set: { status: req?.data?.status ,nextBillingDate: req?.data?.nextBillingDate } };
+      update = { $set: { status: req?.data?.status?.toLowerCase()=="active" ? "active" : req?.data?.status   ,nextBillingDate: req?.data?.nextBillingDate } };
     }
 else {
-      update = { $set: { status: req?.data?.status } } ;
+      update = { $set: { status: req?.data?.status?.toLowerCase()=="active" ? "active" : req?.data?.status } } ;
 }
     } else if (req.body.field == "deliveryMethod") {
       //for updating shipping address
@@ -3771,7 +4212,7 @@ else {
 
 export async function findItemForUpdateSubscription(req, res, next) {
   try {
-    console.log("chloiiiiiiiiiiiiiii", req?.body);
+    console.log("chloiiiiiiiiiiiiiii", res?.locals?.shopify?.session);
     let shop = res?.locals?.shopify?.session?.shop
       ? res?.locals?.shopify?.session?.shop
       : req?.body?.shop;
@@ -4233,7 +4674,6 @@ export async function widgetSettings(req, res) {
 export async function getWidgetSettings(req, res) {
   try {
     console.log(req.body, "sddfsdfsdffdsk");
-
     let shop = res.locals.shopify.session.shop;
     let data = await widgetSettingsModal.findOne({ shop: shop });
 
@@ -5557,26 +5997,6 @@ export async function activeCustomers(req, res) {
   }
 }
 
-export async function upcomingRevenue(req, res) {
-  try {
-    // let shop = res.locals.shopify.session.shop;
-    // let dateRange=findDateRange(req.body)
-    // // Query for data within the date range
-    // let data=await billing_Attempt.countDocuments({
-    //   shop: shop,
-    //   status:"active",
-    //   createdAt: dateRange
-    // })
-
-    // console.log("dataaacivecustomers", data);
-
-    res.send({ message: "success", data });
-  } catch (error) {
-    console.log("error", error);
-    res.send({ message: "error" });
-  }
-}
-
 export async function addAnnouncement(req, res) {
   try {
     let shop = res.locals.shopify.session.shop;
@@ -5926,73 +6346,39 @@ export async function recurringBilingSelected(req, res) {
 }
 
 export async function getBillingPlanData(req, res) {
-  // console.log("oitoo")
+ 
   try {
-    console.log("res--->", res.locals.shopify.session);
     const shop = res.locals.shopify.session.shop;
     const planData = await billingModal.findOne(
       { shop },
       {
         plan: 1,
-        updatedAt: 1,
         _id: 0,
         next_billing: 1,
         charge_id: 1,
         activated_on: 1,
       }
     );
-    // console.log("dplandaata",planData)
-    //  let range= planData.updatedAt
-    //  range.setHours(0,0,0,0)
+  
+    if(planData && planData.plan !='free'){
 
-    //   // console.log("smckscdclsdll",range)
+      const  charge_id  = planData?.charge_id;
+      
+      const verifyBilling =
+        await shopify.api.rest.RecurringApplicationCharge.find({
+          session: res.locals.shopify.session,
+          id: charge_id,
+        });
+      console.log("verifyBilling", verifyBilling);
+      // if (verifyBilling.status === "active") {
+       res.send({ message: "success", planData: { plan : planData.plan ,charge_id, next_billing: verifyBilling?.billing_on , activated_on: verifyBilling?.activated_on }});
 
-    //       let data = await axios.get(
-    //       "https://cdn.shopify.com/s/javascripts/currencies.js"
-    //     );
+    // }
+  }
+  else{
+    res.send({message:'success',planData})
+  }
 
-    //     let filtered =await  eval(
-    //       new Function(`
-
-    //   ${data?.data}
-
-    //   return Currency;
-
-    // `)
-    //     )();
-
-    //     // console.log("yyyy", filtered);
-    //     let sum = 0;
-    //         if (filtered) {
-
-    //       let rates=filtered?.rates ;
-
-    //       let data = await billing_Attempt.find(
-    //         {
-    //           shop: shop,
-    //           $or: [{ status: "success" }, { status: "initial" }],
-    //           // createdAt:  { $gte: range },
-    //           createdAt: { $gte: range},
-    //         },
-    //         { new: true, _id: 0, total_amount: 1, currency: 1, status: 1 }
-    //       );
-
-    //       // let countInitialStatus = 0;
-
-    //       if (data.length > 0) {
-    //         data.map((item) => {
-    //           sum =
-    //             sum +
-    //             parseFloat(item.total_amount) *
-    //               parseFloat(rates[item?.currency] / rates["USD"]);
-
-    //         });
-    //       }
-    // // console.log("mysum",sum)
-
-    //}
-
-    res.send({ message: "success", planData: planData });
   } catch (error) {
     console.log("errorr", error);
     res.send({ message: "error", data: error?.message });
@@ -6110,7 +6496,8 @@ export async function fetchDunningData(req,res){
   try{
     const shop = res.locals.shopify.session.shop;
     const data = await dunningModal.findOne({ shop });
-    // upcomingOrders()
+    upcomingOrders()
+    // paymentFailureCron()
     // failedPaymentRetryCron()
    if(data)
    {
@@ -6190,7 +6577,260 @@ res.send({message:"error"})
 
 }
 
-// export async function
+export async function get_active_pause_cancelSubscription_count(req, res) {
+    try {
+      let shop = res.locals.shopify.session.shop;
+      let dateRange = findDateRange(req.body);
+     
+      let data = await subscriptionDetailsModal.aggregate([
+        {
+          $match: {
+            shop: shop,
+            createdAt: dateRange
+          }
+        },
+        {
+          $group: {
+            _id: null,
+            activeCount: { $sum: { $cond: [{ $eq: [{ $toLower: "$status" }, "active"] }, 1, 0] } },
+            cancelCount: { $sum: { $cond: [{ $eq: [{ $toLower: "$status" }, "cancelled"] }, 1, 0] } },
+            pauseCount: { $sum: { $cond: [{ $eq: [{ $toLower: "$status" }, "paused"] }, 1, 0] } }
+          }
+        }
+      ]);
+       console.log("dataareceived",data)
+      res.send({ message: "success", data });
+    } catch (error) {
+      console.log("error", error);
+      res.send({ message: "error" });
+    }
+  }
+
+  export async function get_reccuring_skip_failed_count(req, res) {
+    try {
+      let shop = res.locals.shopify.session.shop;
+      let dateRange = findDateRange(req.body);
+      let data = await billing_Attempt.aggregate([
+        {
+          $match: {
+            shop: shop, 
+            createdAt: dateRange
+          }
+        },
+        {
+          $group: {
+            _id: null,
+            recurringCount: { $sum: { $cond: [{ $eq: [{ $toLower: "$status" }, "success"] }, 1, 0] } },
+            skipCount: { $sum: { $cond: [{ $eq: [{ $toLower: "$status" }, "cancelled"] }, 1, 0] } },
+            failedCount: { $sum: { $cond: [ { $or: [ 
+              { $eq: [{ $toLower: "$status" }, "failed"] }, 
+              { $eq: [{ $toLower: "$status" }, "retriedAfterFailure"] }
+            ]}, 1, 0] } }
+          }
+        }
+      ]);
+  
+      console.log("dataaacivecustomers", data)
+  
+      res.send({ message: "success", data });
+    } catch (error) {
+      console.log("error", error);
+      res.send({ message: "error" });
+    }
+  }
+
+  function convertISOtoDate(isoDateString) {
+    const date = new Date(isoDateString);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-indexed
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+ 
+  function findDateRangeNew(data) {
+    let dateRange;
+    let date;
+    let datesArray=[];
+    if (data.range == "customDate") {
+      console.log("incustomdate", data);
+      console.log("hihisdh", new Date(data.customDate));
+      datesArray.push({_id:convertISOtoDate(data.customDate),count:0});
+      dateRange = {
+        $gte: new Date(new Date(data.customDate).setUTCHours(0, 0, 0, 0)),
+        $lte: new Date(new Date(data.customDate).setUTCHours(23, 59, 59, 999)),
+      };
+    } else if (data.range == "customRange") {
+      dateRange = {
+        $gte: new Date(new Date(data.startDate).setUTCHours(0, 0, 0, 0)),
+        $lte: new Date(new Date(data.endDate).setUTCHours(23, 59, 59, 999)),
+      };
+    } else if (data.range == "today") {
+      date = new Date();
+      datesArray.push({_id:convertISOtoDate(date),count:0});
+      dateRange = {
+        $gte: new Date(new Date().setUTCHours(0, 0, 0, 0)),
+        $lte: new Date(new Date().setUTCHours(23, 59, 59, 999)),
+      };
+    } else if (data.range == "yesterday") {
+      date = new Date();
+      date.setDate(date.getDate() - 1);
+      datesArray.push({_id:convertISOtoDate(date),count:0});
+      dateRange = {
+        $gte: new Date(date.setUTCHours(0, 0, 0, 0)),
+        $lte: new Date(date.setUTCHours(23, 59, 59, 999)),
+      };
+     
+    } else if (data.range == "last7Days") {
+      console.log("last777days");
+  
+      date = new Date();
+      date.setDate(date.getDate() - 7);
+  
+      dateRange = {
+        $gte: new Date(new Date(date).setUTCHours(0, 0, 0, 0)),
+        $lt: new Date(new Date().setUTCHours(0, 0, 0, 0)),
+      };
+      
+      for (let i = 1; i <=7; i++) {
+        const date = new Date();
+        date.setDate(date.getDate() - i);
+        datesArray.push({_id:convertISOtoDate(date),count:0});
+      }
+
+    } else if (data.range == "last30Days") {
+      
+      console.log("tttttt", new Date(new Date().setHours(0, 0, 0, 0)));
+      date = new Date();
+      date.setDate(date.getDate() - 30);
+  
+      dateRange = {
+        $gte: new Date(date.setUTCHours(0, 0, 0, 0)),
+        $lt: new Date(new Date().setUTCHours(0, 0, 0, 0)),
+      };
+      for (let i = 1; i <= 30; i++) {
+        const date = new Date();
+        date.setDate(date.getDate() - i);
+        datesArray.push({_id:convertISOtoDate(date),count:0});
+      }
+    } else if (data.range == "last90Days") {
+      console.log("in90dayss");
+      date = new Date();
+      date.setDate(date.getDate() - 90);
+  
+      dateRange = {
+        $gte: new Date(date.setUTCHours(0, 0, 0, 0)),
+        $lt: new Date(new Date().setUTCHours(0, 0, 0, 0)),
+      };
+
+      for (let i = 1; i <= 90; i++) {
+        const date = new Date();
+        date.setDate(date.getDate() - i);
+        datesArray.push({_id:convertISOtoDate(date),count:0});
+      }
+
+    } else if (data.range == "lastmonth") {
+      ///this case is used in billing plan page
+  
+      console.log("16jan", new Date(new Date().setHours(0, 0, 0, 0)));
+      date = new Date();
+      console.log("chekcinnnn", date);
+      date.setDate(date.getDate() - 30);
+  
+      dateRange = {
+        $gte: new Date(date.setUTCHours(23, 59, 59, 99)),
+        $lt: new Date(new Date().setUTCHours(23, 59, 59, 999)),
+      };
+    }
+  
+    console.log("daterange", dateRange);
+  
+    return ({dateRange,datesArray});
+  }
+
+  export async function get_subscription_details_analytics(req,res){
+  
+    try {
+    let shop = res.locals.shopify.session.shop;
+    let getData = findDateRangeNew(req.body);
+  
+    let datesArray=getData.datesArray
+    // let data = await subscriptionDetailsModal.find(
+    //   {
+    //       shop: shop,
+    //       createdAt:dateRange 
+    //   })
+   let data= await subscriptionDetailsModal.aggregate([
+    
+      {
+        $match: {
+          shop: shop,
+         createdAt:getData.dateRange  
+        }
+      },
+     
+      {
+        $project: {
+          day: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } }
+        }
+      },
+    
+      {
+        $group: {
+          _id: "$day",
+          count: { $sum: 1 }
+        }
+      },
+      {
+        $sort: { _id: 1 }
+      }])
+
+let uniqueArr=[]
+datesArray.map(item=>{
+     let existing=data.find(itm=>itm._id == item._id);
+     if(!existing){
+      uniqueArr.push(item)
+     }
+}) 
+let mergedArr=[...data,...uniqueArr];
+mergedArr.sort(
+  (a, b) => new Date(a._id) - new Date(b._id)
+);
+
+ res.send({message:'success',data:mergedArr})
+    }
+  
+   catch(error){
+console.log("error",error)
+res.send({message:'error'})
+   }
+    }  
+
+  export async function getSubscriptionsRevenueForAnalytics(){
+      try
+      {
+        let shop=res.locals.shopify.session.shop
+        let data=await billing_Attempt.aggregate([
+          {
+              $group: {
+                  _id: { $dateToString: { format: "%Y-%m-%d", date: "$date" } },
+                  totalRevenue: { $sum: "$revenue" }
+              }
+          },
+          {
+              $project: {
+                  _id: 0,
+                  date: "$_id",
+                  totalRevenue: 1
+              }
+          }
+      ])
+      }
+      catch(error){
+        console.log("error",error)
+        res.send({message:"error"})
+      }
+  }
+
 ///////////////////////////////////////////////
 
 // export async function getProductVarientsIds(req, res) {
@@ -9362,13 +10002,13 @@ export async function prodExPlanUpdate(req, res) {
 
       console.log("jddkk", JSON.stringify(Input));
 
-      fs.writeFile("haha.txt", dataString, (err) => {
-        if (err) {
-          console.error("Error writing to file:", err);
-        } else {
-          console.log("Data written to file successfully!");
-        }
-      });
+      // fs.writeFile("haha.txt", dataString, (err) => {
+      //   if (err) {
+      //     console.error("Error writing to file:", err);
+      //   } else {
+      //     console.log("Data written to file successfully!");
+      //   }
+      // });
       // // console.log(sellPlan[0]["billingPolicy"], "aaaaa");
       console.log(Input, "lllll");
       const mutationQuery = `
@@ -10973,3 +11613,51 @@ export async function sendInvoiceMailAndSaveContract(req, res) {
     console.error("Error in fetching orders", err);
   }
 }
+
+export async function checkAppBlock(req,res) {
+  try {
+    let {shop}=res.locals.shopify.session;
+    let storeDetails = await getStoreDetails(shop);
+    let theme_config_data = await shopify.api.rest.Asset.all({
+      session: res.locals.shopify.session,
+      theme_id: storeDetails?.themeId,
+      asset: { key: "templates/product.json"},
+    });
+    let currentThemeData = JSON.parse(theme_config_data?.data[0]?.value);
+    console.log("zzz",theme_config_data );
+    console.log("yyyyy",currentThemeData );
+    let blockData=currentThemeData?.sections?.main?.blocks;
+    
+    let searchedBlock ;
+    if (blockData) {
+    searchedBlock=Object?.values(blockData)?.find(
+      (item) =>
+        item?.type ==
+        `shopify://apps/${process.env?.APP_NAME}/blocks/revlytic_app_bock/${process.env?.SHOPIFY_THEME_APP_EXTENSION_ID}`
+    );
+    console.log("searchedBlock",searchedBlock)
+    if(searchedBlock && !searchedBlock.disabled){
+     res.send({message:'success',active:true})
+    }
+    else{
+      res.send({message:'success',active:false})
+    }
+    }
+
+  } catch (error) {
+    console.log(error);
+  }
+}
+export async function setUpGuideStatusCheck(req,res){
+try{
+  let { shop } = res.locals.shopify.session;
+   let data=await shopModal.findOne({shop});
+   res.send({message : "success",data})
+
+}
+catch(error){
+  res.send({message:"error"})
+  console.log("error",error)
+}
+}
+

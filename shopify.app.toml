@@ -2,7 +2,7 @@
 
 name = "subscription"
 client_id = "a3fb3d5d86b47a536e7377a9d8b989ca"
-application_url = "https://dominant-necklace-induced-prison.trycloudflare.com"
+application_url = "https://cat-clubs-considerable-tuesday.trycloudflare.com"
 embedded = true
 
 [access_scopes]
@@ -11,21 +11,21 @@ use_legacy_install_flow = true
 
 [auth]
 redirect_urls = [
-  "https://dominant-necklace-induced-prison.trycloudflare.com/auth/callback",
-  "https://dominant-necklace-induced-prison.trycloudflare.com/auth/shopify/callback",
-  "https://dominant-necklace-induced-prison.trycloudflare.com/api/auth/callback"
+  "https://cat-clubs-considerable-tuesday.trycloudflare.com/auth/callback",
+  "https://cat-clubs-considerable-tuesday.trycloudflare.com/auth/shopify/callback",
+  "https://cat-clubs-considerable-tuesday.trycloudflare.com/api/auth/callback"
 ]
 
 [webhooks]
 api_version = "2023-04"
 
   [webhooks.privacy_compliance]
-  customer_deletion_url = "https://chamber-lessons-compressed-guilty.trycloudflare.com/api/webhooks"
-  customer_data_request_url = "https://sparc-brunette-nissan-uncertainty.trycloudflare.com/api/webhooks"
-  shop_deletion_url = "https://chamber-lessons-compressed-guilty.trycloudflare.com/api/webhooks"
+  customer_deletion_url = "https://cell-preview-cultural-arms.trycloudflare.com/api/webhooks"
+  customer_data_request_url = "https://cell-preview-cultural-arms.trycloudflare.com/api/webhooks"
+  shop_deletion_url = "https://cell-preview-cultural-arms.trycloudflare.com/api/webhooks"
 
 [app_proxy]
-url = "https://philadelphia-asthma-centuries-convenience.trycloudflare.com/api/storefront/appProxy"
+url = "https://emperor-scott-alto-notification.trycloudflare.com/api/storefront/appProxy"
 subpath = "revlytic-subscriptions"
 prefix = "apps"
 

@@ -1,7 +1,7 @@
 import postApi from "./postApi";
 
 export async function sendMailDefault(recipientMail, others, app, extra) {
-  
+
   let getEmailConfigData = await postApi(
     "/api/admin/getEmailConfigurationData",
     {},
@@ -14,7 +14,7 @@ export async function sendMailDefault(recipientMail, others, app, extra) {
       let encryptionConfig = {};
       if (data.encryption === "ssl") {
         encryptionConfig = {
-          secure: true,
+           secure: true,
           requireTLS: true,
         };
       } else if (data.encryption === "tls") {

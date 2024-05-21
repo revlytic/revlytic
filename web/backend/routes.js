@@ -72,7 +72,6 @@ import {
   combinedData,
   retryFailedOrder,
   activeCustomers,
-  upcomingRevenue,
   addAnnouncement,
   getAnnouncements,
   updateAnnouncement,
@@ -91,7 +90,13 @@ import {
   fetchDunningData,
   getEmailTemplatesCount,
   saveDunningTemplates,
-} from "./controller.js";
+  get_active_pause_cancelSubscription_count,
+  get_reccuring_skip_failed_count,
+  get_subscription_details_analytics,
+  setUpGuideStatusCheck,
+  checkAppBlock,
+
+ } from "./controller.js";
 import {
   appProxy,
   getCustomerPortalDetailsStore,
@@ -267,7 +272,6 @@ router.post("/retryFailedOrder", retryFailedOrder);
 router.post("/combinedData", combinedData);
 router.post("/subscriptionBookings", subscriptionBookings);
 router.post("/activeCustomers", activeCustomers);
-router.post("/getUpcomingRevenue", upcomingRevenue);
 router.post("/addAnnouncement", addAnnouncement);
 router.post("/updateAnnouncement", updateAnnouncement);
 router.post("/getAnnouncements", getAnnouncements);
@@ -279,6 +283,11 @@ router.post("/saveDunningData", saveDunningData);
 router.post("/fetchDunningData", fetchDunningData);
 router.post("/getEmailTemplatesCount", getEmailTemplatesCount);
 router.post("/saveDunningTemplates", saveDunningTemplates);
+router.post("/get_active_pause_cancelSubscription_count", get_active_pause_cancelSubscription_count);
+router.post("/get_reccuring_skip_failed_count", get_reccuring_skip_failed_count);
+router.post("/get_subscription_details_analytics",get_subscription_details_analytics);
+router.post("/setUpGuideStatusCheck", setUpGuideStatusCheck);
+router.post("/checkAppBlock", checkAppBlock);
 
 router.post("/getProductPlanList", getProductPlanList);
 
@@ -331,6 +340,7 @@ router.post("/getCustomerSubscriptions", getCustomerSubscriptions);
 router.post("/getStoreToken", getStoreToken);
 router.post("/getStoreCountries", getStoreCountries);
 router.post("/getCustomerPortalDetailsStore", getCustomerPortalDetailsStore);
+
 
 // router.post('/upload', upload.single('image'), (req, res) => {
 //   console.log(req.file,'req file')

@@ -2,13 +2,14 @@ import mongoose from "mongoose";
 const { Schema } = mongoose;
 let announcementsSchema = new Schema(
   {
-    title: String,
-    image: String,
-
-    description: String,
-
-    buttonUrl: String,
-    buttonText: String,
+   
+    title:String,
+    image:String,
+   
+    description:String,
+    
+    buttonUrl:String,
+    buttonText:String
   },
   { timestamps: true }
 );

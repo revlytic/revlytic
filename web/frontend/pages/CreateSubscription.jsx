@@ -20,7 +20,7 @@ function CreteSubscription() {
   useEffect(() => {
     type=="manual" && setSubscriptionType("merchant")
   }, [])
-  
+ 
   return (
     <>
       <div className="revlytic plan-group-listing-button">

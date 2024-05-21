@@ -45,9 +45,11 @@ function Dunning() {
       let existingTemplatesLength = response?.data?.templatesLength;
 
       if (existingTemplatesLength < 9) {
-    let templatesData=await postApi('/api/admin/saveDunningTemplates',{},app)
-
-             
+        let templatesData = await postApi(
+          "/api/admin/saveDunningTemplates",
+          {},
+          app
+        );
       }
     } else {
     }
@@ -113,7 +115,7 @@ function Dunning() {
   };
 
   const handleSubmit = async () => {
-    setLoading(true)
+    setLoading(true);
     let body = {
       dunningNoticeType,
       enableDunningNotices,
@@ -139,7 +141,7 @@ function Dunning() {
         position: toast.POSITION.TOP_RIGHT,
       });
     }
-    setLoading(false)
+    setLoading(false);
   };
 
   return (
@@ -282,7 +284,14 @@ function Dunning() {
 
             {attemptList.length > 0 &&
               attemptList?.map((item, index) => (
-                <div key={index} className={ index >= attemptNum ? "revlytic-case-dunning-sec-main all-field-disable" : "revlytic-case-dunning-sec-main"}>
+                <div
+                  key={index}
+                  className={
+                    index >= attemptNum
+                      ? "revlytic-case-dunning-sec-main all-field-disable"
+                      : "revlytic-case-dunning-sec-main"
+                  }
+                >
                   <h4>{retryHeading[index]} Retry</h4>
 
                   <div className="revlytic-dunning-section revlytic-case-dunning-sec">
@@ -350,8 +359,12 @@ function Dunning() {
                         </svg>
                       </span>
                       <span>
-                        <Link    
-                        className={index >= attemptNum ? "disabled-dunning-templatelink" : "" }                   
+                        <Link
+                          className={
+                            index >= attemptNum
+                              ? "disabled-dunning-templatelink"
+                              : ""
+                          }
                           disabled={index >= attemptNum}
                           to="/emailtemplateslist"
                           // onClick={(e) =>
