@@ -278,6 +278,7 @@ router.post("/deleteAnnouncement", deleteAnnouncement);
 router.post("/checkAppBlockEmbed", checkAppBlockEmbed);
 router.post("/getBillingPlanData", getBillingPlanData);
 router.post("/calculateRevenue", calculateRevenue);
+router.post("/subscriptionBookings", subscriptionBookings);
 router.post("/saveDunningData", saveDunningData);
 router.post("/fetchDunningData", fetchDunningData);
 router.post("/getEmailTemplatesCount", getEmailTemplatesCount);
