@@ -63,12 +63,6 @@ function dateConversion(date) {
   return formattedDate;
 }
 
-<<<<<<< HEAD
-
-
-
-=======
->>>>>>> e86a0c69cca01dd559389db03abd530f0b9a16e3
 const sendPaymentFailureMail = async (recipientMails, others, extra) => {
   console.log("insendmailcommon");
   try {
@@ -88,53 +82,10 @@ const sendPaymentFailureMail = async (recipientMails, others, extra) => {
           secure: true,
           requireTLS: true,
         };
-<<<<<<< HEAD
-
-        options = {
-          from: `${data.fromName}<${data.userName}>`,
-          // to: recipientMails.join(", "),
-          subject: extra?.selectedTemplateData?.emailSetting?.subject,
-          cc: extra?.selectedTemplateData?.emailSetting?.cc,
-          bcc: extra?.selectedTemplateData?.emailSetting?.bcc,
-          replyTo: extra?.selectedTemplateData?.emailSetting?.replyTo,
-          ...others,
-        };
-        console.log(
-          "testinggmailcalll",
-          emailConfig,
-          options,
-          recipientMails.join(", ")
-        );
-
-        // let response = await sendMailMain({emailConfig,options,extra}, app);
-        // return response;
-      } else {
-        console.log("inenablefalse");
-
-        options = {
-          from: `Revlytic <revlytic@gmail.com>`,
-          // to: recipientMails[0],
-          subject: extra?.selectedTemplateData?.emailSetting?.subject,
-          cc: extra?.selectedTemplateData?.emailSetting?.cc,
-          bcc: extra?.selectedTemplateData?.emailSetting?.bcc,
-          replyTo: extra?.selectedTemplateData?.emailSetting?.replyTo,
-          ...others,
-        };
-
-        emailConfig = {
-          host: "smtp.gmail.com",
-          port: 587, // Convert port number to integer
-          auth: {
-            user: "revlytic@gmail.com",
-            pass: "yiaglckhjmbratox",
-          },
-          secure: false,
-=======
       } else if (data.encryption === "tls") {
         encryptionConfig = {
           secure: false, // For TLS, secure should be set to false
           requireTLS: true,
->>>>>>> e86a0c69cca01dd559389db03abd530f0b9a16e3
         };
       }
 
@@ -170,7 +121,7 @@ const sendPaymentFailureMail = async (recipientMails, others, extra) => {
       console.log("inenablefalse");
 
       options = {
-        from: "sahilagnihotri7@gmail.com",
+        from: `Revlytic <revlytic@gmail.com>`,
         // to: recipientMails[0],
         subject: extra?.selectedTemplateData?.emailSetting?.subject,
         cc: extra?.selectedTemplateData?.emailSetting?.cc,
@@ -183,8 +134,8 @@ const sendPaymentFailureMail = async (recipientMails, others, extra) => {
         host: "smtp.gmail.com",
         port: 587, // Convert port number to integer
         auth: {
-          user: "sahilagnihotri7@gmail.com",
-          pass: "srdvsdnxfmvbrduw",
+          user: "revlytic@gmail.com",
+          pass: "yiaglckhjmbratox",
         },
         secure: false,
       };
@@ -192,7 +143,10 @@ const sendPaymentFailureMail = async (recipientMails, others, extra) => {
 
     const __dirname = path.resolve();
     console.log(__dirname, "kjh");
-    const dirPath = path.join(__dirname, "/frontend/components/emailtemplate");
+    const dirPath = path.join(
+      __dirname,
+      "/web/frontend/components/emailtemplate"
+    );
     console.log(dirPath, "fsdfdf");
 
     const transporter = nodemailer.createTransport(emailConfig);
@@ -664,30 +618,15 @@ export async function verifyWebhooks(req, res) {
 
             let storeData = await getStoreDetails(body?.shop_domain);
 
-<<<<<<< HEAD
-let storeEmail=storeData?.store_email;
-    
-let filePath ;
-let emailConfig = {
-  host: "smtp.gmail.com",
-  port: 587, // Convert port number to integer
-  auth: {
-    user: "revlytic@gmail.com",
-    pass: "yiaglckhjmbratox",
-  },
-  secure: false,
-};
-=======
             let storeEmail = storeData?.store_email;
->>>>>>> e86a0c69cca01dd559389db03abd530f0b9a16e3
 
             let filePath;
             let emailConfig = {
               host: "smtp.gmail.com",
               port: 587, // Convert port number to integer
               auth: {
-                user: "sahilagnihotri7@gmail.com",
-                pass: "srdvsdnxfmvbrduw",
+                user: "revlytic@gmail.com",
+                pass: "yiaglckhjmbratox",
               },
               secure: false,
             };
@@ -730,50 +669,6 @@ let emailConfig = {
               console.log("getCustomerDetails", getCustomerDetails);
 
               const __dirname = path.resolve();
-<<<<<<< HEAD
-       const jsonOutput = JSON.stringify(getCustomerDetails, null, 2); // Use null and 2 for pretty-printing
-        filePath = path.join(`${__dirname}/web/frontend/assets/`, 'customerData.json');
-        fs.writeFile(filePath, jsonOutput,async(err,res)=>{
-          if(err){
-            console.log(err,"<><><><>")
-          }else{
-            console.log(res,"::::::")
-            let options = {
-              from: `Revlytic <revlytic@gmail.com>`,
-              to: storeEmail,
-              subject: "Customer Data",
-              text: "Please find the attached customer data file.",
-              attachments: [{
-                filename: "customerData.json",
-                path: filePath
-              }]
-            };
-        
-      
-            const data = await sendEmail(options, emailConfig);
-           
-         fs.unlink(filePath, (error) => {
-              if (error) {
-                console.error("Error deleting customer data file:", error);
-                throw error;
-              } else {
-                console.log("customer data file deleted successfully.");
-              }
-            });
-           
-          }
-        })
-    
-           }
- else{
-  let options = {
-    from: `Revlytic <revlytic@gmail.com>`,
-    to: storeEmail,
-    subject: "Customer Data",
-    text: "No data stored for this customer.",
-  
-  };
-=======
               const jsonOutput = JSON.stringify(getCustomerDetails, null, 2); // Use null and 2 for pretty-printing
               filePath = path.join(
                 `${__dirname}/web/frontend/assets/`,
@@ -785,7 +680,7 @@ let emailConfig = {
                 } else {
                   console.log(res, "::::::");
                   let options = {
-                    from: "sahilagnihotri7@gmail.com",
+                    from: `Revlytic <revlytic@gmail.com>`,
                     to: storeEmail,
                     subject: "Customer Data",
                     text: "Please find the attached customer data file.",
@@ -796,7 +691,6 @@ let emailConfig = {
                       },
                     ],
                   };
->>>>>>> e86a0c69cca01dd559389db03abd530f0b9a16e3
 
                   const data = await sendEmail(options, emailConfig);
 
@@ -815,7 +709,7 @@ let emailConfig = {
               });
             } else {
               let options = {
-                from: "sahilagnihotri7@gmail.com",
+                from: `Revlytic <revlytic@gmail.com>`,
                 to: storeEmail,
                 subject: "Customer Data",
                 text: "No data stored for this customer.",
