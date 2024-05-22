@@ -6173,7 +6173,7 @@ export async function checkAppBlockEmbed(req, res) {
     searchedBlock=Object?.values(blockData)?.find(
       (item) =>
         item?.type ==
-        `shopify://apps/${process.env?.APP_NAME}/blocks/${process.env?.APP_EXTENSION_BLOCK}/${process.env?.SHOPIFY_THEME_APP_EXTENSION_ID}`
+        `shopify://apps/revlytic-staging/blocks/revlytic/578cdb30-f8ee-4436-aafd-e7a2bef22404`
     );
     }
    
