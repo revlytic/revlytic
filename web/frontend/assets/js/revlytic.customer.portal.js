@@ -1,6 +1,12 @@
 document.addEventListener("DOMContentLoaded", () => {
+<<<<<<< HEAD
   console.log("21novmber")
   let apiPath = "https://revlytic.co/";
+=======
+  console.log("21novmber");
+  let apiPath =
+    "https://emperor-scott-alto-notification.trycloudflare.com/";
+>>>>>>> e86a0c69cca01dd559389db03abd530f0b9a16e3
   const urlParams = new URLSearchParams(window.location.search);
   const customerId = urlParams.get("cid");
   // const customerId = ShopifyAnalytics.meta.page.customerId;
@@ -8,293 +14,502 @@ document.addEventListener("DOMContentLoaded", () => {
   var shop = Shopify.shop;
   var prevButton, nextButton;
   var countrydata;
-  var permissions={
-    "cancellation": "simple",
-     "options": {
-     "one": "Doesn't meet my needs",
-     "two": "Found a better alternative",
-     "three": "Very expensive",
-     "four": "Other"
-     },
-     "values": {
-      "attemptBilling": false,
-      "skipOrder": false,
-      "skipUpcomingFullfilment": false,
-      "pauseResumeSubscription": false,
-      "nextBilldate": false,
-      "changeShippingAddress": false,
-      "cancelSubscription": false,
-      "pauseBeforeCancellation": false,
-      "changeProductQuantity": false,
-      "addNewContractProduct": false,
-      "deleteSubscriptionProduct": false
-      }
- }
+  var permissions = {
+    cancellation: "simple",
+    options: {
+      one: "Doesn't meet my needs",
+      two: "Found a better alternative",
+      three: "Very expensive",
+      four: "Other",
+    },
+    values: {
+      attemptBilling: false,
+      skipOrder: false,
+      skipUpcomingFullfilment: false,
+      pauseResumeSubscription: false,
+      nextBilldate: false,
+      changeShippingAddress: false,
+      cancelSubscription: false,
+      pauseBeforeCancellation: false,
+      changeProductQuantity: false,
+      addNewContractProduct: false,
+      deleteSubscriptionProduct: false,
+    },
+  };
   var currencyCode;
   var timezone;
   var rescheduleId = "";
   var rescheduleDate = "";
-  let store_name = ""
-  let store_email = ""
-  let totalBillings =""
-  let store_currency=''
+  let store_name = "";
+  let store_email = "";
+  let totalBillings = "";
+  let store_currency = "";
 
+  const countries = [
+    { countrycode: "US", name: "United States", currency: "USD" },
+    { countrycode: "AF", name: "Afghanistan", currency: "AFN" },
+    { countrycode: "AX", name: "Åland Islands", currency: "EUR" },
+    { countrycode: "AL", name: "Albania", currency: "ALL" },
+    { countrycode: "DZ", name: "Algeria", currency: "DZD" },
+    { countrycode: "AD", name: "Andorra", currency: "EUR" },
+    {
+      countrycode: "AO",
+      name: "Angola",
+      currency: "AOA",
+      shopify: "storecurrency",
+    },
+    { countrycode: "AI", name: "Anguilla", currency: "XCD" },
+    { countrycode: "AG", name: "Antigua and Barbuda", currency: "XCD" },
+    {
+      countrycode: "AR",
+      name: "Argentina",
+      currency: "ARS",
+      shopify: "storecurrency",
+    },
+    { countrycode: "AM", name: "Armenia", currency: "AMD" },
+    { countrycode: "AW", name: "Aruba", currency: "AWG" },
+    { countrycode: "AC", name: "Ascension Island", currency: "SHP" },
+    { countrycode: "AU", name: "Australia", currency: "AUD" },
+    { countrycode: "AT", name: "Austria", currency: "EUR" },
+    { countrycode: "AZ", name: "Azerbaijan", currency: "AZN" },
+    { countrycode: "BS", name: "Bahamas", currency: "BSD" },
+    {
+      countrycode: "BH",
+      name: "Bahrain",
+      currency: "BHD",
+      shopify: "storecurrency",
+    },
+    { countrycode: "BD", name: "Bangladesh", currency: "BDT" },
+    { countrycode: "BB", name: "Barbados", currency: "BBD" },
+    {
+      countrycode: "BY",
+      name: "Belarus",
+      currency: "BYN",
+      shopify: "storecurrency",
+    },
+    { countrycode: "BE", name: "Belgium", currency: "EUR" },
+    { countrycode: "BZ", name: "Belize", currency: "BZD" },
+    { countrycode: "BJ", name: "Benin", currency: "XOF" },
+    { countrycode: "BM", name: "Bermuda", currency: "BMD", shopify: "USD" },
+    {
+      countrycode: "BT",
+      name: "Bhutan",
+      currency: "BTN",
+      shopify: "storecurrency",
+    },
+    {
+      countrycode: "BO",
+      name: "Bolivia (Plurinational State of)",
+      currency: "BOB",
+    },
+    { countrycode: "BA", name: "Bosnia and Herzegovina", currency: "BAM" },
+    { countrycode: "BW", name: "Botswana", currency: "BWP" },
+    {
+      countrycode: "BR",
+      name: "Brazil",
+      currency: "BRL",
+      shopify: "storecurrency",
+    },
+    {
+      countrycode: "IO",
+      name: "British Indian Ocean Territory",
+      currency: "USD",
+    },
+    { countrycode: "VG", name: "British Virgin Islands", currency: "USD" },
+    { countrycode: "BN", name: "Brunei", currency: "BND" },
+    { countrycode: "BG", name: "Bulgaria", currency: "BGN" },
+    { countrycode: "BF", name: "Burkina Faso", currency: "XOF" },
+    { countrycode: "BI", name: "Burundi", currency: "BIF" },
+    { countrycode: "KH", name: "Cambodia", currency: "KHR" },
+    { countrycode: "CM", name: "Cameroon", currency: "XAF" },
+    { countrycode: "CA", name: "Canada", currency: "CAD" },
+    { countrycode: "CV", name: "Cape Verde", currency: "CVE" },
+    { countrycode: "BQ", name: "Caribbean Netherlands", currency: "USD" },
+    { countrycode: "KY", name: "Cayman Islands", currency: "KYD" },
+    { countrycode: "CF", name: "Central African Republic", currency: "XAF" },
+    { countrycode: "TD", name: "Chad", currency: "XAF" },
+    {
+      countrycode: "CL",
+      name: "Chile",
+      currency: "CLP",
+      shopify: "storecurrency",
+    },
+    { countrycode: "CN", name: "China", currency: "CNY" },
+    { countrycode: "CX", name: "Christmas Island", currency: "AUD" },
+    { countrycode: "CC", name: "Cocos (Keeling) Islands", currency: "AUD" },
+    {
+      countrycode: "CO",
+      name: "Colombia",
+      currency: "COP",
+      shopify: "storecurrency",
+    },
+    { countrycode: "KM", name: "Comoros", currency: "KMF" },
+    { countrycode: "CD", name: "Congo, Kinshasa", currency: "CDF" },
+    { countrycode: "CG", name: "Congo Brazzaville", currency: "XAF" },
+    { countrycode: "CK", name: "Cook Islands", currency: "NZD" },
+    { countrycode: "CR", name: "Costa Rica", currency: "CRC" },
+    { countrycode: "CI", name: "Côte d'Ivoire", currency: "XOF" },
+    { countrycode: "HR", name: "Croatia", currency: "HRK", shopify: "EUR" },
+    { countrycode: "CW", name: "Curaçao", currency: "ANG" },
+    { countrycode: "CY", name: "Cyprus", currency: "EUR" },
+    { countrycode: "CZ", name: "Czech Republic or czechia", currency: "CZK" },
+    { countrycode: "DK", name: "Denmark", currency: "DKK" },
+    { countrycode: "DJ", name: "Djibouti", currency: "DJF" },
+    { countrycode: "DM", name: "Dominica", currency: "XCD" },
+    { countrycode: "DO", name: "Dominican Republic", currency: "DOP" },
+    { countrycode: "EC", name: "Ecuador", currency: "USD" },
+    { countrycode: "EG", name: "Egypt", currency: "EGP" },
+    { countrycode: "SV", name: "El Salvador", currency: "USD" },
+    { countrycode: "GQ", name: "Equatorial Guinea", currency: "XAF" },
+    {
+      countrycode: "ER",
+      name: "Eritrea",
+      currency: "ERN",
+      shopify: "storecurrency",
+    },
+    {countrycode: "EE", name: "Estonia", currency: "EUR"},
+    {
+      countrycode: "SZ",
+      name: "Eswatini",
+      currency: "SZL",
+      shopify: "storecurrency",
+    },
+    { countrycode: "ET", name: "Ethiopia", currency: "ETB" },
+    { countrycode: "FK", name: "Falkland Islands", currency: "FKP" },
+    { countrycode: "FO", name: "Faroe Islands", currency: "DKK" },
+    { countrycode: "FJ", name: "Fiji", currency: "FJD" },
+    { countrycode: "FI", name: "Finland", currency: "EUR" },
+    { countrycode: "FR", name: "France", currency: "EUR" },
+    { countrycode: "GF", name: "French Guiana", currency: "EUR" },
+    { countrycode: "PF", name: "French Polynesia", currency: "XPF" },
+    { countrycode: "GA", name: "Gabon", currency: "XAF", shopify: "XOF" }, //XOF,XAF holds same monetary value
+    { countrycode: "GM", name: "Gambia", currency: "GMD" },
+    {
+      countrycode: "GE",
+      name: "Georgia",
+      currency: "GEL",
+      shopify: "storecurrency",
+    },
+    { countrycode: "DE", name: "Germany", currency: "EUR" },
+    {
+      countrycode: "GH",
+      name: "Ghana",
+      currency: "GHS",
+      shopify: "storecurrency",
+    },
+    { countrycode: "GI", name: "Gibraltar", currency: "GIP", shopify: "GBP" }, //GIP,GBP holds same monetary value
+    { countrycode: "GR", name: "Greece", currency: "EUR" },
+    { countrycode: "GL", name: "Greenland", currency: "DKK" },
+    { countrycode: "GD", name: "Grenada", currency: "XCD" },
+    { countrycode: "GP", name: "Guadeloupe", currency: "EUR" },
+    { countrycode: "GT", name: "Guatemala", currency: "GTQ" },
+    { countrycode: "GG", name: "Guernsey", currency: "GBP" },
+    { countrycode: "GN", name: "Guinea", currency: "GNF" },
+    { countrycode: "GW", name: "Guinea-Bissau", currency: "XOF" },
+    { countrycode: "GY", name: "Guyana", currency: "GYD" },
+    {
+      countrycode: "HT",
+      name: "Haiti",
+      currency: "HTG",
+      shopify: "storecurrency",
+    },
+    { countrycode: "HN", name: "Honduras", currency: "HNL" },
+    { countrycode: "HK", name: "Hong Kong SAR", currency: "HKD" },
+    { countrycode: "HU", name: "Hungary", currency: "HUF" },
+    { countrycode: "IS", name: "Iceland", currency: "ISK" },
+    { countrycode: "IN", name: "India", currency: "INR" },
+    { countrycode: "ID", name: "Indonesia", currency: "IDR" },
+    {
+      countrycode: "IQ",
+      name: "Iraq",
+      currency: "IQD",
+      shopify: "storecurrency",
+    },
+    { countrycode: "IE", name: "Ireland", currency: "EUR" },
+    { countrycode: "IM", name: "Isle of Man", currency: "GBP" },
+    { countrycode: "IL", name: "Israel", currency: "ILS" },
+    { countrycode: "IT", name: "Italy", currency: "EUR" },
+    { countrycode: "JM", name: "Jamaica", currency: "JMD" },
+    { countrycode: "JP", name: "Japan", currency: "JPY" },
+    {
+      countrycode: "JE",
+      name: "Jersey",
+      currency: "GBP",
+      shopify: "storecurrency",
+    },
+    {
+      countrycode: "JO",
+      name: "Jordan",
+      currency: "JOD",
+      shopify: "storecurrency",
+    },
+    { countrycode: "KZ", name: "Kazakhstan", currency: "KZT" },
+    { countrycode: "KE", name: "Kenya", currency: "KES" },
+    {
+      countrycode: "KI",
+      name: "Kiribati",
+      currency: "AUD",
+      shopify: "storecurrency",
+    },
+    { countrycode: "XK", name: "Kosovo", currency: "EUR" },
+    {
+      countrycode: "KW",
+      name: "Kuwait",
+      currency: "KWD",
+      shopify: "storecurrency",
+    },
+    { countrycode: "KG", name: "Kyrgyzstan", currency: "KGS" },
+    { countrycode: "LA", name: "Laos", currency: "LAK" },
+    { countrycode: "LV", name: "Latvia", currency: "EUR" },
+    { countrycode: "LB", name: "Lebanon", currency: "LBP" },
+    {
+      countrycode: "LS",
+      name: "Lesotho",
+      currency: "LSL",
+      shopify: "storecurrency",
+    },
+    {
+      countrycode: "LR",
+      name: "Liberia",
+      currency: "LRD",
+      shopify: "storecurrency",
+    },
+    {
+      countrycode: "LY",
+      name: "Libya",
+      currency: "LYD",
+      shopify: "storecurrency",
+    },
+    { countrycode: "LI", name: "Liechtenstein", currency: "CHF" },
+    { countrycode: "LT", name: "Lithuania", currency: "EUR" },
+    { countrycode: "LU", name: "Luxembourg", currency: "EUR" },
+    { countrycode: "MO", name: "Macao SAR", currency: "MOP" },
+    {
+      countrycode: "MG",
+      name: "Madagascar",
+      currency: "MGA",
+      shopify: "storecurrency",
+    },
+    { countrycode: "MW", name: "Malawi", currency: "MWK" },
+    { countrycode: "ML", name: "Mali", currency: "XOF" },
+    { countrycode: "MT", name: "Malta", currency: "EUR" },
+    { countrycode: "MQ", name: "Martinique", currency: "EUR" },
+    {
+      countrycode: "MR",
+      name: "Mauritania",
+      currency: "MRU",
+      shopify: "storecurrency",
+    },
+    { countrycode: "MU", name: "Mauritius", currency: "MUR" },
+    { countrycode: "YT", name: "Mayotte", currency: "EUR" },
+    {
+      countrycode: "MX",
+      name: "Mexico",
+      currency: "MXN",
+      shopify: "storecurrency",
+    },
+    { countrycode: "MD", name: "Moldova", currency: "MDL" },
+    { countrycode: "MC", name: "Monaco", currency: "EUR" },
+    { countrycode: "MN", name: "Mongolia", currency: "MNT" },
+    { countrycode: "ME", name: "Montenegro", currency: "EUR" },
+    { countrycode: "MS", name: "Montserrat", currency: "XCD" },
+    { countrycode: "MA", name: "Morocco", currency: "MAD" },
+    {
+      countrycode: "MZ",
+      name: "Mozambique",
+      currency: "MZN",
+      shopify: "storecurrency",
+    },
+    { countrycode: "MM", name: "Myanmar (Burma)", currency: "MMK" },
+    {
+      countrycode: "NA",
+      name: "Namibia",
+      currency: "NAD",
+      shopify: "storecurrency",
+    },
+    { countrycode: "NR", name: "Nauru", currency: "AUD" },
+    { countrycode: "NP", name: "Nepal", currency: "NPR" },
+    { countrycode: "NL", name: "Netherlands", currency: "EUR" },
+    { countrycode: "NC", name: "New Caledonia", currency: "XPF" },
+    { countrycode: "NZ", name: "New Zealand", currency: "NZD" },
+    { countrycode: "NI", name: "Nicaragua", currency: "NIO" },
+    { countrycode: "NE", name: "Niger", currency: "XOF" },
+    { countrycode: "NG", name: "Nigeria", currency: "NGN" },
+    { countrycode: "NU", name: "Niue", currency: "NZD" },
+    { countrycode: "NF", name: "Norfolk Island", currency: "AUD" },
+    { countrycode: "MK", name: "North Macedonia", currency: "MKD" },
+    {
+      countrycode: "NO",
+      name: "Norway",
+      currency: "NOK",
+      shopify: "storecurrency",
+    },
+    {
+      countrycode: "OM",
+      name: "Oman",
+      currency: "OMR",
+      shopify: "storecurrency",
+    },
+    { countrycode: "PK", name: "Pakistan", currency: "PKR" },
+    { countrycode: "PS", name: "Palestinian Territories", currency: "ILS" },
+    { countrycode: "PA", name: "Panama", currency: "PAB", shopify: "USD" },
+    { countrycode: "PG", name: "Papua New Guinea", currency: "PGK" },
+    { countrycode: "PY", name: "Paraguay", currency: "PYG" },
+    { countrycode: "PE", name: "Peru", currency: "PEN" },
+    { countrycode: "PH", name: "Philippines", currency: "PHP" },
+    { countrycode: "PN", name: "Pitcairn Islands", currency: "NZD" },
+    { countrycode: "PL", name: "Poland", currency: "PLN" },
+    { countrycode: "PT", name: "Portugal", currency: "EUR" },
+    { countrycode: "QA", name: "Qatar", currency: "QAR" },
+    { countrycode: "RE", name: "Réunion", currency: "EUR" },
+    { countrycode: "RO", name: "Romania", currency: "RON" },
+    { countrycode: "RU", name: "Russia", currency: "RUB" },
+    { countrycode: "RW", name: "Rwanda", currency: "RWF" },
+    { countrycode: "WS", name: "Samoa", currency: "WST" },
+    { countrycode: "SM", name: "San Marino", currency: "EUR" },
+    { countrycode: "ST", name: "São Tomé & Príncipe", currency: "STD" },
+    { countrycode: "SA", name: "Saudi Arabia", currency: "SAR" },
+    { countrycode: "SN", name: "Senegal", currency: "XOF" },
+    { countrycode: "RS", name: "Serbia", currency: "RSD" },
+    {
+      countrycode: "SC",
+      name: "Seychelles",
+      currency: "SCR",
+      shopify: "storecurrency",
+    },
+    { countrycode: "SL", name: "Sierra Leone", currency: "SLL" },
+    { countrycode: "SG", name: "Singapore", currency: "SGD" },
+    { countrycode: "SX", name: "Sint Maarten", currency: "ANG" },
+    { countrycode: "SK", name: "Slovakia", currency: "EUR" },
+    { countrycode: "SI", name: "Slovenia", currency: "EUR" },
+    { countrycode: "SB", name: "Solomon Islands", currency: "SBD" },
+    {
+      countrycode: "SO",
+      name: "Somalia",
+      currency: "SOS",
+      shopify: "storecurrency",
+    },
+    { countrycode: "ZA", name: "South Africa", currency: "ZAR" },
+    { countrycode: "KR", name: "South Korea", currency: "KRW" },
+    {
+      countrycode: "SS",
+      name: "South Sudan",
+      currency: "SSP",
+      shopify: "storecurrency",
+    },
+    { countrycode: "ES", name: "Spain", currency: "EUR" },
+    { countrycode: "LK", name: "Sri Lanka", currency: "LKR" },
+    { countrycode: "BL", name: "Saint Barthélemy", currency: "EUR" },
+    { countrycode: "SH", name: "St. Helena", currency: "SHP" },
+    { countrycode: "KN", name: "St. Kitts & Nevis", currency: "XCD" },
+    { countrycode: "LC", name: "St. Lucia", currency: "XCD" },
+    { countrycode: "MF", name: "St. Martin", currency: "EUR" },
+    { countrycode: "PM", name: "St. Pierre & Miquelon", currency: "EUR" },
+    { countrycode: "KP", name: "North Korea", currency: "KPW" },
+    { countrycode: "VC", name: "St. Vincent & Grenadines", currency: "XCD" },
+    {
+      countrycode: "SD",
+      name: "Sudan",
+      currency: "SDG",
+      shopify: "storecurrency",
+    },
+    {
+      countrycode: "SR",
+      name: "Suriname",
+      currency: "SRD",
+      shopify: "storecurrency",
+    },
+    {
+      countrycode: "SJ",
+      name: "Svalbard & Jan Mayen",
+      currency: "NOK",
+      shopify: "storecurrency",
+    },
+    { countrycode: "SE", name: "Sweden", currency: "SEK" },
+    { countrycode: "CH", name: "Switzerland", currency: "CHF" },
+    { countrycode: "TW", name: "Taiwan", currency: "TWD" },
+    { countrycode: "TJ", name: "Tajikistan", currency: "TJS" },
+    { countrycode: "TZ", name: "Tanzania", currency: "TZS" },
+    { countrycode: "TH", name: "Thailand", currency: "THB" },
+    { countrycode: "TL", name: "Timor-Leste", currency: "USD" },
+    { countrycode: "TG", name: "Togo", currency: "XOF" },
+    { countrycode: "TK", name: "Tokelau", currency: "NZD" },
+    { countrycode: "TO", name: "Tonga", currency: "TOP" },
+    { countrycode: "TT", name: "Trinidad & Tobago", currency: "TTD" },
+    {
+      countrycode: "TA",
+      name: "Tristan da Cunha",
+      currency: "SHP",
+      shopify: "GBP",
+    }, //SHP,GBP share same monetary value
+    {
+      countrycode: "TN",
+      name: "Tunisia",
+      currency: "TND",
+      shopify: "storecurrency",
+    },
+    {
+      countrycode: "TR",
+      name: "Turkey",
+      currency: "TRY",
+      shopify: "storecurrency",
+    },
+    {
+      countrycode: "TM",
+      name: "Turkmenistan",
+      currency: "TMT",
+      shopify: "storecurrency",
+    },
+    { countrycode: "TC", name: "Turks & Caicos Islands", currency: "USD" },
+    { countrycode: "TV", name: "Tuvalu", currency: "AUD" },
+    { countrycode: "UM", name: "U.S. Outlying Islands", currency: "USD" },
+    { countrycode: "UG", name: "Uganda", currency: "UGX" },
+    { countrycode: "UA", name: "Ukraine", currency: "UAH" },
+    { countrycode: "AE", name: "United Arab Emirates", currency: "AED" },
+    { countrycode: "GB", name: "United Kingdom", currency: "GBP" },
+    { countrycode: "UY", name: "Uruguay", currency: "UYU" },
+    { countrycode: "UZ", name: "Uzbekistan", currency: "UZS" },
+    { countrycode: "VU", name: "Vanuatu", currency: "VUV" },
+    { countrycode: "VA", name: "Vatican City", currency: "EUR" },
+    { countrycode: "VE", name: "Venezuela", currency: "VES", shopify: "USD" },
+    { countrycode: "VN", name: "Vietnam", currency: "VND" },
+    { countrycode: "WF", name: "Wallis & Futuna", currency: "XPF" },
+    { countrycode: "EH", name: "Western Sahara", currency: "MAD" },
+    { countrycode: "YE", name: "Yemen", currency: "YER" },
+    {
+      countrycode: "ZM",
+      name: "Zambia",
+      currency: "ZMW",
+      shopify: "storecurrency",
+    },
+    { countrycode: "ZW", name: "Zimbabwe", currency: "ZWL", shopify: "USD" },
 
-  const countries=[
-    { "countrycode": "US", "name": "United States", "currency": "USD" },
-    { "countrycode": "AF", "name": "Afghanistan", "currency": "AFN" },
-    { "countrycode": "AX", "name": "Åland Islands", "currency": "EUR" },
-    { "countrycode": "AL", "name": "Albania", "currency": "ALL" },
-    { "countrycode": "DZ", "name": "Algeria", "currency": "DZD" },
-    { "countrycode": "AD", "name": "Andorra", "currency": "EUR" },
-    { "countrycode": "AO", "name": "Angola", "currency": "AOA" ,"shopify":"storecurrency"},
-    { "countrycode": "AI", "name": "Anguilla", "currency": "XCD" },
-    { "countrycode": "AG", "name": "Antigua and Barbuda", "currency": "XCD" },
-    { "countrycode": "AR", "name": "Argentina", "currency": "ARS" , "shopify" :"storecurrency" },
-    { "countrycode": "AM", "name": "Armenia", "currency": "AMD" },
-    { "countrycode": "AW", "name": "Aruba", "currency": "AWG" },
-    { "countrycode": "AC", "name": "Ascension Island" ,"currency": "SHP" },
-    { "countrycode": "AU", "name": "Australia", "currency": "AUD" },
-    { "countrycode": "AT", "name": "Austria", "currency": "EUR" },
-    { "countrycode": "AZ", "name": "Azerbaijan", "currency": "AZN" },
-      { "countrycode": "BS", "name": "Bahamas", "currency": "BSD" },
-      { "countrycode": "BH", "name": "Bahrain", "currency": "BHD" ,"shopify": "storecurrency"},
-      { "countrycode": "BD", "name": "Bangladesh", "currency": "BDT" },
-      { "countrycode": "BB", "name": "Barbados", "currency": "BBD" },
-      { "countrycode": "BY", "name": "Belarus", "currency": "BYN" ,"shopify":"storecurrency" },
-      { "countrycode": "BE", "name": "Belgium", "currency": "EUR" },
-      { "countrycode": "BZ", "name": "Belize", "currency": "BZD" },
-      { "countrycode": "BJ", "name": "Benin", "currency": "XOF" },
-      { "countrycode": "BM", "name": "Bermuda", "currency": "BMD" ,"shopify":"USD"},
-      { "countrycode": "BT", "name": "Bhutan", "currency": "BTN" ,"shopify":"storecurrency"},
-      { "countrycode": "BO", "name": "Bolivia (Plurinational State of)", "currency": "BOB" },
-      { "countrycode": "BA", "name": "Bosnia and Herzegovina", "currency": "BAM" },
-      { "countrycode": "BW", "name": "Botswana", "currency": "BWP" },
-      { "countrycode": "BR", "name": "Brazil", "currency": "BRL" ,"shopify": "storecurrency" },
-      { "countrycode": "IO", "name": "British Indian Ocean Territory", "currency": "USD" },
-      { "countrycode": "VG", "name": "British Virgin Islands", "currency": "USD" },
-      { "countrycode": "BN", "name": "Brunei", "currency": "BND" },
-      { "countrycode": "BG", "name": "Bulgaria", "currency": "BGN" },
-      { "countrycode": "BF", "name": "Burkina Faso", "currency": "XOF" },
-      { "countrycode": "BI", "name": "Burundi", "currency": "BIF" },
-      { "countrycode": "KH", "name": "Cambodia", "currency": "KHR" },
-      { "countrycode": "CM", "name": "Cameroon", "currency": "XAF" },
-      { "countrycode": "CA", "name": "Canada", "currency": "CAD" },
-      { "countrycode": "CV", "name": "Cape Verde", "currency": "CVE" },
-      { "countrycode": "BQ", "name": "Caribbean Netherlands", "currency": "USD" },
-      { "countrycode": "KY", "name": "Cayman Islands", "currency": "KYD" },
-      { "countrycode": "CF", "name": "Central African Republic", "currency": "XAF" },
-      { "countrycode": "TD", "name": "Chad", "currency": "XAF" },
-      { "countrycode": "CL", "name": "Chile", "currency": "CLP" ,"shopify":"storecurrency" },
-      { "countrycode": "CN", "name": "China", "currency": "CNY" },
-      { "countrycode": "CX", "name": "Christmas Island", "currency": "AUD" },
-      { "countrycode": "CC", "name": "Cocos (Keeling) Islands", "currency": "AUD" },
-      { "countrycode": "CO", "name": "Colombia", "currency": "COP" ,"shopify":"storecurrency"},
-      { "countrycode": "KM", "name": "Comoros", "currency": "KMF" },
-      { "countrycode": "CD", "name": "Congo, Kinshasa", "currency": "CDF" },
-      { "countrycode": "CG", "name": "Congo Brazzaville", "currency": "XAF" },
-      { "countrycode": "CK", "name": "Cook Islands", "currency": "NZD" },
-      { "countrycode": "CR", "name": "Costa Rica", "currency": "CRC" },
-      { "countrycode": "CI", "name": "Côte d'Ivoire", "currency": "XOF" },
-      { "countrycode": "HR", "name": "Croatia", "currency": "HRK" ,"shopify":"EUR"},
-      { "countrycode": "CW", "name": "Curaçao", "currency": "ANG" },
-      { "countrycode": "CY", "name": "Cyprus", "currency": "EUR" },
-      { "countrycode": "CZ", "name": "Czech Republic or czechia", "currency": "CZK" },
-      { "countrycode": "DK", "name": "Denmark", "currency": "DKK" },
-      { "countrycode": "DJ", "name": "Djibouti", "currency": "DJF" },
-      { "countrycode": "DM", "name": "Dominica", "currency": "XCD" },
-      { "countrycode": "DO", "name": "Dominican Republic", "currency": "DOP" },
-      { "countrycode": "EC", "name": "Ecuador", "currency": "USD" },
-      { "countrycode": "EG", "name": "Egypt", "currency": "EGP" },
-      { "countrycode": "SV", "name": "El Salvador", "currency": "USD" },
-      { "countrycode": "GQ", "name": "Equatorial Guinea", "currency": "XAF" },
-      { "countrycode": "ER", "name": "Eritrea", "currency": "ERN" ,"shopify":"storecurrency" },
-      { "countrycode": "EE", "name": "Estonia", "currency": "EUR" },
-      { "countrycode": "SZ", "name": "Eswatini", "currency": "SZL" ,"shopify":"storecurrency" },
-      { "countrycode": "ET", "name": "Ethiopia", "currency": "ETB" },
-      { "countrycode": "FK", "name": "Falkland Islands", "currency": "FKP" },
-      { "countrycode": "FO", "name": "Faroe Islands", "currency": "DKK" },
-      { "countrycode": "FJ", "name": "Fiji", "currency": "FJD" },
-      { "countrycode": "FI", "name": "Finland", "currency": "EUR" },
-      { "countrycode": "FR", "name": "France", "currency": "EUR" },
-      { "countrycode": "GF", "name": "French Guiana", "currency": "EUR" },
-      { "countrycode": "PF", "name": "French Polynesia", "currency": "XPF" },
-      { "countrycode": "GA", "name": "Gabon", "currency": "XAF" ,"shopify":"XOF"},//XOF,XAF holds same monetary value
-      { "countrycode": "GM", "name": "Gambia", "currency": "GMD" },
-      { "countrycode": "GE", "name": "Georgia", "currency": "GEL" ,"shopify":"storecurrency"},
-      { "countrycode": "DE", "name": "Germany", "currency": "EUR" },
-      { "countrycode": "GH", "name": "Ghana", "currency": "GHS","shopify":"storecurrency"},
-      { "countrycode": "GI", "name": "Gibraltar", "currency": "GIP" ,"shopify" :"GBP" },//GIP,GBP holds same monetary value
-      { "countrycode": "GR", "name": "Greece", "currency": "EUR" },
-      { "countrycode": "GL", "name": "Greenland", "currency": "DKK" },
-      { "countrycode": "GD", "name": "Grenada", "currency": "XCD" },
-      { "countrycode": "GP", "name": "Guadeloupe", "currency": "EUR" },
-      { "countrycode": "GT", "name": "Guatemala", "currency": "GTQ" },
-      { "countrycode": "GG", "name": "Guernsey", "currency": "GBP" },
-      { "countrycode": "GN", "name": "Guinea", "currency": "GNF" },
-      { "countrycode": "GW", "name": "Guinea-Bissau", "currency": "XOF" },
-      { "countrycode": "GY", "name": "Guyana", "currency": "GYD" },
-      { "countrycode": "HT", "name": "Haiti", "currency": "HTG" ,"shopify":"storecurrency" },
-      { "countrycode": "HN", "name": "Honduras", "currency": "HNL" },
-      { "countrycode": "HK", "name": "Hong Kong SAR", "currency": "HKD" },
-      { "countrycode": "HU", "name": "Hungary", "currency": "HUF" },
-      { "countrycode": "IS", "name": "Iceland", "currency": "ISK" },
-      { "countrycode": "IN", "name": "India", "currency": "INR" },
-      { "countrycode": "ID", "name": "Indonesia", "currency": "IDR" },
-      { "countrycode": "IQ", "name": "Iraq", "currency": "IQD", "shopify":"storecurrency" },
-      { "countrycode": "IE", "name": "Ireland", "currency": "EUR" },
-      { "countrycode": "IM", "name": "Isle of Man", "currency": "GBP" },
-      { "countrycode": "IL", "name": "Israel", "currency": "ILS" },
-      { "countrycode": "IT", "name": "Italy", "currency": "EUR" },
-      { "countrycode": "JM", "name": "Jamaica", "currency": "JMD" },
-      { "countrycode": "JP", "name": "Japan", "currency": "JPY" },
-      { "countrycode": "JE", "name": "Jersey", "currency": "GBP","shopify":"storecurrency" },
-      { "countrycode": "JO", "name": "Jordan", "currency": "JOD","shopify":"storecurrency" },
-      { "countrycode": "KZ", "name": "Kazakhstan", "currency": "KZT" },
-      { "countrycode": "KE", "name": "Kenya", "currency": "KES" },
-      { "countrycode": "KI", "name": "Kiribati", "currency": "AUD" ,"shopify":"storecurrency" },
-      { "countrycode": "XK", "name": "Kosovo", "currency": "EUR" },
-      { "countrycode": "KW", "name": "Kuwait", "currency": "KWD" ,"shopify":"storecurrency" },
-      { "countrycode": "KG", "name": "Kyrgyzstan", "currency": "KGS"  },
-      { "countrycode": "LA", "name": "Laos", "currency": "LAK" },
-      { "countrycode": "LV", "name": "Latvia", "currency": "EUR" },
-      { "countrycode": "LB", "name": "Lebanon", "currency": "LBP" },
-      { "countrycode": "LS", "name": "Lesotho", "currency": "LSL" ,"shopify":"storecurrency" },
-      { "countrycode": "LR", "name": "Liberia", "currency": "LRD" ,"shopify":"storecurrency"},
-      { "countrycode": "LY", "name": "Libya", "currency": "LYD" ,"shopify":"storecurrency" },
-      { "countrycode": "LI", "name": "Liechtenstein", "currency": "CHF" },
-      { "countrycode": "LT", "name": "Lithuania", "currency": "EUR" },
-      { "countrycode": "LU", "name": "Luxembourg", "currency": "EUR" },
-      { "countrycode": "MO", "name": "Macao SAR", "currency": "MOP" },
-      { "countrycode": "MG", "name": "Madagascar", "currency": "MGA" ,"shopify":"storecurrency"},
-      { "countrycode": "MW", "name": "Malawi", "currency": "MWK" },
-      { "countrycode": "ML", "name": "Mali", "currency": "XOF" },
-      { "countrycode": "MT", "name": "Malta", "currency": "EUR" }, 
-      { "countrycode": "MQ", "name": "Martinique", "currency": "EUR" },
-      { "countrycode": "MR", "name": "Mauritania", "currency": "MRU" ,"shopify":"storecurrency" },
-      { "countrycode": "MU", "name": "Mauritius", "currency": "MUR" },
-      { "countrycode": "YT", "name": "Mayotte", "currency": "EUR" },
-      { "countrycode": "MX", "name": "Mexico", "currency": "MXN" ,"shopify":"storecurrency" },
-      { "countrycode": "MD", "name": "Moldova", "currency": "MDL" },
-      { "countrycode": "MC", "name": "Monaco", "currency": "EUR" },
-      { "countrycode": "MN", "name": "Mongolia", "currency": "MNT" },
-      { "countrycode": "ME", "name": "Montenegro", "currency": "EUR" },
-      { "countrycode": "MS", "name": "Montserrat", "currency": "XCD" },
-      { "countrycode": "MA", "name": "Morocco", "currency": "MAD" },
-      { "countrycode": "MZ", "name": "Mozambique", "currency": "MZN" ,"shopify":"storecurrency"},
-      { "countrycode": "MM", "name": "Myanmar (Burma)", "currency": "MMK" },
-      { "countrycode": "NA", "name": "Namibia", "currency": "NAD" ,"shopify":"storecurrency"},
-      { "countrycode": "NR", "name": "Nauru", "currency": "AUD" },
-      { "countrycode": "NP", "name": "Nepal", "currency": "NPR" },
-      { "countrycode": "NL", "name": "Netherlands", "currency": "EUR" },
-      { "countrycode": "NC", "name": "New Caledonia", "currency": "XPF" }, 
-      { "countrycode": "NZ", "name": "New Zealand", "currency": "NZD" },
-      { "countrycode": "NI", "name": "Nicaragua", "currency": "NIO" },
-      { "countrycode": "NE", "name": "Niger", "currency": "XOF" },
-      { "countrycode": "NG", "name": "Nigeria", "currency": "NGN" },
-      { "countrycode": "NU", "name": "Niue", "currency": "NZD" },
-      { "countrycode": "NF", "name": "Norfolk Island", "currency": "AUD" },
-      { "countrycode": "MK", "name": "North Macedonia", "currency": "MKD" },
-      { "countrycode": "NO", "name": "Norway", "currency": "NOK","shopify":"storecurrency"},
-      { "countrycode": "OM", "name": "Oman", "currency": "OMR" ,"shopify":"storecurrency" },
-      { "countrycode": "PK", "name": "Pakistan", "currency": "PKR" },
-      { "countrycode": "PS", "name": "Palestinian Territories", "currency": "ILS" },
-      { "countrycode": "PA", "name": "Panama", "currency": "PAB" ,"shopify":"USD" },
-      { "countrycode": "PG", "name": "Papua New Guinea", "currency": "PGK" },
-      { "countrycode": "PY", "name": "Paraguay", "currency": "PYG" },
-      { "countrycode": "PE", "name": "Peru", "currency": "PEN" },
-      { "countrycode": "PH", "name": "Philippines", "currency": "PHP" },
-      { "countrycode": "PN", "name": "Pitcairn Islands", "currency": "NZD" },
-      { "countrycode": "PL", "name": "Poland", "currency": "PLN" },
-      { "countrycode": "PT", "name": "Portugal", "currency": "EUR" },
-      { "countrycode": "QA", "name": "Qatar", "currency": "QAR" },
-      { "countrycode": "RE", "name": "Réunion", "currency": "EUR" },
-      { "countrycode": "RO", "name": "Romania", "currency": "RON" },
-      { "countrycode": "RU", "name": "Russia", "currency": "RUB" },
-      { "countrycode": "RW", "name": "Rwanda", "currency": "RWF" },
-      { "countrycode": "WS", "name": "Samoa", "currency": "WST" },
-      { "countrycode": "SM", "name": "San Marino", "currency": "EUR" },
-      { "countrycode": "ST", "name": "São Tomé & Príncipe", "currency": "STD" },
-      { "countrycode": "SA", "name": "Saudi Arabia", "currency": "SAR" },
-      { "countrycode": "SN", "name": "Senegal", "currency": "XOF" },
-      { "countrycode": "RS", "name": "Serbia", "currency": "RSD" },
-      { "countrycode": "SC", "name": "Seychelles", "currency": "SCR" ,"shopify":"storecurrency" },
-      { "countrycode": "SL", "name": "Sierra Leone", "currency": "SLL" },
-      { "countrycode": "SG", "name": "Singapore", "currency": "SGD" },
-      { "countrycode": "SX", "name": "Sint Maarten", "currency": "ANG" },
-      { "countrycode": "SK", "name": "Slovakia", "currency": "EUR" },
-      { "countrycode": "SI", "name": "Slovenia", "currency": "EUR" },
-      { "countrycode": "SB", "name": "Solomon Islands", "currency": "SBD" },
-      { "countrycode": "SO", "name": "Somalia", "currency": "SOS" ,"shopify":"storecurrency"},
-      { "countrycode": "ZA", "name": "South Africa", "currency": "ZAR" },
-      { "countrycode": "KR", "name": "South Korea", "currency": "KRW" },
-      { "countrycode": "SS", "name": "South Sudan", "currency": "SSP" ,"shopify":"storecurrency"},
-      { "countrycode": "ES", "name": "Spain", "currency": "EUR" },
-      { "countrycode": "LK", "name": "Sri Lanka", "currency": "LKR" },
-      { "countrycode": "BL", "name": "Saint Barthélemy", "currency": "EUR" },
-      { "countrycode": "SH", "name": "St. Helena", "currency": "SHP" },
-      { "countrycode": "KN", "name": "St. Kitts & Nevis", "currency": "XCD" },
-      { "countrycode": "LC", "name": "St. Lucia", "currency": "XCD" },
-      { "countrycode": "MF", "name": "St. Martin", "currency": "EUR" },
-      { "countrycode": "PM", "name": "St. Pierre & Miquelon", "currency": "EUR" },
-      { "countrycode": "KP", "name": "North Korea", "currency": "KPW" },
-      { "countrycode": "VC", "name": "St. Vincent & Grenadines", "currency": "XCD" },
-      { "countrycode": "SD", "name": "Sudan", "currency": "SDG" ,"shopify":"storecurrency"},
-      { "countrycode": "SR", "name": "Suriname", "currency": "SRD" ,"shopify":"storecurrency"},
-      { "countrycode": "SJ", "name": "Svalbard & Jan Mayen", "currency": "NOK" ,"shopify":"storecurrency"},
-      { "countrycode": "SE", "name": "Sweden", "currency": "SEK" },
-      { "countrycode": "CH", "name": "Switzerland", "currency": "CHF" },
-      { "countrycode": "TW", "name": "Taiwan", "currency": "TWD" },
-      { "countrycode": "TJ", "name": "Tajikistan", "currency": "TJS" },
-      { "countrycode": "TZ", "name": "Tanzania", "currency": "TZS" },
-      { "countrycode": "TH", "name": "Thailand", "currency": "THB" },
-      { "countrycode": "TL", "name": "Timor-Leste", "currency": "USD" },
-      { "countrycode": "TG", "name": "Togo", "currency": "XOF" },
-      { "countrycode": "TK", "name": "Tokelau", "currency": "NZD" },
-      { "countrycode": "TO", "name": "Tonga", "currency": "TOP" },
-      { "countrycode": "TT", "name": "Trinidad & Tobago", "currency": "TTD" },
-      { "countrycode": "TA", "name": "Tristan da Cunha", "currency": "SHP" ,"shopify":"GBP" },//SHP,GBP share same monetary value
-      { "countrycode": "TN", "name": "Tunisia", "currency": "TND" ,"shopify":"storecurrency" },
-      { "countrycode": "TR", "name": "Turkey", "currency": "TRY" ,"shopify":"storecurrency"},
-      { "countrycode": "TM", "name": "Turkmenistan", "currency": "TMT" ,"shopify":"storecurrency"},
-      { "countrycode": "TC", "name": "Turks & Caicos Islands", "currency": "USD" },
-      { "countrycode": "TV", "name": "Tuvalu", "currency": "AUD" },
-      { "countrycode": "UM", "name": "U.S. Outlying Islands", "currency": "USD" },
-      { "countrycode": "UG", "name": "Uganda", "currency": "UGX" },
-      { "countrycode": "UA", "name": "Ukraine", "currency": "UAH" },
-      { "countrycode": "AE", "name": "United Arab Emirates", "currency": "AED" },
-      { "countrycode": "GB", "name": "United Kingdom", "currency": "GBP" },
-      { "countrycode": "UY", "name": "Uruguay", "currency": "UYU" },
-      { "countrycode": "UZ", "name": "Uzbekistan", "currency": "UZS" },
-      { "countrycode": "VU", "name": "Vanuatu", "currency": "VUV" },
-      { "countrycode": "VA", "name": "Vatican City", "currency": "EUR" },
-      { "countrycode": "VE", "name": "Venezuela", "currency": "VES" ,"shopify":"USD" },
-      { "countrycode": "VN", "name": "Vietnam", "currency": "VND" },
-      { "countrycode": "WF", "name": "Wallis & Futuna", "currency": "XPF" },
-      { "countrycode": "EH", "name": "Western Sahara", "currency": "MAD" },
-      { "countrycode": "YE", "name": "Yemen", "currency": "YER" },
-      { "countrycode": "ZM", "name": "Zambia", "currency": "ZMW" ,"shopify":"storecurrency" },
-      { "countrycode": "ZW", "name": "Zimbabwe", "currency": "ZWL" ,"shopify":"USD" },
-      
-      
-      
-      ////below are unconfirmed counties
-      
-      // { "countrycode": "AS", "name": "American Samoa", "currency": "USD" },
-      // { "countrycode": "BV", "name": "Bouvet Island", "currency": "NOK" },
-      // { "countrycode": "CU", "name": "Cuba", "currency": "CUP" },
-      // { "countrycode": "GS", "name": "South Georgia & South Sandwich Islands", "currency": "GBP" },
-      // { "countrycode": "HM", "name": "Heard & McDonald Islands", "currency": "AUD" },
-      // { "countrycode": "IR", "name": "Iran", "currency": "IRR" },
-      
-      // { "countrycode": "MV", "name": "Maldives", "currency": "MVR" },
-      // { "countrycode": "MY", "name": "Malaysia", "currency": "MYR" },
-      // { "countrycode": "SY", "name": "Syria", "currency": "SYP" },
-      // { "countrycode": "TF", "name": "French Southern Territories", "currency": "EUR" },
-      // { "countrycode": "AN", "name": "Netherlands Antilles", "currency": "ANG" }, 
-  ]
+    ////below are unconfirmed counties
 
+<<<<<<< HEAD
   const getSymbol =currency => {   const symbol = new Intl.NumberFormat('en', { style: 'currency', currency }).formatToParts().find(x => x.type === 'currency');   return symbol && symbol.value; }
+=======
+    // { "countrycode": "AS", "name": "American Samoa", "currency": "USD" },
+    // { "countrycode": "BV", "name": "Bouvet Island", "currency": "NOK" },
+    // { "countrycode": "CU", "name": "Cuba", "currency": "CUP" },
+    // { "countrycode": "GS", "name": "South Georgia & South Sandwich Islands", "currency": "GBP" },
+    // { "countrycode": "HM", "name": "Heard & McDonald Islands", "currency": "AUD" },
+    // { "countrycode": "IR", "name": "Iran", "currency": "IRR" },
+
+    // { "countrycode": "MV", "name": "Maldives", "currency": "MVR" },
+    // { "countrycode": "MY", "name": "Malaysia", "currency": "MYR" },
+    // { "countrycode": "SY", "name": "Syria", "currency": "SYP" },
+    // { "countrycode": "TF", "name": "French Southern Territories", "currency": "EUR" },
+    // { "countrycode": "AN", "name": "Netherlands Antilles", "currency": "ANG" },
+  ];
+
+  const getSymbol = (currency) => {
+    const symbol = new Intl.NumberFormat("en", { style: "currency", currency })
+      .formatToParts()
+      .find((x) => x.type === "currency");
+    return symbol && symbol.value;
+  };
+>>>>>>> e86a0c69cca01dd559389db03abd530f0b9a16e3
 
   function showToast(message, duration) {
     // Create a toast element
@@ -311,43 +526,37 @@ document.addEventListener("DOMContentLoaded", () => {
     }, duration);
   }
 
+  /////////////////////get total billngs
+  function getBillingsTotal() {
+    let loader = document.getElementById("revlytic-overlay");
+    loader.style.display = "flex";
 
-/////////////////////get total billngs
-function getBillingsTotal() {
-  let loader = document.getElementById("revlytic-overlay");
-  loader.style.display = "flex";
-
-  fetch(`${apiPath}api/customerPortal/getTotalOrdersBillingsCount`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      shop,
-      contract_id:`gid://shopify/SubscriptionContract/${param1}`
-    }),
-  })
-    .then((response) => response.json())
-    .then((data) => {
-      loader.style.display = "none";
-      console.log(data, "permmmmm dataa");
-      if (data.message == "success") {
-        totalBillings = data?.data;
-        console.log(data,"okokokokkoko")
-      }
+    fetch(`${apiPath}api/customerPortal/getTotalOrdersBillingsCount`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        shop,
+        contract_id: `gid://shopify/SubscriptionContract/${param1}`,
+      }),
     })
+      .then((response) => response.json())
+      .then((data) => {
+        loader.style.display = "none";
+        console.log(data, "permmmmm dataa");
+        if (data.message == "success") {
+          totalBillings = data?.data;
+          console.log(data, "okokokokkoko");
+        }
+      })
 
-    .catch((error) => {
-      loader.style.display = "none";
-      console.error("Error fetching data:", error);
-    });
-}
+      .catch((error) => {
+        loader.style.display = "none";
+        console.error("Error fetching data:", error);
+      });
+  }
   // //////////////////////
-
-
-
-
-
 
   function getPermissions() {
     let loader = document.getElementById("revlytic-overlay");
@@ -395,9 +604,9 @@ function getBillingsTotal() {
         console.log(data, "currre dataa");
         if (data.message == "success") {
           timezone = data?.data?.timezone;
-          store_name= data?.data?.store_name;
-          store_email=data?.data?.store_email;
-          store_currency=data?.data?.currency;
+          store_name = data?.data?.store_name;
+          store_email = data?.data?.store_email;
+          store_currency = data?.data?.currency;
         }
       })
 
@@ -406,6 +615,7 @@ function getBillingsTotal() {
         console.error("Error fetching data:", error);
       });
   }
+
   let loaderData = `<div class="overlay" id="revlytic-overlay">
   <div className='revlytic-loader'>
   <svg width="20vh" height="20vh" viewBox="0 0 512 512" fill="#44e74473" overflow="hidden" xmlns="http://www.w3.org/2000/svg">
@@ -611,8 +821,10 @@ function getBillingsTotal() {
 
   if (param1 == null) {
     containerDiv.innerHTML = bodyData;
+
   }
-  getBillingsTotal()
+
+  getBillingsTotal();
   getPermissions();
   getstoreDetails();
   let loader = document.getElementById("revlytic-overlay");
@@ -633,7 +845,7 @@ function getBillingsTotal() {
         loader.style.display = "none";
 
         listData = subscriptions;
-        allListData=JSON.parse(JSON.stringify(subscriptions))
+        allListData = JSON.parse(JSON.stringify(subscriptions));
         console.log(allListData);
         if (param1 == null) {
           prevButton = document.getElementById("rev-prev-btn");
@@ -708,7 +920,7 @@ function getBillingsTotal() {
             initials =
               subscriptions.data[0].customer_details.firstName
                 .charAt(0)
-                .toUpperCase()+
+                .toUpperCase() +
               subscriptions.data[0].customer_details.lastName
                 .charAt(0)
                 .toUpperCase();
@@ -730,8 +942,13 @@ function getBillingsTotal() {
           Cname.innerHTML = `Hello ${customerName}`;
         } else {
           getStoreToken();
+<<<<<<< HEAD
 console.log("ssdsdasa=>>>",subscriptions)
            subscriptionDetails(subscriptions);
+=======
+          console.log("ssdsdasa=>>>", subscriptions);
+          subscriptionDetails(subscriptions);
+>>>>>>> e86a0c69cca01dd559389db03abd530f0b9a16e3
         }
       })
 
@@ -748,8 +965,8 @@ console.log("ssdsdasa=>>>",subscriptions)
     let searchInput = document.getElementById("rev-search");
 
     searchInput.addEventListener("input", () => {
-      currentPage=1
-      console.log(listData, "hhh",allListData);
+      currentPage = 1;
+      console.log(listData, "hhh", allListData);
       // listData=allListData
       const searchTerm = searchInput.value.toLowerCase();
 
@@ -767,20 +984,17 @@ console.log("ssdsdasa=>>>",subscriptions)
       });
 
       if (!searchTerm) {
-        let change = JSON.parse(JSON.stringify(allListData))
-        listData=change
-        console.log(allListData,"okkk",listData)
+        let change = JSON.parse(JSON.stringify(allListData));
+        listData = change;
+        console.log(allListData, "okkk", listData);
         // If search term is empty, render the original list
         const totalPages = Math.ceil(allListData.data.length / itemsPerPage);
-        
+
         prevButton.disabled = currentPage === 1;
         nextButton.disabled =
-        currentPage === totalPages ||
-        allListData.data.length <= itemsPerPage;
-       renderItems(allListData);
-      }
-      else {
-
+          currentPage === totalPages || allListData.data.length <= itemsPerPage;
+        renderItems(allListData);
+      } else {
         const filteredItems = allListData.data.filter((item) => {
           const numericId = item.subscription_id.match(/\d+/)[0];
           let Price = 0;
@@ -816,18 +1030,16 @@ console.log("ssdsdasa=>>>",subscriptions)
             frequency.toLowerCase().includes(searchTerm)
           );
         });
-        let mainData = listData
-        mainData.data = filteredItems
-        listData=mainData
+        let mainData = listData;
+        mainData.data = filteredItems;
+        listData = mainData;
 
-        
         function updatePaginationButtons() {
           const totalPages = Math.ceil(filteredItems.length / itemsPerPage);
 
           prevButton.disabled = currentPage === 1;
           nextButton.disabled =
-            currentPage === totalPages ||
-            filteredItems.length <= itemsPerPage;
+            currentPage === totalPages || filteredItems.length <= itemsPerPage;
         }
         updatePaginationButtons();
          renderItems({ data: filteredItems });
@@ -875,8 +1087,17 @@ console.log("ssdsdasa=>>>",subscriptions)
                     <div class="col-col-1">${numericId}</div>
                     <div class="col-col-1">${formattedDate}</div>
                     <div class="col-col-1">${frequency.toLocaleLowerCase()}(s)</div>
+<<<<<<< HEAD
                     <div class="col-col-1 rev-product-count">${item.product_details.length}</div>
                     <div class="col-col-1">${getSymbol(item?.subscription_details?.currency)}${Price.toFixed(2)}</div>
+=======
+                    <div class="col-col-1 rev-product-count">${
+                      item.product_details.length
+                    }</div>
+                    <div class="col-col-1">${getSymbol(
+                      item?.subscription_details?.currency
+                    )}${Price.toFixed(2)}</div>
+>>>>>>> e86a0c69cca01dd559389db03abd530f0b9a16e3
                     <div class="col-col-1 ${
                       item.status.toLowerCase() == "active"
                         ? "active"
@@ -1071,7 +1292,7 @@ console.log("ssdsdasa=>>>",subscriptions)
 
     console.log("entresssssssssss", products);
     const nodesArray = products.edges.map((item) => item.node);
-console.log(nodesArray,"18octtest1")
+    console.log(nodesArray, "18octtest1");
     // Merge loadProducts with nodesArray
     loadProducts = [...loadProducts, ...nodesArray];
 
@@ -1088,8 +1309,8 @@ console.log(nodesArray,"18octtest1")
     console.log("asfhkjshjksfhjkafhjkhdkjs");
     // const productList = document.getElementById("product-list");
     const bottom =
-      e.target.scrollHeight - e.target.scrollTop== e.target.clientHeight 
-      
+      e.target.scrollHeight - e.target.scrollTop == e.target.clientHeight;
+
     console.log("next", e.target.scrollHeight - parseInt(e.target.scrollTop));
     // console.log("next1",e.target.scrollTop)
     console.log("next2", e.target.clientHeight);
@@ -1253,9 +1474,9 @@ console.log(nodesArray,"18octtest1")
 
     console.log(data, "fdjs");
     const mainDetails = data[0];
-    currencyCode= getSymbol(data[0]?.subscription_details?.currency)
+    currencyCode = getSymbol(data[0]?.subscription_details?.currency);
     let cancelReasonModal;
-    if (permissions.cancellation == "simple" ) {
+    if (permissions.cancellation == "simple") {
       cancelReasonModal = `<div id="cancelModal" class="rev-cancel-reason-modal">
 <div class="modal-content">
     <span class="close" id="cancelModalCloseBtn">&times;</span>
@@ -1366,7 +1587,6 @@ console.log(nodesArray,"18octtest1")
                 item.status != "initial" &&
                 item.status != "skipped" &&
                 item.status != "retriedAfterFailure" &&
-
                 new Date(item.renewal_date) > new Date()
             );
 
@@ -1458,6 +1678,10 @@ console.log(nodesArray,"18octtest1")
               }
             }
             console.log("end", newArray);
+
+   
+
+
             function getStatusSVG(status) {
               let color = "";
               switch (status) {
@@ -1487,18 +1711,25 @@ console.log(nodesArray,"18octtest1")
               let buttons =
                 item.status == "upcoming"
                   ? `<div class="order-now-and-skip">
-                  ${permissions.values.attemptBilling?`<button
+                  ${
+                    permissions.values.attemptBilling
+                      ? `<button
                   class="order-button"
                   data-renewal-date="${item.renewal_date}"
                 >
                   Order Now
-                </button>`:""}
-                ${permissions.values.skipOrder ?`<button
+                </button>`
+                      : ""
+                  }
+                ${
+                  permissions.values.skipOrder
+                    ? `<button
                   class="skip-button"
                   data-renewal-date="${item.renewal_date}"
                 >
                   Skip Order
-              </button>`:""
+              </button>`
+                    : ""
                 }
                   </div>`
                   : item.status == "failed"
@@ -1513,7 +1744,7 @@ console.log(nodesArray,"18octtest1")
                   : ` <div class="order-now-and-skip">
 </div>`;
 
-              return ` <div class="order-conformation-inner">
+              return item.status != "failed"  ? `<div class="order-conformation-inner">
               <div class="order-date">
                   <h5>${dateConversion(item?.renewal_date)}</h5>
               </div>
@@ -1521,7 +1752,7 @@ console.log(nodesArray,"18octtest1")
                   <h5>
                       ${svg}
                       ${
-                        item.status == "upcoming"
+                        item.status == "upcoming" 
                           ? "Queued"
                           : item.status == "pending"
                           ? "Pending"
@@ -1533,7 +1764,7 @@ console.log(nodesArray,"18octtest1")
               </div>
               
                   ${buttons}
-          </div>`;
+          </div>` : '' 
             });
             let skipHtml = filterSkippedOrders.map((item) => {
               return ` <div class="order-conformation-inner">
@@ -1556,6 +1787,45 @@ ${item?.order_no}
 
           </div>`;
             });
+
+            let failedOrdersArray=arr.filter((item)=>
+        (item.status=='failed' ||  item.status=='retriedAfterFailure'  )
+   && (!filterPastOrders.some((itm)=> itm?.renewal_date==item?.renewal_date)) && (!newArray.some((itm)=> itm?.renewal_date==item?.renewal_date && itm.status=='pending'))
+          )
+          let failedOrderHtml = failedOrdersArray.map((item) => {
+            return ( mainDetails?.status?.toLowerCase()=='active' ? `<div class="order-conformation-inner">
+            <div class="order-date">
+                <h5>${dateConversion(item?.renewal_date)}</h5>
+            </div>
+            <div class="order-now-and-skip">
+            <button
+              class="retry-button"
+              data-renewal-date="${item.renewal_date}"
+            >
+              Retry
+            </button>
+          </div> 
+        </div>` : `<div class="order-conformation-inner">
+        <div class="order-date">
+            <h5>${dateConversion(item?.renewal_date)}</h5>
+        </div>` );
+        
+          });
+          const failedOrdersMain = document.querySelector(
+            ".revlytic.failed-order-container"
+          );
+          console.log(failedOrdersMain, "failedOrdersMain");
+          console.log(failedOrderHtml, "failedOrderHtml");
+          const failedOrdersContainer = document.createElement("div");
+          failedOrdersContainer.classList.add("revlytic-orders-container");
+        
+          failedOrdersContainer.innerHTML = failedOrderHtml.join("");
+          failedOrdersMain.parentNode.insertBefore(
+            failedOrdersContainer,
+            failedOrdersMain.nextSibling
+          );
+
+
             //////upcomingg
 
             if (mainDetails.status.toLowerCase() == "active") {
@@ -1563,6 +1833,9 @@ ${item?.order_no}
                 ".revlytic.upcoming-order-container"
               );
               const upcomingOrdersContainer = document.createElement("div");
+              upcomingOrdersContainer.classList.add(
+                "revlytic-orders-container"
+              );
               upcomingOrdersContainer.innerHTML = upcomingHtml.join("");
               upcomingOrdersMain.parentNode.insertBefore(
                 upcomingOrdersContainer,
@@ -1573,8 +1846,10 @@ ${item?.order_no}
             const skipOrdersMain = document.querySelector(
               ".revlytic.skip-order-container"
             );
-            console.log(skipHtml,"fhsgdfghsdfhsdfsdhf")
+            console.log(skipHtml, "fhsgdfghsdfhsdfsdhf");
             const skipOrdersContainer = document.createElement("div");
+            skipOrdersContainer.classList.add("revlytic-orders-container");
+
             skipOrdersContainer.innerHTML = skipHtml.join("");
             skipOrdersMain.parentNode.insertBefore(
               skipOrdersContainer,
@@ -1585,6 +1860,8 @@ ${item?.order_no}
               ".revlytic.past-order-container"
             );
             const pastOrderContainer = document.createElement("div");
+            pastOrderContainer.classList.add("revlytic-orders-container");
+
             pastOrderContainer.innerHTML = pastHtml.join("");
             pastOrderMain.parentNode.insertBefore(
               pastOrderContainer,
@@ -1678,7 +1955,10 @@ ${item?.order_no}
                           if (data.message == "success") {
                             console.log(data);
                             getDataFromDb();
-                            showToast("Your order was successfully submitted", 3000);
+                            showToast(
+                              "Your order was successfully submitted",
+                              3000
+                            );
                           } else {
                             showToast(data?.data, 3000);
                           }
@@ -1716,7 +1996,10 @@ ${item?.order_no}
                           if (data.message == "success") {
                             console.log(data);
                             getDataFromDb();
-                            showToast("Your order was successfully submitted", 3000);
+                            showToast(
+                              "Your order was successfully submitted",
+                              3000
+                            );
                           } else {
                             showToast(data?.data, 3000);
                           }
@@ -1824,7 +2107,10 @@ ${item?.order_no}
                           if (data.message == "success") {
                             console.log(data);
                             getDataFromDb();
-                            showToast("Your order was successfully skipped", 3000);
+                            showToast(
+                              "Your order was successfully skipped",
+                              3000
+                            );
                           } else {
                             showToast(data?.data, 3000);
                           }
@@ -1855,7 +2141,10 @@ ${item?.order_no}
                           if (data.message == "success") {
                             console.log(data);
                             getDataFromDb();
-                            showToast("Your order was successfully skipped", 3000);
+                            showToast(
+                              "Your order was successfully skipped",
+                              3000
+                            );
                           } else {
                             showToast(data?.data, 3000);
                           }
@@ -1894,7 +2183,10 @@ ${item?.order_no}
                       if (data.message == "success") {
                         console.log(data);
                         getDataFromDb();
-                        showToast("Your order was successfully submitted", 3000);
+                        showToast(
+                          "Your order was successfully submitted",
+                          3000
+                        );
                       } else {
                         showToast(data?.data, 3000);
                       }
@@ -1971,7 +2263,7 @@ ${item?.order_no}
                         lineItems: arr,
                         fulfill_at: item?.fulfill_at,
                         status: item.status,
-                        order_id:item.order_id
+                        order_id: item.order_id,
                       },
                     };
                     if (item.status == "scheduled") {
@@ -2019,7 +2311,9 @@ ${item?.order_no}
                         <div class="order-status">
                         <h5><a
                         target="_blank"
-                        href="https://admin.shopify.com/store/${shop?.split(".myshopify.com")[0]}/orders/${Object.values(item)[0]?.order_id}"
+                        href="https://admin.shopify.com/store/${
+                          shop?.split(".myshopify.com")[0]
+                        }/orders/${Object.values(item)[0]?.order_id}"
                         
                       >
                       ${fullfillmentDataMain?.orderNumber}
@@ -2035,29 +2329,37 @@ ${item?.order_no}
                             >
                               Reschedule
                             </button>
-                            ${permissions.values.skipUpcomingFullfilment?`<button
+                            ${
+                              permissions.values.skipUpcomingFullfilment
+                                ? `<button
                             class="skip-fullfill-button"
                             data-id= ${Object.keys(item)[0]}
                             data-date=${Object.values(item)[0].fulfill_at}
                           >
                             Postpone
-                          </button>`:""}
+                          </button>`
+                                : ""
+                            }
                       </div>
                     </div>`;
 
                         // Push the HTML element into the array
                       }
                     });
-                    if(mainDetails.subscription_details.planType == "prepaid") {const upcomingOrdersMain = document.querySelector(
-                      ".revlytic.upcoming-order-container"
-                    );
-                    const upcomingOrdersContainer =
-                      document.createElement("div");
-                    upcomingOrdersContainer.innerHTML = upcomingHtml.join("");
-                    upcomingOrdersMain.parentNode.insertBefore(
-                      upcomingOrdersContainer,
-                      upcomingOrdersMain.nextSibling
-                    );}
+                    if (
+                      mainDetails.subscription_details.planType == "prepaid"
+                    ) {
+                      const upcomingOrdersMain = document.querySelector(
+                        ".revlytic.upcoming-order-container"
+                      );
+                      const upcomingOrdersContainer =
+                        document.createElement("div");
+                      upcomingOrdersContainer.innerHTML = upcomingHtml.join("");
+                      upcomingOrdersMain.parentNode.insertBefore(
+                        upcomingOrdersContainer,
+                        upcomingOrdersMain.nextSibling
+                      );
+                    }
                   }
                   // setUpcomingFulfillments(filtered)
                 }
@@ -2093,7 +2395,9 @@ ${item?.order_no}
                             <div class="order-status">
                             <h5><a
                             target="_blank"
-                            href="https://admin.shopify.com/store/${shop?.split(".myshopify.com")[0]}/orders/${Object.values(item)[0]?.order_id}"
+                            href="https://admin.shopify.com/store/${
+                              shop?.split(".myshopify.com")[0]
+                            }/orders/${Object.values(item)[0]?.order_id}"
                             
                           >
                           ${fullfillmentDataMain?.orderNumber}
@@ -2147,7 +2451,9 @@ ${item?.order_no}
                             <div class="order-status">
                             <h5><a
                             target="_blank"
-                            href="https://admin.shopify.com/store/${shop?.split(".myshopify.com")[0]}/orders/${Object.values(item)[0]?.order_id}"
+                            href="https://admin.shopify.com/store/${
+                              shop?.split(".myshopify.com")[0]
+                            }/orders/${Object.values(item)[0]?.order_id}"
                             
                           >
                           ${fullfillmentDataMain?.orderNumber}
@@ -2185,18 +2491,17 @@ ${item?.order_no}
                     function formatDateForInput(dateString) {
                       const dateObj = new Date(dateString);
                       const year = dateObj.getFullYear();
-                      const month = (dateObj.getMonth() + 1).toString().padStart(2, '0'); // Adding 1 because January is 0
-                      const day = dateObj.getDate().toString().padStart(2, '0');
+                      const month = (dateObj.getMonth() + 1)
+                        .toString()
+                        .padStart(2, "0"); // Adding 1 because January is 0
+                      const day = dateObj.getDate().toString().padStart(2, "0");
                       return `${year}-${month}-${day}`;
                     }
-                    
+
                     const providedDate = dateConversion(date); // This is the date you want to set
                     const formattedDate = formatDateForInput(providedDate);
-                    document.getElementById("reschedule-datepicker").value = formattedDate;
-
-
-
-
+                    document.getElementById("reschedule-datepicker").value =
+                      formattedDate;
 
                     // const parts = date.split("T"); // Split the date and time
                     // const datePart = parts[0]; // Get the date part "2023-10-25"
@@ -2347,8 +2652,8 @@ ${item?.order_no}
             loader.style.display = "none";
             console.log(`Error`, error);
           });
-          loader.style.display = "flex";
-  
+        loader.style.display = "flex";
+
         fetch(`${apiPath}api/customerPortal/getOrdersDataUpcoming`, {
           method: "POST",
           headers: {
@@ -2366,11 +2671,50 @@ ${item?.order_no}
             // let newArray = [...ordersDataUpcoming?.data];
             console.log(ordersDataUpcoming?.data, "newArray");
             let arr = [...ordersDataUpcoming?.data];
-  
+
             let filterPastOrders = arr.filter(
               (item) => item.status == "success" || item.status == "initial"
             );
             console.log(filterPastOrders, "passsssstt");
+             ////////sahil1may////////////
+             let failedOrdersArray=arr.filter((item)=>
+             (item.status=='failed' ||  item.status=='retriedAfterFailure'  )
+        && (!filterPastOrders.some((itm)=> itm?.renewal_date==item?.renewal_date))
+               )
+                       
+               let failedOrderHtml = failedOrdersArray.map((item) => {
+                 return `<div class="order-conformation-inner">
+                 <div class="order-date">
+                     <h5>${dateConversion(item?.renewal_date)}</h5>
+                 </div>
+                  <div class="order-now-and-skip">
+                 <button
+                   class="retry-button"
+                   data-renewal-date="${item.renewal_date}"
+                 >
+                   Retry
+                 </button>
+               </div>
+             </div>`;
+             
+               });
+               const failedOrdersMain = document.querySelector(
+                 ".revlytic.failed-order-container"
+               );
+               console.log(failedOrdersMain, "failedOrdersMain");
+               console.log(failedOrderHtml, "failedOrderHtml");
+               const failedOrdersContainer = document.createElement("div");
+               failedOrdersContainer.classList.add("revlytic-orders-container");
+             
+               failedOrdersContainer.innerHTML = failedOrderHtml.join("");
+               failedOrdersMain.parentNode.insertBefore(
+                 failedOrdersContainer,
+                 failedOrdersMain.nextSibling
+               );
+
+
+
+/////////sahilend1may///////
             if (filterPastOrders.length > 0) {
               // let filtered = completed.filter((item) =>
               //   Object.values(item)[0].lineItems.some((lineItem) =>
@@ -2391,8 +2735,7 @@ ${item?.order_no}
               let prepaidPastOrdersHtml = ``;
               if (filterPastOrders?.length > 0) {
                 prepaidPastOrdersHtml = filterPastOrders?.map((item, index) => {
-                  return (
-                    `<div class="order-conformation-inner" key={index}>
+                  return `<div class="order-conformation-inner" key={index}>
                         <div class="order-date">
                                <h5>${dateConversion(
                                  item.renewal_date,
@@ -2402,14 +2745,15 @@ ${item?.order_no}
                         <div class="order-status">
                         <h5><a
                         target="_blank"
-                        href="https://admin.shopify.com/store/${shop?.split(".myshopify.com")[0]}/orders/${item?.order_id?.split('/').at(-1)}"
+                        href="https://admin.shopify.com/store/${
+                          shop?.split(".myshopify.com")[0]
+                        }/orders/${item?.order_id?.split("/").at(-1)}"
                         
                       >
                       ${item?.order_no}
                       </a></h5>
                         </div>
-                     </div>`
-                  );
+                     </div>`;
                 });
                 const skipOrdersMain = document.querySelector(
                   ".revlytic.prepaid-past-order-container"
@@ -2422,7 +2766,55 @@ ${item?.order_no}
                 );
               }
             }
-          }).catch((error) => {
+
+            const retryButtons = document.querySelectorAll(".retry-button");
+            retryButtons.length > 0 &&
+            retryButtons.forEach((button) => {
+              button.addEventListener("click", () => {
+                const renewal_date = button.getAttribute("data-renewal-date");
+                let loader = document.getElementById("revlytic-overlay");
+                loader.style.display = "flex";
+
+                fetch(`${apiPath}api/customerPortal/retryFailedOrder`, {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json",
+                  },
+                  body: JSON.stringify({
+                    shop: shop,
+                    renewal_date: renewal_date,
+                    product_details: mainDetails?.product_details,
+                    subscription_id: mainDetails.subscription_id,
+                  }),
+                })
+                  .then((response) => response.json())
+                  .then((data) => {
+                    loader.style.display = "none";
+                    if (data.message == "success") {
+                      console.log(data);
+                      getDataFromDb();
+                      showToast(
+                        "Your order was successfully submitted",
+                        3000
+                      );
+                    } else {
+                      showToast(data?.data, 3000);
+                    }
+                  })
+                  .catch((error) => {
+                    showToast("Something went wrong", 3000);
+                    loader.style.display = "none";
+                    console.log(`Error  ${JSON.stringify(error)}`);
+                  });
+              });
+
+              // setUpcomingOrders(newArray);
+            });
+
+
+
+          })
+          .catch((error) => {
             showToast("Something went wrong", 3000);
             loader.style.display = "none";
             console.log(`Error`, error);
@@ -2452,14 +2844,22 @@ ${item?.order_no}
       if (permissions.values.pauseResumeSubscription) {
         buttons += `<button href="#" class="pause-sub">Pause Subscription </button>`;
       }
-      if (permissions.values.cancelSubscription && parseInt(mainDetails?.subscription_details?.billingMinValue) <= parseInt(totalBillings)) {
+      if (
+        permissions.values.cancelSubscription &&
+        parseInt(mainDetails?.subscription_details?.billingMinValue) <=
+          parseInt(totalBillings)
+      ) {
         buttons += `<button href="#" class="cancel-sub">Cancel Subscription</button>`;
       }
     } else if (mainDetails.status.toLowerCase() === "paused") {
       if (permissions.values.pauseResumeSubscription) {
         buttons += `<button href="#" class="resume-sub">Resume Subscription </button>`;
       }
-      if (permissions.values.cancelSubscription && parseInt(mainDetails?.subscription_details?.billingMinValue) <= parseInt(totalBillings)) {
+      if (
+        permissions.values.cancelSubscription &&
+        parseInt(mainDetails?.subscription_details?.billingMinValue) <=
+          parseInt(totalBillings)
+      ) {
         buttons += `<button href="#" class="cancel-sub">Cancel Subscription</button>`;
       }
     } else {
@@ -2477,8 +2877,8 @@ ${item?.order_no}
     }
     function formatVariableName(variableName) {
       // Split the variable name by underscores
-      const parts = variableName.split('_');
-    
+      const parts = variableName.split("_");
+
       // Capitalize the first letter of each part after the first one
       const formattedParts = parts.map((part, index) => {
         if (index === 0) {
@@ -2487,10 +2887,10 @@ ${item?.order_no}
           return part.charAt(0).toUpperCase() + part.slice(1);
         }
       });
-    
+
       // Join the formatted parts with spaces
-      const formattedVariableName = formattedParts.join(' ');
-    
+      const formattedVariableName = formattedParts.join(" ");
+
       return formattedVariableName;
     }
     let subtotal = 0;
@@ -2511,21 +2911,25 @@ ${item?.order_no}
             </img>
             <div class="pl-3 email">
               <span>${item.product_name} ${
-                item?.title?.toLowerCase() != "default title" && item?.title != null ? item?.title : ""
+        item?.title?.toLowerCase() != "default title" && item?.title != null
+          ? item?.title
+          : ""
       }</span>
             </div>
         </td>
-        <td class="price-td" data-price =${item?.price} >${currencyCode && currencyCode}${parseFloat(item?.price).toFixed(2)}</td>
+        <td class="price-td" data-price =${item?.price} >${
+        currencyCode && currencyCode
+      }${parseFloat(item?.price).toFixed(2)}</td>
         <td class="quantity-td">${item?.quantity}</td>
         <td class="quantity-input hidden"><input  type="number" placeholder="Quantity" value=${
           item?.quantity
         } /></td>
-        <td class="total-td" >${currencyCode && currencyCode}${
-        parseFloat(item?.price * item?.quantity)?.toFixed(2)
-      }</td>
-        <td class="total-input hidden">${currencyCode && currencyCode}${
-          parseFloat(item?.price * item?.quantity)?.toFixed(2)
-      }</td>
+        <td class="total-td" >${currencyCode && currencyCode}${parseFloat(
+        item?.price * item?.quantity
+      )?.toFixed(2)}</td>
+        <td class="total-input hidden">${
+          currencyCode && currencyCode
+        }${parseFloat(item?.price * item?.quantity)?.toFixed(2)}</td>
 
         <td class="submit-cancel-button hidden"><button  data-line =${
           item.subscriptionLine
@@ -2796,9 +3200,27 @@ ${cancelReasonModal}
               </div>
     
               <div class="edit-plan-payment-main">
-              <h4>Payment Method Type: <span>${mainDetails?.payment_details?.payment_instrument_value?.brand?.charAt(0)?.toUpperCase() + formatVariableName(mainDetails?.payment_details?.payment_instrument_value?.brand?.slice(1))} Ending With ${
-                mainDetails?.payment_details?.payment_instrument_value?.lastDigits
-              }</span></h4>
+              ${
+                mainDetails?.payment_details?.payment_instrument_value
+                  ?.__typename == "CustomerCreditCard" ||
+                mainDetails?.payment_details?.payment_instrument_value
+                  ?.__typename == "CustomerShopPayAgreement"
+                  ? ` <h4>Payment Method Type: <span>${
+                      mainDetails?.payment_details?.payment_instrument_value
+                        ?.brand
+                        ? mainDetails?.payment_details?.payment_instrument_value?.brand
+                            ?.charAt(0)
+                            ?.toUpperCase() +
+                          formatVariableName(
+                            mainDetails?.payment_details?.payment_instrument_value?.brand?.slice(
+                              1
+                            )
+                          )
+                        : ""
+                    } Ending With ${
+                      mainDetails?.payment_details?.payment_instrument_value
+                        ?.lastDigits
+                    }</span></h4>
     <h4>Card Holder Name: <span>${capitalizeFirstChar(
       firstName
     )} ${capitalizeFirstChar(lastName)}</span></h4>
@@ -2807,8 +3229,14 @@ ${cancelReasonModal}
                     mainDetails?.payment_details?.payment_instrument_value
                       ?.expiryMonth
                   } / ${
-      mainDetails?.payment_details?.payment_instrument_value?.expiryYear
-    }</span></h4>
+                      mainDetails?.payment_details?.payment_instrument_value
+                        ?.expiryYear
+                    }</span></h4>`
+                  : mainDetails?.payment_details?.payment_instrument_value
+                      ?.__typename == "CustomerPaypalBillingAgreement"
+                  ? `<h4>Payment Method Type: <span>${mainDetails?.payment_details?.payment_instrument_value?.paypalAccountEmail}</span></h4>`
+                  : ""
+              }
               </div>
           </div>
       </div>
@@ -2970,84 +3398,33 @@ ${cancelReasonModal}
     
       </div>
       <!--edit shiping details section end-->
-    
-      <div class="upcoming-order tabset">
-      <!-- Tab 1 -->
-      ${
-           ` <input type="radio" name="tabset" id="tab1" aria-controls="UpcomingOrders" checked>
-      <label for="tab1">${
+      <div class="revlytic-tabs-newmain">
+      <ul class="revlytic-tabs-new tabs">
+      <li class="active" data-cont=".one">${
         mainDetails.subscription_details.planType == "payAsYouGo"
           ? "Upcoming Orders"
           : "Scheduled"
-      }</label>`
-          
-      }
-      <!-- Tab 2 -->
-      <input type="radio" name="tabset" id="tab2" aria-controls="PastOrders" >
-      <label for="tab2">${
+      }</li>
+      <li data-cont=".two">${
         mainDetails.subscription_details.planType == "payAsYouGo"
           ? "Past Orders"
           : "Open"
-      }</label>
-      <!-- Tab 3 -->
-      <input type="radio" name="tabset" id="tab3" aria-controls="SkippedOrders">
-      <label for="tab3">${
+      }</li>
+      <li data-cont=".three">${
         mainDetails.subscription_details.planType == "payAsYouGo"
           ? "Skipped Orders"
           : "Closed"
-      }</label>
-      <input type="radio" name="tabset" id="tab4" aria-controls="PrepaidPastOrders">
-      ${mainDetails.subscription_details.planType == "prepaid" ? `<label for="tab4">Past Orders</label>` : ""}
+      }</li>
+      
 
-      <div class="tab-panels">
-          <section id="UpcomingOrders" class="tab-panel">
-              <div class="revlytic upcoming-orders-main upcoming-order-container">
-                  <h4>${
-                    mainDetails.subscription_details.planType == "payAsYouGo"
-                      ? "Order Date"
-                      : "Fulfillment Date"
-                  }</h4>
-                  <h4 class="status">${
-                    mainDetails.subscription_details.planType == "payAsYouGo"
-                      ? "Status"
-                      : "Order Number"
-                  }</h4>
-                  <h4 class="manage">${
-                  "Manage"
-                  }</h4>
-              </div>
 
-          </section>
-          <section id="PastOrders" class="tab-panel">
-          <div class="revlytic upcoming-orders-main past-order-container">
-          <h4>${
-            mainDetails.subscription_details.planType == "payAsYouGo"
-              ? "Order Date"
-              : "Fulfillment Date"
-          }</h4>
-          <h4 class="status">${
-            mainDetails.subscription_details.planType == "payAsYouGo"
-              ? "Order Number"
-              : "Order Number"
-          }</h4>
-              </div>
-              
-          </section>
-          <section id="SkippedOrders" class="tab-panel">
-          <div class="revlytic upcoming-orders-main skip-order-container">
-                  <h4>${
-                    mainDetails.subscription_details.planType == "payAsYouGo"
-                      ? "Order Date"
-                      : "Fulfillment Date"
-                  }</h4>
-                  <h4 class="status">${
-                    mainDetails.subscription_details.planType == "payAsYouGo"
-                      ? ""
-                      : "Order Number"
-                  }</h4>
-              </div>
-          </section>
+      ${mainDetails.subscription_details.planType == "prepaid" ? `
+      <li data-cont=".four">
+        Past orders
+      </li>
+    ` : ''}
 
+<<<<<<< HEAD
           ${mainDetails.subscription_details.planType == "prepaid" ? `         
            <section id="PrepaidPastOrders" class="tab-panel">
           <div class="revlytic upcoming-orders-main prepaid-past-order-container">
@@ -3057,9 +3434,68 @@ ${cancelReasonModal}
 
       </section>`: "" }
       </div>
+=======
+    <li data-cont=".five">Failed orders</li>
+      
+    </ul>
+    <div class="revlytictabs-content content">
+    <div class="one"> <div class="revlytic upcoming-orders-main upcoming-order-container">
+    <h4>${
+    mainDetails.subscription_details.planType == "payAsYouGo"
+      ? "Order Date"
+      : "Fulfillment Date"
+    }</h4>
+    <h4 class="status">${
+    mainDetails.subscription_details.planType == "payAsYouGo"
+      ? "Status"
+      : "Order Number"
+    }</h4>
+    <h4 class="manage">${"Manage"}</h4>
+    </div></div>
+    <div class="two">   <div class="revlytic upcoming-orders-main past-order-container">
+    <h4>${
+    mainDetails.subscription_details.planType == "payAsYouGo"
+      ? "Order Date"
+      : "Fulfillment Date"
+    }</h4>
+    <h4 class="status">${
+    mainDetails.subscription_details.planType == "payAsYouGo"
+      ? "Order Number"
+      : "Order Number"
+    }</h4>
+      </div></div>
+    <div class="three"> <div class="revlytic upcoming-orders-main skip-order-container">
+    <h4>${
+    mainDetails.subscription_details.planType == "payAsYouGo"
+      ? "Order Date"
+      : "Fulfillment Date"
+    }</h4>
+    <h4 class="status">${
+    mainDetails.subscription_details.planType == "payAsYouGo"
+      ? ""
+      : "Order Number"
+    }</h4>
+    </div></div>
 
-  </div>
-    
+>>>>>>> e86a0c69cca01dd559389db03abd530f0b9a16e3
+
+    ${
+      mainDetails.subscription_details.planType == "prepaid"
+        ? `         
+        <div class = "four"> <div class="revlytic upcoming-orders-main prepaid-past-order-container">
+        <h4>Order Date</h4>
+        <h4 class="status">Order Number</h4>
+            </div></div>`
+        : ""
+    }
+    <div class = "five"><div class="revlytic upcoming-orders-main failed-order-container">
+    <h4>Failed  On</h4>
+</div></div>
+
+
+    </div>
+
+    </div>
       <!--upcoming order section end-->
     
       <div class="revlytic-subscription-status">
@@ -3078,7 +3514,29 @@ ${cancelReasonModal}
     </div>`;
 
     containerDiv.innerHTML = detailsData;
-    ////////////////////reschedule datepicker listner
+    // latest event listner
+    let tabs = document.querySelectorAll(".tabs li");
+    let tabsArray = Array.from(tabs);
+    let divs = document.querySelectorAll(".content > div");
+    let divsArray = Array.from(divs);
+    
+    // console.log(tabsArray);
+    
+    tabsArray.forEach((ele) => {
+      ele.addEventListener("click", function (e) {
+        // console.log(ele);
+        tabsArray.forEach((ele) => {
+          ele.classList.remove("active");
+        });
+        e.currentTarget.classList.add("active");
+        divsArray.forEach((div) => {
+          div.style.display = "none";
+        });
+        // console.log(e.currentTarget.dataset.cont);
+        document.querySelector(e.currentTarget.dataset.cont).style.display = "block";
+      });
+    });
+    //////////////////reschedule datepicker listner
     document
       .getElementById("reschedule-datepicker")
       .addEventListener("change", function () {
@@ -3112,15 +3570,12 @@ ${cancelReasonModal}
       "rev-reason-confirmCancelBtn"
     );
     let reason = document.getElementById("rev-cancel-reason-select");
-   
 
     cancelModalCancelBtn.addEventListener("click", () => {
       cancelModal.style.display = "none";
     });
 
-    const cancelModalCrossBtn = document.getElementById(
-      "cancelModalCloseBtn"
-    );
+    const cancelModalCrossBtn = document.getElementById("cancelModalCloseBtn");
     cancelModalCrossBtn.addEventListener("click", () => {
       cancelModal.style.display = "none";
     });
@@ -3143,25 +3598,63 @@ ${cancelReasonModal}
       }
     });
 
+    function compareDatesIgnoringTime(date1, date2) {
+      // Create new Date objects with the same date but time set to 00:00:00
+      const newDate1 = new Date(date1.getFullYear(), date1.getMonth(), date1.getDate());
+      const newDate2 = new Date(date2.getFullYear(), date2.getMonth(), date2.getDate());
+  
+      // Compare the new Date objects
+      if (newDate1 < newDate2) {
+          return -1;
+      } else if (newDate1 > newDate2) {
+          return 1;
+      } else {
+          return 0;
+      }
+  }
+  
+
     function changeSubStatus(key, reason) {
       let loader = document.getElementById("revlytic-overlay");
       loader.style.display = "flex";
+     let body={
+      shop: shop,
+      id: `gid://shopify/SubscriptionContract/${param1}`,
+      input: { status: key },
+      field: "status",
+      reason: reason,
+    }
+
+    if(key =='ACTIVE') {
+
+      const dateString1 = new Date(mainDetails?.nextBillingDate).toISOString();
+      const dateString2 = new Date().toISOString();
+       let date1=new Date(dateString1)
+       let date2=new Date(dateString2)
+      const comparisonResult = compareDatesIgnoringTime(date1,date2);
+      
+      if (comparisonResult < 0) {
+        date2.setDate(date2.getDate() + 1);
+        // console.log("date2",new Date(date2).toISOString())
+        body.input.nextBillingDate = new Date(date2)?.toISOString() ;
+        console.log("bodyyy",body)      
+      } else if (comparisonResult > 0) {
+          // console.log("date1 is after date2.");
+      } else {
+          // console.log("Both dates are the same.");
+      }
+  
+     }
 
       fetch(`${apiPath}api/customerPortal/subscriptionStatusUpdate`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          shop: shop,
-          id: `gid://shopify/SubscriptionContract/${param1}`,
-          input: { status: key },
-          field: "status",
-          reason: reason,
-        }),
+        body: JSON.stringify(body),
       })
         .then((response) => response.json())
-        .then(async(data) => {
+        .then(async (data) => {
           loader.style.display = "none";
           if (data.message == "success") {
             if (data?.data?.status == "CANCELLED") {
@@ -3172,7 +3665,7 @@ ${cancelReasonModal}
                 shop_email: store_email,
                 currency: mainDetails?.subscription_details?.currency,
               };
-    
+
               let resp = await sendMailOnUpdate({}, extra);
             } else if (data?.data?.status == "PAUSED") {
               let extra = {
@@ -3182,7 +3675,7 @@ ${cancelReasonModal}
                 shop_email: store_email,
                 currency: mainDetails?.subscription_details?.currency,
               };
-    
+
               let resp = await sendMailOnUpdate({}, extra);
             } else if (data?.data?.status == "ACTIVE") {
               let extra = {
@@ -3192,7 +3685,7 @@ ${cancelReasonModal}
                 shop_email: store_email,
                 currency: mainDetails?.subscription_details?.currency,
               };
-    
+
               let resp = await sendMailOnUpdate({}, extra);
             }
             console.log(data);
@@ -3209,80 +3702,64 @@ ${cancelReasonModal}
         });
     }
 
+
     async function sendMailOnUpdate(others, extra) {
       let loader = document.getElementById("revlytic-overlay");
       loader.style.display = "flex";
 
-      fetch(
-        `${apiPath}api/customerPortal/getEmailTemplateAndConfigData`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            shop: shop,
-            templateType: extra?.templateType,
-          }),
-        }
-      )
+      fetch(`${apiPath}api/customerPortal/getEmailTemplateAndConfigData`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          shop: shop,
+          templateType: extra?.templateType,
+        }),
+      })
         .then((response) => response.json())
         .then((getEmailTemplateAndConfigData) => {
           loader.style.display = "none";
           if (getEmailTemplateAndConfigData.message == "success") {
             console.log(getEmailTemplateAndConfigData);
-            let templateType = extra?.templateType
+            let templateType = extra?.templateType;
 
-              let getData = getEmailTemplateAndConfigData?.data;
-          
-              let sendMailToCustomer = getData?.settings[templateType].status;
-              let sendMailToMerchant = getData?.settings[templateType].adminNotification;
-          
-              if (sendMailToCustomer || sendMailToMerchant) {
-                console.log("stredetails", extra?.storeDetails);
-          
-                let recipientMails = [];
-          
-                if (sendMailToMerchant) {
-                  console.log("extra", extra);
-                  let shopEmail = extra?.shop_email;
-          
-                  recipientMails.push(shopEmail);
-                }
-                if (sendMailToCustomer) {
-                  recipientMails.push(extra?.data?.customer_details?.email);
-                }
-          
-                let configurationData = getData?.configuration;
-                let selectedTemplate = getData?.settings[templateType];
-          
-                let options = {};
-                let emailConfig = {};
-          
-                if (configurationData && configurationData.enable == true) {
-                  console.log("inenabletrue");
-                  let encryptionConfig = {};
-                  if (configurationData.encryption === "ssl") {
-                    encryptionConfig = {
-                      secure: true,
-                      requireTLS: true,
-                    };
-                  } else if (configurationData.encryption === "tls") {
-                    encryptionConfig = {
-                      secure: false, // For TLS, secure should be set to false
-                      requireTLS: true,
-                    };
-                  }
-          
-                  emailConfig = {
-                    host: configurationData.host,
-                    port: parseInt(configurationData.portNumber), // Convert port number to integer
-                    auth: {
-                      user: configurationData.userName,
-                      pass: configurationData.password,
-                    },
-                    ...(configurationData.encryption === "none" ? {} : encryptionConfig),
+            let getData = getEmailTemplateAndConfigData?.data;
+
+            let sendMailToCustomer = getData?.settings[templateType].status;
+            let sendMailToMerchant =
+              getData?.settings[templateType].adminNotification;
+
+            if (sendMailToCustomer || sendMailToMerchant) {
+              console.log("stredetails", extra?.storeDetails);
+
+              let recipientMails = [];
+
+              if (sendMailToMerchant) {
+                console.log("extra", extra);
+                let shopEmail = extra?.shop_email;
+
+                recipientMails.push(shopEmail);
+              }
+              if (sendMailToCustomer) {
+                recipientMails.push(extra?.data?.customer_details?.email);
+              }
+
+              let configurationData = getData?.configuration;
+              let selectedTemplate = getData?.settings[templateType];
+
+              let options = {};
+              let emailConfig = {};
+
+              if (configurationData && configurationData.enable == true) {
+                console.log("inenabletrue");
+                let encryptionConfig = {};
+                if (configurationData.encryption === "ssl") {
+                  encryptionConfig = {
+                    secure: true,
+                    requireTLS: true,
                   };
+<<<<<<< HEAD
           
                   options = {
                     // from: configurationData.fromName,
@@ -3319,70 +3796,109 @@ ${cancelReasonModal}
                     bcc: selectedTemplate?.emailSetting?.bcc,
                     replyTo: selectedTemplate?.emailSetting?.replyTo,
                     ...others,
+=======
+                } else if (configurationData.encryption === "tls") {
+                  encryptionConfig = {
+                    secure: false, // For TLS, secure should be set to false
+                    requireTLS: true,
+>>>>>>> e86a0c69cca01dd559389db03abd530f0b9a16e3
                   };
                 }
-          
-                console.log(
-                  "finalccheckkk",
+
+                emailConfig = {
+                  host: configurationData.host,
+                  port: parseInt(configurationData.portNumber), // Convert port number to integer
+                  auth: {
+                    user: configurationData.userName,
+                    pass: configurationData.password,
+                  },
+                  ...(configurationData.encryption === "none"
+                    ? {}
+                    : encryptionConfig),
+                };
+
+                options = {
+                  // from: configurationData.fromName,
+                  from: `${configurationData.fromName}<${configurationData.userName}>`,
+                  to: recipientMails,
+                  subject: selectedTemplate?.emailSetting?.subject,
+                  cc: selectedTemplate?.emailSetting?.cc,
+                  bcc: selectedTemplate?.emailSetting?.bcc,
+                  replyTo: selectedTemplate?.emailSetting?.replyTo,
+                  ...others,
+                };
+
+                // let response = await postApi("/api/admin/sendMailCommon",{emailConfig,options,extra}, app);
+
+                //       return response;
+              } else {
+                console.log("inenablefalse");
+
+                emailConfig = {
+                  host: "smtp.gmail.com",
+                  port: 587, // Convert port number to integer
+                  auth: {
+                    user: "sahilagnihotri7@gmail.com",
+                    pass: "srdvsdnxfmvbrduw",
+                  },
+                  secure: false,
+                };
+
+                options = {
+                  from: `Revlytic <sahilagnihotri7@gmail.com>`,
+                  to: recipientMails,
+                  subject: selectedTemplate?.emailSetting?.subject,
+                  cc: selectedTemplate?.emailSetting?.cc,
+                  bcc: selectedTemplate?.emailSetting?.bcc,
+                  replyTo: selectedTemplate?.emailSetting?.replyTo,
+                  ...others,
+                };
+              }
+
+              console.log(
+                "finalccheckkk",
+                recipientMails,
+                emailConfig,
+                options,
+                selectedTemplate,
+                extra
+              );
+
+              fetch(`${apiPath}api/customerPortal/sendMailOnUpdate`, {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  shop: shop,
                   recipientMails,
                   emailConfig,
                   options,
                   selectedTemplate,
-                  extra
-                );
-          
-                fetch(
-                  `${apiPath}api/customerPortal/sendMailOnUpdate`,
-                  {
-                    method: "POST",
-                    headers: {
-                      "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({
-                      shop: shop,
-                      recipientMails, emailConfig, options, selectedTemplate, extra
-                    }),
+                  extra,
+                }),
+              })
+                .then((response) => response.json())
+                .then((data) => {
+                  loader.style.display = "none";
+                  if (data.message == "success") {
+                    console.log(data);
+                    getDataFromDb();
+                    showToast("Subscription updated successfully", 3000);
+                  } else {
+                    showToast(data?.data, 3000);
                   }
-                )
-                  .then((response) => response.json())
-                  .then((data) => {
-                    loader.style.display = "none";
-                    if (data.message == "success") {
-                      console.log(data);
-                      getDataFromDb();
-                      showToast(
-                        "Subscription updated successfully",
-                        3000
-                      );
-                    } else {
-                      showToast(data?.data, 3000);
-                    }
-                  })
-                  .catch((error) => {
-                    showToast("Something went wrong", 3000);
-                    loader.style.display = "none";
-                    console.log(`Error  ${JSON.stringify(error)}`);
-                  });
-          
-                //   ///////
-                //  let mailCheck = await sendMailCall(
-                //   recipientMails,
-                //   {},
-                //   {
-                //      shop,
-                //      selectedTemplateData,
-                //     configurationData,
-                //     extra
-                //    } );
-              }
-            
+                })
+                .catch((error) => {
+                  showToast("Something went wrong", 3000);
+                  loader.style.display = "none";
+                  console.log(`Error  ${JSON.stringify(error)}`);
+                });
 
+            }
 
             getDataFromDb();
-            showToast(
-              "Subscription updated successfully",
-              3000
-            );
+            showToast("Subscription updated successfully", 3000);
           } else {
             showToast(data?.data, 3000);
           }
@@ -3405,17 +3921,33 @@ ${cancelReasonModal}
     let input8 = document.getElementById("rev-phone");
     let input9 = document.getElementById("rev-delivery-price");
 
-    input1.value = mainDetails?.shipping_address?.address1 ?mainDetails?.shipping_address?.address1 :""
-    input2.value = mainDetails?.shipping_address?.address2 ?mainDetails?.shipping_address?.address2 :""
-    input3.value = mainDetails?.shipping_address?.city ?mainDetails?.shipping_address?.city :""
-    input4.value = mainDetails?.shipping_address?.zip ?mainDetails?.shipping_address?.zip :""
-    input5.value = mainDetails?.shipping_address?.company ?mainDetails?.shipping_address?.company :""
-    input6.value = mainDetails?.shipping_address?.firstName ?mainDetails?.shipping_address?.firstName :""
-    input7.value = mainDetails?.shipping_address?.lastName ?mainDetails?.shipping_address?.lastName :""
-    input8.value = mainDetails?.shipping_address?.phone ?mainDetails?.shipping_address?.phone :""
+    input1.value = mainDetails?.shipping_address?.address1
+      ? mainDetails?.shipping_address?.address1
+      : "";
+    input2.value = mainDetails?.shipping_address?.address2
+      ? mainDetails?.shipping_address?.address2
+      : "";
+    input3.value = mainDetails?.shipping_address?.city
+      ? mainDetails?.shipping_address?.city
+      : "";
+    input4.value = mainDetails?.shipping_address?.zip
+      ? mainDetails?.shipping_address?.zip
+      : "";
+    input5.value = mainDetails?.shipping_address?.company
+      ? mainDetails?.shipping_address?.company
+      : "";
+    input6.value = mainDetails?.shipping_address?.firstName
+      ? mainDetails?.shipping_address?.firstName
+      : "";
+    input7.value = mainDetails?.shipping_address?.lastName
+      ? mainDetails?.shipping_address?.lastName
+      : "";
+    input8.value = mainDetails?.shipping_address?.phone
+      ? mainDetails?.shipping_address?.phone
+      : "";
     input9.value = mainDetails?.shipping_address?.deliveryPrice
       ? mainDetails?.shipping_address?.deliveryPrice
-      : ""
+      : "";
 
     const cdropdown = document.getElementById("rev-country-dropdown");
     const pdropdown = document.getElementById("rev-province-dropdown");
@@ -3449,12 +3981,12 @@ ${cancelReasonModal}
     function formatDateForInput(dateString) {
       const dateObj = new Date(dateString);
       const year = dateObj.getFullYear();
-      const month = (dateObj.getMonth() + 1).toString().padStart(2, '0'); // Adding 1 because January is 0
-      const day = dateObj.getDate().toString().padStart(2, '0');
+      const month = (dateObj.getMonth() + 1).toString().padStart(2, "0"); // Adding 1 because January is 0
+      const day = dateObj.getDate().toString().padStart(2, "0");
       return `${year}-${month}-${day}`;
     }
-    const providedDate = dateConversion(mainDetails.nextBillingDate)
-    const formattedDate = formatDateForInput(providedDate)
+    const providedDate = dateConversion(mainDetails.nextBillingDate);
+    const formattedDate = formatDateForInput(providedDate);
     billingInput.value = formattedDate;
     ///////////////////shipping detals listners
     let editsubscriptionIcon = document.getElementById(
@@ -3575,21 +4107,21 @@ ${cancelReasonModal}
           }),
         })
           .then((response) => response.json())
-          .then(async(data) => {
+          .then(async (data) => {
             loader.style.display = "none";
             if (data.message == "success") {
-              console.log("21novvvv")
-            //////emailfunc/////
-            let extra = {
-              templateType: "shippingAddressUpdated",
-              data: data?.data,
-              shop_name: store_name,
-              shop_email: store_email,
-              currency: mainDetails?.subscription_details?.currency,
-            };
-  
-            let resp = await sendMailOnUpdate({}, extra);
-           ////////emailfuncend/////
+              console.log("21novvvv");
+              //////emailfunc/////
+              let extra = {
+                templateType: "shippingAddressUpdated",
+                data: data?.data,
+                shop_name: store_name,
+                shop_email: store_email,
+                currency: mainDetails?.subscription_details?.currency,
+              };
+
+              let resp = await sendMailOnUpdate({}, extra);
+              ////////emailfuncend/////
               getDataFromDb();
               console.log(data);
               showToast("Subscription updated successfully", 3000);
@@ -3799,54 +4331,6 @@ ${cancelReasonModal}
       }
     });
 
-    // const minValidationInput = document.getElementById("rev-min-input");
-    // const maxValidationInput = document.getElementById("rev-max-input");
-    // const validationMessageMin = document.getElementById(
-    //   "validation-message-min"
-    // );
-    // const validationMessageMax = document.getElementById(
-    //   "validation-message-max"
-    // );
-
-    // minValidationInput.addEventListener("input", () => {
-    //   validateMin();
-    // });
-
-    // maxValidationInput.addEventListener("input", () => {
-    //   validateMax();
-    // });
-
-    // function validateMin() {
-    //   const minValue = parseFloat(minInput.value);
-    //   const maxValue = parseFloat(maxInput.value);
-
-    //   if (isNaN(minValue) || minValue <= 0 || maxValue <= 0) {
-    //     validationMessageMin.textContent =
-    //       "Must be a number greater than zero!";
-    //   } else if (maxValue < minValue) {
-    //     validationMessageMin.textContent =
-    //       "Minimum Billing Cycles cannot be greater than Maximum Billing Cycles!";
-    //   } else {
-    //     validationMessageMin.textContent = "";
-    //   }
-    // }
-    // function validateMax() {
-    //   const minValue = parseFloat(minInput.value);
-    //   const maxValue = parseFloat(maxInput.value);
-
-    //   if (isNaN(maxValue) || minValue <= 0 || maxValue <= 0) {
-    //     validationMessageMax.textContent =
-    //       "Must be a number greater than zero!";
-    //   } else if (maxValue < minValue) {
-    //     validationMessageMax.textContent =
-    //       "Maximum Billing Cycles cannot be less than Free trial count!";
-    //   } else {
-    //     validationMessageMax.textContent = "";
-    //   }
-    // }
-
-    /////////////////////// subscription details listners
-    // plannameInput.value = mainDetails.subscription_details.planType;
     billfreqType.value =
       mainDetails.subscription_details.delivery_billingType.toLowerCase();
     DeliveryFreqType.value =
@@ -3855,44 +4339,7 @@ ${cancelReasonModal}
     deliveryfreqInput.value =
       mainDetails.subscription_details.delivery_billingValue;
     let message = document.getElementById("validation-freq");
-    // plannameInput.addEventListener("change", () => {
-    //   if (plannameInput.value == "payAsYouGo") {
-    //     if (!isNaN(billingfreqInput.value) && !isNaN(deliveryfreqInput.value)) {
-    //       if (billingfreqInput.value != deliveryfreqInput.value) {
-    //         console.log("444444");
-    //         message.textContent =
-    //           "Delivery frequency must be  same as billing frequency";
-    //       } else {
-    //         message.textContent = "";
-    //       }
-    //     } else {
-    //       message.textContent =
-    //         "Delivery frequency and Billing frequency must be valid numbers ";
-    //     }
-    //   } else {
-    //     if (!isNaN(billingfreqInput.value) && !isNaN(deliveryfreqInput.value)) {
-    //       console.log("2222");
-
-    //       if (billingfreqInput.value % deliveryfreqInput.value !== 0) {
-    //         console.log("3333");
-
-    //         message.textContent =
-    //           "Delivery frequency must be a multiple of billing frequency";
-    //       } else if (billingfreqInput.value === deliveryfreqInput.value) {
-    //         console.log("444444");
-    //         message.textContent =
-    //           "Delivery frequency cannot be the same as billing frequency";
-    //       } else {
-    //         console.log("5555555555");
-    //         message.textContent = " ";
-    //       }
-    //     } else {
-    //       message.textContent =
-    //         "Delivery frequency and Billing frequency must be valid numbers ";
-    //     }
-    //   }
-    // });
-
+   
     deliveryfreqInput.addEventListener("input", (event) => {
       let message = document.getElementById("validation-freq");
       if (mainDetails.subscription_details.planType == "payAsYouGo") {
@@ -4210,13 +4657,11 @@ ${cancelReasonModal}
             otherTotalinput.classList.add("hidden");
             otherSubmitCancelButton.classList.add("hidden");
             icon.classList.remove("hidden");
-            console.log(otherQuantityInput, otherQuantitytd, "opopop")
-            
+            console.log(otherQuantityInput, otherQuantitytd, "opopop");
 
             ////////////////to change value of quantity input on cancel click
-           let inn= otherQuantityInput.querySelector("input");
-           inn.value=otherQuantitytd.innerHTML
-
+            let inn = otherQuantityInput.querySelector("input");
+            inn.value = otherQuantitytd.innerHTML;
           });
           // Find the parent row (tr) of the clicked element
           const row = event.target.closest("tr");
@@ -4311,20 +4756,26 @@ ${cancelReasonModal}
               input: {
                 quantity: parseInt(quantity),
                 // currentPrice: parseFloat(price),
-                currentPrice: mainDetails?.subscription_details?.planType == 'prepaid' ?   parseFloat(price*(mainDetails?.subscription_details?.billingLength/mainDetails?.subscription_details?.delivery_billingValue))  :    parseFloat(price),
-
-
+                currentPrice:
+                  mainDetails?.subscription_details?.planType == "prepaid"
+                    ? parseFloat(
+                        price *
+                          (mainDetails?.subscription_details?.billingLength /
+                            mainDetails?.subscription_details
+                              ?.delivery_billingValue)
+                      )
+                    : parseFloat(price),
               },
               line: subscriptionLine,
               itemIndex: index,
               field: "lines", //field draftcommit waali mutation ke responses  ke according set ki hai taaki uske response waale data ko db mai set karne mai  easy ho
               check: "line_update", //   just to apply check on query in findItemForUpdateSubscription controller function
-              unitPrice:price 
+              unitPrice: price,
             }),
           }
         )
           .then((response) => response.json())
-          .then(async(data) => {
+          .then(async (data) => {
             loader.style.display = "none";
             if (data.message == "success") {
               let extra = {
@@ -4334,7 +4785,7 @@ ${cancelReasonModal}
                 shop_email: store_email,
                 currency: mainDetails?.subscription_details?.currency,
               };
-    
+
               let resp = await sendMailOnUpdate({}, extra);
 
               getDataFromDb();
@@ -4382,7 +4833,9 @@ ${cancelReasonModal}
       const price = parseFloat(priceInput.getAttribute("data-price"));
       const quantity = parseInt(quantityInput.children[0].value) || 0;
       const total = price * quantity;
-      totaltd.textContent =getSymbol(mainDetails?.subscription_details?.currency) + parseFloat(total)?.toFixed(2);
+      totaltd.textContent =
+        getSymbol(mainDetails?.subscription_details?.currency) +
+        parseFloat(total)?.toFixed(2);
       console.log(price, quantity);
     }
 
@@ -4398,17 +4851,14 @@ ${cancelReasonModal}
         if (searchQuery) {
           const productList = document.getElementById("product-list");
           productList.innerHTML = ""; // Clear previous products
-          searchQuery = ""
-          startCursor = null
-          next = true
+          searchQuery = "";
+          startCursor = null;
+          next = true;
           const searchInput = document.getElementById("search-input");
-searchInput.value=""
+          searchInput.value = "";
 
-          fetchAndProcessProducts("")
-          
+          fetchAndProcessProducts("");
         } else {
-          
-        
           next && fetchAndProcessProducts("");
         }
       });
@@ -4435,7 +4885,6 @@ searchInput.value=""
     });
 
     closeModalBtn.addEventListener("click", function () {
-
       modal.style.display = "none";
       selectedIds = [];
     });
@@ -4452,19 +4901,19 @@ searchInput.value=""
           JSON.parse
         );
 
-
         let country;
-        if(mainDetails?.subscription_details?.currency?.toLowerCase() != store_currency?.toLowerCase()){
-        
-          let filteredCountry=  countries.find(item=> item?.currency?.toLowerCase() == mainDetails?.subscription_details?.currency?.toLowerCase() )   
-          console.log("filteredCountry",filteredCountry)
-        country=filteredCountry?.countrycode
-        
+        if (
+          mainDetails?.subscription_details?.currency?.toLowerCase() !=
+          store_currency?.toLowerCase()
+        ) {
+          let filteredCountry = countries.find(
+            (item) =>
+              item?.currency?.toLowerCase() ==
+              mainDetails?.subscription_details?.currency?.toLowerCase()
+          );
+          console.log("filteredCountry", filteredCountry);
+          country = filteredCountry?.countrycode;
         }
-        
-
-
-
 
         let loader = document.getElementById("revlytic-overlay");
         loader.style.display = "flex";
@@ -4479,12 +4928,12 @@ searchInput.value=""
             lines: uniqueObjects,
             check: "lineAdd",
             field: "lines",
-            ...( country ? { country :  country} : {} ),
-            subscription_details:mainDetails?.subscription_details
+            ...(country ? { country: country } : {}),
+            subscription_details: mainDetails?.subscription_details,
           }),
         })
           .then((response) => response.json())
-          .then(async(data) => {
+          .then(async (data) => {
             loader.style.display = "none";
             if (data.message == "success") {
               let extra = {
@@ -4494,7 +4943,7 @@ searchInput.value=""
                 shop_email: store_email,
                 currency: mainDetails?.subscription_details?.currency,
               };
-    
+
               let resp = await sendMailOnUpdate({}, extra);
               getDataFromDb();
               showToast("Subscription updated successfully", 3000);
@@ -4505,19 +4954,20 @@ searchInput.value=""
           .catch((error) => {
             showToast("Something went wrong", 3000);
             loader.style.display = "none";
-            console.log(`Error fetching subscriptions ${JSON.stringify(error)}`);
+            console.log(
+              `Error fetching subscriptions ${JSON.stringify(error)}`
+            );
           });
         let modal = document.getElementById("myModal");
         modal.style.display = "none";
 
-        startCursor = null
-        searchQuery = ""
-        next = true
+        startCursor = null;
+        searchQuery = "";
+        next = true;
         const productList = document.getElementById("product-list");
         productList.innerHTML = ""; // Clear previous products
       }
-      });
-    
+    });
   };
 
   const getcountries = (mainDetails) => {

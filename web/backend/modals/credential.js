@@ -4,6 +4,7 @@ let shopInfo = new Schema(
   {
     shop: String,
     accessToken: String,
+    setUpGuide:Boolean
     // themeType:String
   },
   { timestamps: true }

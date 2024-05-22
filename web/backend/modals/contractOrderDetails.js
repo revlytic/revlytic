@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 const { Schema } = mongoose;
 let orderContract = new Schema(
     {
-      shop:String,
+        shop:String,
         orderId: String,
         contractID:String,
         status:Boolean

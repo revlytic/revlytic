@@ -45,12 +45,13 @@ import {
 import SubscriptionProducts from "./SubscriptionProducts";
 import { useAPI } from "../components/common/commonContext";
 import { sendMailOnUpdate } from "./common/helpers";
-
+import CalculateBillingUsage from "./calculateBillingUsage";
 function CreateManualSubscription() {
-  const { currency, storeDetails,billingPlan} = useAPI();
+  const { currency, storeDetails } = useAPI();
   const [form] = useForm();
   const [form2] = useForm();
   const navigate = useNavigate();
+  const [billingPlan, setBillingPlan] = useState("");
 
   const location = useLocation();
   const queryParams = location.search;
@@ -104,8 +105,8 @@ function CreateManualSubscription() {
   const [copyText, setCopyText] = useState("");
   const [options, setOptions] = useState({});
   const [preview, setPreview] = useState(
-"This subscription is a Pay As You Go plan. The customer will receive a delivery and be billed every 1 month(s).  Additionally, this plan will renew automatically until canceled.");
-  
+    "This subscription is a Pay As You Go plan. The customer will receive a delivery and be billed every 1 month(s).  Additionally, this plan will renew automatically until canceled."
+  );
 
   function dateConversion(date) {
     const dateString = date;
@@ -123,6 +124,29 @@ function CreateManualSubscription() {
     // //console.log(formattedDate);
 
     return formattedDate;
+  }
+
+  function compareDatesIgnoringTime(date1, date2) {
+    // Create new Date objects with the same date but time set to 00:00:00
+    const newDate1 = new Date(
+      date1.getFullYear(),
+      date1.getMonth(),
+      date1.getDate()
+    );
+    const newDate2 = new Date(
+      date2.getFullYear(),
+      date2.getMonth(),
+      date2.getDate()
+    );
+
+    // Compare the new Date objects
+    if (newDate1 < newDate2) {
+      return -1;
+    } else if (newDate1 > newDate2) {
+      return 1;
+    } else {
+      return 0;
+    }
   }
 
   const getCurrencySymbol = (currency) => {
@@ -182,25 +206,20 @@ function CreateManualSubscription() {
 
     return formattedVariableName;
   }
-  
-function formatFreeTrialCycle(input){
 
-if(input?.toLowerCase()=="day"){
-  return "Day(s)"
-}
-else if(input?.toLowerCase()=="week"){
-  return "Week(s)"
-}
-else if(input?.toLowerCase()=="month"){
-  return "Month(s)"
-}
-else if(input?.toLowerCase()=="year"){
-  return "Year(s)"
-}
-}
+  function formatFreeTrialCycle(input) {
+    if (input?.toLowerCase() == "day") {
+      return "Day(s)";
+    } else if (input?.toLowerCase() == "week") {
+      return "Week(s)";
+    } else if (input?.toLowerCase() == "month") {
+      return "Month(s)";
+    } else if (input?.toLowerCase() == "year") {
+      return "Year(s)";
+    }
+  }
 
   async function getPrepaidPastorders() {
-    console.log(subscriptionId)
     let ordersDataUpcoming = await postApi(
       "/api/admin/getOrdersDataUpcoming",
       { contract_id: `gid://shopify/SubscriptionContract/${subscriptionId}` },
@@ -214,11 +233,10 @@ else if(input?.toLowerCase()=="year"){
       let filterPastOrders = arr.filter(
         (item) => item.status == "initial" || item.status == "success"
       );
-      console.log("18sept",filterPastOrders)
 
       setPastOrders(filterPastOrders);
     }
-}
+  }
   async function fetchDataUpcomingOrders(data) {
     let ordersDataUpcoming = await postApi(
       "/api/admin/getOrdersDataUpcoming",
@@ -231,7 +249,7 @@ else if(input?.toLowerCase()=="year"){
       setAttemptedOrders(arr);
 
       let filterPastOrders = arr.filter(
-        (item) =>  item.status == "initial" || item.status == "success"
+        (item) => item.status == "initial" || item.status == "success"
       );
       //console.log("18sept",filterPastOrders)
       setPastOrders(filterPastOrders);
@@ -240,7 +258,7 @@ else if(input?.toLowerCase()=="year"){
       setSkippedOrders(filterSkippedOrders);
 
       let successCount = arr.filter(
-        (item) =>  item.status == "initial" || item.status == "success"
+        (item) => item.status == "initial" || item.status == "success"
       ).length;
       //console.log(successCount);
       // let today=2
@@ -342,8 +360,8 @@ else if(input?.toLowerCase()=="year"){
     }
   }
 
-  useEffect(async () => { 
-    getPrepaidPastorders()
+  useEffect(async () => {
+    getPrepaidPastorders();
     //console.log();
     //console.log("in useeffect", params.get("mode"));
 
@@ -354,9 +372,7 @@ else if(input?.toLowerCase()=="year"){
       //  setShowDate(true)
       let result = await postApi(
         "/api/admin/getSubscriptionDetails",
-
         { subscriptionId: subscriptionId },
-
         app
       );
 
@@ -404,7 +420,9 @@ else if(input?.toLowerCase()=="year"){
             },
 
             freeTrial: data?.subscription_details?.freeTrial,
-            freeTrialCycle: data?.subscription_details?.freeTrialCycle ? formatFreeTrialCycle(data?.subscription_details?.freeTrialCycle)  : "" ,
+            freeTrialCycle: data?.subscription_details?.freeTrialCycle
+              ? formatFreeTrialCycle(data?.subscription_details?.freeTrialCycle)
+              : "",
           },
 
           customer:
@@ -427,16 +445,33 @@ else if(input?.toLowerCase()=="year"){
           // (**** **** **** {item?.node?.instrument?.lastDigits})
 
           paymentMethod:
-            data?.payment_details?.payment_instrument_value?.brand
-              ?.charAt(0)
-              ?.toUpperCase() +
-            formatVariableName(
-              data?.payment_details?.payment_instrument_value?.brand?.slice(1)
-            ) +
-            " " +
-            "(**** **** ****  " +
-            data?.payment_details?.payment_instrument_value?.lastDigits +
-            ")",
+            data?.payment_details?.payment_instrument_value?.__typename ==
+              "CustomerCreditCard" ||
+            data?.payment_details?.payment_instrument_value?.__typename ==
+              "CustomerShopPayAgreement"
+              ? (data?.payment_details?.payment_instrument_value?.brand
+                  ? data?.payment_details?.payment_instrument_value?.brand
+                      ?.charAt(0)
+                      ?.toUpperCase()
+                  : "") +
+                (data?.payment_details?.payment_instrument_value?.brand
+                  ? formatVariableName(
+                      data?.payment_details?.payment_instrument_value?.brand?.slice(
+                        1
+                      )
+                    )
+                  : "") +
+                " " +
+                "(**** **** ****  " +
+                (data?.payment_details?.payment_instrument_value?.lastDigits
+                  ? data?.payment_details?.payment_instrument_value?.lastDigits
+                  : "") +
+                ")"
+              : data?.payment_details?.payment_instrument_value?.__typename ==
+                "CustomerPaypalBillingAgreement"
+              ? data?.payment_details?.payment_instrument_value
+                  ?.paypalAccountEmail
+              : "",
 
           customer_details: {
             firstName: data?.customer_details?.firstName,
@@ -561,7 +596,9 @@ else if(input?.toLowerCase()=="year"){
               value: data?.subscription_details?.discount?.value,
             },
             freeTrial: data?.subscription_details?.freeTrial,
-            freeTrialCycle: data?.subscription_details?.freeTrialCycle  ? formatFreeTrialCycle(data?.subscription_details?.freeTrialCycle)  : ""  ,
+            freeTrialCycle: data?.subscription_details?.freeTrialCycle
+              ? formatFreeTrialCycle(data?.subscription_details?.freeTrialCycle)
+              : "",
           },
 
           customer:
@@ -578,16 +615,33 @@ else if(input?.toLowerCase()=="year"){
               : ""),
 
           paymentMethod:
-            data?.payment_details?.payment_instrument_value?.brand
-              ?.charAt(0)
-              ?.toUpperCase() +
-            formatVariableName(
-              data?.payment_details?.payment_instrument_value?.brand?.slice(1)
-            ) +
-            " " +
-            "(**** **** ****  " +
-            data?.payment_details?.payment_instrument_value?.lastDigits +
-            ")",
+            data?.payment_details?.payment_instrument_value?.__typename ==
+              "CustomerCreditCard" ||
+            data?.payment_details?.payment_instrument_value?.__typename ==
+              "CustomerShopPayAgreement"
+              ? (data?.payment_details?.payment_instrument_value?.brand
+                  ? data?.payment_details?.payment_instrument_value?.brand
+                      ?.charAt(0)
+                      ?.toUpperCase()
+                  : "") +
+                (data?.payment_details?.payment_instrument_value?.brand
+                  ? formatVariableName(
+                      data?.payment_details?.payment_instrument_value?.brand?.slice(
+                        1
+                      )
+                    )
+                  : "") +
+                " " +
+                "(**** **** ****  " +
+                (data?.payment_details?.payment_instrument_value?.lastDigits
+                  ? data?.payment_details?.payment_instrument_value?.lastDigits
+                  : "") +
+                ")"
+              : data?.payment_details?.payment_instrument_value?.__typename ==
+                "CustomerPaypalBillingAgreement"
+              ? data?.payment_details?.payment_instrument_value
+                  ?.paypalAccountEmail
+              : "",
 
           customer_details: {
             firstName: data?.customer_details?.firstName,
@@ -600,7 +654,9 @@ else if(input?.toLowerCase()=="year"){
           },
 
           address_details: {
-            firstName: data?.shipping_address?.firstName ? data?.shipping_address?.firstName :"" ,
+            firstName: data?.shipping_address?.firstName
+              ? data?.shipping_address?.firstName
+              : "",
 
             lastName: data?.shipping_address?.lastName,
 
@@ -697,7 +753,7 @@ else if(input?.toLowerCase()=="year"){
 
       getCustomers();
 
-     await  getCountries();
+      await getCountries();
 
       setExistingSubscription({});
 
@@ -731,11 +787,10 @@ else if(input?.toLowerCase()=="year"){
   }, [params.get("mode")]);
 
   async function getCountries() {
-    console.log(" in get countriesbxz")
     let response = await postApi("api/admin/getCountries", {}, app);
     if (response?.data?.message == "success") {
       setCountriesData(response?.data?.data?.data);
-console.log("27cntrydata",response?.data?.data?.data)
+
       let countriesNameArray = [];
 
       response?.data?.data?.data.forEach((element) => {
@@ -755,7 +810,7 @@ console.log("27cntrydata",response?.data?.data?.data)
   function previewCommon(data) {
     let data1;
     let data2;
-    // This subscription is a Pay As You Go plan. The customer will receive a delivery and be billed every  1 month(s).  Additionally, this plan will renew automatically until canceled. 
+    // This subscription is a Pay As You Go plan. The customer will receive a delivery and be billed every  1 month(s).  Additionally, this plan will renew automatically until canceled.
     if (data?.subscription_details?.planType == "payAsYouGo") {
       data1 =
         `This subscription is a Pay As You Go plan. The customer will receive a delivery and be billed every ` +
@@ -882,25 +937,27 @@ console.log("27cntrydata",response?.data?.data?.data)
     let data2;
 
     if (form.getFieldValue(["subscription", "planType"]) == "payAsYouGo") {
-      console.log("sahiloct26666");
       data =
         `This subscription is a Pay As You Go plan. The customer will receive a delivery and be billed every ` +
-        `${form.getFieldValue(["subscription", "billingLength"]) ? form.getFieldValue(["subscription", "billingLength"]) :"{Input for bill every}"}  ${form
+        `${
+          form.getFieldValue(["subscription", "billingLength"])
+            ? form.getFieldValue(["subscription", "billingLength"])
+            : "{Input for bill every}"
+        }  ${form
           .getFieldValue(["subscription", "delivery_billingType"])
           ?.toLowerCase()}(s).`;
-          console.log("sdas26oct",data)
     } else {
       //console.log("sahil2");
       data =
         `This subscription is a Prepaid plan. The length of the subscription is ` +
-       `${
+        `${
           form.getFieldValue(["subscription", "billingLength"])
             ? form.getFieldValue(["subscription", "billingLength"])
             : "{Input for prepaid length}"
         }  ${form
           .getFieldValue(["subscription", "delivery_billingType"])
           ?.toLowerCase()}(s) and the customer will be billed upfront.` +
-          ` The customer will receive a delivery every ${
+        ` The customer will receive a delivery every ${
           form.getFieldValue(["subscription", "delivery_billingValue"])
             ? form.getFieldValue(["subscription", "delivery_billingValue"])
             : form.getFieldValue(["subscription", "delivery_billingValue"]) ==
@@ -920,14 +977,13 @@ console.log("27cntrydata",response?.data?.data?.data)
       data2 = ` Additionally, this plan will not renew automatically.`;
     } else {
       //console.log("sahl4");
-      data2 =` Additionally, this plan will renew automatically until canceled.`;
+      data2 = ` Additionally, this plan will renew automatically until canceled.`;
     }
 
     setPreview(data + data2);
   }
 
   async function getCustomerPaymentMethods(id, country) {
-    console.log("cccccccccccccccccountry", country);
     setLoader(true);
     setPaymentLoader(true);
     let result = await postApi(
@@ -941,7 +997,7 @@ console.log("27cntrydata",response?.data?.data?.data)
       let finalData = result?.data?.data;
       //console.log(finalData[0].node.customer?.email);
       //console.log(result?.data?.data);
-      console.log("first-oct27",countriesData)
+
       setCustomerPaymentsData(result?.data?.data);
       //console.log("cusssssstttttt", result?.data?.data);
       if (result?.data?.data.length > 0) {
@@ -951,11 +1007,11 @@ console.log("27cntrydata",response?.data?.data?.data)
 
         form.setFieldValue("paymentMethod", result?.data?.data[0]?.node?.id);
         let selectedCountryData = countriesData?.find(
-          (item) => (item.name)?.toLowerCase() == country?.toLowerCase()
+          (item) => item.name?.toLowerCase() == country?.toLowerCase()
         );
 
         setSelectedCountry(selectedCountryData);
-        console.log("newdelhi", selectedCountryData);
+
         {
           mode != "edit" && setCountryCode(selectedCountryData.code);
         }
@@ -1208,7 +1264,12 @@ console.log("27cntrydata",response?.data?.data?.data)
   const discountType = (
     <Select
       name="ddd"
-      value={existingSubscription?.subscription_details?.discount?.type == "FIXED_AMOUNT" ? "fixed" : "percentage" }
+      value={
+        existingSubscription?.subscription_details?.discount?.type ==
+        "FIXED_AMOUNT"
+          ? "fixed"
+          : "percentage"
+      }
       disabled
     >
       <Select.Option value="percentage">Percentage</Select.Option>
@@ -1228,36 +1289,28 @@ console.log("27cntrydata",response?.data?.data?.data)
     }
     // //console.log(customersList)
   };
-console.log(storeDetails,"billingplan",billingPlan)
+
   const handleMaxCycle = (rule, value) => {
     if (
       form.getFieldValue(["subscription", "billingMinValue"]) != "" &&
       parseInt(value) <
         parseInt(form.getFieldValue(["subscription", "billingMinValue"]))
     ) {
-      //console.log( "kdjaskdjaskd;sl;dals;dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd" );
       return Promise.reject(
         "Maximum Billing Cycles cannot be less than Minimum Billing Cycles!"
       );
     } else if (value && (!/^\d+$/.test(value) || Number(value) <= 0)) {
       return Promise.reject(new Error("Must be a number greater than zero!"));
-    }
-    
-    else if (value && (Number(value) < Number(form.getFieldValue(["subscription", "freeTrial"])))) {
-
+    } else if (
+      value &&
+      Number(value) < Number(form.getFieldValue(["subscription", "freeTrial"]))
+    ) {
       return Promise.reject(
-
         new Error(
-
           "Maximum Billing Cycles cannot be less than Free trial count!"
-
         )
-
       );
-
-    }
-    
-    else {
+    } else {
       form.setFields([
         {
           name: ["subscription", "billingMinValue"],
@@ -1269,23 +1322,6 @@ console.log(storeDetails,"billingplan",billingPlan)
   };
 
   const handleMinCycle = (rule, value) => {
-
-   
- 
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
     if (
       form.getFieldValue(["subscription", "billingMaxValue"]) != "" &&
       parseInt(value) >
@@ -1297,31 +1333,22 @@ console.log(storeDetails,"billingplan",billingPlan)
       );
     } else if (value && (!/^\d+$/.test(value) || Number(value) <= 0)) {
       return Promise.reject(new Error("Must be a number greater than zero!"));
-    } 
-    
-    else if (form.getFieldValue( ["subscription","freeTrial"]) && form.getFieldValue( ["subscription","billingMaxValue"]) && (Number(form.getFieldValue( ["subscription","freeTrial"])) > Number(form.getFieldValue( ["subscription","billingMaxValue"]))))
+    } else if (
+      form.getFieldValue(["subscription", "freeTrial"]) &&
+      form.getFieldValue(["subscription", "billingMaxValue"]) &&
+      Number(form.getFieldValue(["subscription", "freeTrial"])) >
+        Number(form.getFieldValue(["subscription", "billingMaxValue"]))
+    ) {
+      form.setFields([
+        {
+          name: ["subscription", "billingMaxValue"],
 
-      {
-
-       
-
-        form.setFields([
-
-          {
-  
-            name:["subscription", "billingMaxValue"],
-  
-            errors: ["Maximum Billing Cycles cannot be less than Free trial count!"],
-  
-          },
-  
-        ]);
- 
-
-      }
-
-    
-    else {
+          errors: [
+            "Maximum Billing Cycles cannot be less than Free trial count!",
+          ],
+        },
+      ]);
+    } else {
       form.setFields([
         {
           name: ["subscription", "billingMaxValue"],
@@ -1381,7 +1408,7 @@ console.log(storeDetails,"billingplan",billingPlan)
           lastName: data?.lastName,
           phone: data?.phone,
         });
-console.log("value,data.counteruy",value, data?.country)
+
         getCustomerPaymentMethods(value, data?.country);
       }
     } else {
@@ -1574,66 +1601,64 @@ console.log("value,data.counteruy",value, data?.country)
         position: toast.POSITION.TOP_RIGHT,
       });
     } else {
-      
-        try {
-          setLoader(true);
-          if (
-            JSON.stringify(values?.customer_details) !==
-            JSON.stringify(customerDetails)
-          ) {
-            let body = {
-              input: {
-                id: customerId,
-                ...form.getFieldValue("customer_details"),
-              },
-            };
+      try {
+        setLoader(true);
+        if (
+          JSON.stringify(values?.customer_details) !==
+          JSON.stringify(customerDetails)
+        ) {
+          let body = {
+            input: {
+              id: customerId,
+              ...form.getFieldValue("customer_details"),
+            },
+          };
 
-            let result = await postApi("/api/admin/customerUpdate", body, app);
-          }
-
-          ////////
-          let response = await postApi(
-            "/api/admin/createPlanFormForCheckout",
-            { products: products, values },
-            app
-          );
-
-          if (response) {
-            //console.log(response);
-            let pid = response.data.data.plan.edges[0].node.id;
-            let id = pid.split("/");
-
-            let planid = id[id.length - 1];
-
-            let shop = response.data.data.shop;
-            let link = `https://${shop}/cart/clear?return_to=/cart/add?`;
-            // let end = `return_to=/checkout?checkout[email]=${values.customer_details.email}`;
-            let end = `return_to=/checkout`;
-            products.map((i, index) => {
-              let fullId = i.id;
-              let varient = fullId.split("/");
-              let vid = varient[varient.length - 1];
-              link =
-                link +
-                `items[${index}][id]=${vid}%26items[${index}][quantity]=${i.quantity}%26items[${index}][selling_plan]=${planid}%26`;
-            });
-
-            link = link + end;
-            setCopyText(link);
-            setOptions({
-              // from: "virender.shinedezign@gmail.com",
-              to: values.customer_details.email,
-              subject: "Subscription Checkout Link",
-              html: `<p>Click <a href= ${link}>here</a> to redirect to checkout</p>`,
-            });
-            setCopyLink(true);
-          }
-          setLoader(false);
-        } catch (err) {
-          setLoader(false);
+          let result = await postApi("/api/admin/customerUpdate", body, app);
         }
+
+        ////////
+        let response = await postApi(
+          "/api/admin/createPlanFormForCheckout",
+          { products: products, values },
+          app
+        );
+
+        if (response) {
+          //console.log(response);
+          let pid = response.data.data.plan.edges[0].node.id;
+          let id = pid.split("/");
+
+          let planid = id[id.length - 1];
+
+          let shop = response.data.data.shop;
+          let link = `https://${shop}/cart/clear?return_to=/cart/add?`;
+          // let end = `return_to=/checkout?checkout[email]=${values.customer_details.email}`;
+          let end = `return_to=/checkout`;
+          products.map((i, index) => {
+            let fullId = i.id;
+            let varient = fullId.split("/");
+            let vid = varient[varient.length - 1];
+            link =
+              link +
+              `items[${index}][id]=${vid}%26items[${index}][quantity]=${i.quantity}%26items[${index}][selling_plan]=${planid}%26`;
+          });
+
+          link = link + end;
+          setCopyText(link);
+          setOptions({
+            // from: "virender.shinedezign@gmail.com",
+            to: values.customer_details.email,
+            subject: "Subscription Checkout Link",
+            html: `<p>Click <a href= ${link}>here</a> to redirect to checkout</p>`,
+          });
+          setCopyLink(true);
+        }
+        setLoader(false);
+      } catch (err) {
+        setLoader(false);
       }
-    
+    }
   };
 
   const sendPaymentMethodUpdateMail = async () => {
@@ -1658,7 +1683,7 @@ console.log("value,data.counteruy",value, data?.country)
       });
     }
   };
-  
+
   const sendMail = async () => {
     //console.log(options, "optionsss");
 
@@ -1763,10 +1788,15 @@ console.log("value,data.counteruy",value, data?.country)
         let updatedData = {
           ...existingSubscription,
           status: result?.data?.data?.status,
+          nextBillingDate: result?.data?.data?.nextBillingDate,
         };
         setExistingSubscription(updatedData);
-        //console.log("5august", result?.data?.data?.status);
-        if (result?.data?.data?.status == "CANCELLED") {
+        // console.log("5august", result?.data?.data?.nextBillingDate);
+        form.setFieldValue(
+          "startDate",
+          dayjs(result?.data?.data?.nextBillingDate)
+        );
+        if (result?.data?.data?.status?.toUpperCase() == "CANCELLED") {
           let extra = {
             templateType: "subscriptionCanceled",
             data: result?.data?.data,
@@ -1776,7 +1806,7 @@ console.log("value,data.counteruy",value, data?.country)
           };
 
           let resp = await sendMailOnUpdate({}, app, extra);
-        } else if (result?.data?.data?.status == "PAUSED") {
+        } else if (result?.data?.data?.status?.toUpperCase() == "PAUSED") {
           let extra = {
             templateType: "subscriptionPaused",
             data: result?.data?.data,
@@ -1786,7 +1816,8 @@ console.log("value,data.counteruy",value, data?.country)
           };
 
           let resp = await sendMailOnUpdate({}, app, extra);
-        } else if (result?.data?.data?.status == "ACTIVE") {
+        } else if (result?.data?.data?.status?.toUpperCase() == "ACTIVE") {
+          fetchDataUpcomingOrders(updatedData)
           let extra = {
             templateType: "subscriptionResumed",
             data: result?.data?.data,
@@ -1794,7 +1825,6 @@ console.log("value,data.counteruy",value, data?.country)
             shop_email: storeDetails?.store_email,
             currency: storeDetails?.currency,
           };
-
           let resp = await sendMailOnUpdate({}, app, extra);
         }
       }
@@ -1811,33 +1841,29 @@ console.log("value,data.counteruy",value, data?.country)
   const handleCancelEdit = (cancelOption) => {
     if (cancelOption == "customerDetails") {
       //console.log(existingSubscription?.customer_details);
-    
-          
+
       form.setFields([
         {
-          name:["customer_details","email"],
+          name: ["customer_details", "email"],
           errors: [],
-          value:existingSubscription?.subscription_details?.email
-          
-          
+          value: existingSubscription?.subscription_details?.email,
         },
         {
-          name:["customer_details","firstName"],
+          name: ["customer_details", "firstName"],
           errors: [],
-          value:existingSubscription?.subscription_details?.firstName
-          
-        }, {
-          name:["customer_details","phone"],
-          errors: [],
-          value:existingSubscription?.subscription_details?.phone
-          
-        },{
-          name:["customer_details","lastName"],
-          errors: [],
-          value:existingSubscription?.subscription_details?.lastName
-          
+          value: existingSubscription?.subscription_details?.firstName,
         },
-      ])
+        {
+          name: ["customer_details", "phone"],
+          errors: [],
+          value: existingSubscription?.subscription_details?.phone,
+        },
+        {
+          name: ["customer_details", "lastName"],
+          errors: [],
+          value: existingSubscription?.subscription_details?.lastName,
+        },
+      ]);
 
       let data = JSON.parse(
         JSON.stringify(existingSubscription?.customer_details)
@@ -1855,19 +1881,16 @@ console.log("value,data.counteruy",value, data?.country)
 
       form.setFields([
         {
-          name:["subscription","billingMaxValue"],
+          name: ["subscription", "billingMaxValue"],
           errors: [],
-          value:existingSubscription?.subscription_details?.billingMaxValue
-          
-          
+          value: existingSubscription?.subscription_details?.billingMaxValue,
         },
         {
-          name:["subscription","billingMinValue"],
+          name: ["subscription", "billingMinValue"],
           errors: [],
-          value:existingSubscription?.subscription_details?.billingMinValue
-          
+          value: existingSubscription?.subscription_details?.billingMinValue,
         },
-      ])
+      ]);
 
       form.setFieldsValue({
         subscription: { ...existingSubscription?.subscription_details },
@@ -1879,55 +1902,63 @@ console.log("value,data.counteruy",value, data?.country)
     if (cancelOption == "shippingDetails") {
       form.setFields([
         {
-          name:["address_details","firstName"],
+          name: ["address_details", "firstName"],
           errors: [],
-          value:existingSubscription?.shipping_address?.firstName
-        }, {
-          name:["address_details","lastName"],
+          value: existingSubscription?.shipping_address?.firstName,
+        },
+        {
+          name: ["address_details", "lastName"],
           errors: [],
-          value:existingSubscription?.shipping_address?.lastName
-        }, {
-          name:["address_details","address1"],
+          value: existingSubscription?.shipping_address?.lastName,
+        },
+        {
+          name: ["address_details", "address1"],
           errors: [],
-          value:existingSubscription?.shipping_address?.address1
-        }, {
-          name:["address_details","phone"],
+          value: existingSubscription?.shipping_address?.address1,
+        },
+        {
+          name: ["address_details", "phone"],
           errors: [],
-          value:existingSubscription?.shipping_address?.phone
-        }, {
-          name:["address_details","city"],
+          value: existingSubscription?.shipping_address?.phone,
+        },
+        {
+          name: ["address_details", "city"],
           errors: [],
-          value:existingSubscription?.shipping_address?.city
-        }, {
-          name:["address_details","country"],
+          value: existingSubscription?.shipping_address?.city,
+        },
+        {
+          name: ["address_details", "country"],
           errors: [],
-          value:existingSubscription?.shipping_address?.country
-        },{
-          name:["address_details","zip"],
+          value: existingSubscription?.shipping_address?.country,
+        },
+        {
+          name: ["address_details", "zip"],
           errors: [],
-          value:existingSubscription?.shipping_address?.zip
-        },{
-          name:["address_details","deliveryPrice"],
+          value: existingSubscription?.shipping_address?.zip,
+        },
+        {
+          name: ["address_details", "deliveryPrice"],
           errors: [],
-          value:existingSubscription?.shipping_address?.deliveryPrice  
+          value: existingSubscription?.shipping_address?.deliveryPrice,
         },
 
         {
-          name:["address_details","province"],
+          name: ["address_details", "province"],
           errors: [],
-          value:existingSubscription?.shipping_address?.province
+          value: existingSubscription?.shipping_address?.province,
         },
         {
-          name:["address_details","address2"],
+          name: ["address_details", "address2"],
           errors: [],
-          value:existingSubscription?.shipping_address?.address2
-        },  {
-          name:["address_details","company"],
+          value: existingSubscription?.shipping_address?.address2,
+        },
+        {
+          name: ["address_details", "company"],
           errors: [],
-          value:existingSubscription?.shipping_address?.company
-        }
+          value: existingSubscription?.shipping_address?.company,
+        },
       ]);
-console.log("sdasdasdakeuwriorioriorioriorioriorioriorioiooppo")
+
       setProvinceError(false);
       // let data = existingSubscription?.shipping_address?.deliveryPrice
       //   ? existingSubscription?.shipping_address
@@ -1940,7 +1971,7 @@ console.log("sdasdasdakeuwriorioriorioriorioriorioriorioiooppo")
       // form.setFieldsValue({
       //   address_details: data,
       // });
-     
+
       setCountryCode(existingSubscription?.shipping_address?.countryCode);
       setProvinceCode(existingSubscription?.shipping_address?.provinceCode);
 
@@ -1952,7 +1983,6 @@ console.log("sdasdasdakeuwriorioriorioriorioriorioriorioiooppo")
       //console.log("newdelhi", selectedCountryData);
 
       if (selectedCountryData && selectedCountryData?.provinces?.length > 0) {
-        console.log("jalndharrrrrr");
         let provincesNameArray = [];
 
         selectedCountryData?.provinces.forEach((element) => {
@@ -1967,31 +1997,27 @@ console.log("sdasdasdakeuwriorioriorioriorioriorioriorioiooppo")
         selectedCountryData &&
         selectedCountryData?.provinces?.length == 0
       ) {
-        console.log("onosnsodfnsodfso")
-        setProvincesName([]);
-       
-      }
-
-      if(!(existingSubscription?.shipping_address?.country)) {
         setProvincesName([]);
       }
 
+      if (!existingSubscription?.shipping_address?.country) {
+        setProvincesName([]);
+      }
 
       setEdit({ ...edit, shippingDetails: false });
     }
   };
 
   const handleSaveSubscriptionUpdate = async (updateOption) => {
-// console.log("sdjksjdkskdasdasdasdasdasdasdasdasdasdasddasda",form.isFieldValidating(['address_details']))
-//  form.isFieldValidating(['address_details','lastName'])
+    // console.log("sdjksjdkskdasdasdasdasdasdasdasdasdasdasddasda",form.isFieldValidating(['address_details']))
+    //  form.isFieldValidating(['address_details','lastName'])
 
-    await    form.validateFields().then(() => {
-      console.log('Validation succeeded for username field.');
-    }).catch((error) => {
-      console.log('Validation failed for username field:', error); 
-  
-    });
-  
+    await form
+      .validateFields()
+      .then(() => {})
+      .catch((error) => {
+        // console.log('Validation failed for username field:', error);
+      });
 
     if (updateOption == "shipping") {
       //console.log( "inn shipppppppppppppppppppppppppppppp", provincesName.length );
@@ -2006,14 +2032,12 @@ console.log("sdasdasdakeuwriorioriorioriorioriorioriorioiooppo")
         setProvinceError(false);
       }
 
-
-
       // console.log("23oct", form.getFieldError(["address_details", "lastName"]), form.getFieldValue(["address_details", "address1"]) );
-    
 
       let check =
         provincesName.length > 0
-          ? form.getFieldError(["address_details", "firstName"]).length == 0 && form.getFieldError(["address_details", "lastName"]).length == 0 &&
+          ? form.getFieldError(["address_details", "firstName"]).length == 0 &&
+            form.getFieldError(["address_details", "lastName"]).length == 0 &&
             form.getFieldError(["address_details", "address1"]).length == 0 &&
             form.getFieldError(["address_details", "phone"]).length == 0 &&
             form.getFieldError(["address_details", "zip"]).length == 0 &&
@@ -2022,13 +2046,14 @@ console.log("sdasdasdakeuwriorioriorioriorioriorioriorioiooppo")
             form.getFieldError(["address_details", "country"]).length == 0 &&
             form.getFieldError(["address_details", "province"]).length == 0 &&
             form.getFieldValue(["address_details", "province"])
-          : (form.getFieldError(["address_details", "firstName"]).length == 0 && form.getFieldError(["address_details", "lastName"]).length == 0 &&
+          : form.getFieldError(["address_details", "firstName"]).length == 0 &&
+            form.getFieldError(["address_details", "lastName"]).length == 0 &&
             form.getFieldError(["address_details", "address1"]).length == 0 &&
             form.getFieldError(["address_details", "phone"]).length == 0 &&
             form.getFieldError(["address_details", "zip"]).length == 0 &&
             form.getFieldError(["address_details", "deliveryPrice"]).length ==
               0 &&
-            form.getFieldError(["address_details", "country"]).length == 0);
+            form.getFieldError(["address_details", "country"]).length == 0;
 
       if (check) {
         //console.log("hellooooooooooooo");
@@ -2086,13 +2111,12 @@ console.log("sdasdasdakeuwriorioriorioriorioriorioriorioiooppo")
 
         getStatus && setEdit({ ...edit, shippingDetails: false });
       } else {
-        console.log("inelseshipping");
+        // console.log("inelseshipping");
       }
     }
 
     if (updateOption == "subscriptionDetails") {
       //console.log(form.getFieldError(["subscription", "billingLength"]));
-         
 
       if (
         form.getFieldError(["subscription", "planName"]).length == 0 &&
@@ -2214,11 +2238,23 @@ console.log("sdasdasdakeuwriorioriorioriorioriorioriorioiooppo")
           ]),
 
           autoRenew: form.getFieldValue(["subscription", "autoRenew"]),
-          currency:existingSubscription?.subscription_details?.currency,
+          currency: existingSubscription?.subscription_details?.currency,
 
-         ...(existingSubscription?.subscription_details?.discount ?  {discount : existingSubscription?.subscription_details?.discount} : {}),
-          ...( existingSubscription?.subscription_details?.freeTrial ? {freeTrial :  existingSubscription?.subscription_details?.freeTrial} : {} ),
-          ...( existingSubscription?.subscription_details?.freeTrialCycle ? {freeTrialCycle :  existingSubscription?.subscription_details?.freeTrialCycle} : {} ),
+          ...(existingSubscription?.subscription_details?.discount
+            ? { discount: existingSubscription?.subscription_details?.discount }
+            : {}),
+          ...(existingSubscription?.subscription_details?.freeTrial
+            ? {
+                freeTrial:
+                  existingSubscription?.subscription_details?.freeTrial,
+              }
+            : {}),
+          ...(existingSubscription?.subscription_details?.freeTrialCycle
+            ? {
+                freeTrialCycle:
+                  existingSubscription?.subscription_details?.freeTrialCycle,
+              }
+            : {}),
           check: "subscriptionDetailsUpdate",
         };
 
@@ -2244,7 +2280,8 @@ console.log("sdasdasdakeuwriorioriorioriorioriorioriorioiooppo")
     }
 
     if (updateOption == "customerDetails") {
-      if ( form.getFieldError(["customer_details", "firstName"]).length == 0 &&
+      if (
+        form.getFieldError(["customer_details", "firstName"]).length == 0 &&
         form.getFieldError(["customer_details", "lastName"]).length == 0 &&
         form.getFieldError(["customer_details", "email"]).length == 0 &&
         form.getFieldError(["customer_details", "phone"]).length == 0
@@ -2267,7 +2304,6 @@ console.log("sdasdasdakeuwriorioriorioriorioriorioriorioiooppo")
         //console.log("in else customer detilasss");
       }
     }
-
   };
 
   const handleDisableDate = (current) => {
@@ -2279,13 +2315,37 @@ console.log("sdasdasdakeuwriorioriorioriorioriorioriorioiooppo")
   };
 
   const handleMenuClick = (e) => {
-    //console.log("click", e);
+    // console.log("click", e.key);
 
     let body = {
       id: existingSubscription?.subscription_id,
       input: { status: e.key },
       field: "status",
     };
+
+    if (e.key == "ACTIVE") {
+      // console.log("sttauscheck",existingSubscription?.nextBillingDate,new Date().toISOString())
+      const dateString1 = new Date(
+        existingSubscription?.nextBillingDate
+      ).toISOString();
+      const dateString2 = new Date().toISOString();
+      //  console.log("dateString1, dateString2",dateString1, dateString2)
+      let date1 = new Date(dateString1);
+      let date2 = new Date(dateString2);
+      const comparisonResult = compareDatesIgnoringTime(date1, date2);
+
+      if (comparisonResult < 0) {
+        date2.setDate(date2.getDate() + 1);
+        // console.log("date2",new Date(date2).toISOString())
+        body.input.nextBillingDate = new Date(date2)?.toISOString();
+        console.log("bodyyy", body);
+      } else if (comparisonResult > 0) {
+        // console.log("date1 is after date2.");
+      } else {
+        // console.log("Both dates are the same.");
+      }
+    }
+
     subscriptionUpdateCommon("subscriptionStatusUpdate", body, "status");
   };
 
@@ -2552,17 +2612,23 @@ console.log("sdasdasdakeuwriorioriorioriorioriorioriorioiooppo")
                         />
                       </Select.Option>
                     ) : (
-                      customerPaymentsData.map((item, index) => (
-                        <Select.Option key={index} value={item?.node?.id}>
-                          {item?.node?.instrument?.brand
-                            .charAt(0)
-                            .toUpperCase() +
-                            formatVariableName(
-                              item?.node?.instrument?.brand.slice(1)
-                            )}
-                          (**** **** **** {item?.node?.instrument?.lastDigits})
-                        </Select.Option>
-                      ))
+                      customerPaymentsData.map((item, index) =>
+                        item?.node?.instrument?.brand &&
+                        item?.node?.instrument?.lastDigits ? (
+                          <Select.Option key={index} value={item?.node?.id}>
+                            {item?.node?.instrument?.brand
+                              .charAt(0)
+                              .toUpperCase() +
+                              formatVariableName(
+                                item?.node?.instrument?.brand.slice(1)
+                              )}
+                            (**** **** **** {item?.node?.instrument?.lastDigits}
+                            )
+                          </Select.Option>
+                        ) : (
+                          ""
+                        )
+                      )
                     )}
                   </Select>
                 </Form.Item>
@@ -2775,7 +2841,9 @@ console.log("sdasdasdakeuwriorioriorioriorioriorioriorioiooppo")
                     },
                   },
                 ]}
-                tooltip={"Name your subscription plan here. This will allow you to differentiate between your various Subscription Plans."}
+                tooltip={
+                  "Name your subscription plan here. This will allow you to differentiate between your various Subscription Plans."
+                }
               >
                 <Input
                   // placeholder="Plan Name"
@@ -2787,25 +2855,52 @@ console.log("sdasdasdakeuwriorioriorioriorioriorioriorioiooppo")
                 />
               </Form.Item>
               <Form.Item
-              className="chekkkk"
-               
-            label={<div className="revlytic label-tooltip-main"><label>Plan Types</label><Tooltip placement="left"  title={
-                  <div className="revlytic-plan-type-toolTip">
-                              <p>
-                              <h2>Supported Subscription Billing Plans</h2>
-                              <hr/>
-                         <h2>1. Pay As You Go (Auto Renewal):</h2>
-                  Pay As You Go is a flexible billing plan that bills your customers for whatever billing frequency you select. For example, if you set up a Monthly Pay As You Go Subscription plan, your customer will be charged every month until the plan is canceled. 
-                 </p><p><h1>2. Prepaid (Auto Renewal On):</h1>
-                  With the Prepaid Auto Renewal plan type, you are able to bill your customer in advance for multiple periods in the future. For example, with the Prepaid Length set to 12 Months and the Delivery Every set to 1 month, you can bill the customer for 12 Months of deliveries upfront. At the end of the 12 Months, this plan will Auto Renew for another 12 Month period billed upfront. This will continue until either you or the Customer cancels the subscription.
-                 </p><p> <h1>3. Prepaid (Auto Renewal Off):</h1>
-                  This plan type is exactly the same as the Prepaid with Auto Renewal On, except that it does not renew at the of the billing cycle. 
-                   </p>
-                  </div>}><QuestionCircleOutlined/></Tooltip></div>} 
-
+                className="chekkkk"
+                label={
+                  <div className="revlytic label-tooltip-main">
+                    <label>Plan Types</label>
+                    <Tooltip
+                      placement="left"
+                      title={
+                        <div className="revlytic-plan-type-toolTip">
+                          <p>
+                            <h2>Supported Subscription Billing Plans</h2>
+                            <hr />
+                            <h2>1. Pay As You Go (Auto Renewal):</h2>
+                            Pay As You Go is a flexible billing plan that bills
+                            your customers for whatever billing frequency you
+                            select. For example, if you set up a Monthly Pay As
+                            You Go Subscription plan, your customer will be
+                            charged every month until the plan is canceled.
+                          </p>
+                          <p>
+                            <h1>2. Prepaid (Auto Renewal On):</h1>
+                            With the Prepaid Auto Renewal plan type, you are
+                            able to bill your customer in advance for multiple
+                            periods in the future. For example, with the Prepaid
+                            Length set to 12 Months and the Delivery Every set
+                            to 1 month, you can bill the customer for 12 Months
+                            of deliveries upfront. At the end of the 12 Months,
+                            this plan will Auto Renew for another 12 Month
+                            period billed upfront. This will continue until
+                            either you or the Customer cancels the subscription.
+                          </p>
+                          <p>
+                            {" "}
+                            <h1>3. Prepaid (Auto Renewal Off):</h1>
+                            This plan type is exactly the same as the Prepaid
+                            with Auto Renewal On, except that it does not renew
+                            at the of the billing cycle.
+                          </p>
+                        </div>
+                      }
+                    >
+                      <QuestionCircleOutlined />
+                    </Tooltip>
+                  </div>
+                }
                 name={["subscription", "planType"]}
                 initialValue={"payAsYouGo"}
-           
               >
                 <Select
                   // placeholder="Please Select"
@@ -2826,25 +2921,25 @@ console.log("sdasdasdakeuwriorioriorioriorioriorioriorioiooppo")
             <div className="revlytic subscription-details1">
               <div className="revlytic start-date">
                 {mode != "edit" && mode != "view" ? (
-                 (
-                    <Form.Item
-                      name="startDate"
-                      label={
-                        <p className="revlytic required">
-                          Subscription Start Date
-                        </p>
-                      }
-                      tooltip="Date when subscription starts(* Valid for existing customers only)"
-                    >
-                      <Input
-                        disabled
-                        placeholder="The date is determined on checkout by the customer"
-                      />
-                    </Form.Item>
-                  )
+                  <Form.Item
+                    name="startDate"
+                    label={
+                      <p className="revlytic required">
+                        Subscription Start Date
+                      </p>
+                    }
+                    tooltip="Date when subscription starts(* Valid for existing customers only)"
+                  >
+                    <Input
+                      disabled
+                      placeholder="The date is determined on checkout by the customer"
+                    />
+                  </Form.Item>
                 ) : (
                   <Form.Item
-                    label={<p className="revlytic required">Next Billing Date</p>}
+                    label={
+                      <p className="revlytic required">Next Billing Date</p>
+                    }
                     name="startDate"
                     initialValue={dayjs(
                       new Date().getTime() + 1 * 24 * 60 * 60 * 1000
@@ -2943,7 +3038,7 @@ console.log("sdasdasdakeuwriorioriorioriorioriorioriorioiooppo")
                           initialValue={true}
                           valuePropName="checked"
                           tooltip="If this box is selected, the plan will automatically renew at the end of the subscription."
-                          >
+                        >
                           <Checkbox disabled></Checkbox>
                         </Form.Item>
                       </div>
@@ -3018,7 +3113,7 @@ console.log("sdasdasdakeuwriorioriorioriorioriorioriorioiooppo")
                             initialValue={false}
                             valuePropName="checked"
                             tooltip="If this box is selected, the plan will automatically renew at the end of the subscription."
-                            >
+                          >
                             <Checkbox
                               disabled={
                                 existingSubscription != {} &&
@@ -3054,7 +3149,7 @@ console.log("sdasdasdakeuwriorioriorioriorioriorioriorioiooppo")
                               },
                             ]}
                             tooltip="For Prepaid Plans, the number of deliveries that will be made to the customer in the defined Prepaid Length. For example, if you set “Prepaid Length” to 12 Months, and “Delivery Every” to 3 Months, you will be delivering to your customer every 3 months for a 12 month period. That equates to 4 Deliveries (4 Deliveries x 3 Months = 12 Months of Deliveries)."
-                            >
+                          >
                             <Input
                               disabled={
                                 existingSubscription != {} &&
@@ -3105,10 +3200,10 @@ console.log("sdasdasdakeuwriorioriorioriorioriorioriorioiooppo")
                 <p className="revlytic main-headings">Advanced Options</p>
 
                 <div className="revlytic subscription-details2">
-                {(mode == "edit" || mode == "view") &&
-                    existingSubscription?.subscription_details?.freeTrial ? (
-                      <div className="revlytic advance-options-discount free_trial">
-                        {/* <div className="revlytic discount-toggle">
+                  {(mode == "edit" || mode == "view") &&
+                  existingSubscription?.subscription_details?.freeTrial ? (
+                    <div className="revlytic advance-options-discount free_trial">
+                      {/* <div className="revlytic discount-toggle">
                           <Form.Item
                             label="Offer Discount"
                             name={["subscription", "offerDiscount"]}
@@ -3134,67 +3229,64 @@ console.log("sdasdasdakeuwriorioriorioriorioriorioriorioiooppo")
                           </Form.Item>
                         </div>    */}
 
-                        {/* <label>Discount</label> */}
-                        <div className="revlytic ">
-                          <Form.Item
-                            name={["subscription", "freeTrial"]}
-                            // noStyle
-                            label="Free Trial Period"
-                            rules={[
-                              {
-                                required: true,
-                                message: "Offer Discount is required!",
-                                // whitespace: true,
-                              },
-                              {
-                                pattern: /^\d+(\.\d+)?$/,
-                                message: "Price must be a valid number!",
-                              },
+                      {/* <label>Discount</label> */}
+                      <div className="revlytic ">
+                        <Form.Item
+                          name={["subscription", "freeTrial"]}
+                          // noStyle
+                          label="Free Trial Period"
+                          rules={[
+                            {
+                              required: true,
+                              message: "Offer Discount is required!",
+                              // whitespace: true,
+                            },
+                            {
+                              pattern: /^\d+(\.\d+)?$/,
+                              message: "Price must be a valid number!",
+                            },
 
-                              {
-                                validator: (rule, value) =>
-                                  handleDiscountValidator(rule, value),
-                              },
-                            ]}
-                            tooltip=""
-                          >
-                            <Input
-                              // placeholder="Enter value"
-                              disabled={
-                                existingSubscription != {} &&
-                                (mode == "view" || mode == "edit")
-                              }
-                            />
-                          </Form.Item>
+                            {
+                              validator: (rule, value) =>
+                                handleDiscountValidator(rule, value),
+                            },
+                          ]}
+                          tooltip=""
+                        >
+                          <Input
+                            // placeholder="Enter value"
+                            disabled={
+                              existingSubscription != {} &&
+                              (mode == "view" || mode == "edit")
+                            }
+                          />
+                        </Form.Item>
 
-
-                          <Form.Item
-                            name={["subscription", "freeTrialCycle"]}
-                            // noStyle
-                            label=" "
-                      
-                            tooltip=""
-                          >
-                            <Input
-                              // placeholder="Enter value"
-                              disabled={
-                                existingSubscription != {} &&
-                                (mode == "view" || mode == "edit")
-                              }
-                            />
-                          </Form.Item>
-
-                        </div>
+                        <Form.Item
+                          name={["subscription", "freeTrialCycle"]}
+                          // noStyle
+                          label=" "
+                          tooltip=""
+                        >
+                          <Input
+                            // placeholder="Enter value"
+                            disabled={
+                              existingSubscription != {} &&
+                              (mode == "view" || mode == "edit")
+                            }
+                          />
+                        </Form.Item>
                       </div>
-                    ) : (
-                      ""
-                    )}
+                    </div>
+                  ) : (
+                    ""
+                  )}
                   <div className="revlytic  advance-options-frequencyPlanName-discount">
                     <div className="revlytic frequency-name">
                       <Form.Item
                         label="Frequency Plan Name"
                         name={["subscription", "frequencyPlanName"]}
-                        tooltip=' A Frequency Plan refers to the frequency  of deliveries or fulfillments to be made. Name the frequency here. Common examples of Frequency Plan Names are “Monthly” or “Weekly”. This is an external field that will be visible to your customers on the Product Details page.'
+                        tooltip=" A Frequency Plan refers to the frequency  of deliveries or fulfillments to be made. Name the frequency here. Common examples of Frequency Plan Names are “Monthly” or “Weekly”. This is an external field that will be visible to your customers on the Product Details page."
                       >
                         <Input
                           // placeholder="Enter Plan Name"
@@ -3402,7 +3494,6 @@ console.log("sdasdasdakeuwriorioriorioriorioriorioriorioiooppo")
                     ) : (
                       ""
                     )}
-               
 
                     {/* ***    23sept endddd **** */}
                   </div>
@@ -3507,15 +3598,15 @@ console.log("sdasdasdakeuwriorioriorioriorioriorioriorioiooppo")
               checkedIds={checkedIds}
               setCheckedIds={setCheckedIds}
               customerPaymentsDataLength={customerPaymentsData.length}
-              subscription_details={{...form.getFieldValue("subscription"),
-              currency : existingSubscription?.subscription_details?.currency}}
-              
+              subscription_details={{
+                ...form.getFieldValue("subscription"),
+                currency: existingSubscription?.subscription_details?.currency,
+              }}
             />
           )}
         </div>
 
-        {
-        (existingSubscription != {} && (mode == "edit" || mode == "view")) ? (
+        {existingSubscription != {} && (mode == "edit" || mode == "view") ? (
           <Card>
             <div className="revlytic heading-edit-save-container">
               <p className="revlytic main-headings">Shipping Details</p>
@@ -3791,8 +3882,11 @@ console.log("sdasdasdakeuwriorioriorioriorioriorioriorioiooppo")
               </Form.Item>
 
               {provincesName.length > 0 ||
-              ( mode == "view" && existingSubscription?.shipping_address?.province ) ||  
-              (mode == "edit" &&  existingSubscription?.shipping_address?.province &&  provincesName.length > 0) ? (
+              (mode == "view" &&
+                existingSubscription?.shipping_address?.province) ||
+              (mode == "edit" &&
+                existingSubscription?.shipping_address?.province &&
+                provincesName.length > 0) ? (
                 <>
                   <Form.Item
                     label={<p className="revlytic required">State/Province</p>}
@@ -3867,9 +3961,32 @@ console.log("sdasdasdakeuwriorioriorioriorioriorioriorioiooppo")
 
         {existingSubscription != {} &&
         (mode == "view" || mode == "edit") ? null : (
-          <Tooltip color= "#ffffff" title={ billingPlan !="starter" && billingPlan !="premium"   && billingPlan !="premiere"  ? <Link to={(`/billing?option=checkoutlink`)}>Upgrade your Plan</Link> :""}><Button className="revlytic-save-subscription" htmlType="submit" disabled={ billingPlan !="starter" && billingPlan !="premium"  && billingPlan !="premiere" } >
-            Create Checkout Link
-          </Button></Tooltip>
+          <Tooltip
+            color="#ffffff"
+            title={
+              billingPlan != "starter" &&
+              billingPlan != "premium" &&
+              billingPlan != "premiere" ? (
+                <Link to={`/billing?option=checkoutlink`}>
+                  Upgrade your Plan
+                </Link>
+              ) : (
+                ""
+              )
+            }
+          >
+            <Button
+              className="revlytic-save-subscription"
+              htmlType="submit"
+              disabled={
+                billingPlan != "starter" &&
+                billingPlan != "premium" &&
+                billingPlan != "premiere"
+              }
+            >
+              Create Checkout Link
+            </Button>
+          </Tooltip>
         )}
       </Form>
 
@@ -3897,16 +4014,16 @@ console.log("sdasdasdakeuwriorioriorioriorioriorioriorioiooppo")
             setLoader={setLoader}
             setExistingSubscription={setExistingSubscription}
             storeDetails={storeDetails}
-              setNextBillingDate={setNextBillingDate}
-              pastOrders={pastOrders}
-              mode={mode}
+            setNextBillingDate={setNextBillingDate}
+            pastOrders={pastOrders}
+            mode={mode}
             billingPlan={billingPlan}
-
           />
         )
       ) : (
         ""
       )}
+      <CalculateBillingUsage setBillingPlan={setBillingPlan} />
 
       <Modal
         // title="Create Customer "

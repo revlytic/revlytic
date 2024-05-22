@@ -2,7 +2,7 @@ import { Routes as ReactRouterRoutes, Route } from "react-router-dom";
 import Sidebar from "./components/common/Sidebar";
 import CreateManualSubscription from "./components/createManualSubscription";
 import ContactUs from "./pages/ContactUs";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 /**
  * File-based routing.
  * @desc File-based routing that uses React Router under the hood.
@@ -19,23 +19,24 @@ import { useState } from "react";
  */
 export default function Routes({ pages }) {
   const routes = useRoutes(pages);
-  const [activeContactRoute,setActiveContactRoute]=useState(false)
+  const [activeContactRoute,setActiveContactRoute]=useState()
   const routeComponents = routes.map(({ path, component: Component }) => (
+    // console.log(path == "/contactUs")
     <Route key={path} path={path} element={<Component />} />
   ));
 
   const NotFound = routes.find(({ path }) => path === "/notFound").component;
 
   return (
-    <ReactRouterRoutes>
-      {activeContactRoute && <Route path="/contactus" element={<ContactUs/>}/>}
+  <ReactRouterRoutes>
+      {activeContactRoute != undefined && activeContactRoute==true  && <Route path="/contactus" element={<ContactUs/>}/>}
       <Route element ={<Sidebar setActiveContactRoute={setActiveContactRoute}/>} >
         {routeComponents}
         {/* <Route  path="/" element={<Home />} /> */}
         <Route path="/create-manual-subscription" element={<CreateManualSubscription  />} />
 
       
-      <Route path="*" element={<NotFound />} />
+       <Route path="*" element={<NotFound />} />
       </Route>
     </ReactRouterRoutes>
   );
@@ -68,7 +69,6 @@ function useRoutes(pages,hello) {
       if (!pages[key].default) {
         console.warn(`${key} doesn't export a default React component`);
       }
-
       return {
         path,
         component: pages[key].default,

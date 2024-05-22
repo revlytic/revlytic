@@ -16,22 +16,14 @@ import {
   Tooltip,
 } from "antd";
 import dayjs from "dayjs";
-
 import { useEffect, useState, useRef } from "react";
 import { useForm } from "antd/lib/form/Form";
 import postApi from "./common/postApi";
 import { useAppBridge, ResourcePicker } from "@shopify/app-bridge-react";
 import { useNavigate } from "@shopify/app-bridge-react";
 import pic from "../assets/images/image2.png";
-import AddProduct from "../pages/Addproduct";
 import { useAPI } from "./common/commonContext";
-// import { Carousel } from "antd";
 import Slider from "react-slick";
-
-// import Toast from "./notification/Toast";
-
-// import { Swiper, SwiperSlide } from 'swiper/react';
-
 import { toast } from "react-toastify";
 import {
   DeleteOutlined,
@@ -42,12 +34,12 @@ import {
   RightOutlined,
   UpOutlined,
 } from "@ant-design/icons";
-
+import CalculateBillingUsage from "./calculateBillingUsage";
 const PlanForm = (props) => {
   const app = useAppBridge();
   const navigate = useNavigate();
   const { currency, storeName } = useAPI();
-  // //console.log(currency, "lkjh");
+
   const getCurrencySymbol = (currency) => {
     const symbol = new Intl.NumberFormat("en", { style: "currency", currency })
       .formatToParts()
@@ -58,6 +50,8 @@ const PlanForm = (props) => {
 
   const [form] = useForm();
   const [form1] = useForm();
+
+  const [billingPlan,setBillingPlan]=useState('')
 
   const [billingEvery, setBillingEvery] = useState("month"); //////// billing every dropdown value
   const [offerPriceSelect, setOfferPriceSelect] = useState("percentage"); ////dropdown value fpr fixed and percentage options in form pricetype
@@ -101,48 +95,6 @@ const PlanForm = (props) => {
   const [preview, setPreview] = useState(
     "This subscription is a Pay As You Go plan. The customer will receive a delivery and be billed every 1 month(s).  Additionally, this plan will renew automatically until canceled."
   );
-  // //console.log(previewDropdown);
-
-  const week = [
-    "Monday",
-    "Tuesday",
-    "Wednesday",
-    "Thursday",
-    "Friday",
-    "Saturday",
-    "Sunday",
-  ];
-  const months = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December",
-  ];
-  const days = [
-    1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21,
-    22, 23, 24, 25, 26, 27, 28,
-  ];
-
-  // const contentStyle = {
-  //   margin: 0,
-  //   height: "160px",
-  //   lineHeight: "160px",
-  //   color: "#fff",
-  //   textAlign: "center",
-  //   background: "#364d79",
-  // };
-
-  // const onChange = (currentSlide) => {
-  //   //console.log(currentSlide);
-  // };
 
   const settings = {
     dots: false,
@@ -182,7 +134,6 @@ const PlanForm = (props) => {
       name="ddd"
       value={billingEvery}
       onChange={(e) => {
-        //console.log(form.getFieldsValue(),"fhsdfsdhkjsdhfbhj")
         setBillingEvery(e);
         if (buttonText) {
           let values = form.getFieldsValue();
@@ -192,7 +143,6 @@ const PlanForm = (props) => {
             ? previewCommon({ ...initialPlans[editIndex], billingEveryType: e })
             : previewCommon({ ...plansList[editIndex], billingEveryType: e });
         }
-        // form.validateFields();
       }}
     >
       <Select.Option value="day">Day(s)</Select.Option>
@@ -238,7 +188,6 @@ const PlanForm = (props) => {
   useEffect(() => {
     let arr = [];
     plansList.map((el, index) => {
-      //console.log(el, "go");
       let name = el.planType == "payAsYouGo" ? "(Pay As You Go)" : "(Prepaid)";
       let typeName =
         el.billingEveryType == "week"
@@ -251,7 +200,6 @@ const PlanForm = (props) => {
           ? "Year(s)"
           : "";
       arr.push({
-        // label: el.billingEvery + " " + typeName + " " + name,
         label: el.planName,
 
         value: el.priceType + "new" + index,
@@ -275,7 +223,6 @@ const PlanForm = (props) => {
           ? "Year(s)"
           : "";
       arr.push({
-        // label: el.billingEvery + " " + typeName + " " + name,
         label: el.planName,
         value: el.priceType + "old" + index,
         price: el.price,
@@ -287,18 +234,9 @@ const PlanForm = (props) => {
     });
     setPreviewDropdown(arr);
     setDropdownValue(arr[0]);
-    console.log(
-      "products[0]?.variants[0]?.price",
-      products[0]?.variants[0]?.price
-    );
+
     if (arr.length > 0 && arr[0].price != undefined) {
       if (arr[0].value.includes("percentage")) {
-        console.log(
-          "first",
-          (products[0]?.variants[0]?.price ?? 100) -
-            ((products[0]?.variants[0]?.price ?? 100) * arr[0].price) / 100
-        );
-
         arr[0].planType.toLowerCase().includes("prepaid")
           ? setPlanpreviewPrice(
               (arr[0].billing / arr[0].delivery) *
@@ -311,13 +249,6 @@ const PlanForm = (props) => {
                 ((products[0]?.variants[0]?.price ?? 100) * arr[0].price) / 100
             );
       } else if (arr[0].value.includes("fixed")) {
-        console.log(
-          "infixxx",
-          (products[0]?.variants[0]?.price ?? 100) - arr[0].price > 0
-            ? (products[0]?.variants[0]?.price ?? 100) - arr[0].price
-            : 0
-        );
-
         arr[0].planType.toLowerCase().includes("prepaid")
           ? setPlanpreviewPrice(
               (arr[0].billing / arr[0].delivery) *
@@ -333,20 +264,13 @@ const PlanForm = (props) => {
       }
     } else {
       setPlanpreviewPrice(products[0]?.variants[0]?.price ?? 100);
-      // setPlanpreviewPrice(100);
     }
   }, [initialPlans, plansList, products]);
-  //console.log(dropdownValue, "sdsdsd");
   useEffect(() => {
     setProducts(products);
-    // props.setProductList(products)
-    // if(products.length==0){
-    //   setPlanpreviewPrice(100)
-    // }
   }, [products]);
 
   useEffect(() => {
-    // //console.log(props.pid);
     if (props.pid != "new") {
       getProductPlansList();
     } else {
@@ -356,7 +280,6 @@ const PlanForm = (props) => {
   const getAllPlanGroupNames = async (flag, name) => {
     let data = await postApi("/api/admin/getAllPlanGroupNames", {}, app);
     if (data) {
-      // //console.log(data?.data?.data, "jklmnb");
       let arr = [];
       data?.data?.data.map((element) => {
         arr.push(element.plan_group_name.toLowerCase());
@@ -374,7 +297,6 @@ const PlanForm = (props) => {
       { pid: props.pid },
       app
     );
-    console.log(res, "oo");
     setLoader(false);
     if (res?.data?.message == "success") {
       setProducts(res?.data?.data?.product_details);
@@ -437,7 +359,7 @@ const PlanForm = (props) => {
         });
       });
       setCheckedIds(ids);
-      //console.log(res?.data?.data?.plan_group_name, "ghghghg");
+
       setPlanGroupName(res?.data?.data?.plan_group_name);
       getAllPlanGroupNames("old", res?.data?.data?.plan_group_name);
       setinitialPlans(res?.data?.data?.plans);
@@ -446,19 +368,10 @@ const PlanForm = (props) => {
           JSON.parse(JSON.stringify(res?.data?.data?.product_details))
         );
     }
-
-    // setPlanGroupId(res?.data?.data?.plan_group_id);
-    // //console.log(res?.data?.data?.product_details);
-    // res?.data?.data?.plans &&
-    //   seteditdedPlans(JSON.parse(JSON.stringify(res?.data?.data?.plans)));
   };
-  // //console.log(initialPlans);
+
   function handleFormChange(changedData, b) {
-    //console.log("inchanges", changedData);
-
     if (changedData?.planType == "prepaid") {
-      //console.log("prepaid");
-
       form.setFieldsValue({
         billingEvery: 2,
         deliveryEvery: 1,
@@ -466,8 +379,6 @@ const PlanForm = (props) => {
     }
 
     if (changedData?.planType == "payAsYouGo") {
-      //console.log("payAsYouGo");
-
       form.setFieldsValue({
         billingEvery: "1",
       });
@@ -482,8 +393,6 @@ const PlanForm = (props) => {
     let data2;
 
     if (form.getFieldValue("planType") == "payAsYouGo") {
-      //console.log("sahil");
-
       data =
         `This subscription is a Pay As You Go plan. The customer will receive a delivery and be billed every ` +
         `${
@@ -492,8 +401,6 @@ const PlanForm = (props) => {
             : "{Input for bill every}"
         }  ${form.getFieldValue("billingEveryType")?.toLowerCase()}(s).`;
     } else {
-      //console.log("sahil2");
-
       data =
         `This subscription is a Prepaid plan. The length of the subscription is ` +
         `${
@@ -515,12 +422,8 @@ const PlanForm = (props) => {
     }
 
     if (form.getFieldValue("billingCycle") == false) {
-      //console.log("sahl3");
-
       data2 = ` Additionally, this plan will not renew automatically.`;
     } else {
-      //console.log("sahl4");
-
       data2 = ` Additionally, this plan will renew automatically until canceled.`;
     }
 
@@ -534,7 +437,6 @@ const PlanForm = (props) => {
     setEditNewPlan(true);
     setEditIndex(index);
     setButtonText(false);
-    //console.log("hahgggggggggah", elements);
 
     let obj = {
       planName: elements.planName,
@@ -555,28 +457,14 @@ const PlanForm = (props) => {
       obj.trialCount = elements.trialCount;
       obj.freeTrialCycle = elements.freeTrialCycle;
     }
-    // elements.freeTrial ? (obj.trialCount = elements.trialCount) : "";
     elements.deliveryEvery
       ? (obj.deliveryEvery = parseInt(elements.deliveryEvery))
       : "";
 
-    // elements.billingCycle == "cancel_after"
-    //   ? (obj.billingCycleCount = parseInt(elements.billingCycleCount))
-    //   : "";
-
-    // if (elements.billingEveryType === "week") {
-    //   obj.billingWeek = elements.billingWeek;
-    // } else if (elements.billingEveryType === "month") {
-    //   obj.billingMonth = elements.billingMonth;
-    // } else if (elements.billingEveryType === "year") {
-    //   obj.billingYear = elements.billingYear;
-    //   obj.billingMonth = elements.billingMonth;
-    // }
     if (elements.setupFee) {
       obj.setupPrice = elements.setupPrice;
     }
 
-    console.log("cheksjdskjd", obj);
     form.setFieldsValue(obj);
     setBillingEvery(elements.billingEveryType);
     setOfferPriceSelect(elements.priceType);
@@ -595,10 +483,9 @@ const PlanForm = (props) => {
   const editPrevPlanHandler = (elements, index) => {
     previewCommon(elements);
 
-    //console.log("afgagfasfhkashf");
     form.validateFields();
     setOpenForm(true);
-    //console.log(elements);
+
     setEditExistingPlan(true);
     setButtonText(false);
     setEditIndex(index);
@@ -623,42 +510,28 @@ const PlanForm = (props) => {
       obj.freeTrialCycle = elements.freeTrialCycle;
     }
 
-    // elements.freeTrial ? (obj.trialCount = elements.trialCount) : "";
     elements.deliveryEvery
       ? (obj.deliveryEvery = parseInt(elements.deliveryEvery))
       : "";
 
-    // elements.billingCycle == "cancel_after"
-    //   ? (obj.billingCycleCount = parseInt(elements.billingCycleCount))
-    //   : "";
-    // if (elements.billingEveryType === "week") {
-    //   obj.billingWeek = elements.billingWeek;
-    // } else if (elements.billingEveryType === "month") {
-    //   obj.billingMonth = elements.billingMonth;
-    // } else if (elements.billingEveryType === "year") {
-    //   obj.billingYear = elements.billingYear;
-    //   obj.billingMonth = elements.billingMonth;
-    // }
     if (elements.setupFee) {
       obj.setupPrice = elements.setupPrice;
     }
-    console.log(obj);
+
     form.setFieldsValue(obj);
     setBillingEvery(elements.billingEveryType);
     setOfferPriceSelect(elements.priceType);
   };
-  // //console.log(editedArrayIds)
+
   const deletePrevPlan = (
     data = prevPlanDel.data,
     index = prevPlanDel.index
   ) => {
-    //console.log(data);
     setOpenForm(false);
 
     let Planarr = [...initialPlans];
     Planarr.splice(index, 1);
     setinitialPlans(Planarr);
-    console.log(data);
 
     let arr = [...deletedPlanIds];
     arr.push(data.data.plan_id);
@@ -671,26 +544,19 @@ const PlanForm = (props) => {
 
     setIsModalOpenPrev(false);
   };
-  // console.log(deletedPlanIds, "ajlkj");
 
   const onFinish = (values) => {
-    //console.log(values, "kkk");
-
     if (editExistingPlan) {
-      console.log("1check");
-      //console.log(initialPlans);
       let idArr = [...editedArrayIds];
       idArr.push(editIndex);
       seteditedArrayIds(idArr);
       let arr = [...initialPlans];
       let elements = form.getFieldsValue();
-      //console.log(elements);
-      //console.log(arr);
 
       let obj = elements;
       obj.setupProductId = arr[editIndex].setupProductId;
       obj.plan_id = arr[editIndex].plan_id;
-      // obj.billingEveryType = billingEvery;
+
       obj.priceType = offerPriceSelect;
       arr[editIndex] = obj;
       setinitialPlans(arr);
@@ -699,25 +565,19 @@ const PlanForm = (props) => {
       setOpenForm(false);
       setEditExistingPlan(false);
     } else if (editNewPlan) {
-      console.log("2check");
       let arr = [...plansList];
       arr[editIndex] = form.getFieldsValue();
-      // arr[editIndex].billingEveryType = billingEvery;
+
       arr[editIndex].priceType = offerPriceSelect;
       setPlansList(arr);
-      // arr
-      // //console.log("object", form.getFieldsValue());
 
       setButtonText(true);
       form.resetFields();
       setOpenForm(false);
       setEditNewPlan(false);
     } else {
-      console.log("3check");
-      // values.billingEveryType = billingEvery;
       values.priceType = offerPriceSelect;
-      console.log("values", values);
-      // //console.log(values.billingEvery.addonAfter);
+
       let arr = [...plansList];
       arr.push(values);
       setPlansList(arr);
@@ -730,65 +590,51 @@ const PlanForm = (props) => {
   const onFinishFailed = (errorInfo) => {
     // //console.log("Failed:", errorInfo);
   };
-  // //console.log(initialPlans)
+
   const handleUpdate = () => {
-    //console.log(form.getFieldsError().some((field) => field.errors.length));
-    //console.log;
     if (
       form.getFieldsError().some((field) => field.errors.length) ||
       form.getFieldValue("offerDiscount") == ""
     ) {
-      // Toast("warning", "Please set all form fields correctly", "topRight")
       toast.warn("Please set all form fields correctly", {
         position: toast.POSITION.TOP_RIGHT,
       });
-    }
-    // else if (form.get) {
-
-    // }
-    else {
+    } else {
       if (editExistingPlan) {
-        //console.log(initialPlans);
         let idArr = [...editedArrayIds];
         idArr.push(editIndex);
         seteditedArrayIds(idArr);
         let arr = [...initialPlans];
         let elements = form.getFieldsValue();
-        //console.log(elements);
-        //console.log(arr);
 
         let obj = elements;
         obj.setupProductId = arr[editIndex].setupProductId;
         obj.plan_id = arr[editIndex].plan_id;
-        // obj.billingEveryType = billingEvery;
+
         obj.priceType = offerPriceSelect;
         arr[editIndex] = obj;
         setinitialPlans(arr);
         setButtonText(true);
         form.resetFields();
-        // setOpenForm(false);
+
         setEditExistingPlan(false);
       } else {
         let arr = [...plansList];
         arr[editIndex] = form.getFieldsValue();
-        // arr[editIndex].billingEveryType = billingEvery;
+
         arr[editIndex].priceType = offerPriceSelect;
         setPlansList(arr);
-        // arr
-        // //console.log("object", form.getFieldsValue());
 
         setButtonText(true);
         form.resetFields();
-        // setOpenForm(false);
+
         setEditNewPlan(false);
       }
     }
   };
 
   const createPlanGroup = async () => {
-    //console.log(allPlanGroupNames.includes(planGroupName));
     if (products.length < 1) {
-      // Toast("warning", "Please select products", "topRight");
       toast.warn("Please add at least one product to this plan.", {
         position: toast.POSITION.TOP_RIGHT,
       });
@@ -800,7 +646,6 @@ const PlanForm = (props) => {
         position: toast.POSITION.TOP_RIGHT,
       });
     } else if (initialPlans.length < 1 && plansList.length < 1) {
-      // Toast("error", "minimun one plan required", "topRight");
       toast.warn("Minimun one plan required", {
         position: toast.POSITION.TOP_RIGHT,
       });
@@ -819,26 +664,22 @@ const PlanForm = (props) => {
         setLoader(false);
 
         if (data?.data?.message == "success") {
-          // Toast("success", "PlanGroup created Successfully");
           toast.success("Plan created successfully", {
             position: toast.POSITION.TOP_RIGHT,
           });
           navigate("/manageplans");
         } else if (data?.data?.message == "userError") {
           data?.data?.data?.map((element) => {
-            // Toast("error", element.message);
             toast.warn(element.message, {
               position: toast.POSITION.TOP_RIGHT,
             });
           });
         } else if (data?.data?.message == "error") {
-          // Toast("error", data?.data?.data);
           toast.warn(data?.data?.data, {
             position: toast.POSITION.TOP_RIGHT,
           });
         }
       } else {
-        // //console.log("afhhhhhadkgjhkfyu");
         setLoader(true);
         let data = await postApi(
           "/api/admin/updateSellingPlanGroup",
@@ -858,7 +699,6 @@ const PlanForm = (props) => {
         );
         setLoader(false);
         if (data?.data?.message == "success") {
-          // Toast("success", "PlanGroup created Successfully");
           toast.success("Plan updated successfully", {
             position: toast.POSITION.TOP_RIGHT,
           });
@@ -885,30 +725,23 @@ const PlanForm = (props) => {
           setpreviewproductid("");
 
           getProductPlansList();
-          // navigate("/");
         } else if (data?.data?.message == "userError") {
           data?.data?.data?.map((element) => {
-            // Toast("error", element.message);
             toast.warn(element.message, {
               position: toast.POSITION.TOP_RIGHT,
             });
           });
         } else if (data?.data?.message == "error") {
-          // Toast("error", data?.data?.data);
           toast.warn(data?.data?.data, {
             position: toast.POSITION.TOP_RIGHT,
           });
         }
-        // //console.log(data, "dfdf");
       }
     }
-    // data && props.setLoader(false);
   };
 
   const nameValidator = (rule, value) => {
-    //console.log(editExistingPlan, editNewPlan);
     if (editNewPlan) {
-      // //console.log("hahahahhah", editIndex)
       let arr = [...plansList];
       arr.splice(editIndex, 1);
 
@@ -1304,18 +1137,12 @@ const PlanForm = (props) => {
     }
   };
   const handleProducts = async (e) => {
-    // //console.log(e.selection);
-    // setLoader(true);
     let sendData = [];
 
     e.selection.map((item) => {
-      // let id = item.id.split("/");
-      // let p_id = id[id.length - 1];
       let p_id = item.id;
       let variants = [];
       item.variants.map((itm) => {
-        // let id = itm.id.split("/");
-        // let v_id = id[id.length - 1];
         let v_id = itm.id;
         variants.push({
           id: v_id,
@@ -1449,7 +1276,6 @@ const PlanForm = (props) => {
     setCheckedIds(ids);
   };
   function previewCommon(data) {
-    console.log(data);
     let data1;
 
     let data2;
@@ -1641,159 +1467,7 @@ const PlanForm = (props) => {
       </Card>
     );
     // ///////////////////
-
-    // return (
-    //   <div className="revlytic plan-form-create-add-product">
-    //     <Button
-    //       type="primary"
-    //       onClick={() => {
-    //         setModal(true);
-    //       }}
-    //     >
-    //       Add Products
-    //     </Button>
-    //     <Button type="primary" onClick={() => setaddproductModal(true)}>
-    //       Create product
-    //     </Button>
-    //     <List>
-    //       {//console.log(products)}
-    //       {products.length > 0 && (
-    //         <h1 className="revlytic plan-form-products-heading">Products</h1>
-    //       )}
-    //       {products.map((item, productIndex) => (
-    //         <>
-    //           <List.Item
-    //             actions={[
-    //               <a
-    //                 key="list-loadmore-edit"
-    //                 onClick={() => {
-    //                   handleProductDelete(productIndex);
-    //                 }}
-    //               >
-    //                 delete
-    //               </a>,
-    //             ]}
-    //           >
-    //             {/* <List.Item.Meta
-    //               avatar={
-    //                 <Avatar
-    //                   src={item?.product_image ? item?.product_image : pic}
-    //                 />
-    //               }
-    //               title={item.product_name}
-    //               description={
-    //                 item.variants.length == 1 && item.variants[0].price
-    //               }
-    //             /> */}
-    //           </List.Item>
-    //           {
-    //             !item.hasOnlyDefaultVariant ?
-    //             item.variants.map((ele, varientIndex) => {
-    //               return (
-    //                 <div style={{ marginLeft: "20px" }}>
-    //                   <List.Item
-    //                     actions={[
-    //                       <a
-    //                         key="list-loadmore-edit"
-    //                         onClick={() => {
-    //                           handleVarientDelete(productIndex, varientIndex);
-    //                         }}
-    //                       >
-    //                         Preview
-    //                       </a>,
-    //                       <a
-    //                       key="list-loadmore-edit"
-    //                       onClick={() => {
-    //                         handleVarientDelete(productIndex, varientIndex);
-    //                       }}
-    //                     >
-    //                       delete
-    //                     </a>
-    //                     ]}
-    //                   >
-
-    //                     <List.Item.Meta
-    //                       avatar={
-    //                         <Avatar
-    //                           src={
-    //                             ele?.product_image ? ele?.product_image : item?.product_image ? item?.product_image : pic
-    //                           }
-    //                         />
-    //                       }
-    //                       title={ele.title}
-    //                       // description={ele.price}
-    //                     />
-    //                   </List.Item>
-
-    //                 </div>
-    //               );
-    //             }
-    //               )
-    //               :
-
-    //               item.variants.map((ele, varientIndex) => {
-    //                 return (
-    //                   <div style={{ marginLeft: "20px" }}>
-    //                     <List.Item
-    //                       actions={[
-    //                         <a
-    //                           key="list-loadmore-edit"
-    //                           onClick={() => {
-    //                             handleVarientDelete(productIndex, varientIndex);
-    //                           }}
-    //                         >
-    //                           Preview
-    //                         </a>,
-    //                         <a
-    //                         key="list-loadmore-edit"
-    //                         onClick={() => {
-    //                           handleVarientDelete(productIndex, varientIndex);
-    //                         }}
-    //                       >
-    //                         delete
-    //                       </a>
-    //                       ]}
-    //                     >
-
-    //                       <List.Item.Meta
-    //                         avatar={
-    //                           <Avatar
-    //                             src={
-    //                               ele?.product_image ? ele?.product_image : item?.product_image ? item?.product_image : pic
-    //                             }
-    //                           />
-    //                         }
-    //                         title={item.product_name}
-    //                         // description={ele.price}
-    //                       />
-    //                     </List.Item>
-
-    //                   </div>
-    //                 );
-    //               }
-    //                 )
-
-    //           }
-    //         </>
-    //       ))}
-    //     </List>
-
-    //     {modal && (
-    //       <ResourcePicker
-    //         resourceType="Product"
-    //         open={modal}
-    //         onSelection={handleProducts}
-    //         initialSelectionIds={checkedIds}
-    //         onCancel={handleCancel}
-    //         showHidden={false}
-    //       />
-    //     )}
-    //   </div>
-    // );
   };
-  {
-    // //console.log(previewData);
-  }
 
   const onFinishproduct = async (values) => {
     setaddproductModal(false);
@@ -1814,8 +1488,6 @@ const PlanForm = (props) => {
         position: toast.POSITION.TOP_RIGHT,
       });
 
-      //console.log(checkedIds);
-      //console.log(data.data.data);
       let pid = data.data.data.admin_graphql_api_id;
       let vid = data.data.data.variants[0].admin_graphql_api_id;
       let arr = [...checkedIds];
@@ -2729,91 +2401,6 @@ const PlanForm = (props) => {
                             )
                           }
                         </Form.Item>
-                        {/* <Form.Item noStyle shouldUpdate>
-                          {billingEvery == "week" ? (
-                            <Form.Item
-                              label="Billing day"
-                              initialValue="Monday"
-                              name="billingWeek"
-                            >
-                              <Select>
-                                <Select.Option value="Monday">
-                                  Monday
-                                </Select.Option>
-  
-                                <Select.Option value="Tuesday">
-                                  Tuesday
-                                </Select.Option>
-  
-                                <Select.Option value="Wednesday">
-                                  Wednesday
-                                </Select.Option>
-  
-                                <Select.Option value="Thursday">
-                                  Thursday
-                                </Select.Option>
-  
-                                <Select.Option value="Friday">
-                                  Friday
-                                </Select.Option>
-  
-                                <Select.Option value="Saturday">
-                                  Saturday
-                                </Select.Option>
-  
-                                <Select.Option value="Sunday">
-                                  Sunday
-                                </Select.Option>
-                              </Select>
-                            </Form.Item>
-                          ) : billingEvery == "year" ? (
-                            <>
-                              <Form.Item
-                                label="Billing month"
-                                initialValue="January"
-                                name="billingYear"
-                              >
-                                <Select>
-                                  {months.map((month) => (
-                                    <Select.Option key={month} value={month}>
-                                      {month}
-                                    </Select.Option>
-                                  ))}
-                                </Select>
-                              </Form.Item>
-  
-                              <Form.Item
-                                label="Billing date"
-                                initialValue="1"
-                                name="billingMonth"
-                              >
-                                <Select>
-                                  {days.map((day) => (
-                                    <Select.Option key={day} value={day}>
-                                      {day}
-                                    </Select.Option>
-                                  ))}
-                                </Select>
-                              </Form.Item>
-                            </>
-                          ) : billingEvery == "month" ? (
-                            <Form.Item
-                              label="Billing date"
-                              initialValue="1"
-                              name="billingMonth"
-                            >
-                              <Select>
-                                {days.map((day) => (
-                                  <Select.Option key={day} value={day}>
-                                    {day}
-                                  </Select.Option>
-                                ))}
-                              </Select>
-                            </Form.Item>
-                          ) : (
-                            ""
-                          )}
-                        </Form.Item> */}
                       </div>
                     </div>
 
@@ -2843,16 +2430,7 @@ const PlanForm = (props) => {
                               </div>
 
                               <div className="revlytic setup-free-container">
-                                <div className="revlytic discount-toggle">
-                                  {/* <Form.Item
-                                    label="Setup fee"
-                                    valuePropName="checked"
-                                    name="setupFee"
-                                    initialValue={false}
-                                  >
-                                    <Switch />
-                                  </Form.Item> */}
-                                </div>
+                                <div className="revlytic discount-toggle"></div>
                                 <div className="revlytic discount-toggle">
                                   <Form.Item
                                     label="Free trial"
@@ -2903,36 +2481,6 @@ const PlanForm = (props) => {
                             </div>
 
                             <div className="revlytic setup-fee-trial-row">
-                              {/* <div className="revlytic setup-fee-field">
-                                <Form.Item noStyle shouldUpdate>
-                                  {({ getFieldValue }) =>
-                                    getFieldValue("setupFee") == true ? (
-                                      <Form.Item
-                                        label="Setup fee price"
-                                        name="setupPrice"
-                                        rules={[
-                                          {
-                                            required: true,
-                                            message: "Setup fee price is required  !",
-                                          },
-                                          {
-                                            pattern: /^\d+(\.\d+)?$/,
-                                            message:
-                                              "Price must be a valid number!",
-                                          },
-                                        ]}
-                                      >
-                                        <Input
-                                          prefix={
-                                            currency &&
-                                            getCurrencySymbol(currency)
-                                          }
-                                        />
-                                      </Form.Item>
-                                    ) : null
-                                  }
-                                </Form.Item>
-                              </div> */}
                               <div className="revlytic free-trial-field">
                                 <Form.Item noStyle shouldUpdate>
                                   {({ getFieldValue }) =>
@@ -2958,9 +2506,6 @@ const PlanForm = (props) => {
                                             },
                                             {
                                               validator: (rule, value) => {
-                                                console.log(
-                                                  form.getFieldValue("maxCycle")
-                                                );
                                                 if (
                                                   form.getFieldValue(
                                                     "maxCycle"
@@ -2987,9 +2532,6 @@ const PlanForm = (props) => {
                                             },
                                             {
                                               validator: (rule, value) => {
-                                                console.log(
-                                                  form.getFieldValue("maxCycle")
-                                                );
                                                 if (
                                                   value &&
                                                   Number(value) < 1
@@ -3116,6 +2658,7 @@ const PlanForm = (props) => {
             </div>
           }
         </div>
+        <CalculateBillingUsage setBillingPlan={setBillingPlan}/>
       </Spin>
 
       {/* //////////// all modals */}
@@ -3144,13 +2687,7 @@ const PlanForm = (props) => {
           setaddproductModal(false);
           form1.resetFields();
         }}
-        footer={
-          [
-            // <Button key="cancel" onClick={() => setaddproductModal(false)}>
-            //   Cancel
-            // </Button>,
-          ]
-        }
+        footer={[]}
       >
         <div className="revlytic new-customer-modal">
           <div className="revlytic new-customer-modal-title">

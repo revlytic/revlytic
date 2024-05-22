@@ -96,13 +96,6 @@ function ContactUs() {
               <p className="revlytic contactus-password">Store Password</p>
             }
             name={"storepassword"}
-            // rules={[
-            //   {
-            //     required: true,
-            //     message: "",
-            //   },
-
-            // ]}
           >
             <Input
             // placeholder="Plan Name"

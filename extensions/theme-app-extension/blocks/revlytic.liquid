@@ -1,0 +1,15 @@
+{% render "revlyticSnippet" %}
+<script>
+var theme_block_supported = '{{ app.metafields.theme_support.support_theme_block }}';
+console.log('theme_block_supported', theme_block_supported);
+</script>
+
+{% schema %}
+  {
+    "name": "Revlytic",
+    "target": "head",
+    "stylesheet": "revlytic.css",
+    "javascript": "revlytic.js"
+   
+  }
+{% endschema %}

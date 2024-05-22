@@ -199,13 +199,13 @@ seteditState(false)
 
     if (planList.length > 0 && planGroupName.length > 0) {
       const createApi = await fetch(
-        "https://dev.revlytic.co/api/prodEx/prodExCreatePlan",
+        "https://revlytic.co/api/prodEx/prodExCreatePlan",
         {
           method: "POST", // or 'PUT'
           headers: {
             "Content-Type": "application/json",
             Authentication: token,
-             },
+          },
           body: JSON.stringify({
             planGroupName,
             planList,
@@ -691,7 +691,7 @@ function Add() {
         // console.log(checkedPlans, "checked plans");
 
         const response = await fetch(
-          "https://dev.revlytic.co/api/prodEx/prodExAddProduct",
+          "https://revlytic.co/api/prodEx/prodExAddProduct",
           {
             method: "POST", // or 'PUT'
             headers: {
@@ -728,7 +728,7 @@ function Add() {
   useEffect(async () => {
     let token = await getSessionToken();
     const response = await fetch(
-      "https://dev.revlytic.co/api/prodEx/prodExGetallPlans",
+      "https://revlytic.co/api/prodEx/prodExGetallPlans",
       {
         method: "POST", // or 'PUT'
         headers: {
@@ -773,7 +773,7 @@ function Remove() {
     let token = await getSessionToken();
 
     const response = await fetch(
-      "https://dev.revlytic.co/api/prodEx/prodExRemoveVariants",
+      "https://revlytic.co/api/prodEx/prodExRemoveVariants",
       {
         method: "POST", // or 'PUT'
         headers: {
@@ -879,7 +879,7 @@ function Edit() {
     let token = await getSessionToken();
 
     const createApi = await fetch(
-      "https://dev.revlytic.co/api/prodEx/prodExPlanDetails",
+      "https://revlytic.co/api/prodEx/prodExPlanDetails",
       {
         method: "POST", // or 'PUT'
         headers: {
@@ -1135,7 +1135,7 @@ console.log("loppp",frequencyPlanName,arr,freeTrial,"sss",freeTrialCount)
 
     if (planList.length > 0 || prevPlanList.length > 0) {
       const createApi = await fetch(
-        "https://dev.revlytic.co/api/prodEx/prodExPlanUpdate",
+        "https://revlytic.co/api/prodEx/prodExPlanUpdate",
         {
           method: "POST", // or 'PUT'
           headers: {

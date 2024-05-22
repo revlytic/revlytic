@@ -260,6 +260,9 @@ h5 {
     .revlytic-edit-details-grid {
         grid-template-columns: repeat(auto-fit, minmax(500px, 1fr)) !important;
     }
+    #UpcomingOrders .revlytic-orders-container {
+        max-height: 300px;
+    }
 }
 
 @media (max-width:576px) {
@@ -826,7 +829,7 @@ input#reschedule-datepicker {
 
 /********** upcoming order css ********/
 
-.upcoming-order.tabset {
+.upcoming-order.tabset, .revlytic-tabs-newmain {
     border-radius: 10px;
     border: 1px solid #E3E3E3;
     background: #FFF;
@@ -840,20 +843,21 @@ input#reschedule-datepicker {
     left: -200vw;
 }
 
-.tabset .tab-panel {
+/* .tabset .tab-panel {
     display: none;
-}
+} */
 
-.tabset>input:first-child:checked~.tab-panels>.tab-panel:first-child,
+/* .tabset>input:first-child:checked~.tab-panels>.tab-panel:first-child,
 .tabset>input:nth-child(3):checked~.tab-panels>.tab-panel:nth-child(2),
 .tabset>input:nth-child(5):checked~.tab-panels>.tab-panel:nth-child(3),
 .tabset>input:nth-child(7):checked~.tab-panels>.tab-panel:nth-child(4),
 .tabset>input:nth-child(9):checked~.tab-panels>.tab-panel:nth-child(5),
-.tabset>input:nth-child(11):checked~.tab-panels>.tab-panel:nth-child(6) {
+.tabset>input:nth-child(11):checked~.tab-panels>.tab-panel:nth-child(6)
+ {
     display: block;
-}
+} */
 
-.tabset>label {
+/* .tabset>label {
     position: relative;
     display: inline-block;
     padding: 15px 0;
@@ -865,9 +869,9 @@ input#reschedule-datepicker {
     font-weight: 600;
     letter-spacing: -0.4px;
     margin-right: 1rem;
-}
+} */
 
-.tabset>input:focus+label,
+/* .tabset>input:focus+label,
 .tabset>input:checked+label {
     border-bottom: 3px solid #0F550C;
     color: #0F550C;
@@ -883,11 +887,11 @@ input#reschedule-datepicker {
 .tab-panel {
     border-top: 1px solid #ccc;
     min-width: 700px;
-}
+} */
 
-.tab-panels {
+/* .tab-panels {
     overflow-x: auto;
-}
+} */
 
 .order-conformation-inner {
     display: grid;
@@ -1596,6 +1600,9 @@ div#revlytic-main-body {
     cursor: pointer;
 }
 
+#UpcomingOrders .revlytic-orders-container {
+    max-height: 500px;
+}
 
 /* ////////////////////////reschedule mmodal css ends */
 
@@ -1613,4 +1620,71 @@ div#revlytic-main-body {
         font-size: 22px;
         bottom: 8px;
     }
+}
+
+
+
+ body {
+    font-family: Arial, Helvetica, sans-serif;
+  }
+  .tabs {
+    display: flex;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .tabs li {
+    padding: 10px;
+    background-color: #f6f4f4;
+    border-right: 1px solid white;
+    cursor: pointer;
+    transition: 0.2s;
+  }
+  .tabs li.active,
+  .tabs li:hover {
+    background-color: #ddd;
+  }
+  .content {
+    background-color: #ddd;
+  }
+  .content > div {
+    padding: 20px;
+  }
+  .content > div:not(:first-child) {
+    display: none;
+  }
+
+
+
+
+
+  .revlytic-tabs-new.tabs li {
+    position: relative;
+    display: inline-block;
+    padding: 15px;
+    border-bottom: 0;
+    cursor: pointer;
+    color: #737171;
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: -0.4px;
+    background: #fff;
+}
+
+.revlytic-tabs-new.tabs li.active {
+    border-bottom: 3px solid #0F550C;
+    color: #0F550C;
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: -0.4px;
+}
+.revlytictabs-content {
+    background-color: #fff;
+    margin-top: 10px;
+    max-height: 500px;
+    overflow-y: auto;
+    padding-right: 5px;
+}
+.revlytictabs-content > div {
+    padding: 0;
 }
