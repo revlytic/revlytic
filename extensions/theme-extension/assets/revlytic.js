@@ -33,7 +33,7 @@ button.insertAdjacentHTML('afterend', '<br>');
 }
 
 
-let serverPath = "https://revlytic.co";
+let serverPath = "https://dev.revlytic.co";
 
 let activeCurrency = Shopify.currency.active;
 console.log("activeeeecrc",activeCurrency)
