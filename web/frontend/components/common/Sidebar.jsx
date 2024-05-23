@@ -200,6 +200,18 @@ function Sidebar() {
                     </li>
                   </div>
                 )}
+                   <li
+                  className={
+                    location.pathname == "/dunning"
+                      ? "revlytic custom  active-sidebar"
+                      : "revlytic custom"
+                  }
+                >
+                  <Link to="/dunning" onClick={() => setToggleSidebar(false)}>
+                    <img src={image8} />
+                    Dunning
+                  </Link>
+                </li>
                 <li
                   className={
                     location.pathname == "/settings"
