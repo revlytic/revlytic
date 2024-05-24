@@ -22,7 +22,7 @@ import image8 from "../../assets/images/setting_icon.svg";
 import image9 from "../../assets/images/subscription_icon.svg";
 import contact from "../../assets/images/contactus.svg";
 import setup from "../../assets/images/setup.svg";
-
+import storefrontIcon from '../../assets/images/storefront_icon.svg'
 
 function Sidebar() {
   const app = useAppBridge();
@@ -146,7 +146,7 @@ function Sidebar() {
                     {" "}
                     <h5>
                       {" "}
-                      <img src={image3} />{" "}
+                      <img src={storefrontIcon} />{" "}
                       <div className="sidebar-arrow">
                         Storefront
                         {settings ? <UpOutlined /> : <DownOutlined />}{" "}
@@ -208,7 +208,7 @@ function Sidebar() {
                   }
                 >
                   <Link to="/dunning" onClick={() => setToggleSidebar(false)}>
-                    <img src={image8} />
+                    <img src={image3} />
                     Dunning
                   </Link>
                 </li>

@@ -61,7 +61,7 @@
     "logoHeight": "70",
     "logoWidth": "170",
     "logoAlignment": "center",
-    "headingText": "Subscription Canceled",
+    "headingText": "Standard Courtsy Notice",
     "headingTextColor": "#000000",
     "textColor": "#767676",
     "manageSubscriptionText": "Manage Subscription",
@@ -77,7 +77,7 @@
     "paymentMethodText": "Payment Method",
     "endingWithText": "ending with",
     "emailSetting": {
-      "subject": "Subscription Canceled",
+      "subject": "Standard Courtsy Notice",
       "bcc": "",
       "cc": "",
       "replyTo": ""
@@ -108,7 +108,7 @@
   "logoHeight": "70",
   "logoWidth": "170",
   "logoAlignment": "center",
-  "headingText": "Subscription Canceled",
+  "headingText": "Standard Past Due Notice 1",
   "headingTextColor": "#000000",
   "textColor": "#767676",
   "manageSubscriptionText": "Manage Subscription",
@@ -124,7 +124,7 @@
   "paymentMethodText": "Payment Method",
   "endingWithText": "ending with",
   "emailSetting": {
-    "subject": "Subscription Canceled",
+    "subject": "Standard Past Due Notice 1",
     "bcc": "",
     "cc": "",
     "replyTo": ""
@@ -155,7 +155,7 @@
   "logoHeight": "70",
   "logoWidth": "170",
   "logoAlignment": "center",
-  "headingText": "Subscription Canceled",
+  "headingText": "Standard Past Due Notice 2",
   "headingTextColor": "#000000",
   "textColor": "#767676",
   "manageSubscriptionText": "Manage Subscription",
@@ -171,7 +171,7 @@
   "paymentMethodText": "Payment Method",
   "endingWithText": "ending with",
   "emailSetting": {
-    "subject": "Subscription Canceled",
+    "subject": "Standard Past Due Notice 2",
     "bcc": "",
     "cc": "",
     "replyTo": ""
@@ -202,7 +202,7 @@
   "logoHeight": "70",
   "logoWidth": "170",
   "logoAlignment": "center",
-  "headingText": "Subscription Canceled",
+  "headingText": "Standard Past Due Notice 3",
   "headingTextColor": "#000000",
   "textColor": "#767676",
   "manageSubscriptionText": "Manage Subscription",
@@ -218,7 +218,7 @@
   "paymentMethodText": "Payment Method",
   "endingWithText": "ending with",
   "emailSetting": {
-    "subject": "Subscription Canceled",
+    "subject": "Standard Past Due Notice 3",
     "bcc": "",
     "cc": "",
     "replyTo": ""
@@ -249,7 +249,7 @@
   "logoHeight": "70",
   "logoWidth": "170",
   "logoAlignment": "center",
-  "headingText": "Subscription Canceled",
+  "headingText": "Standard Final Demand",
   "headingTextColor": "#000000",
   "textColor": "#767676",
   "manageSubscriptionText": "Manage Subscription",
@@ -265,7 +265,7 @@
   "paymentMethodText": "Payment Method",
   "endingWithText": "ending with",
   "emailSetting": {
-    "subject": "Subscription Canceled",
+    "subject": "Standard Final Demand",
     "bcc": "",
     "cc": "",
     "replyTo": ""
