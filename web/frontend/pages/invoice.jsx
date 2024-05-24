@@ -70,8 +70,6 @@ function invoice() {
   const [totalPriceLabel, setTotalPriceLabel] = useState("Total");
   const [discount, setDiscount] = useState("Discount");
   const [signature, setSignature] = useState("");
-  const [automaticallySend, setAutomaticallySend] = useState("");
-  const [created, setCreated] = useState("");
   const [logoData, setLogoData] = useState("");
   const [signatureData, setSignatureData] = useState("");
   const [editMode, setEditMode] = useState(false);
@@ -81,7 +79,6 @@ function invoice() {
     setComponents(arr);
   };
 
-  // console.log(process.env.REACT_APP_HOST,"lkj");
   useEffect(async () => {
     setLoader(true);
     let getData = await postApi("/api/admin/getinvoiceDetails", {}, app);

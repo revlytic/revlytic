@@ -9,10 +9,12 @@ import { Link } from "react-router-dom";
 import postApi from "../components/common/postApi";
 import { useAppBridge } from "@shopify/app-bridge-react";
 import { toast } from "react-toastify";
+import CalculateBillingUsage from "../components/calculateBillingUsage";
 
 function Dunning() {
   const { Panel } = Collapse;
   const app = useAppBridge();
+  const [billingPlan, setBillingPlan] = useState("");
   const [activeKeyArray, setActiveKeyArray] = useState([]);
   const [dunningNoticeType, setDunningNoticeType] = useState("perInvoice");
   const [loading, setLoading] = useState(true);
@@ -455,6 +457,7 @@ function Dunning() {
           <Button onClick={handleSubmit}>Submit</Button>
         </div>
       </div>
+      <CalculateBillingUsage setBillingPlan={setBillingPlan}/>
     </Spin>
   );
 }

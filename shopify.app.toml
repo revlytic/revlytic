@@ -2,7 +2,7 @@
 
 name = "subscription"
 client_id = "a3fb3d5d86b47a536e7377a9d8b989ca"
-application_url = "https://also-tx-overhead-accommodation.trycloudflare.com"
+application_url = "https://variables-landscape-purpose-wise.trycloudflare.com"
 embedded = true
 
 [access_scopes]
@@ -11,9 +11,9 @@ use_legacy_install_flow = true
 
 [auth]
 redirect_urls = [
-  "https://also-tx-overhead-accommodation.trycloudflare.com/auth/callback",
-  "https://also-tx-overhead-accommodation.trycloudflare.com/auth/shopify/callback",
-  "https://also-tx-overhead-accommodation.trycloudflare.com/api/auth/callback"
+  "https://variables-landscape-purpose-wise.trycloudflare.com/auth/callback",
+  "https://variables-landscape-purpose-wise.trycloudflare.com/auth/shopify/callback",
+  "https://variables-landscape-purpose-wise.trycloudflare.com/api/auth/callback"
 ]
 
 [webhooks]

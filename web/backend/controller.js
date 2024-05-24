@@ -1,4 +1,3 @@
-// import productsModal from "./modals/products.js";
 import shopify from "../shopify.js";
 import planModal from "./modals/PlanGroupDetails.js";
 import subscriptionDetailsModal from "./modals/subscriptionDetails.js";
@@ -16,9 +15,6 @@ import { DataType } from "@shopify/shopify-api";
 import mime from "mime";
 import fs from "fs";
 import jwt from "jsonwebtoken";
-console.log("utcdate", new Date());
-// console.log(process.env.HOST, "envvvvvvvvvvv");
-// console.log(process.env.SCOPES, "envvvvvvvvvvv");
 import { ObjectId } from "bson";
 import puppeteer from "puppeteer";
 import widgetSettingsModal from "./modals/widgetSetting.js";
@@ -33,7 +29,7 @@ import dunningModal from "./modals/dunning.js";
 import dunningTemplates from './dunningTemplates.json'  with { type: "json" };
 const __dirname = path.resolve();
 const dirPath = path.join(__dirname, "/frontend/invoiceTemplate");
-// const dirPath2 = path.join(__dirname);
+
 function formatVariableName(variableName) {
   // Split the variable name by underscores
   const parts = variableName.split("_");
@@ -259,51 +255,17 @@ const sendMailCall = async (recipientMails, others, extra) => {
 
   const __dirname = path.resolve();
 
-  console.log(__dirname, "kjh");
-
   const dirPath = path.join(__dirname, "/frontend/components/emailtemplate");
-
-  console.log(dirPath, "fsdfdf");
 
   const transporter = nodemailer.createTransport(emailConfig);
 
   let selectedTemplate = extra?.selectedTemplateData;
 
-  // console.log("selecetdetemplate",selectedTemplate)
-
-  // console.log("extra?.data", extra?.data);
-  console.log(
-    "chececkkshipinggggaddress",
-    extra?.data?.shipping_address,
-    extra?.data?.shipping_address
-  );
-  console.log(
-    "chececkkshipinggggaddress",
-    extra?.data?.shipping_address,
-    extra?.data?.billing_address
-  );
-
   let replacements;
 
   let emailContent;
 
-  //  emailContent = await ejs.renderFile(dirPath + "/preview.ejs", {
-
-  //     selectedTemplate,
-
-  //     mode: "real",
-
-  //     data: extra?.data,
-
-  //     currencySymbol: extra?.data?.currencySymbol,
-
-  //     dateConversion,
-
-  //     check:extra?.check,
-
-  //     templateType:"subscriptionPurchased"
-
-  //   });
+ 
 
   replacements = {
     "{{customer_email}}": extra?.data?.customer_email,
@@ -322,7 +284,7 @@ const sendMailCall = async (recipientMails, others, extra) => {
 
     "{{email_subject}}": selectedTemplate?.emailSetting?.subject,
 
-    //   // "{{selling_plan_name}}":"23",
+   
 
     "{{shipping_full_name}}":
       extra?.data?.shipping_address?.firstName != null
@@ -393,19 +355,7 @@ const sendMailCall = async (recipientMails, others, extra) => {
       ? extra?.data?.billing_address?.zip
       : "",
 
-    //   "{{subscription_line_items}}":
-
-    //   "{{card_brand_name}}":"456",
-
-    //   "{{last_four_digits}}":"678",
-
-    //   "{{card_expiry_month}}":"866",
-
-    //   "{{card_expiry_year}}":"474",
-
-    // "{{manage_subscription_link}}":selectedTemplate.subscriptionUrl,
-
-    //   // "{{email_subject}}":"633",
+  
 
     "{{card_brand_name}}": extra?.data?.contractDetails?.instrument?.brand
       ? extra?.data?.contractDetails?.instrument?.brand
@@ -450,49 +400,10 @@ const sendMailCall = async (recipientMails, others, extra) => {
     "{{logo_alignment}}": selectedTemplate?.logoAlignment,
   };
 
-  // Iterate through the replacements object
-
-  // for (const key in replacements) {
-
-  //   if (replacements.hasOwnProperty(key)) {
-
-  //     const pattern = new RegExp(key, "gi");
-
-  //    let  text = emailContent.replace(pattern, replacements[key]);
-
-  //   }
-
-  //  }
-
-  // const updatedEmailContent = emailContent.replace( new RegExp(Object.keys(replacements).join("|"), "g"), (matched) => replacements[matched] );
-
-  // options.html = updatedEmailContent;
-
-  // try {
-
-  //   console.log("first in last");
-
-  //   let data = await transporter.sendMail(options);
-
-  //   if (data) {
-
-  //     console.log("Mail sent successfully");
-
-  //   }
-
-  //   console.log(data, "faaltuu");
-
-  // } catch (err) {
-
-  //   console.log(err, "errorr aa gyaa");
-
-  // }
-
-  ////////////saaahhhillll
+  
 
   if (extra?.check == "subscriptionInvoice") {
-    /////////////////////////////////////
-
+   
     async function generatePdf() {
    
       const browser = await puppeteer.launch({
@@ -503,7 +414,7 @@ const sendMailCall = async (recipientMails, others, extra) => {
       const page = await browser.newPage();
       const options = {
         format: "A4",
-        printBackground: true, // To include background colors/images in PDF
+        printBackground: true, 
       };
 
       const filename = String(new Date().getTime());
@@ -525,7 +436,6 @@ const sendMailCall = async (recipientMails, others, extra) => {
 
         await browser.close();
 
-              //////////////////////////
         const pdfData = fs.readFileSync(dirPath + `/${filename}.pdf`);
         const base64Data = Buffer.from(pdfData).toString("base64");
         const contentType = mime.getType(dirPath + `/${filename}.pdf`);
@@ -607,8 +517,7 @@ const sendMailCall = async (recipientMails, others, extra) => {
     ///////////////////////////////
   } else {
     if (recipientMails[0]) {
-      console.log("inzerorecipent");
-
+    
       options = {
         ...options,
 
@@ -620,32 +529,11 @@ const sendMailCall = async (recipientMails, others, extra) => {
       if (extra?.selectedTemplateData?.subscriptionUrl) {
         url = extra?.selectedTemplateData?.subscriptionUrl;
 
-        console.log("dsdasda");
       } else {
         if (recipientMails[0] == extra?.data?.customer_email) {
-          console.log(
-            "sagg",
-
-            recipientMails[0],
-
-            extra?.data?.customer_email,
-
-            recipientMails[0] == extra?.data?.customer_email
-          );
-
-          url = `https://${extra?.shop}/account/login`;
+           url = `https://${extra?.shop}/account/login`;
         } else {
-          console.log(
-            "hiaddsss",
-
-            recipientMails[0],
-
-            extra?.data?.customer_email,
-
-            recipientMails[0] == extra?.data?.customer_email
-          );
-
-          url = `https://admin.shopify.com/store/${
+           url = `https://admin.shopify.com/store/${
             extra?.shop?.split(".myshopify.com")[0]
           }/apps/revlytic/subscriptionlist`;
         }
@@ -693,14 +581,13 @@ const sendMailCall = async (recipientMails, others, extra) => {
         throw error;
       }
 
-      ////
+  
     }
 
-    ///////
+  
 
     if (recipientMails[1]) {
-      console.log("in1recipent");
-
+     
       options = {
         ...options,
 
@@ -712,33 +599,15 @@ const sendMailCall = async (recipientMails, others, extra) => {
       if (extra?.selectedTemplateData?.subscriptionUrl) {
         url = extra?.selectedTemplateData?.subscriptionUrl;
 
-        console.log("oiouo");
+       
       } else {
         if (recipientMails[1] == extra?.data?.customer_email) {
           url = `https://${extra?.shop}/account/login`;
-
-          console.log(
-            "plok",
-
-            recipientMails[1],
-
-            extra?.data?.customer_email,
-
-            recipientMails[1] == extra?.data?.customer_email
-          );
         } else {
           url = `https://admin.shopify.com/store/${
             extra?.shop?.split(".myshopify.com")[0]
           }/apps/revlytic/subscriptionlist`;
-          console.log(
-            "jikkk",
-
-            recipientMails[1],
-
-            extra?.data?.customer_email,
-
-            recipientMails[1] == extra?.data?.customer_email
-          );
+          
         }
       }
 
@@ -784,11 +653,11 @@ const sendMailCall = async (recipientMails, others, extra) => {
         throw error;
       }
 
-      ////
+
     }
   }
 };
-// };
+
 
 let subscriptionBillingAttemptCreateMutation = `mutation subscriptionBillingAttemptCreate($subscriptionBillingAttemptInput: SubscriptionBillingAttemptInput!, $subscriptionContractId: ID!) {
   subscriptionBillingAttemptCreate(subscriptionBillingAttemptInput: $subscriptionBillingAttemptInput, subscriptionContractId: $subscriptionContractId) {
@@ -841,10 +710,8 @@ function verifyToken(token, secretOrPublicKey, callback) {
 }
 
 async function getshopToken(shop) {
-  console.log(shop);
-  let gettoken = await shopModal.findOne({ shop: shop });
-  console.log(gettoken, "nnnnnnn");
-  const client = new shopify.api.clients.Graphql({
+   let gettoken = await shopModal.findOne({ shop: shop });
+   const client = new shopify.api.clients.Graphql({
     session: {
       shop: shop,
       accessToken: gettoken.accessToken,
@@ -1002,10 +869,8 @@ async function sendmailforcrons(recipientMails,emailConfig,options,selectedTempl
       "{{logo_alignment}}": selectedTemplate.logoAlignment,
     };
 
-    //////start/////
     if (recipientMails[0]) {
-      console.log("inzerorecipent");
-
+      
       options = {
         ...options,
         to: recipientMails[0],
@@ -1058,13 +923,13 @@ async function sendmailforcrons(recipientMails,emailConfig,options,selectedTempl
         throw error;
       }
 
-      ////
+   
     }
 
-    ///////
+ 
 
     if (recipientMails[1]) {
-      console.log("in1recipent");
+     
       options = {
         ...options,
         to: recipientMails[1],
@@ -1078,25 +943,13 @@ async function sendmailforcrons(recipientMails,emailConfig,options,selectedTempl
       } else {
         if (recipientMails[1] == extra?.data?.customer_details?.email) {
           url = url = `https://${shop}/account/login`;
-          console.log(
-            "plok",
-            recipientMails[1],
-            extra?.data?.customer_details?.email,
-            recipientMails[1] == extra?.data?.customer_details?.email
-          );
         } else {
           url = `https://admin.shopify.com/store/${
             shop?.split(".myshopify.com")[0]
           }/apps/revlytic/create-manual-subscription?id=${(extra?.data?.subscription_id)
             .split("/")
             .at(-1)}&mode=view`;
-          console.log(
-            "jikkk",
-            recipientMails[1],
-            extra?.data?.customer_details?.email,
-            recipientMails[1] == extra?.data?.customer_details?.email
-          );
-        }
+           }
       }
       
       const emailContent = await ejs.renderFile(dirPath + "/preview2.ejs", {
@@ -1128,10 +981,9 @@ async function sendmailforcrons(recipientMails,emailConfig,options,selectedTempl
         console.log(error, "errorr aa gyaa");
         throw error;
       }
-      //
+    
     }
 
-    ///end//////
 return flag;
 
   }
@@ -1383,7 +1235,6 @@ export async function contractCronJob(req, res) {
 }
 /////////////////////////////// contract create cron end/////////////////////////////////////////
 
-////upcomingordercron-start///////////
 
 const areDatesEqual = (date1, date2) => {
   const dateString1 = date1.toISOString().split('T')[0];
@@ -1392,11 +1243,9 @@ const areDatesEqual = (date1, date2) => {
 }
 
 async function  upcomingOrders()
-
 {
-
  try {
-
+  
  let startRange=new Date(new Date().setUTCHours(0,0,0,0))
 
 let endRange=new Date()
@@ -1531,14 +1380,14 @@ item.result.map(async(sub_item)=> {
     };
   } else if (configurationData.encryption === "tls") {
     encryptionConfig = {
-      secure: false, // For TLS, secure should be set to false
+      secure: false, 
       requireTLS: true,
     };
   }
 
    emailConfig = {
     host: configurationData.host,
-    port: parseInt(configurationData.portNumber), // Convert port number to integer
+    port: parseInt(configurationData.portNumber),
     auth: {
       user: configurationData.userName,
       pass: configurationData.password,
@@ -1562,7 +1411,7 @@ item.result.map(async(sub_item)=> {
 
 emailConfig = {
     host: "smtp.gmail.com",
-    port: 587, // Convert port number to integer
+    port: 587, 
     auth: {
       user: "sahilagnihotri7@gmail.com",
       pass: "srdvsdnxfmvbrduw",
@@ -1918,9 +1767,9 @@ async function paymentFailureCron(){
   );
 
   let filteredArr=[]; 
-  let contract_idArr=[]
+  let contract_idArr=[];
   let contractIdFailureCountObj={};
-  let  allstore_emailTemplate_storeDetail_Obj={};
+  let allstore_emailTemplate_storeDetail_Obj={};
   let lastEmailSentStatusObj={}
   
   if(mainData.length > 0){
@@ -1997,7 +1846,7 @@ async function paymentFailureCron(){
       
     let storedetails=currentItemEmailTemplateStoreDetail["storedetails"]; 
 
-    ///////checkstart/////////////
+
 let checkIsNewEntryInLast24hr= filteredArr.find(val => val.contract_id == item.contract_id && val.lastEmailSentStatus == undefined)   
 console.log("checkNewEntryInLast24hr",checkIsNewEntryInLast24hr)
 
@@ -2020,7 +1869,6 @@ if(lastEmailSentStatusArray.length > 0 ) {
      }
     else
     {
-      console.log("inelse24pail")
       selectedTemplateIndex = 0 ;
     }
   console.log("22april-checkcron",selectedTemplateIndex,lastEmailSentStatusArray)
@@ -2109,7 +1957,7 @@ if(lastEmailSentStatusArray.length > 0 ) {
     
     emailConfig = {
         host: "smtp.gmail.com",
-        port: 587, // Convert port number to integer
+        port: 587,
         auth: {
           user: "sahilagnihotri7@gmail.com",
           pass: "srdvsdnxfmvbrduw",
@@ -2136,11 +1984,8 @@ if(lastEmailSentStatusArray.length > 0 ) {
         currency: item["result"][0]?.subscription_details?.currency,
       };
 
-    console.log("at the  end",recipientMails)
-
-    let mailSentCheck=await  sendmailforcrons(recipientMails,emailConfig,options,selectedTemplate,extra,item.shop)
- 
-  // for upating 
+     let mailSentCheck=await  sendmailforcrons(recipientMails,emailConfig,options,selectedTemplate,extra,item.shop)
+  
 if(mailSentCheck)
      {
     // let updateBillingAttempts=await billing_Attempt.updateMany({ contract_id : item["contract_id"] }, {$set:{lastEmailSentStatus:contractIdFailureCountObj[item["contract_id"]].count-1}}) 
@@ -2148,7 +1993,7 @@ if(mailSentCheck)
     // console.log("updateBillingAttempts",updateBillingAttempts) 
     }
       }
- ///checkend////////
+
       }
   }        
     })
@@ -2343,7 +2188,7 @@ async function failedPaymentRetryCron(){
         ],
         { maxTimeMS: 60000, allowDiskUse: true }
       )
-      
+      console.log("maindAta",mainData)
       let filteredArr=[];
       let contract_idArr=[];
       let contractIdFailureCountObj={};
@@ -2370,19 +2215,19 @@ async function failedPaymentRetryCron(){
    
     filteredArr.forEach(async(item)=> {
     
-  if(!Object.keys(contractIdFailureCountObj).includes(item["contract_id"])){
+  // if(!Object.keys(contractIdFailureCountObj).includes(item["contract_id"])){
     
-    const countDuplicates= contract_idArr.filter((val) => 
-      val==item["contract_id"]     
-    ).length 
+    // const countDuplicates= contract_idArr.filter((val) => 
+    //   val==item["contract_id"]     
+    // ).length 
     
     let dunningDataItem=dunningDataArray.find((val)=>
     val.shop==item["shop"]
   )
-  contractIdFailureCountObj[item["contract_id"]]={count:countDuplicates,attemptNum:dunningDataItem?.attemptNum};
+  // contractIdFailureCountObj[item["contract_id"]]={count:countDuplicates,attemptNum:dunningDataItem?.attemptNum};
   
   if( dunningDataItem && dunningDataItem.attemptNum && parseInt(dunningDataItem.attemptNum) > 0 && item.lastEmailSentStatus ){
- 
+ console.log("this dasdas",)
   let today=new Date()
   today.setUTCHours(0,0,0,0)  
    let targetDate=item?.billing_response_date
@@ -2391,7 +2236,7 @@ async function failedPaymentRetryCron(){
    let  retryAttempt= areDatesEqual(today,targetDate);
   // let retriedAttemptStatus=item.retriedAttemptStatus ;
    
-   if ( retryAttempt && item.lastEmailSentStatus != item.retriedAttemptStatus   && item.shop !="shine.myshopify.com"){
+   if ( retryAttempt && item.lastEmailSentStatus != item.retriedAttemptStatus ){
   
     let mutation = subscriptionBillingAttemptCreateMutation ;
   
@@ -2448,7 +2293,7 @@ async function failedPaymentRetryCron(){
   }
 
   
-     }
+    //  }
   
     })
   }
@@ -4246,51 +4091,13 @@ export async function findItemForUpdateSubscription(req, res, next) {
   }
 }
 
-// export async function updateSubscriptionCustomer(req, res) {
-//   try {
-//     console.log(req.body.values, "dgddhth");
-//     let shop = res.locals.shopify.session.shop;
-//     let obj = {
-//       "customer_details.customerFirstName": req?.body.values?.customerFirstName,
-//       "customer_details.customerLastName": req?.body.values?.customerLastName,
-//       "customer_details.customerName":
-//         req?.body.values?.customerFirstName +
-//         req?.body.values?.customerLastName,
-//       "customer_details.customerEmail": req?.body.values?.customerEmail,
-//     };
-//     let data = await subscriptionDetailsModal.findOneAndUpdate(
-//       { shop: shop, subscription_id: req.body.id },
-//       { $set: obj },
-//       { new: true }
-//     );
-//     console.log(data, "daaaaaaattttaaaa");
-
-//     if (data) {
-//       res.send({
-//         message: "success",
-//         toastMessage: `Subscription updated successfuly`,
-//         data: data,
-//       });
-//     } else {
-//       res.send({ message: "data_not_found", toastMessage: "Data not found" });
-//     }
-//   } catch (error) {
-//     res.send({ message: "error", toastMessage: "Something went wrong" });
-//   }
-// }
-
 export async function subscriptionDraftLineAdd(req, res, next) {
   try {
     let shop = res?.locals?.shopify?.session?.shop
       ? res?.locals?.shopify?.session?.shop
       : req?.body?.shop;
     let client = await getshopToken(shop);
-    console.log("jhdsjdnjasdksjdlkas", req.draft_id);
-
-    // let session = res.locals.shopify.session;
-
-    // const client = new shopify.api.clients.Graphql({ session });
-
+    
     const mutationSubscriptionDraftLine = `mutation subscriptionDraftLineAdd($draftId: ID!, $input: SubscriptionLineInput!) {
   
       subscriptionDraftLineAdd(draftId: $draftId, input: $input) {
@@ -4342,29 +4149,6 @@ export async function subscriptionDraftLineAdd(req, res, next) {
 
         let element = values["lines"][i];
 
-        // if (
-        //   values?.discount?.value &&
-        //   values?.discount?.type == "FIXED_AMOUNT"
-        // ) {
-        //   if (parseFloat(element.price) > parseFloat(values?.discount?.value)) {
-        //     calculatedPrice =
-        //       parseFloat(element.price) - parseFloat(values?.discount?.value);
-        //   } else {
-        //     calculatedPrice = parseFloat(0);
-        //   }
-        // } else if (
-        //   values?.discount?.value &&
-        //   values?.discount?.type == "PERCENTAGE"
-        // ) {
-        //   calculatedPrice = parseFloat(
-        //     element.price - (element.price * values?.discount?.value) / 100
-        //   );
-        // } else {
-        //   calculatedPrice = parseFloat(element.price);
-        // }
-
-        // console.log(calculatedPrice, element.id, element.quantity);
-
         const InputSubscriptionDraftLine = {
           draftId: req.draft_id,
           input: {
@@ -4389,16 +4173,11 @@ export async function subscriptionDraftLineAdd(req, res, next) {
           },
         });
 
-        console.log(
-          "sddfsdhfjkhdfj",
-          response.body.data?.subscriptionDraftLineAdd?.lineAdded
-        );
 
         if (
           response.body.data?.subscriptionDraftLineAdd?.lineAdded?.id != null
         ) {
-          console.log("hell");
-
+         
           linesArray.push(
             response.body.data?.subscriptionDraftLineAdd?.lineAdded
           );
@@ -4410,15 +4189,12 @@ export async function subscriptionDraftLineAdd(req, res, next) {
             req.newLines = { details: values.lines };
 
             next();
-            // console.log("hello", element.subscriptionLine);
-            console.log("linesArray", linesArray);
-            // console.log("chejjjjj",values)
+                  
           }
         } else if (
           response.body.data?.subscriptionDraftLineAdd?.userErrors.length > 0
         ) {
-          console.log("first");
-
+          
           res.send({
             message: "error",
 
@@ -4432,8 +4208,6 @@ export async function subscriptionDraftLineAdd(req, res, next) {
         }
       } catch (error) {
         console.log("error too ", error?.response?.errors);
-
-        // console.log("error too ", error?.response?.errors[0].locations);
 
         res.send({ message: "error", data: "Something went wrong" });
 
@@ -4456,9 +4230,6 @@ export async function subscriptionDraftLineRemove(req, res, next) {
       : req?.body?.shop;
     let client = await getshopToken(shop);
 
-    // let session = res.locals.shopify.session;
-
-    // const client = new shopify.api.clients.Graphql({ session });
 
     const mutationSubscriptionDraftLineRemove = `mutation subscriptionDraftLineRemove($draftId: ID!, $lineId: ID!) {
   
@@ -4511,7 +4282,6 @@ export async function subscriptionDraftLineRemove(req, res, next) {
       },
     });
 
-    console.log("lineremove----", response?.body?.data);
     if (
       response?.body?.data?.subscriptionDraftLineRemove?.lineRemoved != null
     ) {
@@ -4519,10 +4289,7 @@ export async function subscriptionDraftLineRemove(req, res, next) {
     } else if (
       response?.body?.data?.subscriptionDraftLineRemove?.userErrors?.length > 0
     ) {
-      console.log(
-        "seconddd",
-        response?.body?.data?.subscriptionDraftLineRemove?.userErrors
-      );
+     
       res.send({
         message: "error",
         toastMessage:
@@ -4541,12 +4308,11 @@ export async function subscriptionDraftLineRemove(req, res, next) {
 }
 
 export async function removeDraftLineItemFromDb(req, res) {
-  console.log("inlast");
-  // let shop = res.locals.shopify.session.shop;
+
   let shop = res?.locals?.shopify?.session?.shop
     ? res?.locals?.shopify?.session?.shop
     : req?.body?.shop;
-  // let session = res.locals.shopify.session;
+
   try {
     let response = await subscriptionDetailsModal.findOneAndUpdate(
       {
@@ -4559,8 +4325,7 @@ export async function removeDraftLineItemFromDb(req, res) {
 
     console.log("remove line item in db", response);
     if (response) {
-      console.log("tryyyyyy");
-      res.send({
+       res.send({
         message: "success",
         data: response,
       });
@@ -4623,10 +4388,7 @@ export async function customerPaymentMethodSendUpdateEmail(req, res) {
     let response = await client.query({
       data: { query: mutationQuery, variables: Input },
     });
-    console.log(
-      "oooooooooooooo",
-      response?.body?.data?.customerPaymentMethodSendUpdateEmail
-    );
+    
     if (
       response?.body?.data?.customerPaymentMethodSendUpdateEmail?.userErrors
         ?.length > 0
@@ -4660,7 +4422,6 @@ export async function widgetSettings(req, res) {
       { upsert: true, new: true }
     );
     if (data) {
-      console.log("widgetdata", data);
       res.send({ message: "success", data: data });
     } else {
       res.send({ message: "error", data: data });
@@ -4673,11 +4434,10 @@ export async function widgetSettings(req, res) {
 
 export async function getWidgetSettings(req, res) {
   try {
-    console.log(req.body, "sddfsdfsdffdsk");
+  
     let shop = res.locals.shopify.session.shop;
     let data = await widgetSettingsModal.findOne({ shop: shop });
 
-    console.log("ttttttt", data);
 
     if (!data) {
       res.send({ message: "error", data: "No data found" });
@@ -4695,7 +4455,7 @@ export async function getWidgetSettings(req, res) {
 
 export async function emailTemplates(req, res) {
   try {
-    console.log("emialtempkalet", req.body);
+   
     let shop = res.locals.shopify.session.shop;
     let templateType = req.body.templateType;
     let templateData = req.body.data;
@@ -4723,7 +4483,7 @@ export async function emailTemplates(req, res) {
     );
 
     if (data) {
-      console.log("lkokoko", data);
+     
       res.send({ message: "success", data: data });
     } else {
       res.send({ message: "error", data: data });
@@ -4736,14 +4496,11 @@ export async function emailTemplates(req, res) {
 
 export async function getEmailTemplatesList(req, res) {
   try {
-    console.log(res.locals.shopify.session, "sddfsdfsdffdsk");
-
+    
     let shop = res.locals.shopify.session.shop;
 
-    console.log(shop, "fksdjfksljfdksjfg;flkgd;lfgklfgkfd;l");
     let data = await emailTemplatesModal.findOne({ shop: shop });
 
-    console.log("ttttttt", data);
 
     if (data.length == 0) {
       res.send({ message: "error", data: "No data found" });
@@ -4770,13 +4527,11 @@ export async function getEmailTemplateData(req, res) {
       .findOne({ shop: shop })
       .select(`settings.${templateType}`)
       .lean();
-    console.log("ttttttt", data);
-
+ 
     if (!data) {
       res.send({ message: "error", data: "No data found" });
     } else {
-      // let data= await emailTemplatesModal.findOne({ shop: shop}).select(`settings.${templateType}`).lean();
-      res.send({ message: "success", data: data?.settings[templateType] });
+        res.send({ message: "success", data: data?.settings[templateType] });
     }
   } catch (error) {
     console.log(error);
@@ -4789,26 +4544,21 @@ export async function getEmailTemplateData(req, res) {
 
 export async function getEmailTemplateAndConfigData(req, res) {
   try {
-    console.log(req.body, "sddfsdfsdffdsk");
-
     let shop = res?.locals?.shopify?.session?.shop
       ? res?.locals?.shopify?.session?.shop
       : req?.body?.shop;
     let templateType = req.body.templateType;
-    // let data= await emailTemplatesModal.findOne({ shop: shop},{[`settings.${templateType}`]:1})
     let data = await emailTemplatesModal
       .findOne(
         { shop: shop },
         { [`settings.${templateType}`]: 1, configuration: 1 }
       )
       .lean();
-    console.log("rrrrrrr", data, "ddddd");
-
+    
     if (!data) {
       res.send({ message: "error", data: "No data found" });
     } else {
-      // let data= await emailTemplatesModal.findOne({ shop: shop}).select(`settings.${templateType}`).lean();
-      res.send({ message: "success", data: data });
+       res.send({ message: "success", data: data });
     }
   } catch (error) {
     console.log(error);
@@ -4821,7 +4571,7 @@ export async function getEmailTemplateAndConfigData(req, res) {
 
 export async function emailTemplateStatusOrAdminNotificationUpdate(req, res) {
   try {
-    console.log("emialtempkalet", req.body);
+  
     let shop = res.locals.shopify.session.shop;
     let templateType = req.body.type;
     let option = req.body.option;
@@ -4836,7 +4586,6 @@ export async function emailTemplateStatusOrAdminNotificationUpdate(req, res) {
       { new: true }
     );
     if (data) {
-      console.log("dsdsdsd", data);
       res.send({ message: "success", data: data });
     } else {
       res.send({ message: "error", data: data });
@@ -4849,13 +4598,13 @@ export async function emailTemplateStatusOrAdminNotificationUpdate(req, res) {
 
 export async function sendMailCommon(req, res) {
   const __dirname = path.resolve();
-  console.log(__dirname, "kjh");
+ 
   const dirPath = path.join(__dirname, "/frontend/components/emailtemplate");
 
   let options = req.body?.options;
-  console.log("options", options);
+ 
   let emailConfig = req.body?.emailConfig;
-  console.log("outside try sedmailcommon");
+  
   let testAccount = await nodemailer.createTestAccount();
   const transporter = nodemailer.createTransport(emailConfig);
 
@@ -4864,61 +4613,7 @@ export async function sendMailCommon(req, res) {
     let templateType = req.body?.extra?.templateType;
     let currencySymbol = getCurrencySymbol(req.body?.extra?.currency);
     let mode = req.body?.extra?.mode;
-    console.log("currencySymbol", currencySymbol);
-    console.log("selecetdetemplate", selectedTemplate);
-    console.log("crcysymbol", currencySymbol);
-
-    //   const replacements = {
-    //     "{{customer_email}}":extra?.data?.customer_email,
-    //     "{{order_number}}": extra?.data?.order_number,
-    //    "{{customer_name}}":extra?.data?.customer_name,
-    //    "{{customer_id}}":extra?.data?.customer_id,
-    //    "{{shop_name}}":extra?.data?.shopName,
-    //    "{{shop_email}}":extra?.data?.shopEmail,
-    //    "{{shipping_country}}":extra?.data?.shipping_address?.country,
-    //   //   // "{{selling_plan_name}}":"23",
-    //  "{{shipping_full_name}}": extra?.data?.shipping_address?.first_name != null
-    //   ? extra?.data?.shipping_address?.first_name
-    //   : "" + " " + extra?.data?.shipping_address?.last_name != null
-    //   ? extra?.data?.shipping_address?.last_name
-    //   : "",
-    // "{{shipping_address_1}}": extra?.data?.shipping_address?.address1,
-    //     "{{shipping_company}}":extra?.data?.shipping_address?.company !=null ? extra?.data?.shipping_address?.company : "" ,
-    //      "{{shipping_city}}": extra?.data?.shipping_address?.city,
-    //     "{{shipping_province}}": extra?.data?.shipping_address?.province,
-    //     "{{shipping_province_code}}": extra?.data?.shipping_address?.province_code,
-    //      "{{shipping_zip}}":extra?.data?.shipping_address?.zip,
-    //    "{{billing_full_name}}": extra?.data?.billing_address?.first_name != null
-    //   ? extra?.data?.billing_address?.first_name
-    //   : "" + " " + extra?.data?.billing_address?.last_name != null
-    //   ? extra?.data?.billing_address?.last_name
-    //   : "",
-    //   "{{billing_country}}":extra?.data?.billing_address?.country,
-
-    //      "{{billing_address_1}}":extra?.data?.billing_address?.address1,
-    //      "{{billing_city}}":extra?.data?.billing_address?.city,
-    //      "{{billing_province}}":extra?.data?.billing_address?.province,
-    //      "{{billing_province_code}}":extra?.data?.billing_address?.province_code,
-    //      "{{billing_zip}}":extra?.data?.billing_address?.zip,
-    //   //   "{{subscription_line_items}}":
-    //   //   "{{card_brand_name}}":"456",
-    //   //   "{{last_four_digits}}":"678",
-    //   //   "{{card_expiry_month}}":"866",
-    //   //   "{{card_expiry_year}}":"474",
-
-    //     // "{{manage_subscription_link}}":selectedTemplate.subscriptionUrl,
-    //   //   // "{{email_subject}}":"633",
-    //      "{{heading_text}}":selectedTemplate.headingText,
-    //     "{{{logo_image}}":selectedTemplate.logoUrl,
-    //      "{{shiiping_address_text}}":selectedTemplate.subscriptionShippingAddressText,
-    //      "{{billing_address_text}}":selectedTemplate.subscriptionBillingAddressText,
-    //      "{{payment_method_text}}":selectedTemplate.paymentMethodText,
-    //      "{{logo_width}}":selectedTemplate.logoWidth,
-    //      "{{logo_height}}":selectedTemplate.logoHeight,
-    //      "{{logo_alignment}}":selectedTemplate.logoAlignment,
-
-    //    };
-
+   
     const emailContent = await ejs.renderFile(dirPath + "/preview.ejs", {
       selectedTemplate,
       templateType,
@@ -4930,8 +4625,7 @@ export async function sendMailCommon(req, res) {
   }
 
   try {
-    console.log("first intry sendmailcommon");
-
+   
     let data = await transporter.sendMail(options);
     if (data) {
       res.send({
@@ -4939,8 +4633,7 @@ export async function sendMailCommon(req, res) {
         data: "Mail sent successfully",
       });
     }
-    console.log(data, "jhgfds");
-  } catch (err) {
+    } catch (err) {
     console.log(err, "errorr aa gyaa");
     res.send({ message: "error", data: "Something went wrong" });
   }
@@ -4949,7 +4642,7 @@ export async function sendMailCommon(req, res) {
 export async function sendMailOnUpdate(req, res) {
   try {
     const __dirname = path.resolve();
-    console.log(__dirname, "kjh");
+   
     const dirPath = path.join(__dirname, "/frontend/components/emailtemplate");
     let shop = res?.locals?.shopify?.session?.shop
       ? res?.locals?.shopify?.session?.shop
@@ -4958,20 +4651,13 @@ export async function sendMailOnUpdate(req, res) {
     let emailConfig = req.body?.emailConfig;
     let extra = req.body?.extra;
     let templateType = extra?.templateType;
-    console.log("options", options);
-    console.log("outside try sedmailcommon");
     let testAccount = await nodemailer.createTestAccount();
     const transporter = nodemailer.createTransport(emailConfig);
 
     let selectedTemplate = req.body?.selectedTemplate;
     let currencySymbol = getCurrencySymbol(req.body?.extra?.currency);
 
-    console.log("recipentMails", req?.body?.recipientMails);
-    // console.log("currencySymbol", currencySymbol);
-    // console.log("selecetdetemplate", selectedTemplate);
-    // console.log("crcysymbol", currencySymbol);
-    // console.log("extra?.data", extra?.data);
-
+    
     let recipientMails = req?.body?.recipientMails;
 
     const replacements = {
@@ -4979,8 +4665,7 @@ export async function sendMailOnUpdate(req, res) {
 
       "{{customer_email}}": extra?.data?.customer_details?.email,
 
-      // "{{order_number}}": extra?.data?.order_number,
-
+ 
       "{{customer_name}}":
         extra?.data.customer_details.firstName != null
           ? extra?.data.customer_details.firstName
@@ -4997,7 +4682,7 @@ export async function sendMailOnUpdate(req, res) {
           ? extra?.data?.shipping_address?.country
           : "",
 
-      //   //   // "{{selling_plan_name}}":"23",
+  
 
       "{{shipping_full_name}}":
         extra?.data?.shipping_address?.firstName != null
@@ -5073,7 +4758,7 @@ export async function sendMailOnUpdate(req, res) {
           ? extra?.data?.billing_address?.zip
           : "",
 
-      //   //   "{{subscription_line_items}}":
+     
 
       "{{card_brand_name}}":
         extra?.data?.payment_details?.payment_instrument_value?.brand,
@@ -5087,9 +4772,6 @@ export async function sendMailOnUpdate(req, res) {
       "{{card_expiry_year}}":
         extra?.data?.payment_details?.payment_instrument_value?.expiryYear,
 
-      //     // "{{manage_subscription_link}}":selectedTemplate.subscriptionUrl,
-
-      //   //   // "{{email_subject}}":"633",
 
       "{{heading_text}}": selectedTemplate.headingText,
       "{{card_brand_name}}": extra?.data?.payment_details
@@ -5121,9 +4803,9 @@ export async function sendMailOnUpdate(req, res) {
       "{{logo_alignment}}": selectedTemplate.logoAlignment,
     };
 
-    //////start/////
+
     if (recipientMails[0]) {
-      console.log("inzerorecipent");
+     
 
       options = {
         ...options,
@@ -5134,24 +4816,12 @@ export async function sendMailOnUpdate(req, res) {
 
       if (selectedTemplate?.subscriptionUrl) {
         url = selectedTemplate?.subscriptionUrl;
-        console.log("dsdasda");
+      
       } else {
         if (recipientMails[0] == extra?.data?.customer_details?.email) {
-          console.log(
-            "sagg",
-            recipientMails[0],
-            extra?.data?.customer_details?.email,
-            recipientMails[0] == extra?.data?.customer_details?.email
-          );
-
-          url = url = `https://${shop}/account/login`;
+           url = url = `https://${shop}/account/login`;
         } else {
-          console.log(
-            "hiaddsss",
-            recipientMails[0],
-            extra?.data?.customer_details?.email,
-            recipientMails[0] == extra?.data?.customer_details?.email
-          );
+          
           url = `https://admin.shopify.com/store/${
             shop?.split(".myshopify.com")[0]
           }/apps/revlytic/create-manual-subscription?id=${(extra?.data?.subscription_id)
@@ -5159,7 +4829,7 @@ export async function sendMailOnUpdate(req, res) {
             .at(-1)}&mode=view`;
         }
       }
-      console.log("testing0ct18--->",extra?.data);
+ 
       const emailContent = await ejs.renderFile(dirPath + "/preview2.ejs", {
         selectedTemplate,
         templateType,
@@ -5168,7 +4838,7 @@ export async function sendMailOnUpdate(req, res) {
         dateConversion,
         url: url,
       });
-      console.log("rrrrrrrtesting0ct18");
+     
       const updatedEmailContent = emailContent.replace(
         new RegExp(Object.keys(replacements).join("|"), "g"),
         (matched) => replacements[matched]
@@ -5188,13 +4858,13 @@ export async function sendMailOnUpdate(req, res) {
         console.log(error, "errorr aa gyaa");
         throw error;
       }
-      ////
+ 
     }
 
-    ///////
+
 
     if (recipientMails[1]) {
-      console.log("in1recipent");
+      
       options = {
         ...options,
         to: recipientMails[1],
@@ -5204,29 +4874,16 @@ export async function sendMailOnUpdate(req, res) {
 
       if (selectedTemplate?.subscriptionUrl) {
         url = selectedTemplate?.subscriptionUrl;
-        console.log("oiouo");
-      } else {
+         } else {
         if (recipientMails[1] == extra?.data?.customer_details?.email) {
           url = url = `https://${shop}/account/login`;
-          console.log(
-            "plok",
-            recipientMails[1],
-            extra?.data?.customer_details?.email,
-            recipientMails[1] == extra?.data?.customer_details?.email
-          );
-        } else {
+            } else {
           url = `https://admin.shopify.com/store/${
             shop?.split(".myshopify.com")[0]
           }/apps/revlytic/create-manual-subscription?id=${(extra?.data?.subscription_id)
             .split("/")
             .at(-1)}&mode=view`;
-          console.log(
-            "jikkk",
-            recipientMails[1],
-            extra?.data?.customer_details?.email,
-            recipientMails[1] == extra?.data?.customer_details?.email
-          );
-        }
+           }
       }
 
       const emailContent = await ejs.renderFile(dirPath + "/preview2.ejs", {
@@ -5257,10 +4914,9 @@ export async function sendMailOnUpdate(req, res) {
         console.log(error, "errorr aa gyaa");
         throw error;
       }
-      ////
+    
     }
 
-    ///end//////
 
     res.send({ message: "success" });
   } catch (error) {
@@ -5271,17 +4927,13 @@ export async function sendMailOnUpdate(req, res) {
 
 export async function getEmailConfigurationData(req, res) {
   try {
-    console.log(req.body, "sddfsdfsdffdsk");
-
+   
     let shop = res.locals.shopify.session.shop;
-
-    // let data= await emailTemplatesModal.findOne({ shop: shop},{[`settings.${templateType}`]:1})
     let data = await emailTemplatesModal.findOne(
       { shop: shop },
       { configuration: 1 }
     );
-    console.log("ttttttt", data);
-
+    
     if (!data) {
       res.send({ message: "no_data", data: "No data found" });
     } else {
@@ -5299,7 +4951,6 @@ export async function getEmailConfigurationData(req, res) {
 export async function getPastOrdersDetail(req, res) {
   try {
     let shop = res.locals.shopify.session.shop;
-    console.log("body->", req?.body);
     const desiredStatusValues = ["initial", "success"];
     let data = await billing_Attempt.find(
       {
@@ -5315,8 +4966,6 @@ export async function getPastOrdersDetail(req, res) {
         renewal_date: 1,
       }
     );
-    // let data=await billing_Attempt.find({shop:shop,contract_id:req?.body?.contract_id},{updatedAt:1,order_no:1,contract_products:1,order_id:1})
-    console.log("data", data);
     if (data.length > 0) {
       res.send({ message: "success", data: data });
     } else {
@@ -5331,7 +4980,6 @@ export async function getPastOrdersDetail(req, res) {
 export async function getSkippedOrdersDetail(req, res) {
   try {
     let shop = res.locals.shopify.session.shop;
-    console.log("body->", req?.body);
 
     let data = await billing_Attempt.find(
       { shop: shop, contract_id: req?.body?.contract_id, status: "skipped" },
@@ -5343,8 +4991,7 @@ export async function getSkippedOrdersDetail(req, res) {
         renewal_date: 1,
       }
     );
-    // let data=await billing_Attempt.find({shop:shop,contract_id:req?.body?.contract_id},{updatedAt:1,order_no:1,contract_products:1,order_id:1})
-    console.log("data", data);
+   
     if (data.length > 0) {
       res.send({ message: "success", data: data });
     } else {
@@ -5361,9 +5008,7 @@ export async function getOrdersDataUpcoming(req, res) {
     let shop = res?.locals?.shopify?.session?.shop
       ? res?.locals?.shopify?.session?.shop
       : req?.body?.shop;
-    console.log("body->", req?.body);
 
-    // let data=await billing_Attempt.find({shop:shop,contract_id:req?.body?.contract_id,renewal_date: { $gt: new Date().getTime() } },{renewal_date:1,status:1})
     let data = await billing_Attempt.find(
       { shop: shop, contract_id: req?.body?.contract_id },
       {
@@ -5374,9 +5019,7 @@ export async function getOrdersDataUpcoming(req, res) {
         order_id: 1,
       }
     );
-    console.log("data", data);
-
-    console.log("dataaaaddd", data);
+   
     res.send({ message: "success", data: data });
   } catch (error) {
     console.log("error", error);
@@ -5386,12 +5029,12 @@ export async function getOrdersDataUpcoming(req, res) {
 
 export async function orderNow(req, res) {
   try {
-    console.log("bodddy", req.body);
+   
     let shop = res?.locals?.shopify?.session?.shop
       ? res?.locals?.shopify?.session?.shop
       : req?.body?.shop;
     let data = req?.body?.data;
-    console.log("data in ordernow function", data);
+    
 
     let mutation = subscriptionBillingAttemptCreateMutation;
 
@@ -5408,8 +5051,7 @@ export async function orderNow(req, res) {
     };
 
     let gettoken = await shopModal.findOne({ shop: shop });
-    console.log(gettoken, "cvcvcvcvcv");
-
+  
     const client = new shopify.api.clients.Graphql({
       session: {
         shop: shop,
@@ -5421,20 +5063,12 @@ export async function orderNow(req, res) {
       data: { query: mutation, variables: Input },
     });
 
-    console.log(
-      billingAttempt.body.data.subscriptionBillingAttemptCreate,
-      "check it"
-    );
-
+  
     if (
       billingAttempt.body.data.subscriptionBillingAttemptCreate.userErrors
         .length < 1
     ) {
-      console.log(
-        "checjingnxtblgdt",
-        billingAttempt.body.data.subscriptionBillingAttemptCreate
-          ?.subscriptionBillingAttempt?.subscriptionContract?.nextBillingDate
-      );
+     
 
       if (req.body.nextBillingDate) {
         let updateNextBillingDate =
@@ -5446,7 +5080,7 @@ export async function orderNow(req, res) {
               },
             }
           );
-        console.log(updateNextBillingDate, "nextupdate");
+      
       }
 
       let saveToBillingAttempt = await billing_Attempt.create({
@@ -5462,7 +5096,7 @@ export async function orderNow(req, res) {
             .subscriptionBillingAttempt.id,
       });
 
-      console.log("saveToBillingAttempt", saveToBillingAttempt);
+   
       res.send({ message: "success" });
     }
   } catch (error) {
@@ -5476,7 +5110,7 @@ export async function skipOrder(req, res) {
     let shop = res?.locals?.shopify?.session?.shop
       ? res?.locals?.shopify?.session?.shop
       : req?.body?.shop;
-    console.log("body<--->", req?.body);
+   
     let data = req?.body?.data;
     if (req.body.nextBillingDate) {
       let updateNextBillingDate =
@@ -5488,7 +5122,7 @@ export async function skipOrder(req, res) {
             },
           }
         );
-      console.log(updateNextBillingDate, "nextupdate");
+      
     }
 
     let result = await billing_Attempt.findOneAndUpdate(
@@ -5501,7 +5135,7 @@ export async function skipOrder(req, res) {
       { upsert: true, new: true }
     );
 
-    console.log("dataaaaddd", result);
+ 
     if (result) {
       res.send({ message: "success", data: result });
     }
@@ -5513,11 +5147,11 @@ export async function skipOrder(req, res) {
 
 export async function retryFailedOrder(req, res) {
   try {
-    console.log("bodddy", req.body);
+   
     let shop = res?.locals?.shopify?.session?.shop
       ? res?.locals?.shopify?.session?.shop
       : req?.body?.shop;
-    console.log("in retry function", req.body);
+  
 
     let mutation = subscriptionBillingAttemptCreateMutation;
 
@@ -5534,8 +5168,7 @@ export async function retryFailedOrder(req, res) {
     };
 
     let gettoken = await shopModal.findOne({ shop: shop });
-    console.log(gettoken, "cvcvcvcvcv");
-
+   
     const client = new shopify.api.clients.Graphql({
       session: {
         shop: shop,
@@ -5547,29 +5180,12 @@ export async function retryFailedOrder(req, res) {
       data: { query: mutation, variables: Input },
     });
 
-    console.log(
-      billingAttempt.body.data.subscriptionBillingAttemptCreate,
-      "check it"
-    );
 
     if (
       billingAttempt.body.data.subscriptionBillingAttemptCreate.userErrors
         .length < 1
     ) {
-      console.log(
-        "rrrrr",
-        billingAttempt.body.data.subscriptionBillingAttemptCreate
-      );
-      console.log(
-        "yyyyyy",
-        billingAttempt.body.data.subscriptionBillingAttemptCreate
-          ?.subscriptionBillingAttempt
-      );
-      console.log(
-        "checjingnxtblgdt",
-        billingAttempt.body.data.subscriptionBillingAttemptCreate
-          ?.subscriptionBillingAttempt?.subscriptionContract
-      );
+     
 
       let updateFailedStatus = await billing_Attempt.findOneAndUpdate(
         {
@@ -5594,8 +5210,7 @@ export async function retryFailedOrder(req, res) {
             .subscriptionBillingAttempt.id,
       });
 
-      console.log("saveToBillingAttempt", saveToBillingAttempt);
-      res.send({ message: "success" });
+        res.send({ message: "success" });
     } else {
       console.log(
         "usererrror",
@@ -5620,7 +5235,7 @@ export async function upcomingFulfillment(req, res) {
       : req?.body?.shop;
     let subscription_id = '"' + req?.body?.id + '"';
     let gettoken = await shopModal.findOne({ shop: shop });
-    console.log(gettoken, "nnnnnnn");
+   
     const client = new shopify.api.clients.Graphql({
       session: {
         shop: shop,
@@ -5697,27 +5312,13 @@ export async function upcomingFulfillment(req, res) {
 
   }`,
       });
-      console.log("ordername", orderData?.body?.data?.order?.name);
-      console.log("orderData", orderData?.body?.data?.order?.lineItems?.edges);
+     
 
       let orderNumber = orderData?.body?.data?.order?.name;
       let contractIdAndLineItemsData =
         orderData?.body?.data?.order?.lineItems?.edges;
 
-      //  let result = {};
-      //  orderData?.body?.data?.order?.lineItems?.edges?.forEach((item,index)=>{
-      //   let id = item?.node?.contract?.id?.split('/').at(-1);
-      //   if (!result[id]) {
-      //       result[id] = [item?.node?.id?.split('/').at(-1)];
-      //   }
-      // else{
-      //   result[id].push(item?.node?.id?.split('/').at(-1))
-      // }
-
-      //  })
-
-      // console.log("resulttt",result)
-
+   
       const fulfillmentData = await shopify.api.rest.FulfillmentOrder.all({
         session: {
           shop: shop,
@@ -5727,22 +5328,10 @@ export async function upcomingFulfillment(req, res) {
         // status: "scheduled",
       });
 
-      console.log("fulfillmentData--->", fulfillmentData?.data);
+
       let fulfillmentIdAndLineItemsData = fulfillmentData?.data;
 
-      // let result2=[]
-
-      // fulfillmentData?.data?.forEach(item=>{
-      //   let arr=[]
-      // item?.line_items.forEach(line=>{
-      //       arr.push(line?.line_item_id)
-      // })
-      // let id=item?.id
-      // let obj={[id]:{lineItems:arr,fulfill_at:item?.fulfill_at}}
-      // result2.push(obj)
-      // })
-
-      // console.log("result2",result2)
+     
 
       res.send({
         message: "success",
@@ -5755,10 +5344,7 @@ export async function upcomingFulfillment(req, res) {
     } else {
       res.send({ message: "no_data" });
     }
-    //console.log("sdsdewedcd",data?.body?.data?.subscriptionContract?.orders?.edges[0]?.node)
-    //  console.log("sdsdewedcd",data?.body?.data?.subscriptionContract?.orders?.edges[0]?.node?.fulfillmentOrders)
-    //  console.log("sdsdewedcd",data?.body?.data?.subscriptionContract?.orders?.edges[0]?.node?.fulfillmentOrders?.edges[0])
-    // console.log("sdsdewedcd",data?.body?.data?.subscriptionContract?.orders?.edges[0]?.node?.fulfillmentOrders?.edges[0]?.node?.lineItems?.edges[0]?.node?.lineItem)
+    
   } catch (error) {
     console.log("error", error);
     res.send({ message: "error" });
@@ -5798,12 +5384,12 @@ export async function fulfillmentOrderRescheduleOrSkip(req, res) {
     let response = await client.query({
       data: { query: mutationQuery, variables: Input },
     });
-    console.log(response?.body?.data);
+    
     if (
       response?.body?.data?.fulfillmentOrderReschedule?.userErrors?.length == 0
     ) {
       if (req?.body?.nextBillingDate) {
-        console.log("in skip");
+        
         let updateNextBillingDate =
           await subscriptionDetailsModal.findOneAndUpdate(
             { shop: shop, subscription_id: req?.body?.subscription_id },
@@ -5816,7 +5402,7 @@ export async function fulfillmentOrderRescheduleOrSkip(req, res) {
               new: true,
             }
           );
-        console.log(updateNextBillingDate, "nextupdate");
+       
         return res.send({
           message: "success",
           date: updateNextBillingDate?.nextBillingDate,
@@ -5915,27 +5501,8 @@ function findDateRange(data) {
 export async function combinedData(req, res) {
   try {
     let shop = res.locals.shopify.session.shop;
-    // console.log("ccd", req.body);
 
-    // console.log(new Date(), new Date(new Date().setUTCHours(23, 59, 59, 999)));
     let dateRange = findDateRange(req.body);
-
-    // let data = await billing_Attempt.aggregate([
-    //   {
-    //     $match: {
-    //       shop: shop,
-    //       $or: [{ status: "active" }, { status: "initial" }],
-    //       createdAt: dateRange,
-    //     },
-    //   },
-    //   {
-    //     $group: {
-    //       _id: null,
-    //       totalrevenue: { $sum: "$total_amount" },
-    //       Total_orders: { $sum: 1 },
-    //     },
-    //   },
-    // ]);
 
     let data = await billing_Attempt.find(
       {
@@ -5946,7 +5513,7 @@ export async function combinedData(req, res) {
       { new: true, _id: 0, total_amount: 1, currency: 1, status: 1 }
     );
 
-    // console.log("dataaccc", data);
+  
 
     res.send({ message: "success", data });
   } catch (error) {
@@ -5960,14 +5527,11 @@ export async function subscriptionBookings(req, res) {
     let shop = res.locals.shopify.session.shop;
     let dateRange = findDateRange(req.body);
 
-    // Query for data within the date range
     let data = await subscriptionDetailsModal.countDocuments({
       shop: shop,
 
       createdAt: dateRange,
     });
-
-    console.log("subscriptionBookings", data);
 
     res.send({ message: "success", data });
   } catch (error) {
@@ -5981,14 +5545,12 @@ export async function activeCustomers(req, res) {
     let shop = res.locals.shopify.session.shop;
     let dateRange = findDateRange(req.body);
 
-    // Query for data within the date range
     let data = await subscriptionDetailsModal.countDocuments({
       shop: shop,
       status: "active",
       createdAt: dateRange,
     });
 
-    console.log("dataaacivecustomers", data);
 
     res.send({ message: "success", data });
   } catch (error) {
@@ -6001,7 +5563,6 @@ export async function addAnnouncement(req, res) {
   try {
     let shop = res.locals.shopify.session.shop;
 
-    // Query for data within the date range
     let data = await announcementsModal.create({
       description: req?.body?.description,
       title: req?.body?.title,
@@ -6009,8 +5570,6 @@ export async function addAnnouncement(req, res) {
       buttonUrl: req?.body?.buttonUrl,
       buttonText: req?.body?.buttonText,
     });
-
-    console.log("daaa", data);
 
     res.send({ message: "success", data });
   } catch (error) {
@@ -6054,10 +5613,7 @@ export async function getAnnouncements(req, res) {
   try {
     let shop = res.locals.shopify.session.shop;
 
-    // Query for data within the date range
     let data = await announcementsModal.find({}).sort({ createdAt: -1 });
-
-    console.log("daaa", data);
 
     res.send({ message: "success", data });
   } catch (error) {
@@ -6074,11 +5630,9 @@ export async function deleteAnnouncement(req, res) {
       _id: new ObjectId(req?.body?._id),
     });
 
-    console.log("data", data);
     if (data && data?.deletedCount == 1) {
       res.send({ message: "success", data });
     } else {
-      console.log("3oct");
       res.send({ message: "no_data_found", data });
     }
   } catch (error) {
@@ -6087,28 +5641,14 @@ export async function deleteAnnouncement(req, res) {
   }
 }
 
-export async function convertStoreProductPriceIntoOrderCurrency(
-  req,
-  res,
-  next
-) {
+export async function convertStoreProductPriceIntoOrderCurrency( req,res, next) {
   try {
     if (req?.body?.country) {
       let session = res.locals.shopify.session;
 
-      // let drr= await shopify.api.rest.Variant.find({
-      //   session: session,
-      //   id: 44360463450416,
-      // });
-
-      // console.log("drrrr",drr)
-
       const client = new shopify.api.clients.Graphql({ session });
       console.log("ctry", req.body.country);
 
-      // console.log("oballeballe",req.body.lines)
-
-      // let lines= req?.body?.check2 == "createProductSubscriptionEdit" ?   ""  : req?.body.lines ;
       let lines =
         req?.body?.check2 == "createProductSubscriptionEdit"
           ? req?.createProductData?.data
@@ -6131,11 +5671,7 @@ export async function convertStoreProductPriceIntoOrderCurrency(
             data: currencyConversionQuery,
           });
 
-          console.log(
-            data?.body?.data?.productVariant,
-            "novv",
-            data?.body?.data?.productVariant?.contextualPricing?.price?.amount
-          );
+         
           let price =
             data?.body?.data?.productVariant?.contextualPricing?.price?.amount;
           lines[index]["price"] = price;
@@ -6156,19 +5692,14 @@ export async function convertStoreProductPriceIntoOrderCurrency(
           console.log("updatedlinesinnrer", lines);
 
           if (req?.body?.check2 == "createProductSubscriptionEdit") {
-            console.log("dr dang");
-            // req.body.lines=lines
+                     
             req.createProductData.data = lines;
-            console.log(
-              "req?.createProductData?.data",
-              req?.createProductData?.data
-            );
-          } else {
-            console.log("shinchan");
+              } else {
+           
             req.body.lines = lines;
           }
           next();
-          // Now you have access to all prices in the 'prices' array
+          
         })
         .catch((error) => {
           console.error("Error processing promises:", error);
@@ -6179,7 +5710,6 @@ export async function convertStoreProductPriceIntoOrderCurrency(
       next();
     }
 
-    // res.send("hello")
   } catch (error) {
     console.log("errorr", error);
     res.send({ message: "error", data: "Something went wrong" });
@@ -6196,7 +5726,7 @@ export async function checkAppBlockEmbed(req, res) {
       asset: { key: "config/settings_data.json"},
     });
     let currentThemeData = JSON.parse(theme_config_data?.data[0]?.value);
-    // console.log("zzz", currentThemeData?.current?.blocks);
+    
     let blockData=currentThemeData?.current?.blocks;
     
     let searchedBlock ;
@@ -6225,7 +5755,7 @@ export async function recurringBiling(req, res) {
     const session = res.locals.shopify.session;
     const shop = res.locals.shopify.session.shop;
     const API_KEY = process.env.SHOPIFY_API_KEY;
-    console.log("keyyyy", API_KEY);
+   
     const client = new shopify.api.clients.Graphql({ session });
     let billingInterval = interval == "MONTHLY" ? "EVERY_30_DAYS" : "ANNUAL";
     let testCharge;
@@ -6270,25 +5800,11 @@ export async function recurringBiling(req, res) {
       data: recurringString,
     });
 
-    console.log(
-      "response",
-      response?.body?.data?.appSubscriptionCreate?.userErrors.length > 0,
-      response?.body?.data?.appSubscriptionCreate?.userErrors[0]
-    );
 
-    if (
-      response &&
-      response?.body?.data?.appSubscriptionCreate?.userErrors.length > 0
-    ) {
-      res.send({
-        message: "error",
-        data: response?.body?.data?.appSubscriptionCreate?.userErrors[0]
-          ?.message,
-      });
+    if ( response && response?.body?.data?.appSubscriptionCreate?.userErrors.length > 0 ) {
+      res.send({message: "error",data: response?.body?.data?.appSubscriptionCreate?.userErrors[0]?.message,});
     } else {
-      res
-        .status(200)
-        .send({ message: "success", url: response, interval: interval });
+      res.status(200).send({ message: "success", url: response, interval: interval });
     }
   } catch (err) {
     return res.json({ message: "INTERNAL_SERVER_ERROR", err: err.message });
@@ -6304,7 +5820,7 @@ export async function recurringBilingSelected(req, res) {
         session: res.locals.shopify.session,
         id: charge_id,
       });
-    console.log("verifyBilling", verifyBilling);
+   
     if (verifyBilling.status === "active") {
       const updatePlan = await billingModal.findOneAndUpdate(
         { shop },
@@ -6337,8 +5853,7 @@ export async function recurringBilingSelected(req, res) {
           });
       }
     } else {
-      console.log("inthe kelsee");
-      res.json({ message: "something went wrong", result: 0 });
+       res.json({ message: "something went wrong", result: 0 });
     }
   } catch (err) {
     return res.json({ message: "INTERNAL_SERVER_ERROR", err: err.message });
@@ -6369,11 +5884,9 @@ export async function getBillingPlanData(req, res) {
           session: res.locals.shopify.session,
           id: charge_id,
         });
-      console.log("verifyBilling", verifyBilling);
-      // if (verifyBilling.status === "active") {
+      
        res.send({ message: "success", planData: { plan : planData.plan ,charge_id, next_billing: verifyBilling?.billing_on , activated_on: verifyBilling?.activated_on }});
 
-    // }
   }
   else{
     res.send({message:'success',planData})
@@ -6389,7 +5902,7 @@ export async function calculateRevenue(req, res) {
   try {
     let shop = res.locals.shopify.session.shop;
     let range = req?.body?.range;
-     console.log("bodyyyyy--->",req?.body)
+    
     new Date(range).setHours(0, 0, 0, 0);
 
     let data = await billing_Attempt.find(
@@ -6401,8 +5914,6 @@ export async function calculateRevenue(req, res) {
       { new: true, _id: 0, total_amount: 1, currency: 1, status: 1 }
     );
 
-    console.log("dataaccc", data);
-
     res.send({ message: "success", data });
   } catch (error) {
     console.log("error", error);
@@ -6413,16 +5924,14 @@ export async function calculateRevenue(req, res) {
 export async function deleteRecurringCharge(req, res, next) {
   try {
     let session = res.locals.shopify.session;
-    console.log("req.body?.charge_id--->", req.body?.charge_id);
-
+   
     let data = await shopify.api.rest.RecurringApplicationCharge.delete({
       session: session,
       id: req.body?.charge_id,
     });
 
-    console.log("dataaaaaassss", data);
     if (Object.keys(data).length == 0) {
-      console.log("in ifff");
+     
       next();
     } else {
       res.send({ message: "Something went wrong" });
@@ -6469,7 +5978,7 @@ export async function freePlanActivation(req, res) {
 export async function saveDunningData(req,res){
   try{
     const shop = res.locals.shopify.session.shop;
-  console.log('bodyreq',req?.body)
+ 
   const data = await dunningModal.findOneAndUpdate(
     { shop },
     {
@@ -6484,7 +5993,6 @@ if(data)
   res.send({message: "success"})
 }
 
-
 }
 catch(error){
     console.log("error", error);
@@ -6496,7 +6004,7 @@ export async function fetchDunningData(req,res){
   try{
     const shop = res.locals.shopify.session.shop;
     const data = await dunningModal.findOne({ shop });
-    upcomingOrders()
+    // upcomingOrders()
     // paymentFailureCron()
     // failedPaymentRetryCron()
    if(data)
@@ -6537,8 +6045,6 @@ export async function getEmailTemplatesCount(req,res){
     });
   }
 
-
-
 }
 
 export async function saveDunningTemplates(req,res){
@@ -6547,18 +6053,17 @@ export async function saveDunningTemplates(req,res){
       let shop=res.locals.shopify.session.shop ;
 
       let saveTemplatesData=await emailTemplatesModal.findOneAndUpdate(
-        {
-          shop,
-         $set:{
-          'settings.upcomingOrderReminder': dunningTemplates?.upcomingOrderReminder,
-          'settings.standardCourtsyNotice': dunningTemplates?.standardCourtsyNotice,
+        { shop},
+         {
+          $set:{
+          'settings.upcomingOrderReminder':  dunningTemplates?.upcomingOrderReminder,
+          'settings.standardCourtsyNotice':  dunningTemplates?.standardCourtsyNotice,
           'settings.standardPastDueNotice1': dunningTemplates?.standardPastDueNotice1,
           'settings.standardPastDueNotice2': dunningTemplates?.standardPastDueNotice2,
           'settings.standardPastDueNotice3': dunningTemplates?.standardPastDueNotice3,
-          'settings.standardFinalDemand': dunningTemplates?.standardFinalDemand,
-                },                             
-        new:true 
-        }
+          'settings.standardFinalDemand':    dunningTemplates?.standardFinalDemand,
+                }
+        },{new:true} 
         )                            
     
      if(saveTemplatesData){
@@ -6598,7 +6103,7 @@ export async function get_active_pause_cancelSubscription_count(req, res) {
           }
         }
       ]);
-       console.log("dataareceived",data)
+     
       res.send({ message: "success", data });
     } catch (error) {
       console.log("error", error);
@@ -6629,9 +6134,7 @@ export async function get_active_pause_cancelSubscription_count(req, res) {
           }
         }
       ]);
-  
-      console.log("dataaacivecustomers", data)
-  
+    
       res.send({ message: "success", data });
     } catch (error) {
       console.log("error", error);
@@ -10306,9 +9809,7 @@ export async function getCustomerPortalDetails(req, res) {
 
 
 export async function sendInvoiceMailAndSaveContract(req, res) {
-  console.log(
-    "dfsdkfsjjkdfjksjdfskdlfksldfksldfksjdfksdklfskdjfskjdfksjdkfjskdj"
-  );
+  console.log("in sendInvoiceMailAndSaveContract");
   try {
     let details;
     let getorder = await orderOnly.findOne({
@@ -11222,9 +10723,7 @@ export async function sendInvoiceMailAndSaveContract(req, res) {
           }
           ////////////////////////////check max to pause end////////////////////////
 
-          let saveContractDetailsToDB = await subscriptionDetailsModal.create(
-            obj
-          );
+          let saveContractDetailsToDB = await subscriptionDetailsModal.create(obj);
           // console.log(saveContractDetailsToDB, "hahahahaahahahah");
 
           if (saveContractDetailsToDB) {
@@ -11452,14 +10951,10 @@ export async function sendInvoiceMailAndSaveContract(req, res) {
           }
         });
 
-        console.log("orderDetails?.customer", orderDetails?.customer);
-
-        console.log("sdsdsadas", orderDetails?.shippingAddress);
-        console.log("rererreer", orderDetails?.billingAddress);
-        console.log(
-          "ngyftg",
-          orderDetails?.subtotalPriceSet?.presentmentMoney?.currencyCode
-        );
+        //console.log("orderDetails?.customer", orderDetails?.customer);
+        // console.log("sdsdsadas", orderDetails?.shippingAddress);
+        // console.log("rererreer", orderDetails?.billingAddress);
+        // console.log("ngyftg", orderDetails?.subtotalPriceSet?.presentmentMoney?.currencyCode);
 
         let getData = {
           order_number: orderDetails?.name,
@@ -11479,7 +10974,7 @@ export async function sendInvoiceMailAndSaveContract(req, res) {
         };
 
         try {
-          // console.log("beforrreeeee");
+       
           let shopName;
           let shopEmail;
           let subscriptionPurchasedTemplateData =
@@ -11491,10 +10986,7 @@ export async function sendInvoiceMailAndSaveContract(req, res) {
                 configuration: 1,
               }
             );
-          // console.log(
-          //   "subscriptionPurchasedTemplateData",
-          //   subscriptionPurchasedTemplateData
-          // );
+        
           if (subscriptionPurchasedTemplateData) {
             let sendMailToCustomer =
               subscriptionPurchasedTemplateData?.settings?.subscriptionPurchased
@@ -11525,9 +11017,7 @@ export async function sendInvoiceMailAndSaveContract(req, res) {
               let selectedTemplateData =
                 subscriptionPurchasedTemplateData?.settings
                   ?.subscriptionPurchased;
-              //////
-
-              ///////
+           
               let mailCheck = await sendMailCall(
                 recipientMails,
                 {},
@@ -11546,7 +11036,6 @@ export async function sendInvoiceMailAndSaveContract(req, res) {
             }
           }
 
-          //////////fro subscription invoic//////
 
           if (subscriptionPurchasedTemplateData && saveDetails.components[17]) {
             let sendMailToCustomer =
@@ -11563,24 +11052,22 @@ export async function sendInvoiceMailAndSaveContract(req, res) {
                 let storeData = await getStoreDetails(getorder.shop);
                 shopEmail = storeData.store_email;
                 shopName = storeData.store_name;
-                // console.log("emailstore", shopEmail);
+             
                 recipientMails.push(shopEmail);
                 getData.shopEmail = shopEmail;
                 getData.shopName = shopName;
               }
               if (sendMailToCustomer) {
-                // console.log("customeremail", getData.customer_email);
+               
                 recipientMails.push(getData.customer_email);
               }
-              // console.log("recipiensmails", recipientMails);
+          
               let configurationData =
                 subscriptionPurchasedTemplateData?.configuration;
               let selectedTemplateData =
                 subscriptionPurchasedTemplateData?.settings
                   ?.subscriptionInvoice;
-              //////
-
-              ///////
+              
               let mailCheck = await sendMailCall(
                 recipientMails,
                 {},
@@ -11601,12 +11088,10 @@ export async function sendInvoiceMailAndSaveContract(req, res) {
             }
           }
 
-          //////invoiceend//////
         } catch (error) {
           console.log("error", error);
         }
 
-        /////////////////////////////////Sahil End///////////////////////////////////////
       }
     }
   } catch (err) {
