@@ -816,6 +816,14 @@ const secondJob = new CronJob(
 );
 firstJob.start();
 secondJob.start();
+ 
+const  upcomingOrderCron=new CronJob(cronTimeEvery24hr,upcomingOrders) ;
+const  paymentFailureEmailCron=new CronJob(cronTimeEvery24hr,paymentFailureEmail); 
+const  failedPaymentRetryAttemptCron=new CronJob(cronTimeEvery24hr,failedPaymentRetryAttempt) ;
+
+upcomingOrderCron.start();
+paymentFailureEmailCron.start();
+failedPaymentRetryAttemptCron.start();
 
 export async function contractCronJob(req, res) {
   const currentDate = new Date().toISOString();
@@ -1499,7 +1507,7 @@ emailConfig = {
  
 //   }
 
-async function paymentFailureCron(){
+async function paymentFailureEmail(){
 
   try 
   
@@ -1928,7 +1936,7 @@ if(mailSentCheck)
 // }
 // } 
 
-async function failedPaymentRetryCron(){
+async function failedPaymentRetryAttempt(){
 
   try
     {
@@ -5769,8 +5777,8 @@ export async function fetchDunningData(req,res){
     const shop = res.locals.shopify.session.shop;
     const data = await dunningModal.findOne({ shop });
     // upcomingOrders()
-    // paymentFailureCron()
-    // failedPaymentRetryCron()
+    // paymentFailureEmail()
+    // failedPaymentRetryAttempt()
    if(data)
    {
       res.send({message:"success",data:data})
