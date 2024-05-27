@@ -137,8 +137,7 @@ app.get(
           .create({
             shop,
             accessToken,
-            setUpGuide:false
-          })
+              })
           .then(() => {
             console.log("Shop info successfully saved");
           })

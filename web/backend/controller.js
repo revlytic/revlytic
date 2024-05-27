@@ -136,14 +136,6 @@ export async function demo(req, res) {
 }
 
 const sendMailCall = async (recipientMails, others, extra) => {
-  console.log("insendmailcommon");
-
-  // let data =  await emailTemplatesModal.findOne({ shop: shop},{configuration:1});
-
-  console.log("configuraitondata", extra?.configurationData);
-
-  console.log("selecetdtemplatedata", extra?.selectedTemplateData);
-
   let data = extra?.configurationData;
 
   // if (!data) {
@@ -154,258 +146,139 @@ const sendMailCall = async (recipientMails, others, extra) => {
   let options = {};
 
   if (data && data.enable == true) {
-    console.log("inenabletrue");
-
-    let encryptionConfig = {};
-
+     let encryptionConfig = {};
     if (data.encryption === "ssl") {
       encryptionConfig = {
         secure: true,
-
         requireTLS: true,
       };
     } else if (data.encryption === "tls") {
       encryptionConfig = {
-        secure: false, // For TLS, secure should be set to false
-
+        secure: false, 
         requireTLS: true,
       };
     }
-
     emailConfig = {
       host: data.host,
-
-      port: parseInt(data.portNumber), // Convert port number to integer
-
+      port: parseInt(data.portNumber), 
       auth: {
         user: data.userName,
-
         pass: data.password,
       },
-
       ...(data.encryption === "none" ? {} : encryptionConfig),
     };
-
     options = {
       from: `${data.fromName}<${data.userName}>`,
-
       // to: recipientMails.join(", "),
-
       subject: extra?.selectedTemplateData?.emailSetting?.subject,
-
       cc: extra?.selectedTemplateData?.emailSetting?.cc,
-
       bcc: extra?.selectedTemplateData?.emailSetting?.bcc,
-
       replyTo: extra?.selectedTemplateData?.emailSetting?.replyTo,
-
       ...others,
     };
-
     // let response = await sendMailMain({emailConfig,options,extra}, app);
-
     // return response;
   } else {
-    console.log("inenablefalse");
-
-    emailConfig = {
+     emailConfig = {
       host: "smtp.gmail.com",
-
-      port: 587, // Convert port number to integer
-
+      port: 587, 
       auth: {
         user: "sahilagnihotri7@gmail.com",
-
         pass: "srdvsdnxfmvbrduw",
       },
-
       secure: false,
     };
 
     options = {
       from: "sahilagnihotri7@gmail.com",
-
       // to: recipientMails.join(", "),
-
       subject: extra?.selectedTemplateData?.emailSetting?.subject,
-
       cc: extra?.selectedTemplateData?.emailSetting?.cc,
-
       bcc: extra?.selectedTemplateData?.emailSetting?.bcc,
-
       replyTo: extra?.selectedTemplateData?.emailSetting?.replyTo,
-
       ...others,
     };
-
-    //return response;
-
-    // console.log(
-
-    //   "elseeeemailcall",
-
-    //   emailConfig,
-
-    //   options,
-
-    //   recipientMails.join(", ")
-
-    // );
   }
 
   const __dirname = path.resolve();
-
   const dirPath = path.join(__dirname, "/frontend/components/emailtemplate");
-
   const transporter = nodemailer.createTransport(emailConfig);
-
   let selectedTemplate = extra?.selectedTemplateData;
-
   let replacements;
-
-  let emailContent;
-
- 
+  let emailContent; 
 
   replacements = {
     "{{customer_email}}": extra?.data?.customer_email,
-
     "{{order_number}}": extra?.data?.order_number,
-
     "{{customer_name}}": extra?.data?.customer_name,
-
     "{{customer_id}}": extra?.data?.customer_id,
-
     "{{shop_name}}": extra?.data?.shopName,
-
     "{{shop_email}}": extra?.data?.shopEmail,
-
     "{{shipping_country}}": extra?.data?.shipping_address?.country,
-
     "{{email_subject}}": selectedTemplate?.emailSetting?.subject,
-
-   
-
-    "{{shipping_full_name}}":
-      extra?.data?.shipping_address?.firstName != null
+    "{{shipping_full_name}}": extra?.data?.shipping_address?.firstName != null
         ? extra?.data?.shipping_address?.firstName
         : "" + " " + extra?.data?.shipping_address?.lastName != null
         ? extra?.data?.shipping_address?.lastName
         : "",
-
     "{{shipping_address_1}}": extra?.data?.shipping_address?.address1,
-
-    "{{shipping_company}}":
-      extra?.data?.shipping_address?.company != null
+    "{{shipping_company}}":  extra?.data?.shipping_address?.company != null
         ? extra?.data?.shipping_address?.company
         : "",
-
-    "{{shipping_city}}":
-      extra?.data?.shipping_address?.city != null
+    "{{shipping_city}}": extra?.data?.shipping_address?.city != null
         ? extra?.data?.shipping_address?.city
         : "",
-
-    "{{shipping_province}}":
-      extra?.data?.shipping_address?.province != null
+    "{{shipping_province}}":extra?.data?.shipping_address?.province != null
         ? extra?.data?.shipping_address?.province
         : extra?.data?.shipping_address?.province,
-
-    "{{shipping_province_code}}":
-      extra?.data?.shipping_address?.provinceCode != null
+    "{{shipping_province_code}}": extra?.data?.shipping_address?.provinceCode != null
         ? extra?.data?.shipping_address?.provinceCode
         : "",
-
-    "{{shipping_zip}}":
-      extra?.data?.shipping_address?.zip != null
+    "{{shipping_zip}}":extra?.data?.shipping_address?.zip != null
         ? extra?.data?.shipping_address?.zip
         : "",
-
-    "{{billing_full_name}}":
-      extra?.data?.billing_address?.firstName != null
+    "{{billing_full_name}}":extra?.data?.billing_address?.firstName != null
         ? extra?.data?.billing_address?.firstName
         : "" + " " + extra?.data?.billing_address?.lastName != null
         ? extra?.data?.billing_address?.lastName
         : "",
-
-    "{{billing_country}}":
-      extra?.data?.billing_address?.country != null
+    "{{billing_country}}": extra?.data?.billing_address?.country != null
         ? extra?.data?.billing_address?.country
         : "",
-
-    "{{billing_address_1}}":
-      extra?.data?.billing_address?.address1 != null
+    "{{billing_address_1}}":extra?.data?.billing_address?.address1 != null
         ? extra?.data?.billing_address?.address1
         : "",
-
-    "{{billing_city}}":
-      extra?.data?.billing_address?.city != null
+    "{{billing_city}}": extra?.data?.billing_address?.city != null
         ? extra?.data?.billing_address?.city
         : "",
-
-    "{{billing_province}}":
-      extra?.data?.billing_address?.province != null
+    "{{billing_province}}":extra?.data?.billing_address?.province != null
         ? extra?.data?.billing_address?.province
         : "",
-
     "{{billing_province_code}}": extra?.data?.billing_address?.provinceCode
       ? extra?.data?.billing_address?.provinceCode
       : "",
-
-    "{{billing_zip}}": extra?.data?.billing_address?.zip
+    "{{billing_zip}}":extra?.data?.billing_address?.zip
       ? extra?.data?.billing_address?.zip
       : "",
-
-  
-
-    "{{card_brand_name}}": extra?.data?.contractDetails?.instrument?.brand
-      ? extra?.data?.contractDetails?.instrument?.brand
-
-          .charAt(0)
-
-          .toUpperCase() +
-        formatVariableName(
-          extra?.data?.contractDetails?.instrument?.brand
-
-            .slice(1)
-
-            .toLowerCase()
-        )
+    "{{card_brand_name}}":extra?.data?.contractDetails?.instrument?.brand
+      ? extra?.data?.contractDetails?.instrument?.brand.charAt(0).toUpperCase() +
+        formatVariableName(extra?.data?.contractDetails?.instrument?.brand.slice(1).toLowerCase())
       : "",
-
-    "{{last_four_digits}}":
-      extra?.data?.contractDetails?.instrument?.lastDigits,
-
-    "{{card_expiry_month}}":
-      extra?.data?.contractDetails?.instrument?.expiryMonth,
-
-    "{{card_expiry_year}}":
-      extra?.data?.contractDetails?.instrument?.expiryYear,
-
+    "{{last_four_digits}}":extra?.data?.contractDetails?.instrument?.lastDigits,
+    "{{card_expiry_month}}":extra?.data?.contractDetails?.instrument?.expiryMonth,
+    "{{card_expiry_year}}":extra?.data?.contractDetails?.instrument?.expiryYear,
     "{{heading_text}}": selectedTemplate?.headingText,
-
     "{{{logo_image}}": selectedTemplate?.logoUrl,
-
-    "{{shiiping_address_text}}":
-      selectedTemplate?.subscriptionShippingAddressText,
-
-    "{{billing_address_text}}":
-      selectedTemplate?.subscriptionBillingAddressText,
-
+    "{{shiiping_address_text}}":selectedTemplate?.subscriptionShippingAddressText,
+    "{{billing_address_text}}":selectedTemplate?.subscriptionBillingAddressText,
     "{{payment_method_text}}": selectedTemplate?.paymentMethodText,
-
     "{{logo_width}}": selectedTemplate?.logoWidth,
-
     "{{logo_height}}": selectedTemplate?.logoHeight,
-
     "{{logo_alignment}}": selectedTemplate?.logoAlignment,
   };
 
-  
-
   if (extra?.check == "subscriptionInvoice") {
-   
-    async function generatePdf() {
-   
+     async function generatePdf() {
       const browser = await puppeteer.launch({
         executablePath: "/usr/bin/chromium-browser",
         headless: true,
@@ -418,24 +291,19 @@ const sendMailCall = async (recipientMails, others, extra) => {
       };
 
       const filename = String(new Date().getTime());
-
       try {
         const templatePath = dirPath + "/invoiceTemplate.ejs";
         const compiledTemplate = ejs.compile(
           fs.readFileSync(templatePath, "utf8")
         );
-       
 
         const content = compiledTemplate({ details: extra.details });
-
         await page.setContent(content);
         await page.pdf({
           path: dirPath + `/${filename}.pdf`,
           format: options.format,
         });
-
         await browser.close();
-
         const pdfData = fs.readFileSync(dirPath + `/${filename}.pdf`);
         const base64Data = Buffer.from(pdfData).toString("base64");
         const contentType = mime.getType(dirPath + `/${filename}.pdf`);
@@ -452,38 +320,26 @@ const sendMailCall = async (recipientMails, others, extra) => {
         const recipientEmails = recipientMails.join(",");
         options = {
           ...options,
-
           to: recipientEmails,
         };
-
         emailContent = await ejs.renderFile(dirPath + "/preview.ejs", {
           selectedTemplate,
-
           mode: "real",
-
           data: { ...extra?.data, check: extra?.check },
-
           currencySymbol: extra?.data?.currencySymbol,
-
           dateConversion,
-
           check: extra?.check,
-
           templateType: "subscriptionInvoice",
         });
 
         const updatedEmailContent = emailContent.replace(
           new RegExp(Object.keys(replacements).join("|"), "g"),
-
           (matched) => replacements[matched]
         );
-
         options.html = updatedEmailContent;
         options.attachments = attachments;
-
         try {
           console.log("first in last");
-
           let data = await transporter.sendMail(options);
           if (data) {
             console.log("Mail sent successfully");
@@ -500,35 +356,25 @@ const sendMailCall = async (recipientMails, others, extra) => {
               }
             });
           }
-
           console.log(data, "faaltuu");
         } catch (error) {
           console.log(error, "errorr aa gyaa");
-
           throw error;
         }
-        //////////////////////////
-      } catch (err) {
+       } catch (err) {
         console.error(err);
       }
     }
-
     generatePdf();
-    ///////////////////////////////
-  } else {
-    if (recipientMails[0]) {
-    
+      } else {
+    if (recipientMails[0]) {    
       options = {
         ...options,
-
         to: recipientMails[0],
       };
-
       let url;
-
       if (extra?.selectedTemplateData?.subscriptionUrl) {
         url = extra?.selectedTemplateData?.subscriptionUrl;
-
       } else {
         if (recipientMails[0] == extra?.data?.customer_email) {
            url = `https://${extra?.shop}/account/login`;
@@ -538,126 +384,81 @@ const sendMailCall = async (recipientMails, others, extra) => {
           }/apps/revlytic/subscriptionlist`;
         }
       }
-
       emailContent = await ejs.renderFile(dirPath + "/preview.ejs", {
         selectedTemplate,
-
         mode: "real",
-
         data: { ...extra?.data, check: extra?.check },
-
         currencySymbol: extra?.data?.currencySymbol,
-
         dateConversion,
-
         check: extra?.check,
-
         templateType: "subscriptionPurchased",
-
         url: url,
       });
 
       const updatedEmailContent = emailContent.replace(
         new RegExp(Object.keys(replacements).join("|"), "g"),
-
         (matched) => replacements[matched]
       );
-
       options.html = updatedEmailContent;
-
       try {
         console.log("first in last");
-
         let data = await transporter.sendMail(options);
-
         if (data) {
           console.log("Mail sent successfully");
         }
-
         console.log(data, "faaltuu");
       } catch (error) {
         console.log(error, "errorr aa gyaa");
-
         throw error;
-      }
-
-  
+      }  
     }
-
-  
-
-    if (recipientMails[1]) {
-     
+    if (recipientMails[1]) {     
       options = {
         ...options,
-
         to: recipientMails[1],
       };
-
       let url;
-
       if (extra?.selectedTemplateData?.subscriptionUrl) {
         url = extra?.selectedTemplateData?.subscriptionUrl;
-
-       
       } else {
         if (recipientMails[1] == extra?.data?.customer_email) {
           url = `https://${extra?.shop}/account/login`;
         } else {
           url = `https://admin.shopify.com/store/${
             extra?.shop?.split(".myshopify.com")[0]
-          }/apps/revlytic/subscriptionlist`;
-          
+          }/apps/revlytic/subscriptionlist`;          
         }
       }
 
       emailContent = await ejs.renderFile(dirPath + "/preview.ejs", {
         selectedTemplate,
-
         mode: "real",
-
         data: { ...extra?.data, check: extra?.check },
-
         currencySymbol: extra?.data?.currencySymbol,
-
         dateConversion,
-
         check: extra?.check,
-
         templateType: "subscriptionPurchased",
-
         url: url,
       });
-
       const updatedEmailContent = emailContent.replace(
         new RegExp(Object.keys(replacements).join("|"), "g"),
-
         (matched) => replacements[matched]
       );
-
       options.html = updatedEmailContent;
-
       try {
         console.log("first in last");
-
         let data = await transporter.sendMail(options);
-
         if (data) {
           console.log("Mail sent successfully");
         }
-
         console.log(data, "faaltuu");
       } catch (error) {
         console.log(error, "errorr aa gyaa");
-
         throw error;
       }
-
-
     }
   }
 };
-
 
 let subscriptionBillingAttemptCreateMutation = `mutation subscriptionBillingAttemptCreate($subscriptionBillingAttemptInput: SubscriptionBillingAttemptInput!, $subscriptionContractId: ID!) {
   subscriptionBillingAttemptCreate(subscriptionBillingAttemptInput: $subscriptionBillingAttemptInput, subscriptionContractId: $subscriptionContractId) {
