@@ -144,6 +144,7 @@ app.get(
           .catch((err) => console.log(err));
       }
     });
+    
     const storefront_access_token = new shopify.api.rest.StorefrontAccessToken({
       session: {
         shop,
