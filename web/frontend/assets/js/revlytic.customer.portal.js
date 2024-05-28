@@ -1,7 +1,7 @@
+import { commonVariables } from "../../components/common/helpers";
 document.addEventListener("DOMContentLoaded", () => {
   console.log("21novmber");
-  let apiPath =
-    "https://emperor-scott-alto-notification.trycloudflare.com/";
+  let apiPath =`${commonVariables?.url}/`;
   const urlParams = new URLSearchParams(window.location.search);
   const customerId = urlParams.get("cid");
   // const customerId = ShopifyAnalytics.meta.page.customerId;

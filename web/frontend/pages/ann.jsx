@@ -20,7 +20,7 @@ import postApi from "../components/common/postApi";
 import { LoadingOutlined, PlusOutlined,DeleteOutlined ,SoundOutlined} from '@ant-design/icons';
 import { useAppBridge } from "@shopify/app-bridge-react";
 import { message, Upload } from 'antd';
-
+import { commonVariables } from "../components/common/helpers";
 const getBase64 = (img, callback) => {
   const reader = new FileReader();
   reader.addEventListener('load', () => callback(reader.result));
@@ -135,7 +135,7 @@ if(announcementList[index]?.image){
  console.log("3oct")
   const response = await postApi(
     "/api/admin/delete",
-    { url: `https://revlytic.co/images/announcement/${announcementList[index]?.image}`  },
+    { url: `${commonVariables?.url}/images/announcement/${announcementList[index]?.image}`  },
     app
   );
 
@@ -296,7 +296,7 @@ setError({
    if (imageResponse.data.message == "success") {
    
   setImageUrl(
-     `https://revlytic.co/images/announcement/${imageResponse?.data?.name}`
+     `${commonVariables?.url}/images/announcement/${imageResponse?.data?.name}`
   );
 
 await saveAnnouncement(imageResponse?.data?.name)
@@ -316,13 +316,13 @@ else{
 console.log("start")
    if(imageUrl){
    
-   if(`https://revlytic.co/images/announcement/${selectedItem?.image}` != imageUrl){
+   if(`${commonVariables?.url}/images/announcement/${selectedItem?.image}` != imageUrl){
     
 
     console.log("mid")
     const response = await postApi(
       "/api/admin/delete",
-      { url: `https://revlytic.co/images/announcement/${selectedItem?.image}`  },
+      { url: `${commonVariables?.url}/images/announcement/${selectedItem?.image}`  },
       app
     );
   
@@ -334,7 +334,7 @@ console.log("start")
     if (imageResponse.data.message == "success") {
    
       setImageUrl(
-         `https://revlytic.co/images/announcement/${imageResponse?.data?.name}`
+         `${commonVariables?.url}/images/announcement/${imageResponse?.data?.name}`
       );
     
     await saveAnnouncement(imageResponse?.data?.name)
@@ -355,7 +355,7 @@ else{
   if(selectedItem?.image){
     const response = await postApi(
       "/api/admin/delete",
-      { url: `https://revlytic.co/images/announcement/${selectedItem?.image}`  },
+      { url: `${commonVariables?.url}/images/announcement/${selectedItem?.image}`  },
       app
     );
 
@@ -522,7 +522,7 @@ let item={...announcementList[index]}
 
 setSelectedItem(item)
 setAddMore(true)
-item?.image  ? setImageUrl( `https://revlytic.co/images/announcement/${item?.image}`) : setImageUrl()
+item?.image  ? setImageUrl( `${commonVariables?.url}/images/announcement/${item?.image}`) : setImageUrl()
 setButtonText(item?.buttonText)
 setButtonUrl(item?.buttonUrl)
 setTitle(item?.title)
@@ -549,7 +549,7 @@ return (<Spin spinning={mainLoader} size="large" tip="Loading...">
   <div key={index} className="revlytic-annoucments-inner-section"> 
        <div className="revlytic-annoucments-inner-row">
        <div className="revlytic-annoucments-inner-column">
-        <img src={`https://revlytic.co/images/announcement/${item?.image}`} width="100" height="100"  />
+        <img src={`${commonVariables?.url}/images/announcement/${item?.image}`} width="100" height="100"  />
         <div className="revlyticannoucments-inner-content">
           <h3>{item?.title}</h3>  
           <p>{item?.description}</p>

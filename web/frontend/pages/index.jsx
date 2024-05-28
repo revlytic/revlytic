@@ -28,6 +28,7 @@ import { Link } from "react-router-dom";
 import { InfoCircleOutlined } from "@ant-design/icons";
 import CalculateBillingUsage from "../components/calculateBillingUsage";
 import setup_instructions from "../assets/setup_instructions.pdf";
+import { commonVariables } from "../components/common/helpers";
 function Home() {
   const { storeDetails } = useAPI();
 
@@ -64,6 +65,7 @@ function Home() {
   const [showAppBlock, setShowAppBlock] = useState();
 
   const [billingPlan, setBillingPlan] = useState("");
+
 
   useEffect(async () => {
     let data = await axios.get(
@@ -462,7 +464,7 @@ function Home() {
                 <div className="revlytic-annoucments-inner-row">
                   <div className="revlytic-annoucments-inner-column">
                     <img
-                      src={`https://revlytic.co/images/announcement/${item?.image}`}
+                      src={`${commonVariables?.url}/images/announcement/${item?.image}`}
                       width="100"
                       height="100"
                     />

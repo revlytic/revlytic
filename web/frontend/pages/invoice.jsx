@@ -16,6 +16,7 @@ import { toast } from "react-toastify";
 import { useAPI } from "../components/common/commonContext";
 import { Link } from "react-router-dom";
 import CalculateBillingUsage from "../components/calculateBillingUsage";
+import { commonVariables } from "../components/common/helpers";
 const { Panel } = Collapse;
 function invoice() {
   const app = useAppBridge();
@@ -137,10 +138,8 @@ function invoice() {
           // toast.success("Logo uploaded successfully", {
           //   position: toast.POSITION.TOP_RIGHT,
           // });
-          updatedLogo = `https://stated-carnival-sara-circuits.trycloudflare.com/images/logo/${savelogo.data.name}`;
-          setLogo(
-            `https://stated-carnival-sara-circuits.trycloudflare.com/images/logo/${savelogo.data.name}`
-          );
+          updatedLogo = `${commonVariables?.url}/images/logo/${savelogo.data.name}`;
+          setLogo(`${commonVariables?.url}/images/logo/${savelogo.data.name}`);
         }
       } catch (error) {
         // toast.success("File upload failed", {
@@ -160,10 +159,8 @@ function invoice() {
           // toast.success("Signature uploaded successfully", {
           //   position: toast.POSITION.TOP_RIGHT,
           // });
-          updatedSignature = `https://stated-carnival-sara-circuits.trycloudflare.com/images/signature/${savesignature.data.name}`;
-          setSignature(
-            `https://stated-carnival-sara-circuits.trycloudflare.com/images/signature/${savesignature.data.name}`
-          );
+          updatedSignature = `${commonVariables?.url}/images/signature/${savesignature.data.name}`;
+          setSignature(`${commonVariables?.url}/images/signature/${savesignature.data.name}`);
         }
       } catch (error) {
         // toast.success("File upload failed", {
@@ -412,8 +409,6 @@ function invoice() {
                                                 />
                                               </td>
                                             ) : (
-                                              // <input type="file" value={logo} />
-                                              // <img src="https://vessel-intervals-click-tight.trycloudflare.com/uploads/1689147506940.jpeg"/>
                                               <UploadImage
                                                 setLogo={setLogo}
                                                 logo={logo}
