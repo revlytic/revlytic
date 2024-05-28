@@ -185,8 +185,6 @@ export async function sendMailOnUpdate(others, app, extra) {
   }
 }
 
-
 export let commonVariables={
-  url:"https://assembled-necessity-resist-responsibilities.trycloudflare.com",
-  
-}
+  url:"https://offense-wu-nerve-summer.trycloudflare.com",
+  }
