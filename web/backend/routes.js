@@ -120,16 +120,8 @@ import fs from "fs";
 const upload = multer({ dest: '/web/frontend/uploads' });
 const router = express.Router();
 
-router.post("/demo", demo);
-
 router.post("/getCurrencyCode", getCurrencyCode);
 router.post("/getCountries", getCountries);
-
-// router.post("/addProducts", addProducts);
-// router.post("/getAllProducts", getAllProducts);
-// router.post("/getProducts", getProducts);
-// router.post("/searchProduct", searchProduct);
-
 router.post("/getCustomers", getCustomers);
 router.post("/searchCustomer", searchCustomer);
 router.post("/getCustomerPaymentMethods", getCustomerPaymentMethods);
@@ -159,8 +151,6 @@ router.post(
   subscriptionDraftCommitCommon,
   updateSubscriptionInDbCommon
 );
-// router.post("/subscriptionNoteUpdate",findItemForUpdateSubscription,createSubscriptionDraftCommon,updateSubscriptionFieldCommon,subscriptionDraftCommitCommon,updateSubscriptionInDbCommon)
-
 router.post(
   "/subscriptionShippingUpdate",
   findItemForUpdateSubscription,
@@ -235,14 +225,8 @@ router.post(
   subscriptionCustomerUpdate
 );
 
-router.post(
-  "/customerUpdate",
-
-  subscriptionCustomerUpdate
-);
-
+router.post("/customerUpdate",subscriptionCustomerUpdate);
 router.post("/widgetSettings", widgetSettings);
-
 router.post("/getWidgetSettings", getWidgetSettings);
 router.post("/emailTemplates", emailTemplates);
 router.post("/getEmailTemplateData", getEmailTemplateData);
