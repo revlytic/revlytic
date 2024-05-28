@@ -76,7 +76,6 @@ import {
   getAnnouncements,
   updateAnnouncement,
   deleteAnnouncement,
-  demo,
   checkAppBlockEmbed,
   convertStoreProductPriceIntoOrderCurrency,
   recurringBiling,
