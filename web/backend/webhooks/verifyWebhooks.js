@@ -3,7 +3,6 @@ import StoreSchemaModal from "../modals/storeDetails.js";
 import productsModal from "../modals/Products.js";
 import shopModal from "../modals/credential.js";
 import planModal from "../modals/PlanGroupDetails.js";
-import sub_customers from "../modals/subscriptionCustomer.js";
 import shopify from "../../shopify.js";
 import subscriptionDetailsModal from "../modals/subscriptionDetails.js";
 import emailTemplatesModal from "../modals/emailtemplates.js";
@@ -32,24 +31,6 @@ const getStoreDetails = async (shop) => {
     console.log(error);
   }
 };
-function formatVariableName(variableName) {
-  // Split the variable name by underscores
-  const parts = variableName.split("_");
-
-  // Capitalize the first letter of each part after the first one
-  const formattedParts = parts.map((part, index) => {
-    if (index === 0) {
-      return part; // Keep the first part as is
-    } else {
-      return part.charAt(0).toUpperCase() + part.slice(1);
-    }
-  });
-
-  // Join the formatted parts with spaces
-  const formattedVariableName = formattedParts.join(" ");
-
-  return formattedVariableName;
-}
 
 function dateConversion(date) {
   const dateString = date;
@@ -59,23 +40,16 @@ function dateConversion(date) {
     month: "long",
     day: "numeric",
   });
-  // console.log(formattedDate);
   return formattedDate;
 }
 
 const sendPaymentFailureMail = async (recipientMails, others, extra) => {
-  console.log("insendmailcommon");
   try {
-    // let data =  await emailTemplatesModal.findOne({ shop: shop},{configuration:1});
-    console.log("configuraitondata", extra?.configurationData);
-    console.log("selecetdtemplatedata", extra?.selectedTemplateData);
     let data = extra?.configurationData;
-
     let emailConfig = {};
     let options = {};
 
     if (data && data.enable == true) {
-      console.log("inenabletrue");
       let encryptionConfig = {};
       if (data.encryption === "ssl") {
         encryptionConfig = {
@@ -84,21 +58,19 @@ const sendPaymentFailureMail = async (recipientMails, others, extra) => {
         };
       } else if (data.encryption === "tls") {
         encryptionConfig = {
-          secure: false, // For TLS, secure should be set to false
+          secure: false,
           requireTLS: true,
         };
       }
-
       emailConfig = {
         host: data.host,
-        port: parseInt(data.portNumber), // Convert port number to integer
+        port: parseInt(data.portNumber),
         auth: {
           user: data.userName,
           pass: data.password,
         },
         ...(data.encryption === "none" ? {} : encryptionConfig),
       };
-
       options = {
         from: `${data.fromName}<${data.userName}>`,
         // to: recipientMails.join(", "),
@@ -108,18 +80,7 @@ const sendPaymentFailureMail = async (recipientMails, others, extra) => {
         replyTo: extra?.selectedTemplateData?.emailSetting?.replyTo,
         ...others,
       };
-      console.log(
-        "testinggmailcalll",
-        emailConfig,
-        options,
-        recipientMails.join(", ")
-      );
-
-      // let response = await sendMailMain({emailConfig,options,extra}, app);
-      // return response;
     } else {
-      console.log("inenablefalse");
-
       options = {
         from: `Revlytic <revlytic@gmail.com>`,
         // to: recipientMails[0],
@@ -132,7 +93,7 @@ const sendPaymentFailureMail = async (recipientMails, others, extra) => {
 
       emailConfig = {
         host: "smtp.gmail.com",
-        port: 587, // Convert port number to integer
+        port: 587,
         auth: {
           user: "revlytic@gmail.com",
           pass: "yiaglckhjmbratox",
@@ -142,30 +103,15 @@ const sendPaymentFailureMail = async (recipientMails, others, extra) => {
     }
 
     const __dirname = path.resolve();
-    console.log(__dirname, "kjh");
-    const dirPath = path.join(
-      __dirname,
-      "/web/frontend/components/emailtemplate"
-    );
-    console.log(dirPath, "fsdfdf");
-
+    const dirPath = path.join(__dirname,"/web/frontend/components/emailtemplate");
     const transporter = nodemailer.createTransport(emailConfig);
-
     let selectedTemplate = extra?.selectedTemplateData;
-
-    // console.log("selecetdetemplate",selectedTemplate)
-
-    console.log("extra?.data", extra?.data);
-
     let replacements;
     let emailContent;
-
-    console.log("mohaliii inelse", selectedTemplate, extra);
 
     replacements = {
       "{{subscription_id}}": extra?.data?.subscription_id?.split("/").at(-1),
       "{{customer_email}}": extra?.data?.customer_details?.email,
-      // "{{order_number}}": extra?.data?.order_number,
       "{{customer_name}}":
         extra?.data.customer_details?.firstName != null
           ? extra?.data.customer_details?.firstName
@@ -174,7 +120,6 @@ const sendPaymentFailureMail = async (recipientMails, others, extra) => {
       "{{shop_name}}": extra?.shop_name,
       "{{shop_email}}": extra?.shop_email,
       "{{shipping_country}}": extra?.data?.shipping_address?.country,
-      //   //   // "{{selling_plan_name}}":"23",
       "{{shipping_full_name}}":
         extra?.data?.shipping_address?.firstName != null
           ? extra?.data?.shipping_address?.firstName
@@ -233,15 +178,6 @@ const sendPaymentFailureMail = async (recipientMails, others, extra) => {
         extra?.data?.billing_address?.zip != null
           ? extra?.data?.billing_address?.zip
           : "",
-      //   //   "{{subscription_line_items}}":
-      //   //   "{{card_brand_name}}":"456",
-      //   //   "{{last_four_digits}}":"678",
-      //   //   "{{card_expiry_month}}":"866",
-      //   //   "{{card_expiry_year}}":"474",
-
-      //     // "{{manage_subscription_link}}":selectedTemplate.subscriptionUrl,
-      //   //   // "{{email_subject}}":"633",
-
       "{{card_brand_name}}": extra?.data?.payment_details
         ?.payment_instrument_value?.brand
         ? extra?.data?.payment_details?.payment_instrument_value?.brand
@@ -251,16 +187,12 @@ const sendPaymentFailureMail = async (recipientMails, others, extra) => {
             .slice(1)
             .toLowerCase()
         : "",
-
       "{{last_four_digits}}":
         extra?.data?.payment_details?.payment_instrument_value?.lastDigits,
-
       "{{card_expiry_month}}":
         extra?.data?.payment_details?.payment_instrument_value?.expiryMonth,
-
       "{{card_expiry_year}}":
         extra?.data?.payment_details?.payment_instrument_value?.expiryYear,
-
       "{{heading_text}}": selectedTemplate?.headingText,
       "{{{logo_image}}": selectedTemplate?.logoUrl,
       "{{shiiping_address_text}}":
@@ -274,34 +206,17 @@ const sendPaymentFailureMail = async (recipientMails, others, extra) => {
     };
 
     if (recipientMails[0]) {
-      console.log("inzerorecipent");
-
       options = {
         ...options,
         to: recipientMails[0],
       };
-
       let url;
-
       if (extra?.selectedTemplateData?.subscriptionUrl) {
         url = extra?.selectedTemplateData?.subscriptionUrl;
-        console.log("dsdasda");
       } else {
         if (recipientMails[0] == extra?.data?.customer_details?.email) {
-          console.log(
-            "sagg",
-            recipientMails[0],
-            extra?.data?.customer_details?.email,
-            recipientMails[0] == extra?.data?.customer_details?.email
-          );
           url = `https://${extra?.shop}/account/login`;
         } else {
-          console.log(
-            "hiaddsss",
-            recipientMails[0],
-            extra?.data?.customer_details?.email,
-            recipientMails[0] == extra?.data?.customer_details?.email
-          );
           url = `https://admin.shopify.com/store/${
             extra?.shop?.split(".myshopify.com")[0]
           }/apps/revlytic/create-manual-subscription?id=${(extra?.data.subscription_id)
@@ -309,9 +224,6 @@ const sendPaymentFailureMail = async (recipientMails, others, extra) => {
             .at(-1)}&mode=view`;
         }
       }
-
-      // url =`https://admin.shopify.com/store/${extra?.shop?.split('.myshopify.com')[0]}/apps/subscription-83/subscriptionlist`;
-
       emailContent = await ejs.renderFile(dirPath + "/preview2.ejs", {
         selectedTemplate,
         currencySymbol: extra?.currencySymbol,
@@ -322,65 +234,38 @@ const sendPaymentFailureMail = async (recipientMails, others, extra) => {
         check: extra?.check,
       });
 
-      console.log("after emailcontent", extra?.data?.product_details);
-
       const updatedEmailContent = emailContent.replace(
         new RegExp(Object.keys(replacements).join("|"), "g"),
         (matched) => replacements[matched]
       );
-
       options.html = updatedEmailContent;
-
       try {
-        console.log("first in last");
-
         let data = await transporter.sendMail(options);
         if (data) {
           console.log("Mail sent successfully");
         }
-        console.log(data, "faaltuu");
       } catch (error) {
         console.log(error, "errorr aa gyaa");
         throw error;
       }
-      ////
     }
-
-    ///////
-
     if (recipientMails[1]) {
-      console.log("in1recipent");
-
       options = {
         ...options,
         to: recipientMails[1],
       };
       let url;
-
       if (extra?.selectedTemplateData?.subscriptionUrl) {
         url = extra?.selectedTemplateData?.subscriptionUrl;
-        console.log("oiouo");
       } else {
         if (recipientMails[1] == extra?.data?.customer_details?.email) {
           url = `https://${extra?.shop}/account/login`;
-          console.log(
-            "plok",
-            recipientMails[1],
-            extra?.data?.customer_details?.email,
-            recipientMails[1] == extra?.data?.customer_details?.email
-          );
         } else {
           url = `https://admin.shopify.com/store/${
             extra?.shop?.split(".myshopify.com")[0]
           }/apps/revlytic/create-manual-subscription?id=${(extra?.data.subscription_id)
             .split("/")
             .at(-1)}&mode=view`;
-          console.log(
-            "jikkk",
-            recipientMails[1],
-            extra?.data?.customer_details?.email,
-            recipientMails[1] == extra?.data?.customer_details?.email
-          );
         }
       }
 
@@ -394,8 +279,6 @@ const sendPaymentFailureMail = async (recipientMails, others, extra) => {
         check: extra?.check,
       });
 
-      console.log("after emailcontent", extra?.data?.product_details);
-
       const updatedEmailContent = emailContent.replace(
         new RegExp(Object.keys(replacements).join("|"), "g"),
         (matched) => replacements[matched]
@@ -404,39 +287,23 @@ const sendPaymentFailureMail = async (recipientMails, others, extra) => {
       options.html = updatedEmailContent;
 
       try {
-        console.log("first in last");
-
         let data = await transporter.sendMail(options);
         if (data) {
           console.log("Mail sent successfully");
         }
-        console.log(data, "faaltuu");
       } catch (error) {
         console.log(error, "errorr aa gyaa");
         throw error;
       }
-      ////
     }
-
-    ///////
-
-    ////////end/////
   } catch (error) {
     console.log("error", error);
     throw error;
   }
 };
 
-const getCurrencySymbol = (currency) => {
-  const symbol = new Intl.NumberFormat("en", { style: "currency", currency })
-    .formatToParts()
-    .find((x) => x.type === "currency");
-  return symbol && symbol.value;
-};
 const __dirname = path.resolve();
-console.log(__dirname, "kjh");
 const dirPath = path.join(__dirname, "web/frontend/invoiceTemplate");
-
 const getSymbol = (currency) => {
   const symbol = new Intl.NumberFormat("en", { style: "currency", currency })
     .formatToParts()
@@ -512,9 +379,7 @@ export async function verifyWebhooks(req, res) {
             .update(req.body)
             .digest("base64");
           if (calculated_hmac == hmac_header) {
-            // console.log("hmac verified delete Products")
             let responseWebhook = JSON.parse(req.body);
-            // console.log("hmac verified delete Products",responseWebhook)
             let pid = responseWebhook.id.toString();
             const filter = { shop: shop };
             let productDelete = await productsModal.updateOne(filter, {
@@ -538,9 +403,7 @@ export async function verifyWebhooks(req, res) {
             .update(req.body)
             .digest("base64");
           if (calculated_hmac == hmac_header) {
-            // console.log("Webhook verified");
             let responseWebhook = JSON.parse(req.body);
-            console.log(responseWebhook, "ccpdateeeee");
             let id = responseWebhook.id;
             let update = {
               $set: {
@@ -562,8 +425,6 @@ export async function verifyWebhooks(req, res) {
               filter,
               update
             );
-            console.log(customerUpdate, "hahahhaha in webhooks");
-
             if (customerUpdate && customerUpdate.modifiedCount > 0) {
               res.status(200).json({ message: "Updated Successfully!" });
             } else {
@@ -614,12 +475,8 @@ export async function verifyWebhooks(req, res) {
             ///oct12///////////
 
             let body = JSON.parse(req?.body);
-            console.log("body customer", body);
-
             let storeData = await getStoreDetails(body?.shop_domain);
-
             let storeEmail = storeData?.store_email;
-
             let filePath;
             let emailConfig = {
               host: "smtp.gmail.com",
@@ -630,9 +487,7 @@ export async function verifyWebhooks(req, res) {
               },
               secure: false,
             };
-
             const transporter = nodemailer.createTransport(emailConfig);
-
             const sendEmail = (options, emailConfig) => {
               return new Promise((resolve, reject) => {
                 const transporter = nodemailer.createTransport(emailConfig);
@@ -664,10 +519,7 @@ export async function verifyWebhooks(req, res) {
                 }
               )
               .lean();
-
             if (getCustomerDetails.length > 0) {
-              console.log("getCustomerDetails", getCustomerDetails);
-
               const __dirname = path.resolve();
               const jsonOutput = JSON.stringify(getCustomerDetails, null, 2); // Use null and 2 for pretty-printing
               filePath = path.join(
@@ -714,14 +566,8 @@ export async function verifyWebhooks(req, res) {
                 subject: "Customer Data",
                 text: "No data stored for this customer.",
               };
-
               const data = await sendEmail(options, emailConfig);
-
-              console.log("first in esle");
             }
-
-            ///////////////enddddddd///////////
-            // console.log("hmac verified customer data request");
             res.status(200).send("Accepted Customer Data request");
           } else {
             res.status(401).send("Unauthorized Access");
@@ -748,22 +594,15 @@ export async function verifyWebhooks(req, res) {
               auth: {
                 user: "revlytic@gmail.com",
                 pass: "yiaglckhjmbratox",
-                // user: testAccount.user, // generated ethereal user
-                // pass: testAccount.pass, // generated ethereal password
-              },
+                 },
             });
-
-            // Define email data
             const mailOptions = {
               from: `Revlytic <revlytic@gmail.com>`,
-              // to: "nehaa.shinedezign@gmail.com",
               to: email,
-
               subject: "Customer Data Deletion",
               text: "As we are using customer's data in subcription details so we can not delete the customer's data.",
             };
 
-            // Send the email
             transporter.sendMail(mailOptions, (error, info) => {
               if (error) {
                 console.error("Error sending email:", error);
@@ -771,7 +610,6 @@ export async function verifyWebhooks(req, res) {
                 console.log("Email sent:", info.response);
               }
             });
-
             res.status(200).json("we can not delete customer's data");
           } else {
             console.error("Webhook processing error:", err);
@@ -894,46 +732,27 @@ export async function verifyWebhooks(req, res) {
             .digest("base64");
           if (calculated_hmac == hmac_header) {
             let responseWebhook = JSON.parse(req.body);
-            console.log("inthemeupdate", responseWebhook);
-
-            //////////////////
-
-            console.log("in nested ifff");
-
             let getThemeId;
             var themeType;
-
             var meta_field_value;
-
             let meta_field_value_not;
-
             let theme_block_support;
-
             let theme_block_support_not;
-
-            console.log("qwertttttyyyyyyyyyyyyyyyyyyyyyyyy");
-
             const client = new shopify.api.clients.Rest({
               session: {
                 shop: shop,
                 accessToken: gettoken.accessToken,
               },
             });
-
             try {
               const theme = await client.get({ path: "themes", type: "json" });
-
               const themeId = theme.body.themes.find(
                 (el) => el.role === "main"
               );
 
-              console.log("theme123", themeId);
-
               getThemeId = themeId?.id;
-
               const getAssetsData = await client.get({
                 path: `themes/${themeId.id}/assets`,
-
                 type: DataType.JSON,
               });
 
@@ -943,72 +762,30 @@ export async function verifyWebhooks(req, res) {
                 }
               );
 
-              console.log("lyyy", findJsonTemplate);
-
               themeType = findJsonTemplate === undefined ? "vintage" : "modern";
-
-              console.log("themeTypeaaaaaaa", themeType);
 
               if (themeType === "modern") {
                 theme_block_support = "support_theme_block";
-
                 theme_block_support_not = "support_theme_block_not";
-
                 meta_field_value_not = "false";
-
                 meta_field_value = "true";
               } else {
                 theme_block_support = "support_theme_block";
-
                 meta_field_value = "false";
-
                 theme_block_support_not = "support_theme_block_not";
-
                 meta_field_value_not = "true";
               }
             } catch (error) {
-              console.log("incACHHHHH");
-
-              // theme_block_support = "support_theme_block";
-
-              // meta_field_value = "false";
-
-              // theme_block_support_not = "support_theme_block_not";
-
-              // meta_field_value_not = "true";
-
               theme_block_support = "support_theme_block";
-
               meta_field_value = "false";
-
               theme_block_support_not = "support_theme_block_not";
-
               meta_field_value_not = "true";
             }
-
-            console.log(
-              "checkinggg--->",
-
-              themeType,
-
-              meta_field_value,
-
-              meta_field_value_not,
-
-              theme_block_support,
-
-              theme_block_support_not
-            );
-
             const app_query = `{
-
-appInstallation {
-
-id
-
-}
-
-}`;
+                        appInstallation {
+                        id
+                        }
+                        }`;
 
             const Client = new shopify.api.clients.Graphql({
               session: {
@@ -1024,82 +801,40 @@ id
 
               if (response.body.data.appInstallation.id) {
                 let app_installation_id = response.body.data.appInstallation.id;
-
-                console.log("app_installation_id", app_installation_id);
-
                 let createAppDataMetafieldMutation = `mutation CreateAppDataMetafield($metafieldsSetInput: [MetafieldsSetInput!]!) {
-
-  metafieldsSet(metafields: $metafieldsSetInput) {
-
-    metafields {
-
-      id
-
-      namespace
-
-      key
-
-      type
-
-      value
-
-    }
-
-    userErrors {
-
-      field
-
-      message
-
-    }
-
-  }
-
-}`;
-
-                console.log(
-                  "checkinggg123455--->",
-
-                  themeType,
-
-                  meta_field_value,
-
-                  meta_field_value_not,
-
-                  theme_block_support,
-
-                  theme_block_support_not
-                );
+                                                metafieldsSet(metafields: $metafieldsSetInput) {
+                                                  metafields {
+                                                    id
+                                                    namespace
+                                                    key
+                                                    type
+                                                    value
+                                                  }
+                                                  userErrors {
+                                                    field
+                                                    message
+                                                  }
+                                                }
+                                              }`;
 
                 const Input = {
                   metafieldsSetInput: [
                     {
                       namespace: "theme_support",
-
                       key: theme_block_support,
-
                       type: "boolean",
-
                       value: meta_field_value,
-
                       ownerId: app_installation_id,
                     },
-
                     {
                       namespace: "theme_not_support",
-
                       key: theme_block_support_not,
-
                       type: "boolean",
-
                       value: meta_field_value_not,
-
                       ownerId: app_installation_id,
                     },
                   ],
                 };
-
-                console.log("errorinput checking", Input);
 
                 try {
                   const result = await Client.query({
@@ -1108,20 +843,11 @@ id
                       variables: Input,
                     },
                   });
-
-                  console.log("response--->", result.body.data);
-
-                  console.log(
-                    "response--->",
-                    result.body.data.metafieldsSet.metafields
-                  );
                 } catch (error) {
-                  console.log("errror1233");
                   throw error;
                 }
               }
             } catch (error) {
-              console.log("error4565");
               throw error;
             }
 
@@ -1131,12 +857,8 @@ id
             )
               .then((data) => console.log("theme stored in db"))
               .catch((error) => {
-                console.log("error1290");
                 throw error;
               });
-
-            ////////
-
             res.status(200).send("success");
           } else {
             res.status(401).json("Unauthorized Access!");
@@ -1147,15 +869,14 @@ id
           res.status(200).send("success in catch");
         }
         break;
-      /////////////
+
       case "subscription_contracts/create":
         try {
-          console.log("kljljkl", req.body);
           const calculated_hmac = crypto
             .createHmac("sha256", secretKey)
             .update(req.body)
             .digest("base64");
-          console.log("first", calculated_hmac);
+
           if (calculated_hmac == hmac_header) {
             let responseWebhook = JSON.parse(req.body);
             const existingOrder = await orderOnly.findOne({
@@ -1169,7 +890,6 @@ id
                 orderId: responseWebhook.admin_graphql_api_origin_order_id,
                 status: false,
               });
-              console.log("Order ID saved:", savedOrder);
             }
             const savecontractDetails = await orderContractDetails.create({
               shop: shop,
@@ -1177,8 +897,6 @@ id
               contractID: responseWebhook.admin_graphql_api_id,
               status: false,
             });
-            console.log("contract ID saved:", savecontractDetails);
-
             res.status(200).json({ message: "Updated Successfully!" });
           } else {
             res.status(401).json("Unauthorized Access!");
@@ -1189,17 +907,14 @@ id
           res.status(200).send("success in catch");
         }
         break;
-      /////////////////////////
 
       case "customer_payment_methods/update":
         try {
-          console.log(">>>>>>>>>pymentmethodupdate");
           const calculated_hmac = crypto
             .createHmac("sha256", secretKey)
             .update(req.body)
             .digest("base64");
 
-          console.log("calculated_hmac", calculated_hmac, hmac_header);
           if (calculated_hmac == hmac_header) {
             console.log("customer_payment_methods/update", req?.body);
             let body = JSON.parse(req?.body);
@@ -1221,10 +936,8 @@ id
               filter,
               { $set: { "payment_details.payment_instrument_value": obj } }
             );
-            console.log("paymentMethodUpdate", paymentMethodUpdate);
 
             if (paymentMethodUpdate && paymentMethodUpdate.modifiedCount > 0) {
-              console.log("hello in if customerpayment update webhook");
               res.status(200).json({ message: "Updated Successfully!" });
             } else {
               res.status(200).json({ message: "No document found!" });
@@ -1233,7 +946,6 @@ id
             res.status(401).json("Unauthorized access");
           }
         } catch (err) {
-          console.error("Webhook processing error:", err);
           // Respond with an error status code if needed
           res.status(200).send("success in catch");
         }
@@ -1249,11 +961,7 @@ id
           if (calculated_hmac == hmac_header) {
             let body = JSON.parse(req?.body);
             const currentDate = new Date().toISOString();
-            console.log("body", body);
-            console.log(
-              body.subscription_contract_id,
-              "success vali webhook hai ayyee"
-            );
+
             let admin_graphql_api_order_id =
               '"' + body.admin_graphql_api_order_id + '"';
             let query = `{
@@ -1270,7 +978,7 @@ id
             let orderData = await client.query({
               data: query,
             });
-            console.log(orderData.body.data.order, "opopopopopop");
+
             let billing_attempt_success =
               await billing_Attempt.findOneAndUpdate(
                 {
@@ -1301,55 +1009,47 @@ id
               },
               { subscription_details: 1, product_details: 1 }
             );
-            console.log(
-              parseInt(getMaxCycle.subscription_details.billingMaxValue),
-              "ye hai maxxxxx"
-            );
 
-            ////////////////////////////////////////auto renew check
+            ////////auto renew check
             if (getMaxCycle?.subscription_details?.autoRenew == false) {
               console.log("ander aa gya haiiiiii");
               const mutationQuery = `mutation subscriptionContractUpdate($contractId: ID!) {
-  subscriptionContractUpdate(contractId: $contractId) {             
-    draft {            
-     id            
-    }
-      userErrors {
-      field
-      message
-    }
-  }
-}`;
+                            subscriptionContractUpdate(contractId: $contractId) {             
+                              draft {            
+                              id            
+                              }
+                                userErrors {
+                                field
+                                message
+                              }
+                            }
+                          }`;
               const Input1 = {
                 contractId: body.admin_graphql_api_subscription_contract_id,
               };
               let response1 = await client.query({
                 data: { query: mutationQuery, variables: Input1 },
               });
-              console.log(response1, "response1 hai yee");
+
               if (
                 response1.body.data?.subscriptionContractUpdate?.userErrors
                   .length < 1
               ) {
-                console.log(
-                  "drfat id bn gyi hai",
-                  response1.body.data.subscriptionContractUpdate?.draft?.id
-                );
                 let draftID =
                   response1.body.data.subscriptionContractUpdate?.draft?.id;
 
                 const mutationQuery = `mutation subscriptionDraftUpdate($draftId: ID!, $input: SubscriptionDraftInput!) {
-    subscriptionDraftUpdate(draftId: $draftId, input: $input) {
-      draft {
-        id
-        status
-      }
-      userErrors {
-        field
-        message
-      }
-    }
-  }`;
+                            subscriptionDraftUpdate(draftId: $draftId, input: $input) {
+                              draft {
+                                id
+                                status
+                              }
+                              userErrors {
+                                field
+                                message
+                              }
+                            }
+                          }`;
 
                 const Input = {
                   draftId: draftID,
@@ -1363,20 +1063,18 @@ id
                   response2.body.data?.subscriptionDraftUpdate?.userErrors
                     .length < 1
                 ) {
-                  console.log("update hio gyi draftttt");
-
                   let mutationSubscriptionDraftCommit = `mutation subscriptionDraftCommit($draftId: ID!) {
-    subscriptionDraftCommit(draftId: $draftId) {
-      contract {
-      id
-      status
-      }
-      userErrors {
-        field
-        message
-      }
-    }
-  }`;
+                                            subscriptionDraftCommit(draftId: $draftId) {
+                                              contract {
+                                              id
+                                              status
+                                              }
+                                              userErrors {
+                                                field
+                                                message
+                                              }
+                                            }
+                                          }`;
 
                   const InputMutationSubscriptionDraftCommit = {
                     draftId: draftID,
@@ -1388,16 +1086,10 @@ id
                     },
                   });
 
-                  console.log(
-                    "jklmnaop",
-                    response3.body.data?.subscriptionDraftCommit?.contract
-                      ?.status
-                  );
                   if (
                     response2.body.data?.subscriptionDraftCommit?.userErrors
                       .length < 1
                   ) {
-                    console.log("atlastl");
                     let updateTable =
                       await subscriptionDetailsModal.findOneAndUpdate(
                         {
@@ -1410,7 +1102,6 @@ id
                 }
               }
             }
-            //////////////////////////////////////
 
             if (
               getMaxCycle.subscription_details.billingMaxValue != undefined &&
@@ -1421,7 +1112,7 @@ id
                 contract_id: body.admin_graphql_api_subscription_contract_id,
                 status: { $in: ["success", "initial"] },
               });
-              console.log("count ko check k aro", parseInt(count));
+
               if (
                 parseInt(count) ==
                 parseInt(getMaxCycle.subscription_details.billingMaxValue)
@@ -1444,15 +1135,11 @@ id
                 let response1 = await client.query({
                   data: { query: mutationQuery, variables: Input1 },
                 });
-                console.log(response1, "response1 hai yee");
+
                 if (
                   response1.body.data?.subscriptionContractUpdate?.userErrors
                     .length < 1
                 ) {
-                  console.log(
-                    "drfat id bn gyi hai",
-                    response1.body.data.subscriptionContractUpdate?.draft?.id
-                  );
                   let draftID =
                     response1.body.data.subscriptionContractUpdate?.draft?.id;
 
@@ -1481,8 +1168,6 @@ id
                     response2.body.data?.subscriptionDraftUpdate?.userErrors
                       .length < 1
                   ) {
-                    console.log("update hio gyi draftttt");
-
                     let mutationSubscriptionDraftCommit = `mutation subscriptionDraftCommit($draftId: ID!) {
                   subscriptionDraftCommit(draftId: $draftId) {
                     contract {
@@ -1506,11 +1191,6 @@ id
                       },
                     });
 
-                    console.log(
-                      "jklmnaop",
-                      response3.body.data?.subscriptionDraftCommit?.contract
-                        ?.status
-                    );
                     if (
                       response2.body.data?.subscriptionDraftCommit?.userErrors
                         .length < 1
@@ -1709,14 +1389,10 @@ id
             .digest("base64");
 
           if (calculated_hmac == hmac_header) {
-            // let body = JSON.parse(req?.body);
-
             const currentDate = new Date().toISOString();
             let body = JSON.parse(req?.body);
-            console.log(body, "payment failure vali webhook hai ayyee");
             let admin_graphql_api_order_id =
               '"' + body.admin_graphql_api_order_id + '"';
-
             let billing_attempt_failure =
               await billing_Attempt.findOneAndUpdate(
                 {
@@ -1734,8 +1410,6 @@ id
               );
 
             if (billing_attempt_failure) {
-              //////////////////////////////////by sahil (start)//////////////////////////////////////////
-              console.log("iniffffffffffffffffffffffffffffffffffffff");
               let subscriptionData = await subscriptionDetailsModal
                 .findOne({
                   shop: shop,
@@ -1753,7 +1427,6 @@ id
                 { "settings.paymentFailure": 1, configuration: 1 }
               );
 
-              console.log("data5oct", data);
               if (data) {
                 let sendMailToCustomer = data?.settings?.paymentFailure?.status;
                 let sendMailToMerchant =
@@ -1773,25 +1446,15 @@ id
                     // getDataFromWebhook.shopName=shopName;
                   }
                   if (sendMailToCustomer) {
-                    console.log(
-                      "customeremail",
-                      subscriptionData?.customer_details?.email
-                    );
                     recipientMails.push(
                       subscriptionData?.customer_details?.email
                     );
                     // recipientMails.push("sam@yopmail.com");
                   }
-                  console.log("recipiensmails", recipientMails);
+
                   let configurationData = data?.configuration;
                   let selectedTemplateData = data?.settings?.paymentFailure;
-                  //////
 
-                  console.log("subdatail", subscriptionData);
-                  console.log("templatedtaa", selectedTemplateData);
-                  console.log("configdata", configurationData);
-
-                  ///////
                   let mailCheck = await sendPaymentFailureMail(
                     recipientMails,
                     {},
@@ -1814,14 +1477,8 @@ id
               } else {
                 console.log("jdfksdjfs;l nodata found");
               }
-
-              //////////////////////////////by sahil(end)///////////////////////////////////////////////////////
-              console.log("testing5oct");
               res.status(200).json({ message: "Updated Successfully!" });
-              console.log("testing5octagainnn");
             }
-
-            console.log("afterriffffffffffffffffffffff");
           } else {
             res.status(401).json("Unauthorized Access!");
           }

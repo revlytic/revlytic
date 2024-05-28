@@ -808,7 +808,7 @@ console.log("error12")
 const firstScheduledTime = "*/30 * * * * *"; // Replace with your desired time in cron syntax
 const cronTimeEvery1hr = "0 * * * *"; // Replace with your desired time in cron syntax
 const cronTimeEvery24hr="0 0 * * *";
-const firstJob = new CronJob(cronTimeEvery1hr, contractCronJob);
+const firstJob = new CronJob(firstScheduledTime, contractCronJob);
 
 const secondJob = new CronJob(
   firstScheduledTime,

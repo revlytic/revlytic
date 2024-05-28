@@ -185,8 +185,6 @@ export async function sendMailOnUpdate(others, app, extra) {
   }
 }
 
-
 export let commonVariables={
-  url:"https://dev.revlytic.co",
-  
+  url:"https://dev.revlytic.co",  
 }
