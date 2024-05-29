@@ -25,7 +25,7 @@ function Dunning() {
   const [showDueDate, setShowDueDate] = useState(false);
   const [showOverdueInvoices, setShowOverdueInvoices] = useState(false);
 
-  const [attemptNum, setAttemptNum] = useState(3);
+  const [attemptNum, setAttemptNum] = useState(2);
   const [attemptList, setAttemptList] = useState([
     { retryAfterDays: 2, selectedTemplate: "standardCourtsyNotice" },
     { retryAfterDays: 2, selectedTemplate: "standardPastDueNotice1" },
@@ -78,11 +78,32 @@ function Dunning() {
       (numRegex.test(e.target.value) || e.target.value == "") &&
       e.target.value.includes(".") == false
     ) {
-      if (e.target.value < 6) {
+      if (e.target.value < 6 && e.target.value > 0) {
         setAttemptNum(e.target.value);
       }
     }
   };
+
+///if input  type == 'text'
+  // const handleAttemptChange = (e) => {
+  //   // let numRegex = /^\d+(\.\d+)?$/;
+  //   console.log("etarget",e.target.value)
+  //   const preventChar = [".", "-", "/", "e", "E"];
+
+  //   if(preventChar.includes(e.target.value)) {
+  //     e.preventDefault();
+  //   }
+  //   let numRegex = /^[1-9]+$/;
+  //   if (
+  //     (numRegex.test(e.target.value) || e.target.value == "")
+  //     // e.target.value.includes(".") == false && e.target.value.includes("-") == false
+  //   ) {         
+  //      if (e.target.value < 6) {
+  //         setAttemptNum(e.target.value);
+  //     }       
+  //   }
+    
+  // };
 
   const handleTemplateChange = (e, index) => {
     let arr = [...attemptList];
@@ -149,7 +170,7 @@ function Dunning() {
   return (
     <Spin spinning={loading} size="large" tip="Loading...">
       <div className="revlytic dunning-main">
-        <h1 class="revlytic-plan-switch-heading">
+        <h1 className="revlytic-plan-switch-heading">
           Dunning Management Configuration
         </h1>
         <Collapse onChange={(e) => setActiveKeyArray(e)} defaultActiveKey={"1"}>
@@ -270,7 +291,8 @@ function Dunning() {
                 <input
                   type="number"
                   onChange={handleAttemptChange}
-                  value={attemptNum}
+                  value={attemptNum}               
+                  // min={0}
                 />
               </div>
               {/* <Button>Set</Button> */}
