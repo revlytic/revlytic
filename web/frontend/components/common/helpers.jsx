@@ -186,5 +186,5 @@ export async function sendMailOnUpdate(others, app, extra) {
 }
 
 export let commonVariables={
-  url:"https://offense-wu-nerve-summer.trycloudflare.com",
+  url:"https://locate-guys-pose-magnet.trycloudflare.com",
   }
