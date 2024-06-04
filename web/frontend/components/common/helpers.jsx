@@ -131,7 +131,6 @@ export async function sendMailOnUpdate(others, app, extra) {
             requireTLS: true,
           };
         }
-
         emailConfig = {
           host: configurationData.host,
           port: parseInt(configurationData.portNumber),
@@ -186,5 +185,5 @@ export async function sendMailOnUpdate(others, app, extra) {
 }
 
 export let commonVariables={
-  url:"https://locate-guys-pose-magnet.trycloudflare.com",
+  url:"https://brooklyn-american-council-bo.trycloudflare.com",
   }

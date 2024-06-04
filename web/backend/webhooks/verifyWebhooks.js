@@ -1529,6 +1529,25 @@ export async function verifyWebhooks(req, res) {
         }
         break;
 
+        case 'bulk_operations/finish':
+          const calculated_hmac = crypto
+          .createHmac("sha256", secretKey)
+          .update(req.body)
+          .digest("base64");
+          try{
+            if (calculated_hmac == hmac_header) {
+              let body = JSON.parse(req?.body);
+                console.log("infinish bulk",body)
+                res.status(200)
+            }
+            else{
+              res.status(401).json("Unauthorized Access!");
+            }
+          }catch(error){
+            console.error("Webhook processing error:", err);
+            res.status(200).send("success in catch");
+          }
+          break;       
       default:
         break;
     }

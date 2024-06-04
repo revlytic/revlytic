@@ -12,6 +12,8 @@ import emailTemplatesModal from "./modals/emailtemplates.js";
 import announcementsModal from "./modals/announcements.js";
 import { DataType } from "@shopify/shopify-api";
 // import pdf from "html-pdf";
+import axios from 'axios';
+import FormData from "form-data";
 import mime from "mime";
 import fs from "fs";
 import jwt from "jsonwebtoken";
@@ -29,7 +31,7 @@ import dunningModal from "./modals/dunning.js";
 import dunningTemplates from './dunningTemplates.json'  with { type: "json" };
 const __dirname = path.resolve();
 const dirPath = path.join(__dirname, "/frontend/invoiceTemplate");
-
+console.log("dirname",path.resolve())
 function formatVariableName(variableName) {
   // Split the variable name by underscores
   const parts = variableName.split("_");
@@ -720,9 +722,9 @@ const  upcomingOrderCron=new CronJob(cronTimeEvery24hr,upcomingOrders) ;
 const  paymentFailureEmailCron=new CronJob(cronTimeEvery24hr,paymentFailureEmail); 
 const  failedPaymentRetryAttemptCron=new CronJob(cronTimeEvery24hr,failedPaymentRetryAttempt) ;
 
-upcomingOrderCron.start();
-paymentFailureEmailCron.start();
-failedPaymentRetryAttemptCron.start();
+// upcomingOrderCron.start();
+// paymentFailureEmailCron.start();
+// failedPaymentRetryAttemptCron.start();
 
 export async function contractCronJob(req, res) {
   const currentDate = new Date().toISOString();
@@ -4947,6 +4949,10 @@ export async function fetchDunningData(req,res){
   try{
     const shop = res.locals.shopify.session.shop;
     const data = await dunningModal.findOne({ shop });
+    // stagedUploadsCreateMutation(res.locals.shopify.session)
+    // bulk_operationsFinishWebhookSubscription(res.locals.shopify.session)
+    // bulkSetNextBillingDateMutation(res.locals.shopify.session,"tmp/67035398448/bulk/b396fd62-7fbc-4c34-a622-057e0c7319a4/Bulk_op_vars")
+    //  getBulkOperationUrl(res.locals.shopify.session)
     // upcomingOrders()
     // paymentFailureEmail()
     // failedPaymentRetryAttempt()
@@ -9606,18 +9612,15 @@ export async function sendInvoiceMailAndSaveContract(req, res) {
 
             if (sendMailToCustomer || sendMailToMerchant) {
               let recipientMails = [];
-
               if (sendMailToMerchant) {
                 let storeData = await getStoreDetails(getorder.shop);
                 shopEmail = storeData.store_email;
-                shopName = storeData.store_name;
-                
+                shopName = storeData.store_name;                
                 recipientMails.push(shopEmail);
                 getData.shopEmail = shopEmail;
                 getData.shopName = shopName;
               }
-              if (sendMailToCustomer) {
-               
+              if (sendMailToCustomer) {               
                 recipientMails.push(getData.customer_email);
               }
            
@@ -9644,8 +9647,6 @@ export async function sendInvoiceMailAndSaveContract(req, res) {
               );
             }
           }
-
-
           if (subscriptionPurchasedTemplateData && saveDetails.components[17]) {
             let sendMailToCustomer =
               subscriptionPurchasedTemplateData?.settings?.subscriptionInvoice
@@ -9696,11 +9697,9 @@ export async function sendInvoiceMailAndSaveContract(req, res) {
               );
             }
           }
-
         } catch (error) {
           console.log("error", error);
         }
-
       }
     }
   } catch (err) {
@@ -9740,6 +9739,7 @@ export async function checkAppBlock(req,res) {
     console.log(error);
   }
 }
+
 export async function setUpGuideStatusCheck(req,res){
 try{
   let { shop } = res.locals.shopify.session;
@@ -9752,4 +9752,215 @@ catch(error){
   console.log("error",error)
 }
 }
+
+
+export async function stagedUploadsCreateMutation(session){
+  
+  try
+  {  
+let stagedUploadsCreateMutation=`mutation {
+  stagedUploadsCreate(input:{
+    resource: BULK_MUTATION_VARIABLES,
+    filename: "Bulk_op_vars",
+    mimeType: "text/jsonl",
+    httpMethod: POST
+  }){
+    userErrors{
+      field,
+      message
+    },
+    stagedTargets{
+      url,
+      resourceUrl,
+      parameters {
+        name,
+        value
+      }
+    }
+  }
+}
+`
+
+const client = new shopify.api.clients.Graphql({session});
+let Input=
+  {
+    resource: "BULK_MUTATION_VARIABLES",
+    filename: "Bulk_op_vars",
+    mimeType: "text/jsonl",
+    httpMethod: "POST"
+  }
+
+let mutationResponse = await client.query({
+  data: { query: stagedUploadsCreateMutation },
+});
+console.log("mutationResponse",mutationResponse.body.data.stagedUploadsCreate);
+
+if(mutationResponse.body.data.stagedUploadsCreate.userErrors.length == 0){
+console.log("array",mutationResponse.body.data.stagedUploadsCreate.stagedTargets[0].parameters);
+let url=mutationResponse.body.data.stagedUploadsCreate.stagedTargets[0].url;
+let fileUploadParamsArray=mutationResponse.body.data.stagedUploadsCreate.stagedTargets[0].parameters;
+uploadFile(fileUploadParamsArray,url)
+}
+  }
+  catch(error){
+    console.log("error",error)
+  }
+}
+
+export async function bulkSetNextBillingDateMutation(session,uploadpath){
+  try
+  //let mutation = `mutation subscriptionBillingAttemptCreate($subscriptionBillingAttemptInput: SubscriptionBillingAttemptInput!, $subscriptionContractId: ID!) {
+    // subscriptionBillingAttemptCreate(subscriptionBillingAttemptInput: $subscriptionBillingAttemptInput, subscriptionContractId: $subscriptionContractId) {
+    {
+      let bulkSetNextBillingDateMutation = `mutation {
+        bulkOperationRunMutation(
+          mutation: "mutation subscriptionContractSetNextBillingDate($contractId: ID!, $date: DateTime!){subscriptionContractSetNextBillingDate(contractId: $contractId, date: $date){contract{id nextBillingDate } userErrors {  field  message } } }",
+          stagedUploadPath:${'"'+uploadpath+'"'}) {
+          bulkOperation {
+            id
+            url
+            status
+          }
+          userErrors {
+            message
+            field
+          }
+        }
+      }`   
+      const client = new shopify.api.clients.Graphql({session});
+
+      let mutationResponse = await client.query({
+        data: { query: bulkSetNextBillingDateMutation },
+      });
+      console.log('mutationresponse',mutationResponse.body.data.bulkOperationRunMutation)
+      console.log("furtherdata",mutationResponse.body.data.bulkOperationRunMutation.userErrors[0])  
+
+    }
+catch(error)
+   {
+console.log("error",error)
+   }
+}
+  
+  async function uploadFile(data,url) {
+   const form = new FormData();  
+   let obj={};
+    data.forEach((item)=>{
+      obj[item.name]=item.value
+          },[])
+
+  console.log("obj",obj)    
+    // Append form fields
+    form.append('key',obj["key"]);
+    form.append('x-goog-credential', obj["x-goog-credential"]);
+    form.append('x-goog-algorithm', obj['x-goog-algorithm']);
+    form.append('x-goog-date', obj['x-goog-date']);
+    form.append('x-goog-signature',obj['x-goog-signature']);
+    form.append('policy', obj['policy']);
+    form.append('acl',obj['acl']);
+    form.append('Content-Type',obj['Content-Type']);
+    form.append('success_action_status', obj['success_action_status']);
+    form.append('file', fs.createReadStream(path.join(__dirname,"/backend/Bulk_op_vars.jsonl")));  
+    try {
+      const response = await axios.post(url, form, {
+        headers: {
+          ...form.getHeaders()
+        }
+      });
+      console.log('Response:=>', response);
+      if(response.data){
+         console.log("response.data",response.data)
+      }
+    } catch (error) {
+      console.error('Error:', error.response ? error.response.data : error.message);
+    }
+  }
+  
+  async function bulk_operationsFinishWebhookSubscription(session){
+    try
+    {
+     let Mutation= `mutation {
+        webhookSubscriptionCreate(
+          topic: BULK_OPERATIONS_FINISH
+          webhookSubscription: {
+            format: JSON,
+            callbackUrl: "https://diameter-ll-sharp-oklahoma.trycloudflare.com/api/webhooks"}
+        ) {
+          userErrors {
+            field
+            message
+          }
+          webhookSubscription {
+            id
+          }
+        }
+      }`      
+      const client = new shopify.api.clients.Graphql({session});
+      let mutationResponse = await client.query({
+        data: { query: Mutation },
+      });      
+      console.log('mutationresponse',mutationResponse.body.data)
+      console.log("furtherdata",mutationResponse.body.data.webhookSubscriptionCreate.userErrors[0])  
+    }
+    catch(error){
+      console.log("error")
+    }
+  } 
+
+  async function getBulkOperationUrl(session){
+try
+{
+  let query=`query {
+    node(id: "gid://shopify/BulkOperation/4279702487344") {
+      ... on BulkOperation {
+        url
+        partialDataUrl
+      }
+    }
+  }`
+
+  const client = new shopify.api.clients.Graphql({session});
+  let mutationResponse = await client.query({
+    data: { query },
+  });  
+  console.log("mutationResponse",mutationResponse.body.data.node.url)
+  if(mutationResponse.body.data.node.url){
+    const response = await axios.get(mutationResponse.body.data.node.url);
+    // console.log("urlresponse", response.data)
+      
+  const jsonArray = convertJsonlStringToJsonArray(response.data);
+  // console.log("mydata",JSON.stringify(jsonArray, null, 2));
+     
+  }
+}
+catch(error){
+console.log("error",error.message)
+}
+  }
+
+  function convertJsonlStringToJsonArray(jsonlString) {
+    const lines = jsonlString.split('\n');    
+    const jsonArray = lines.map(line => {
+      try {
+        const jsonObject = JSON.parse(line.trim());
+        if (jsonObject && Object.keys(jsonObject).length > 0) {
+        if(jsonObject.data.subscriptionContractSetNextBillingDate.contract && Object.keys(jsonObject.data.subscriptionContractSetNextBillingDate.contract).length>0){
+          return jsonObject;
+        }
+        }
+      } catch (e) {
+        // Ignore parsing errors
+      }
+      return null;
+    }).filter(Boolean); // Remove any null entries from the array
+  
+    return jsonArray;
+  } 
+  
+  
+  // Example usage
+  const jsonlData = `{"input": {"contractId": "gid://shopify/SubscriptionContract/11601903920", "date": "2024-09-08T15:50:00Z"}}
+  {"input": {"contractId": "gid://shopify/SubscriptionContract/14226587952", "date": "2024-09-07T15:50:00Z"}}`;
+
+
 
