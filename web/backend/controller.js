@@ -712,7 +712,7 @@ return flag;
   }
 }
 catch(error){
-console.log("error12")
+console.log("error12",error)
 }
 }
 
@@ -889,7 +889,7 @@ const areDatesEqual = (date1, date2) => {
 async function  upcomingOrders()
 {
  try {
-  console.log("inupcomingorder")
+  console.log("inupcomingorder func")
    let startRange=new Date(new Date().setUTCHours(0,0,0,0))
 let endRange=new Date()
 endRange.setDate(endRange.getDate() + 5)
