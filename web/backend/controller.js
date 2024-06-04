@@ -731,9 +731,9 @@ const  upcomingOrderCron=new CronJob(cronTimeEvery24hr,upcomingOrders) ;
 const  paymentFailureEmailCron=new CronJob(cronTimeEvery24hr,paymentFailureEmail); 
 const  failedPaymentRetryAttemptCron=new CronJob(cronTimeEvery24hr,failedPaymentRetryAttempt) ;
 
-// upcomingOrderCron.start();
-// paymentFailureEmailCron.start();
-// failedPaymentRetryAttemptCron.start();
+upcomingOrderCron.start();
+paymentFailureEmailCron.start();
+failedPaymentRetryAttemptCron.start();
 
 export async function contractCronJob(req, res) {
   const currentDate = new Date().toISOString();
@@ -889,8 +889,7 @@ const areDatesEqual = (date1, date2) => {
 async function  upcomingOrders()
 {
  try {
-  console.log("inupcomingorder func")
-   let startRange=new Date(new Date().setUTCHours(0,0,0,0))
+let startRange=new Date(new Date().setUTCHours(0,0,0,0))
 let endRange=new Date()
 endRange.setDate(endRange.getDate() + 5)
 endRange.setUTCHours(23,59,59,999)
@@ -943,15 +942,11 @@ endRange.setUTCHours(23,59,59,999)
   { maxTimeMS: 60000, allowDiskUse: true }
 );
 
-
 if(data.length > 0){
-  console.log('dataa',data)
-  let emailTemplate_storeDetail_Obj={};
+let emailTemplate_storeDetail_Obj={};
 data.forEach(async(item)=>{
 if(item?.result?.length > 0 ) {
-  console.log("rrro8030")
-  let storedetails={}; 
-  
+   let storedetails={};   
     let getTemplateAndStoreData = await emailTemplatesModal.aggregate(
        [
          {
@@ -987,9 +982,9 @@ item.result.map(async(sub_item)=> {
    const date2 = new Date();
    date2.setDate(date2.getDate() + parseInt(item?.statementsInput))
    let sendMail=areDatesEqual(date1,date2)
- console.log("sendmail4june",sendMail)
-   if(sendMail) {      
-    
+ 
+   if(sendMail) {  
+
    let sendMailToCustomer = emailTemplate_storeDetail_Obj?.settings?.upcomingOrderReminder?.status;
    let sendMailToMerchant = emailTemplate_storeDetail_Obj?.settings?.upcomingOrderReminder?.adminNotification;
 
@@ -1013,7 +1008,6 @@ item.result.map(async(sub_item)=> {
 
     let options={};
     let emailConfig={};
-
      
  if (configurationData && configurationData.enable == true) {
    let encryptionConfig = {};
@@ -1055,14 +1049,14 @@ emailConfig = {
     host: "smtp.gmail.com",
     port: 587, 
     auth: {
-      user: "sahilagnihotri7@gmail.com",
-      pass: "srdvsdnxfmvbrduw",
+       user: "revlytic@gmail.com",
+       pass: "yiaglckhjmbratox",
     },
     secure: false,
   };
 
    options = {
-    from: "sahilagnihotri7@gmail.com",
+    from:  `Revlytic <revlytic@gmail.com>`,
     to: recipientMails,
     subject:selectedTemplate?.emailSetting?.subject,
     cc:selectedTemplate?.emailSetting?.cc,
@@ -1595,14 +1589,14 @@ if(lastEmailSentStatusArray.length > 0 ) {
         host: "smtp.gmail.com",
         port: 587,
         auth: {
-          user: "sahilagnihotri7@gmail.com",
-          pass: "srdvsdnxfmvbrduw",
+          user: "revlytic@gmail.com",
+          pass: "yiaglckhjmbratox",
         },
         secure: false,
       };
     
        options = {
-        from: "sahilagnihotri7@gmail.com",
+        from:  `Revlytic <revlytic@gmail.com>`,
         to: recipientMails,
         subject:selectedTemplate?.emailSetting?.subject,
         cc:selectedTemplate?.emailSetting?.cc,
@@ -4960,7 +4954,7 @@ export async function fetchDunningData(req,res){
   try{
     const shop = res.locals.shopify.session.shop;
     const data = await dunningModal.findOne({ shop });
-    upcomingOrders()
+    // upcomingOrders()
     // paymentFailureEmail()
     // failedPaymentRetryAttempt()
    if(data)
