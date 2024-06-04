@@ -456,7 +456,7 @@ async function sendmailforcrons(recipientMails,emailConfig,options,selectedTempl
     let flag=false;
     const __dirname = path.resolve();
     
-    const dirPath = path.join(__dirname, "/frontend/components/emailtemplate");
+    const dirPath = path.join(__dirname, "web/frontend/components/emailtemplate");
     let templateType = extra?.templateType;
     const transporter = nodemailer.createTransport(emailConfig);
     let currencySymbol = getCurrencySymbol(extra?.currency);
