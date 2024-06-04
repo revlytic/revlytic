@@ -944,9 +944,11 @@ endRange.setUTCHours(23,59,59,999)
 
 
 if(data.length > 0){
+  console.log('dataa',data)
   let emailTemplate_storeDetail_Obj={};
 data.forEach(async(item)=>{
 if(item?.result?.length > 0 ) {
+  console.log("rrro8030")
   let storedetails={}; 
   
     let getTemplateAndStoreData = await emailTemplatesModal.aggregate(
@@ -984,7 +986,7 @@ item.result.map(async(sub_item)=> {
    const date2 = new Date();
    date2.setDate(date2.getDate() + parseInt(item?.statementsInput))
    let sendMail=areDatesEqual(date1,date2)
- 
+ console.log("sendmail4june",sendMail)
    if(sendMail) {      
     
    let sendMailToCustomer = emailTemplate_storeDetail_Obj?.settings?.upcomingOrderReminder?.status;
