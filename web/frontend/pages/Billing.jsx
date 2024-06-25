@@ -8,6 +8,7 @@ import { useLocation } from "react-router-dom";
 import { useAPI } from "../components/common/commonContext";
 import { useNavigate } from "@shopify/app-bridge-react";
 import CalculateBillingUsage from "../components/calculateBillingUsage";
+
 function Billing() {
   const navigate = useNavigate();
   const app = useAppBridge();
