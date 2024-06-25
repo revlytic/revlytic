@@ -719,23 +719,23 @@ console.log("error12",error)
 // ///////////////////////////contract create cron start///////////////////////////////////////////
 const firstScheduledTime = "*/30 * * * * *"; // Replace with your desired time in cron syntax
 const cronTimeEvery1hr = "0 * * * *"; // Replace with your desired time in cron syntax
-const cronTimeEvery24hr="0 0 * * *";
+const cronTimeEvery24hr="10 0 * * *";
 
-const firstJob = new CronJob(cronTimeEvery1hr, contractCronJob);
+const firstJob = new CronJob(firstScheduledTime, recurringOrderCron);
 const secondJob = new CronJob(firstScheduledTime,sendInvoiceMailAndSaveContract);
 
 firstJob.start();
 secondJob.start();
  
-const  upcomingOrderCron=new CronJob(cronTimeEvery24hr,upcomingOrders) ;
-const  paymentFailureEmailCron=new CronJob(cronTimeEvery24hr,paymentFailureEmail); 
-const  failedPaymentRetryAttemptCron=new CronJob(cronTimeEvery24hr,failedPaymentRetryAttempt) ;
+const  upcomingOrderCron=new CronJob("5 0 * * *",upcomingOrders) ;
+const  paymentFailureEmailCron=new CronJob("15 0 * * *",paymentFailureEmail); 
+const  failedPaymentRetryAttemptCron=new CronJob("15 3 * * *",failedPaymentRetryAttempt);
 
-upcomingOrderCron.start();
-paymentFailureEmailCron.start();
-failedPaymentRetryAttemptCron.start();
+// upcomingOrderCron.start();
+// paymentFailureEmailCron.start();
+// failedPaymentRetryAttemptCron.start();
 
-export async function contractCronJob(req, res) {
+export async function recurringOrderCron(req, res) {
   const currentDate = new Date().toISOString();
   const targetDate = new Date(currentDate);
   
@@ -831,11 +831,11 @@ export async function contractCronJob(req, res) {
         },
       });
 
-      let billingAttempt = await client.query({
-        data: { query: mutation, variables: Input },
-      });
+      let billingAttempt = await client.request(mutation,{
+                variables: Input 
+            });
 
-      if (billingAttempt.body.data.subscriptionBillingAttemptCreate.userErrors.length < 1 ) {
+      if (billingAttempt.data.subscriptionBillingAttemptCreate.userErrors.length < 1 ) {
         const currentDate = new Date().toISOString();
         let saveToBillingAttempt = await billing_Attempt.create({
           shop: data[i].shop,
@@ -844,8 +844,9 @@ export async function contractCronJob(req, res) {
           renewal_date: currentDate,
           contract_products: data[i].product_details,
           contract_id: data[i].subscription_id,
-          billing_attempt_id: billingAttempt.body.data.subscriptionBillingAttemptCreate.subscriptionBillingAttempt.id,
+          billing_attempt_id: billingAttempt.data.subscriptionBillingAttemptCreate.subscriptionBillingAttempt.id,
           idempotencyKey: uniqueId,
+          attemptMode:"recurringOrderCron"
         });
 
         const originalDate = new Date(currentDate); // Assuming currentDate is already in ISO string format
@@ -1088,285 +1089,12 @@ emailConfig = {
 
 }
 
-// //////upcomingordercrin-end///
-
-// async function paymentFailureCron(){
-
-//   try 
-  
-//   {
-//     let targetDate=new Date()
-//     targetDate.setDate(targetDate.getDate() - 25)
-//     targetDate.setUTCHours(0,0,0,0)
-   
-//   // let getBillingData=await billing_Attempt.find({
-//   //   updatedAt:{$gte: targetDate},
-//   //   $or: [{ status: "failed" }, { status: "retriedAfterFailure" },{ status: "success" }],
-//   //  })
-
-
-//  let mainData=await billing_Attempt.aggregate(
-//     [
-//       {
-//         $match: {
-//           updatedAt: {$gte: targetDate},
-//           $or: [{ status: "failed" }, { status: "retriedAfterFailure" },{ status: "success" }],
-//         }
-//       },
-//       {
-//         $lookup: {
-//           from: 'subscription_details',
-//           localField: 'contract_id',
-//           foreignField: 'subscription_id',
-//           as: 'result'
-//         }
-//       },
-//       {
-//         $match: {
-//           'result.status': { $eq: 'active' }
-//         }
-//       }
-//     ],
-//     { maxTimeMS: 60000, allowDiskUse: true }
-//   );
-
-//   let filteredArr=[]; 
-//   let contract_idArr=[]
-//   let contractIdFailureCountObj={};
-//   let  allstore_emailTemplate_storeDetail_Obj={};
-//   let lastEmailSentStatusObj={}
-  
-//   if(mainData.length > 0){
-//     mainData.map((item)=>{
-//   if(item?.status=='failed' || item?.status=='retriedAfterFailure'){
-//     filteredArr.push(item)
-//     contract_idArr.push(item?.contract_id)
-//   }
-//   else if(item?.status=='success'){
-//     filteredArr= filteredArr.filter((itm, index) => !Object.values(itm).includes(item.contract_id))
-//       contract_idArr= contract_idArr.filter((value, index) => value != item?.contract_id )
-   
-//   }
-//     })
-//   }
-//   else{
-//     return;
-//   }
-//   let dunningDataArray=await dunningModal.find({enablePaymentAttempt:true});
-//    if(dunningDataArray.length >0 &&  filteredArr.length > 0){
-//     filteredArr.forEach(async(item)=> {    
-//   if(!Object.keys(contractIdFailureCountObj).includes(item["contract_id"])){
-//     const countDuplicates= contract_idArr.filter((val) => 
-//       val==item["contract_id"]    
-//     ).length
-    
-//     let dunningDataItem=dunningDataArray.find((val)=>
-//     val.shop==item["shop"]
-//   )
-  
-//   contractIdFailureCountObj[item["contract_id"]]={count:countDuplicates,attemptNum:dunningDataItem?.attemptNum};
-  
-//   if(dunningDataItem && dunningDataItem.attemptNum) {
-   
-//   let currentItemEmailTemplateStoreDetail= allstore_emailTemplate_storeDetail_Obj[item["shop"]];
-//     if(! currentItemEmailTemplateStoreDetail){
-            
-//       let getTemplateAndStoreData = await emailTemplatesModal.aggregate(
-//         [
-//           {
-//             $match: {
-//               shop: item["shop"]
-//             }
-//           },
-//           {
-//             $lookup: {
-//               from: 'store_details',
-//               localField: 'shop',
-//               foreignField: 'shop',
-//               as: 'storedetails'
-//             }
-//           },
-//           {
-//             $project: {
-//               [`settings.standardCourtsyNotice`]: 1,
-//               [`settings.standardPastDueNotice1`]: 1,
-//               [`settings.standardPastDueNotice2`]: 1,
-//               [`settings.standardPastDueNotice3`]: 1,
-//               [`settings.standardFinalDemand`]: 1,
-//               configuration: 1,
-//               shop:1,
-//               storedetails:{ $arrayElemAt: [ "$storedetails",0] }
-//             }
-//           }
-//         ],
-//         { maxTimeMS: 60000, allowDiskUse: true }
-//       );
-      
-
-//       if(getTemplateAndStoreData) {
-//           currentItemEmailTemplateStoreDetail = getTemplateAndStoreData[0] 
-//        }
-  
-//     }
-      
-//     let storedetails=currentItemEmailTemplateStoreDetail["storedetails"]; 
-
-//     ///////checkstart/////////////
-
-//     let templateOption="";
-
-
-    
-//       const lastEmailSentStatusArray = filteredArr.filter(val => val.contract_id == item.contract_id && val.lastEmailSentStatus !== undefined);
-        
-
-//       const highestlastEmailSentStatusValue = lastEmailSentStatusArray.reduce((maxvalue, item) => {
-//         return item.lastEmailSentStatus > maxvalue ? item.lastEmailSentStatus : maxvalue;
-//       }, 0);    
-  
-//    console.log("highestlastEmailSentStatusValue",highestlastEmailSentStatusValue)
-
-
-//         // if(item?.lastEmailSentStatus>=(contractIdFailureCountObj[item["contract_id"]].count)){
-//            if(contractIdFailureCountObj[item["contract_id"]].count==1){
-//            return;
-//            }
-
-//           if(item?.lastEmailSentStatus>=contractIdFailureCountObj[item["contract_id"]].count){
-//             console.log("iniffff")
-//             return;
-//         }
-
-//         else
-//         {
-//            console.log("inemailsentelsee")
-//           //  templateOption=dunningDataItem?.attemptList[contractIdFailureCountObj[item["contract_id"]]?.count - 2]?.selectedTemplate
-//            templateOption=dunningDataItem?.attemptList[highestlastEmailSentStatusValue]?.selectedTemplate
-//         }
-            
-//        let sendMailToCustomer = currentItemEmailTemplateStoreDetail?.settings[templateOption]?.status ;
-//        let sendMailToMerchant = currentItemEmailTemplateStoreDetail?.settings[templateOption]?.adminNotification ;
-    
-//        if (sendMailToCustomer || sendMailToMerchant) {
-            
-//         let recipientMails = [];
-    
-//         if (sendMailToMerchant)
-//            {
-//             let shopEmail = storedetails?.store_email;
-//             recipientMails.push(shopEmail);
-//         }
-//         if (sendMailToCustomer) {       
-//           recipientMails.push(item["result"][0]?.customer_details?.email);
-//         }
-    
-//         let configurationData =  currentItemEmailTemplateStoreDetail?.configuration;
-//         let selectedTemplate =   currentItemEmailTemplateStoreDetail?.settings[templateOption];
-    
-//         let options={};
-//         let emailConfig={};
-    
-         
-//      if (configurationData && configurationData.enable == true) {
-//       console.log("inenabletrue");
-//       let encryptionConfig = {};
-//       if (configurationData.encryption === "ssl") {
-//         encryptionConfig = {
-//           secure: true,
-//           requireTLS: true,
-//         };
-//       } else if (configurationData.encryption === "tls") {
-//         encryptionConfig = {
-//           secure: false, // For TLS, secure should be set to false
-//           requireTLS: true,
-//         };
-//       }
-    
-//        emailConfig = {
-//         host: configurationData.host,
-//         port: parseInt(configurationData.portNumber), // Convert port number to integer
-//         auth: {
-//           user: configurationData.userName,
-//           pass: configurationData.password,
-//         },
-//         ...(configurationData.encryption === "none" ? {} : encryptionConfig),
-//       };
-    
-//        options = {
-//         // from: configurationData.fromName,
-//         from:`${configurationData.fromName}<${configurationData.userName}>`,
-//         to: recipientMails,
-//         subject:selectedTemplate?.emailSetting?.subject,
-//         cc:selectedTemplate?.emailSetting?.cc,
-//         bcc:selectedTemplate?.emailSetting?.bcc,
-//         replyTo:selectedTemplate?.emailSetting?.replyTo,
-//         // ...others,
-//       };
-    
-//     } else {
-//       console.log("inenablefalse");
-    
-//     emailConfig = {
-//         host: "smtp.gmail.com",
-//         port: 587, // Convert port number to integer
-//         auth: {
-//           user: "sahilagnihotri7@gmail.com",
-//           pass: "srdvsdnxfmvbrduw",
-//         },
-//         secure: false,
-//       };
-    
-//        options = {
-//         from: "sahilagnihotri7@gmail.com",
-//         to: recipientMails,
-//         subject:selectedTemplate?.emailSetting?.subject,
-//         cc:selectedTemplate?.emailSetting?.cc,
-//         bcc:selectedTemplate?.emailSetting?.bcc,
-//         replyTo:selectedTemplate?.emailSetting?.replyTo,
-//         // ...others,
-//      };   
-//     }
-    
-//      let extra = {
-//         templateType: templateOption,
-//         data:  item["result"][0],
-//         shop_name: storedetails?.store_name,
-//         shop_email: storedetails?.store_email,
-//         currency: item["result"][0]?.subscription_details?.currency,
-//       };
-
-//     console.log("at the  end",recipientMails)
-
-//     let mailSentCheck=await  sendmailforcrons(recipientMails,emailConfig,options,selectedTemplate,extra,item.shop)
- 
-//   // for upating 
-// if(mailSentCheck)
-//      {
-//     // let updateBillingAttempts=await billing_Attempt.updateMany({ contract_id : item["contract_id"] }, {$set:{lastEmailSentStatus:contractIdFailureCountObj[item["contract_id"]].count-1}}) 
-//     let updateBillingAttempts=await billing_Attempt.updateMany({ contract_id : item["contract_id"] }, {$set:{lastEmailSentStatus:highestlastEmailSentStatusValue}}) 
-//     console.log("updateBillingAttempts",updateBillingAttempts) 
-//     }
-//       }
-//  ///checkend////////
-//       }
-//   }        
-//     })
-//   }
-//   else{
-//     return
-//   }
-//   }
-//   catch(error){
-//   console.log("errorpaymentfailure",error)
-//   }
- 
-//   }
-
 async function paymentFailureEmail(){
   try 
     {
+
     let targetDate=new Date()
-    targetDate.setDate(targetDate.getDate() - 25)
+    targetDate.setDate(targetDate.getDate() - 11)
     targetDate.setUTCHours(0,0,0,0)
    
   // let getBillingData=await billing_Attempt.find({
@@ -1398,7 +1126,7 @@ async function paymentFailureEmail(){
     ],
     { maxTimeMS: 60000, allowDiskUse: true }
   );
-
+  console.log("main",mainData)  
   let filteredArr=[]; 
   let contract_idArr=[];
   let contractIdFailureCountObj={};
@@ -1420,28 +1148,28 @@ async function paymentFailureEmail(){
   else{
     return;
   }
+
   let dunningDataArray=await dunningModal.find({enablePaymentAttempt:true});
    if(dunningDataArray.length >0 &&  filteredArr.length > 0){
-     console.log("filteredArr",filteredArr)
+     console.log("filteredArr",filteredArr)       
     filteredArr.forEach(async(item)=> {    
   if(!Object.keys(contractIdFailureCountObj).includes(item["contract_id"])){
+    
     const countDuplicates= contract_idArr.filter((val) => 
       val==item["contract_id"]    
     ).length
     
     let dunningDataItem=dunningDataArray.find((val)=>
     val.shop==item["shop"]
-  )
-  
-  contractIdFailureCountObj[item["contract_id"]]={count:countDuplicates,attemptNum:dunningDataItem?.attemptNum};
-  
-  if(dunningDataItem && dunningDataItem.attemptNum && parseInt(dunningDataItem.attemptNum) > 0) {
-   
-  let currentItemEmailTemplateStoreDetail= allstore_emailTemplate_storeDetail_Obj[item["shop"]];
-    if(! currentItemEmailTemplateStoreDetail){
-            
-      let getTemplateAndStoreData = await emailTemplatesModal.aggregate(
-        [
+  )  
+  contractIdFailureCountObj[item["contract_id"]]={count:countDuplicates};
+
+  // if(dunningDataItem && dunningDataItem.attemptNum && parseInt(dunningDataItem.attemptNum) > 0) {
+    if(dunningDataItem) { 
+      console.log("indunningdata")
+    if(! allstore_emailTemplate_storeDetail_Obj[item["shop"]]){   
+      console.log("inallstore")         
+      let getTemplateAndStoreData = await emailTemplatesModal.aggregate([
           {
             $match: {
               shop: item["shop"]
@@ -1469,62 +1197,34 @@ async function paymentFailureEmail(){
           }
         ],
         { maxTimeMS: 60000, allowDiskUse: true }
-      );
-      
-      if(getTemplateAndStoreData) {
-          currentItemEmailTemplateStoreDetail = getTemplateAndStoreData[0] 
-       }
-  
+      );      
+      // console.log("getTemplateAndStoreData[0]",getTemplateAndStoreData[0])
+    
+        allstore_emailTemplate_storeDetail_Obj[item["shop"]] =getTemplateAndStoreData[0]     
     }
-      
-    let storedetails=currentItemEmailTemplateStoreDetail["storedetails"]; 
-
-
-let checkIsNewEntryInLast24hr= filteredArr.find(val => val.contract_id == item.contract_id && val.lastEmailSentStatus == undefined)   
-console.log("checkNewEntryInLast24hr",checkIsNewEntryInLast24hr)
-
-if(!checkIsNewEntryInLast24hr){
-return
+     if (allstore_emailTemplate_storeDetail_Obj[item["shop"]]){     
+     ////////18junestart////////
+     console.log("depppo")
+     let selectedTemplateIndex;
+     let currentItemEmailTemplateStoreDetail=allstore_emailTemplate_storeDetail_Obj[item["shop"]];
+     let storedetails=currentItemEmailTemplateStoreDetail["storedetails"]; 
+     let flag=true;
+if(Object.keys(item).includes("lastEmailSentStatus")){
+ if(item.lastEmailSentStatus == item.retriedAttemptStatus && item.lastEmailSentStatus < dunningDataItem?.attemptList?.length -1){
+  selectedTemplateIndex = parseInt(item.lastEmailSentStatus) + 1 ;
+ }
+ else{
+  console.log("inelsesee")
+   flag=false;
+ }
 }
-const lastEmailSentStatusArray = filteredArr.filter(val => val.contract_id == item.contract_id && val.lastEmailSentStatus !== undefined);
-let selectedTemplateIndex;
-
-
-if(lastEmailSentStatusArray.length > 0 ) {
-  let highestlastEmailSentStatusValue = lastEmailSentStatusArray.reduce((maxvalue, item) => {
-        return item.lastEmailSentStatus > maxvalue ? item.lastEmailSentStatus : maxvalue;
-      }, 0);   
-      console.log("highestlastEmailSentStatusValue",highestlastEmailSentStatusValue)
-      if(parseInt(dunningDataItem?.attemptNum)==highestlastEmailSentStatusValue+1) {
-        return ;
-      }
-      selectedTemplateIndex = parseInt(highestlastEmailSentStatusValue) + 1
-     }
-    else
-    {
-      selectedTemplateIndex = 0 ;
-    }
-  console.log("22april-checkcron",selectedTemplateIndex,lastEmailSentStatusArray)
-
-
-        // if(item?.lastEmailSentStatus>=(contractIdFailureCountObj[item["contract_id"]].count)){
-          //  if(contractIdFailureCountObj[item["contract_id"]].count==1){
-          //  return;
-          //  }
-
-        //   if(item?.lastEmailSentStatus>=contractIdFailureCountObj[item["contract_id"]].count){
-        //     console.log("iniffff")
-        //     return;
-        // }
-
-        // else
-        // {
-        //    console.log("inemailsentelsee")
-        //   //  templateOption=dunningDataItem?.attemptList[contractIdFailureCountObj[item["contract_id"]]?.count - 2]?.selectedTemplate
-        //    templateOption=dunningDataItem?.attemptList[highestlastEmailSentStatusValue]?.selectedTemplate
-        // }
-            
-             let templateOption=dunningDataItem?.attemptList[selectedTemplateIndex]?.selectedTemplate
+else{ 
+  console.log("in0template")
+  selectedTemplateIndex = 0 ;
+}
+console.log("19june")
+if(flag){
+       let templateOption=dunningDataItem?.attemptList[selectedTemplateIndex]?.selectedTemplate ;
 
        let sendMailToCustomer = currentItemEmailTemplateStoreDetail?.settings[templateOption]?.status ;
        let sendMailToMerchant = currentItemEmailTemplateStoreDetail?.settings[templateOption]?.adminNotification ;
@@ -1623,7 +1323,40 @@ if(mailSentCheck)
     // console.log("updateBillingAttempts",updateBillingAttempts) 
     }
       }
+    }
+   /////////18juneend///////
+    } 
+      
+    // let storedetails=currentItemEmailTemplateStoreDetail["storedetails"]; 
 
+
+// let checkIsNewEntry= filteredArr.find(val => val.contract_id == item.contract_id && val.lastEmailSentStatus == undefined)   
+// console.log("checkNewEntry",checkIsNewEntry)
+
+// if(!checkIsNewEntry){
+// return
+// }
+// const lastEmailSentStatusArray = filteredArr.filter(val => val.contract_id == item.contract_id && val.lastEmailSentStatus !== undefined);
+// let selectedTemplateIndex;
+
+
+// if(lastEmailSentStatusArray.length > 0 ) {
+//   let highestlastEmailSentStatusValue = lastEmailSentStatusArray.reduce((maxvalue, item) => {
+//         return item.lastEmailSentStatus > maxvalue ? item.lastEmailSentStatus : maxvalue;
+//       }, 0);   
+//       console.log("highestlastEmailSentStatusValue",highestlastEmailSentStatusValue)
+//       if(parseInt(dunningDataItem?.attemptNum)==highestlastEmailSentStatusValue+1) {
+//         return ; 
+//       }
+//       selectedTemplateIndex = parseInt(highestlastEmailSentStatusValue) + 1
+//      }
+//     else
+//     {
+//       selectedTemplateIndex = 0 ;
+//     }
+//   console.log("22april-checkcron",selectedTemplateIndex,lastEmailSentStatusArray)
+ 
+   
       }
   }        
     })
@@ -1638,304 +1371,153 @@ if(mailSentCheck)
  
   }
 
+  async function failedPaymentRetryAttempt(){
 
-///////cronpayment retry start//////////
-// async function failedPaymentRetryCron(){
-
-// try
-//   {
-//     let targetDate=new Date()
-//     targetDate.setDate(targetDate.getDate() - 5)
-//     targetDate.setUTCHours(0,0,0,0)
-
-
-//     let mainData=await billing_Attempt.aggregate(
-//       [
-//         {
-//           $match: {
-//             billing_response_date: {$gte: targetDate},
-//             $or: [{ status: "failed" }, { status: "retriedAfterFailure" },{ status: "success" }],
-//           }
-//         },
-//         {
-//           $lookup: {
-//             from: 'subscription_details',
-//             localField: 'contract_id',
-//             foreignField: 'subscription_id',
-//             as: 'result'
-//           }
-//         },
-//         {
-//           $match: {
-//             'result.status': { $eq: 'active' }
-//           }
-//         }
-//       ],
-//       { maxTimeMS: 60000, allowDiskUse: true }
-//     )
+    try
+      {
+        let targetDate=new Date()
+        targetDate.setDate(targetDate.getDate() - 11)
+        targetDate.setUTCHours(0,0,0,0)
     
-//     let filteredArr=[];
-//     let contract_idArr=[];
-//     let contractIdFailureCountObj={};
-
-//     if(mainData.length > 0){
-//       mainData.map((item)=>{
-//     if(item?.status=='failed' || item?.status=='retriedAfterFailure'){
-//       filteredArr.push(item)
-//       contract_idArr.push(item?.contract_id)
-//     }
-//     else if(item?.status=='success'){
-//       filteredArr= filteredArr.filter((itm, index) => !Object.values(itm).includes(item.contract_id))
-//         contract_idArr= contract_idArr.filter((value, index) => value != item?.contract_id )
+    
+        let mainData=await billing_Attempt.aggregate(
+          [
+            {
+              $match: {
+                billing_response_date: {$gte: targetDate},
+                $or: [{ status: "failed" }, { status: "retriedAfterFailure" },{ status: "success" }],
+              }
+            },
+            {
+              $lookup: {
+                from: 'subscription_details',
+                localField: 'contract_id',
+                foreignField: 'subscription_id',
+                as: 'result'
+              }
+            },
+            {
+              $match: {
+                'result.status': { $eq: 'active' }
+              }
+            }
+          ],
+          { maxTimeMS: 60000, allowDiskUse: true }
+        )
+        console.log("maindAta",mainData)
+        let filteredArr=[];
+        let contract_idArr=[];
+        let contractIdFailureCountObj={};
+    
+        if(mainData.length > 0){
+          mainData.map((item)=>{
+        if(item?.status=='failed' || item?.status=='retriedAfterFailure'){
+          filteredArr.push(item)
+          contract_idArr.push(item?.contract_id)
+        }
+        else if(item?.status=='success'){
+          filteredArr= filteredArr.filter((itm, index) => !Object.values(itm).includes(item.contract_id))
+          contract_idArr= contract_idArr.filter((value, index) => value != item?.contract_id )
+        }
+          })
+        }
+        else{
+          return;
+        }
+    
+    let dunningDataArray=await dunningModal.find({enablePaymentAttempt:true});
+       
+    if(dunningDataArray.length > 0 &&  filteredArr.length > 0){
      
-//     }
-//       })
-//     }
-//     else{
-//       return;
-//     }
-
-// let dunningDataArray=await dunningModal.find({enablePaymentAttempt:true});
-   
-// if(dunningDataArray.length >0 &&  filteredArr.length > 0){
- 
-//   filteredArr.forEach(async(item)=> {
-  
-// if(!Object.keys(contractIdFailureCountObj).includes(item["contract_id"])){
-  
-//   const countDuplicates= contract_idArr.filter((val) => 
-//     val==item["contract_id"]     
-//   ).length
-  
-//   let dunningDataItem=dunningDataArray.find((val)=>
-//   val.shop==item["shop"]
-// )
-// contractIdFailureCountObj[item["contract_id"]]={count:countDuplicates,attemptNum:dunningDataItem?.attemptNum};
-// if( dunningDataItem && dunningDataItem.attemptNum && countDuplicates <=5 ){
-// let today=new Date()
-// today.setUTCHours(0,0,0,0)
-
-//  let targetDate=item?.billing_response_date
-//  targetDate.setDate(targetDate.getDate()+ parseInt(dunningDataItem?.attemptList[countDuplicates-1]?.retryAfterDays))
-//  targetDate.setUTCHours(0,0,0,0)
-
-//  let  retryAttempt= areDatesEqual(today,targetDate);
-
-//  if(retryAttempt && item.shop !="shine.myshopify.com"){
-
-//   let mutation = subscriptionBillingAttemptCreateMutation ;
-
-//   const currentDate = new Date().toISOString();
-//   const uniqueId =
-//     Date.now().toString(36) + Math.random().toString(36).substring(2, 5);
-
-//   let Input = {
-//     subscriptionBillingAttemptInput: {
-//       idempotencyKey: uniqueId,
-//       originTime: currentDate,
-//     },
-//     subscriptionContractId: item.contract_id,
-//   };
-
-//   let gettoken = await shopModal.findOne({ shop: item?.shop });
-//   // console.log(gettoken, "cvcvcvcvcv");
-
-//   const client = new shopify.api.clients.Graphql({
-//     session: {
-//       shop: item?.shop,
-//       accessToken: gettoken.accessToken,
-//     },
-//   });
-
-//   let billingAttempt = await client.query({
-//     data: { query: mutation, variables: Input },
-//   });
-
-//   if (billingAttempt.body.data.subscriptionBillingAttemptCreate.userErrors.length < 1 ) {
-
-//     let saveToBillingAttempt = await billing_Attempt.create({
-//       shop: item?.shop,
-//       status: "pending",
-//       billing_attempt_date: currentDate,
-//       idempotencyKey: uniqueId,
-//       renewal_date: item.renewal_date,
-//       contract_products: item.contract_products,
-//       contract_id: item.contract_id,
-//       billing_attempt_id:
-//         billingAttempt.body.data.subscriptionBillingAttemptCreate
-//           .subscriptionBillingAttempt.id,
-//     });
-  
-   
-//   }
-
-
-//  }
-
-// }
-
-//    }
-
-//   })
-// }
-//   }
-// catch(error){
-// console.log('error',error)
-
-// }
-// } 
-
-async function failedPaymentRetryAttempt(){
-
-  try
-    {
-      let targetDate=new Date()
-      targetDate.setDate(targetDate.getDate() - 5)
-      targetDate.setUTCHours(0,0,0,0)
-  
-  
-      let mainData=await billing_Attempt.aggregate(
-        [
-          {
-            $match: {
-              billing_response_date: {$gte: targetDate},
-              $or: [{ status: "failed" }, { status: "retriedAfterFailure" },{ status: "success" }],
-            }
-          },
-          {
-            $lookup: {
-              from: 'subscription_details',
-              localField: 'contract_id',
-              foreignField: 'subscription_id',
-              as: 'result'
-            }
-          },
-          {
-            $match: {
-              'result.status': { $eq: 'active' }
-            }
-          }
-        ],
-        { maxTimeMS: 60000, allowDiskUse: true }
-      )
-      console.log("maindAta",mainData)
-      let filteredArr=[];
-      let contract_idArr=[];
-      let contractIdFailureCountObj={};
-  
-      if(mainData.length > 0){
-        mainData.map((item)=>{
-      if(item?.status=='failed' || item?.status=='retriedAfterFailure'){
-        filteredArr.push(item)
-        contract_idArr.push(item?.contract_id)
-      }
-      else if(item?.status=='success'){
-        filteredArr= filteredArr.filter((itm, index) => !Object.values(itm).includes(item.contract_id))
-        contract_idArr= contract_idArr.filter((value, index) => value != item?.contract_id )
-      }
-        })
-      }
-      else{
-        return;
-      }
-  
-  let dunningDataArray=await dunningModal.find({enablePaymentAttempt:true});
-     
-  if(dunningDataArray.length >0 &&  filteredArr.length > 0){
-   
-    filteredArr.forEach(async(item)=> {
+      filteredArr.forEach(async(item)=> {
+      
+    if(!Object.keys(contractIdFailureCountObj).includes(item["contract_id"])){
+      
+      const countDuplicates= contract_idArr.filter((val) => 
+        val==item["contract_id"]     
+      ).length 
+      
+      let dunningDataItem=dunningDataArray.find((val)=>
+      val.shop==item["shop"]
+    )
+    contractIdFailureCountObj[item["contract_id"]]={count:countDuplicates};
     
-  // if(!Object.keys(contractIdFailureCountObj).includes(item["contract_id"])){
+    if( dunningDataItem && item.lastEmailSentStatus ){
+    let today=new Date()
+    today.setUTCHours(0,0,0,0)  
+     let targetDate=item?.billing_response_date
+     targetDate.setDate(targetDate.getDate() + parseInt(dunningDataItem?.attemptList[item.lastEmailSentStatus]?.retryAfterDays))
+     targetDate.setUTCHours(0,0,0,0)  
+     let  retryAttempt= areDatesEqual(today,targetDate);
+    // let retriedAttemptStatus=item.retriedAttemptStatus ;
+     console.log("abovefunction",retryAttempt,item.lastEmailSentStatus != item.retriedAttemptStatus )
+     if ( retryAttempt && item.lastEmailSentStatus != item.retriedAttemptStatus ){
+      console.log("inon",item["shop"])
+      
+      let mutation = subscriptionBillingAttemptCreateMutation ;  
+      const currentDate = new Date().toISOString();
+      const uniqueId = Date.now().toString(36) + Math.random().toString(36).substring(2, 5);
     
-    // const countDuplicates= contract_idArr.filter((val) => 
-    //   val==item["contract_id"]     
-    // ).length 
+      let Input = {
+        subscriptionBillingAttemptInput: {
+          idempotencyKey: uniqueId,
+          originTime: currentDate,
+        },
+        subscriptionContractId: item.contract_id,
+      };
     
-    let dunningDataItem=dunningDataArray.find((val)=>
-    val.shop==item["shop"]
-  )
-  // contractIdFailureCountObj[item["contract_id"]]={count:countDuplicates,attemptNum:dunningDataItem?.attemptNum};
-  
-  if( dunningDataItem && dunningDataItem.attemptNum && parseInt(dunningDataItem.attemptNum) > 0 && item.lastEmailSentStatus ){
-  let today=new Date()
-  today.setUTCHours(0,0,0,0)  
-   let targetDate=item?.billing_response_date
-   targetDate.setDate(targetDate.getDate() + parseInt(dunningDataItem?.attemptList[item.lastEmailSentStatus]?.retryAfterDays))
-   targetDate.setUTCHours(0,0,0,0)  
-   let  retryAttempt= areDatesEqual(today,targetDate);
-  // let retriedAttemptStatus=item.retriedAttemptStatus ;
-   
-   if ( retryAttempt && item.lastEmailSentStatus != item.retriedAttemptStatus ){
-  
-    let mutation = subscriptionBillingAttemptCreateMutation ;
-  
-    const currentDate = new Date().toISOString();
-    const uniqueId =
-      Date.now().toString(36) + Math.random().toString(36).substring(2, 5);
-  
-    let Input = {
-      subscriptionBillingAttemptInput: {
-        idempotencyKey: uniqueId,
-        originTime: currentDate,
-      },
-      subscriptionContractId: item.contract_id,
-    };
-  
-    let gettoken = await shopModal.findOne({ shop: item?.shop });
-  
-  
-    const client = new shopify.api.clients.Graphql({
-      session: {
-        shop: item?.shop,
-        accessToken: gettoken.accessToken,
-      },
-    });
-  
-    let billingAttempt = await client.query({
-      data: { query: mutation, variables: Input },
-    });
-  
-    if (billingAttempt.body.data.subscriptionBillingAttemptCreate.userErrors.length < 1 ) {
-  
-      let saveToBillingAttempt = await billing_Attempt.create({
-        shop: item?.shop,
-        status: "pending",
-        billing_attempt_date: currentDate,
-        idempotencyKey: uniqueId,
-        renewal_date: item.renewal_date,
-        contract_products: item.contract_products,
-        contract_id: item.contract_id,
-        billing_attempt_id:
-          billingAttempt.body.data.subscriptionBillingAttemptCreate
-            .subscriptionBillingAttempt.id,
-        retriedAttemptStatus:item.lastEmailSentStatus 
+      let gettoken = await shopModal.findOne({ shop: item?.shop });
+    
+    
+      const client = new shopify.api.clients.Graphql({
+        session: {
+          shop: item?.shop,
+          accessToken: gettoken.accessToken,
+        },
       });
-
     
-      let updateBillingAttempts=await billing_Attempt.updateMany({ contract_id : item["contract_id"] , status : { $in: ["failed", "retriedAfterFailure"] } } ,{$set:{retriedAttemptStatus:item.lastEmailSentStatus}}) 
+      let billingAttempt = await client.request(mutation,{
+       variables: Input
+      });
+    
+      if (billingAttempt.data.subscriptionBillingAttemptCreate.userErrors.length < 1 ) {
+    
+        let saveToBillingAttempt = await billing_Attempt.create({
+          shop: item?.shop,
+          status: "pending",
+          billing_attempt_date: currentDate,
+          idempotencyKey: uniqueId,
+          renewal_date: item.renewal_date,
+          contract_products: item.contract_products,
+          contract_id: item.contract_id,
+          billing_attempt_id:
+            billingAttempt.data.subscriptionBillingAttemptCreate
+              .subscriptionBillingAttempt.id,
+          retriedAttemptStatus:item.lastEmailSentStatus,
+          attemptMode:"dunning" 
+        });
+      
+        let updateBillingAttempts=await billing_Attempt.updateMany({ contract_id : item["contract_id"] , status : { $in: ["failed", "retriedAfterFailure"] } } ,{$set:{retriedAttemptStatus:item.lastEmailSentStatus}}) 
+        console.log("inend")
+      }
+    
+    
+     }
     
     }
   
-  
-   }
-  
-  }
-
-  
-    //  }
-  
-    })
-  }
+    
+       }
+    
+      })
     }
-  catch(error){
-  console.log('error',error)
-  
-  }
-  } 
-
-
-
-/////////cron pament retry end//////
+      }
+    catch(error){
+    console.log('error',error)  
+    }
+    } 
+    
+  /////////cron pament retry end//////
 
 const currentDate = new Date().toISOString();
 const targetDate = new Date(currentDate);
@@ -2107,8 +1689,8 @@ export async function getCustomers(req, res) {
     let cursorCheckNext = cursor == "" ? "first : 10" : 'first:10,after:"' + cursor + '"';
 
     const client = new shopify.api.clients.Graphql({ session });
-    const data = await client.query({
-      data: `query {
+    const data = await client.request(
+      `query {
       customers(${cursorCheckNext}) {
         edges {
           node {
@@ -2138,11 +1720,11 @@ export async function getCustomers(req, res) {
         }
       }
     }`,
-    });
+    );
 
-    let sendData = data.body.data.customers.edges;
+    let sendData = data.data.customers.edges;
     if (sendData.length > 0) {
-      let next = data.body.data.customers.pageInfo.hasNextPage;
+      let next = data.data.customers.pageInfo.hasNextPage;
 
       res.send({
         data: sendData,
@@ -2173,8 +1755,8 @@ export async function searchCustomer(req, res) {
     let query = 'query:"' + searchTerm + '"';
     let cursorCheckNext = cursor == "" ? "first : 10" : 'first:10,after:"' + cursor + '"';
     const client = new shopify.api.clients.Graphql({ session });
-    const data = await client.query({
-      data: `query {
+    const data = await client.request(
+       `query {
       customers(${cursorCheckNext},${query}) {
         edges {
           node {
@@ -2203,11 +1785,11 @@ export async function searchCustomer(req, res) {
         }
       }
     }`,
-    });
+    );
 
-    let sendData = data.body.data.customers.edges;
+    let sendData = data.data.customers.edges;
     if (sendData.length > 0) {
-      let next = data.body.data.customers.pageInfo.hasNextPage;
+      let next = data.data.customers.pageInfo.hasNextPage;
       res.send({
         data: sendData,
         next: next,
@@ -2253,19 +1835,19 @@ export async function subscriptionCustomerUpdate(req, res, next) {
       input: req?.body?.input,
     };
 
-    let response = await client.query({
-      data: { query: mutationQuery, variables: Input },
+    let response = await client.request(mutationQuery,{
+       variables: Input 
     });
 
-    if (response.body.data?.customerUpdate?.userErrors.length > 0) {
+    if (response.data?.customerUpdate?.userErrors.length > 0) {
        res.send({
         message: "error",
-        data: response?.body?.data?.customerUpdate?.userErrors[0]?.message,
+        data: response?.data?.customerUpdate?.userErrors[0]?.message,
       });
     } else {
        res.send({
         message: "success",
-        data: response?.body?.data?.customerUpdate?.customer,
+        data: response?.data?.customerUpdate?.customer,
       });
     }
   } catch (error) {
@@ -2281,8 +1863,7 @@ export async function getCustomerPaymentMethods(req, res) {
     let session = res.locals.shopify.session;
     const client = new shopify.api.clients.Graphql({ session });
     let id = req.body.id;
-    const data = await client.query({
-      data: `query 
+    const data = await client.request( `query 
       {
                 
      customer(id:"${req.body.id}"){
@@ -2349,8 +1930,8 @@ export async function getCustomerPaymentMethods(req, res) {
                 }
               }
               }`,
-    });
-    let dataToSend = data.body.data.customer.paymentMethods.edges;
+    );
+    let dataToSend = data.data.customer.paymentMethods.edges;
     if (dataToSend.length > 0) {
        res.send({ message: "success", data: dataToSend });
     } else {
@@ -2737,17 +2318,17 @@ export async function subscriptionDraftLineUpdateCommon(req, res, next) {
       lineId: req?.body?.line,
     };
 
-    let response = await client.query({
-      data: { query: mutationQuery, variables: Input },
+    let response = await client.request(mutationQuery,{
+    variables: Input 
     });
 
     if (
-      response.body.data?.subscriptionDraftLineUpdate?.userErrors.length > 0
+      response.data?.subscriptionDraftLineUpdate?.userErrors.length > 0
     ) {
      
       res.send({
         message: "error",
-        data: response.body.data.subscriptionDraftUpdate.userErrors[0].message,
+        data: response.data.subscriptionDraftUpdate.userErrors[0].message,
       });
     } else {
          next();
@@ -2756,7 +2337,6 @@ export async function subscriptionDraftLineUpdateCommon(req, res, next) {
     console.log(error?.response?.errors);
   }
 }
-
 export async function checkReferenceId(req, res, next) {
   try {
     let shop = res.locals.shopify.session.shop;
@@ -2928,18 +2508,18 @@ export async function createSubscriptionDraftCommon(req, res, next) {
     const Input = {
       contractId: req.body.id,
     };
-    let response = await cli.query({
-      data: { query: mutationQuery, variables: Input },
+    let response = await cli.request(mutationQuery,{
+      variables: Input
     });
-    console.log(response.body.data);
-    if (response.body.data?.subscriptionContractUpdate?.userErrors.length > 0) {
+   
+    if (response.data?.subscriptionContractUpdate?.userErrors.length > 0) {
         res.send({
         message: "error",
-        data: response.body.data.subscriptionContractUpdate.userErrors[0].message,
+        data: response.data.subscriptionContractUpdate.userErrors[0].message,
       });
     } else {
-      console.log("draftid",response.body.data.subscriptionContractUpdate?.draft?.id);
-      req.draft_id = response.body.data.subscriptionContractUpdate?.draft?.id;
+      console.log("draftid",response.data.subscriptionContractUpdate?.draft?.id);
+      req.draft_id = response.data.subscriptionContractUpdate?.draft?.id;
       next();
     }
   } catch (error) {
@@ -2950,6 +2530,7 @@ export async function createSubscriptionDraftCommon(req, res, next) {
 
 export async function updateSubscriptionFieldCommon(req, res, next) {
   try {
+   
       let shop = res?.locals?.shopify?.session?.shop
       ? res?.locals?.shopify?.session?.shop
       : req?.body?.shop;
@@ -2998,23 +2579,21 @@ export async function updateSubscriptionFieldCommon(req, res, next) {
       input: input,
     };
 
-    let response = await client.query({
-      data: { query: mutationQuery, variables: Input },
+    let response = await client.request(mutationQuery,{
+     variables: Input 
     });
 
-    console.log(response.body.data?.subscriptionDraftUpdate?.userErrors[0]);
-
-    if (response.body.data?.subscriptionDraftUpdate?.userErrors.length > 0) {
+    if (response.data?.subscriptionDraftUpdate?.userErrors.length > 0) {
        res.send({
         message: "error",
-        data: response.body.data.subscriptionDraftUpdate.userErrors[0].message,
+        data: response.data.subscriptionDraftUpdate.userErrors[0].message,
       });
     } else {     
       if (req.body.check == "subscriptionDetailsUpdate")
         req.subscriptionDetailsChange = {
-          billingPolicy   : response.body.data.subscriptionDraftUpdate?.draft?.billingPolicy,
-          deliveryPolicy  : response.body.data.subscriptionDraftUpdate?.draft?.deliveryPolicy,
-          nextBillingDate : response.body.data.subscriptionDraftUpdate?.draft?.nextBillingDate,
+          billingPolicy   : response.data.subscriptionDraftUpdate?.draft?.billingPolicy,
+          deliveryPolicy  : response.data.subscriptionDraftUpdate?.draft?.deliveryPolicy,
+          nextBillingDate : response.data.subscriptionDraftUpdate?.draft?.nextBillingDate,
         };
       next();
     }
@@ -3098,21 +2677,18 @@ export async function subscriptionDraftCommitCommon(req, res, next) {
     const InputMutationSubscriptionDraftCommit = {
       draftId: req.draft_id,
     };
-    let response = await client.query({
-      data: {
-        query: mutationSubscriptionDraftCommit,
-        variables: InputMutationSubscriptionDraftCommit,
-      },
-    });
+    let response = await client.request(mutationSubscriptionDraftCommit,{
+              variables: InputMutationSubscriptionDraftCommit,
+         });
 
-    if (response.body.data?.subscriptionDraftCommit?.userErrors.length > 0) {
+    if (response.data?.subscriptionDraftCommit?.userErrors.length > 0) {
       res.send({
         message: "error",
         data:
-          response.body.data.subscriptionDraftCommit.userErrors[0].message ==
+          response.data.subscriptionDraftCommit.userErrors[0].message ==
           "Contract draft delivery method can't be blank if any lines require shipping."
             ? "Please update shipping address first."
-            : response.body.data.subscriptionDraftCommit.userErrors[0].message,
+            : response.data.subscriptionDraftCommit.userErrors[0].message,
       });
     } else {
       // response.body.data?.subscriptionDraftCommit?.contract?.lines?.edges?.map(
@@ -3128,19 +2704,19 @@ export async function subscriptionDraftCommitCommon(req, res, next) {
 
       if (req?.body?.field == "deliveryMethod") {
         req.data = {
-          deliveryPrice: response.body.data?.subscriptionDraftCommit?.contract?.deliveryPrice?.amount,
-          [req.body?.field]:response.body.data?.subscriptionDraftCommit?.contract[req.body?.field],
+          deliveryPrice: response.data?.subscriptionDraftCommit?.contract?.deliveryPrice?.amount,
+          [req.body?.field]:response.data?.subscriptionDraftCommit?.contract[req.body?.field],
         };
       } else {
         req.data = {
-          [req.body?.field]:response.body.data?.subscriptionDraftCommit?.contract[req.body?.field],
-            nextBillingDate:response.body.data?.subscriptionDraftCommit?.contract?.nextBillingDate
+          [req.body?.field]:response.data?.subscriptionDraftCommit?.contract[req.body?.field],
+            nextBillingDate:response.data?.subscriptionDraftCommit?.contract?.nextBillingDate
         };
       }
       next();
     }
   } catch (error) {
-    console.log(error?.response?.errors, "commmiterror");
+    console.log(error, "commmiterror");
     res.send({ message: "error", data: "Something went wrong" });
   }
 }
@@ -3363,35 +2939,32 @@ export async function subscriptionDraftLineAdd(req, res, next) {
           },
         };
 
-        let response = await client.query({
-          data: {
-            query: mutationSubscriptionDraftLine,
-            variables: InputSubscriptionDraftLine,
-          },
-        });
+        let response = await client.request(mutationSubscriptionDraftLine,{
+                    variables: InputSubscriptionDraftLine,
+                });
 
         if (
-          response.body.data?.subscriptionDraftLineAdd?.lineAdded?.id != null
+          response.data?.subscriptionDraftLineAdd?.lineAdded?.id != null
         ) {
          
-          linesArray.push(response.body.data?.subscriptionDraftLineAdd?.lineAdded);
-          element.subscriptionLine = response.body.data?.subscriptionDraftLineAdd?.lineAdded?.id;
+          linesArray.push(response.data?.subscriptionDraftLineAdd?.lineAdded);
+          element.subscriptionLine = response.data?.subscriptionDraftLineAdd?.lineAdded?.id;
 
           if (i == values["lines"].length - 1) {
             req.newLines = { details: values.lines };
             next();                 
           }
-        } else if ( response.body.data?.subscriptionDraftLineAdd?.userErrors.length > 0 ) {
+        } else if ( response.data?.subscriptionDraftLineAdd?.userErrors.length > 0 ) {
             res.send({
             message: "error",
-            data: response.body.data?.subscriptionDraftLineAdd?.userErrors[0].message,
+            data: response.data?.subscriptionDraftLineAdd?.userErrors[0].message,
           });
 
           flag = true;
           break;
         }
       } catch (error) {
-        console.log("error too ", error?.response?.errors);
+        console.log("error too ", error);
         res.send({ message: "error", data: "Something went wrong" });
         flag = true;
         break;
@@ -3405,6 +2978,7 @@ export async function subscriptionDraftLineAdd(req, res, next) {
 
 export async function subscriptionDraftLineRemove(req, res, next) {
   try {
+    console.log('7june')
     let shop = res?.locals?.shopify?.session?.shop
       ? res?.locals?.shopify?.session?.shop
       : req?.body?.shop;
@@ -3435,24 +3009,21 @@ export async function subscriptionDraftLineRemove(req, res, next) {
       lineId: req?.body?.line,
     };
 
-    let response = await client.query({
-      data: {
-        query: mutationSubscriptionDraftLineRemove,
-        variables: InputSubscriptionDraftLineRemove,
-      },
-    });
+    let response = await client.request(mutationSubscriptionDraftLineRemove,{
+            variables: InputSubscriptionDraftLineRemove,
+       });
 
     if (
-      response?.body?.data?.subscriptionDraftLineRemove?.lineRemoved != null
+      response?.data?.subscriptionDraftLineRemove?.lineRemoved != null
     ) {
       next();
     } else if (
-      response?.body?.data?.subscriptionDraftLineRemove?.userErrors?.length > 0
+      response?.data?.subscriptionDraftLineRemove?.userErrors?.length > 0
     ) {     
       res.send({
         message: "error",
         toastMessage:
-          response.body.data?.subscriptionDraftLineRemove?.userErrors[0]
+          response.data?.subscriptionDraftLineRemove?.userErrors[0]
             .message,
       });
     }
@@ -3544,17 +3115,17 @@ export async function customerPaymentMethodSendUpdateEmail(req, res) {
       },
     };
 
-    let response = await client.query({
-      data: { query: mutationQuery, variables: Input },
+    let response = await client.request(mutationQuery,{
+       variables: Input 
     });
     
     if (
-      response?.body?.data?.customerPaymentMethodSendUpdateEmail?.userErrors
+      response?.data?.customerPaymentMethodSendUpdateEmail?.userErrors
         ?.length > 0
     ) {
       res.send({
         message: "error",
-        data: response?.body?.data?.customerPaymentMethodSendUpdateEmail
+        data: response?.data?.customerPaymentMethodSendUpdateEmail
           ?.userErrors[0].message,
       });
     } else {
@@ -3567,6 +3138,7 @@ export async function customerPaymentMethodSendUpdateEmail(req, res) {
     res.send({ message: "error", data: "Something went wrong" });
   }
 }
+
 
 export async function widgetSettings(req, res) {
   try {
@@ -4118,11 +3690,11 @@ export async function orderNow(req, res) {
       },
     });
 
-    let billingAttempt = await client.query({
-      data: { query: mutation, variables: Input },
+    let billingAttempt = await client.request(mutation,{
+      variables: Input 
     });  
 
-    if (billingAttempt.body.data.subscriptionBillingAttemptCreate.userErrors.length < 1 ) {  
+    if (billingAttempt.data.subscriptionBillingAttemptCreate.userErrors.length < 1 ) {  
       if (req.body.nextBillingDate) {
         let updateNextBillingDate =
           await subscriptionDetailsModal.findOneAndUpdate(
@@ -4145,8 +3717,9 @@ export async function orderNow(req, res) {
         contract_products: data.product_details,
         contract_id: data.subscription_id,
         billing_attempt_id:
-          billingAttempt.body.data.subscriptionBillingAttemptCreate
+          billingAttempt.data.subscriptionBillingAttemptCreate
             .subscriptionBillingAttempt.id,
+            attemptMode:'orderNow'
       });   
       res.send({ message: "success" });
     }
@@ -4197,6 +3770,7 @@ export async function skipOrder(req, res) {
 
 export async function retryFailedOrder(req, res) {
   try {   
+    console.log("inretryfailed")
     let shop = res?.locals?.shopify?.session?.shop
       ? res?.locals?.shopify?.session?.shop
       : req?.body?.shop;
@@ -4219,12 +3793,12 @@ export async function retryFailedOrder(req, res) {
       },
     });
 
-    let billingAttempt = await client.query({
-      data: { query: mutation, variables: Input },
+    let billingAttempt = await client.request(mutation,{
+     variables: Input
     });
 
     if (
-      billingAttempt.body.data.subscriptionBillingAttemptCreate.userErrors
+      billingAttempt.data.subscriptionBillingAttemptCreate.userErrors
         .length < 1
     ) {   
 
@@ -4247,15 +3821,16 @@ export async function retryFailedOrder(req, res) {
         contract_products: req?.body?.product_details,
         contract_id: req?.body?.subscription_id,
         billing_attempt_id:
-          billingAttempt.body.data.subscriptionBillingAttemptCreate
+          billingAttempt.data.subscriptionBillingAttemptCreate
             .subscriptionBillingAttempt.id,
+            attemptMode:'retriedAfterFailure'
       });
 
         res.send({ message: "success" });
     } else {    
       res.send({
         message: "userrerror",
-        data: billingAttempt.body.data.subscriptionBillingAttemptCreate
+        data: billingAttempt.data.subscriptionBillingAttemptCreate
           .userErrors[0].message,
       });
     }
@@ -4282,8 +3857,8 @@ export async function upcomingFulfillment(req, res) {
 
     // const client = new shopify.api.clients.Graphql({ session });
 
-    const data = await client.query({
-      data: `query {
+    const data = await client.request(
+     `query {
         subscriptionContract(id : ${subscription_id}){
             createdAt
             orders(first : 1, reverse:true){
@@ -4296,16 +3871,15 @@ export async function upcomingFulfillment(req, res) {
             }
         }
     }`,
-    });
+    );
 
     if (
-      data?.body?.data?.subscriptionContract?.orders?.edges[0]?.node?.id != null
+      data?.data?.subscriptionContract?.orders?.edges[0]?.node?.id != null
     ) {
       let order_id =
-        data?.body?.data?.subscriptionContract?.orders?.edges[0]?.node?.id;
+        data?.data?.subscriptionContract?.orders?.edges[0]?.node?.id;
       let id = '"' + order_id + '"';
-      const orderData = await client.query({
-        data: `{
+      const orderData = await client.request( `{
 
       order(id: ${id}){
 
@@ -4336,12 +3910,12 @@ export async function upcomingFulfillment(req, res) {
       }
 
   }`,
-      });
+  );
      
 
-      let orderNumber = orderData?.body?.data?.order?.name;
+      let orderNumber = orderData?.data?.order?.name;
       let contractIdAndLineItemsData =
-        orderData?.body?.data?.order?.lineItems?.edges;
+        orderData?.data?.order?.lineItems?.edges;
 
    
       const fulfillmentData = await shopify.api.rest.FulfillmentOrder.all({
@@ -4400,12 +3974,12 @@ export async function fulfillmentOrderRescheduleOrSkip(req, res) {
       id: "gid://shopify/FulfillmentOrder/" + req?.body?.id,
     };
 
-    let response = await client.query({
-      data: { query: mutationQuery, variables: Input },
+    let response = await client.request(mutationQuery,{
+      variables: Input 
     });
     
     if (
-      response?.body?.data?.fulfillmentOrderReschedule?.userErrors?.length == 0
+      response?.data?.fulfillmentOrderReschedule?.userErrors?.length == 0
     ) {
       if (req?.body?.nextBillingDate) {
         
@@ -4648,20 +4222,19 @@ export async function convertStoreProductPriceIntoOrderCurrency( req,res, next) 
     }
   }`;
 
-        try {
-          let data = await client.query({
-            data: currencyConversionQuery,
-          });         
-          let price = data?.body?.data?.productVariant?.contextualPricing?.price?.amount;
-          lines[index]["price"] = price;
-          return price;
-        } catch (error) {
-          console.error(
-            `Error fetching data for item at index ${index}: ${error}`
-          );
-          return null;
-        }
-      });
+  try {
+    let data = await client.request(currencyConversionQuery);         
+    let price = data?.data?.productVariant?.contextualPricing?.price?.amount;
+    lines[index]["price"] = price;
+    return price;
+  } catch (error) {
+    console.error(
+      `Error fetching data for item at index ${index}: ${error}`
+    );
+    return null;
+  }
+});
+
 
       // Wait for all promises to resolve
 
@@ -4762,12 +4335,10 @@ export async function recurringBiling(req, res) {
             }
         }`;
 
-    const response = await client.query({
-      data: recurringString,
-    });
+    const response = await client.request(recurringString);
 
-    if ( response && response?.body?.data?.appSubscriptionCreate?.userErrors.length > 0 ) {
-      res.send({message: "error",data: response?.body?.data?.appSubscriptionCreate?.userErrors[0]?.message,});
+    if ( response && response?.data?.appSubscriptionCreate?.userErrors.length > 0 ) {
+      res.send({message: "error",data: response?.data?.appSubscriptionCreate?.userErrors[0]?.message,});
     } else {
       res.status(200).send({ message: "success", url: response, interval: interval });
     }
@@ -4775,6 +4346,7 @@ export async function recurringBiling(req, res) {
     return res.json({ message: "INTERNAL_SERVER_ERROR", err: err.message });
   }
 }
+
 
 export async function recurringBilingSelected(req, res) {
   try {
@@ -4954,10 +4526,14 @@ export async function fetchDunningData(req,res){
   try{
     const shop = res.locals.shopify.session.shop;
     const data = await dunningModal.findOne({ shop });
+    // stagedUploadsCreateMutation(res.locals.shopify.session)
+    // bulk_operationsFinishWebhookSubscription(res.locals.shopify.session)
+    // bulkSetNextBillingDateMutation(res.locals.shopify.session,"tmp/67035398448/bulk/b396fd62-7fbc-4c34-a622-057e0c7319a4/Bulk_op_vars")
+    //  getBulkOperationUrl(res.locals.shopify.session)
     // upcomingOrders()
-    // paymentFailureEmail()
+    // paymentFailureEmail()  
     // failedPaymentRetryAttempt()
-   if(data)
+   if(data) 
    {
       res.send({message:"success",data:data})
    }
@@ -4971,6 +4547,7 @@ catch(error)
     res.send({ message: "error" });
   }
 }
+
 
 
 export async function getEmailTemplatesCount(req,res){
@@ -5521,7 +5098,6 @@ export async function addPlansSubscription(req, res) {
       sellingPlanGroup {
         id
         appId
-        productVariantCount
         sellingPlans(first: 30) {
           edges {
             node {
@@ -5556,16 +5132,16 @@ export async function addPlansSubscription(req, res) {
   `;
 
   try {
-    let response = await client.query({
-      data: { query: mutationQuery, variables: Input },
+    let response = await client.request(mutationQuery,{
+     variables: Input 
     });
 
-    if (response.body.data.sellingPlanGroupCreate.userErrors.length < 1) {
+    if (response.data.sellingPlanGroupCreate.userErrors.length < 1) {
       
       let planGroupId =
-        response.body.data.sellingPlanGroupCreate.sellingPlanGroup.id;
+        response.data.sellingPlanGroupCreate.sellingPlanGroup.id;
       let planIds =
-        response.body.data.sellingPlanGroupCreate.sellingPlanGroup.sellingPlans
+        response.data.sellingPlanGroupCreate.sellingPlanGroup.sellingPlans
           .edges;
 
       let planDetails = [];
@@ -5634,12 +5210,12 @@ export async function addPlansSubscription(req, res) {
           if (item.setupFee) {
             try {
               obj.setupPrice = item.setupPrice;
-              let createProduct = await client.query({
-                data: { query: productCreatemutation, variables: Input },
+              let createProduct = await client.request(productCreatemutation,{
+                variables: Input
               });
              
               let createdProductId =
-                createProduct.body.data.productCreate.product.id;
+                createProduct.data.productCreate.product.id;
               obj.setupProductId = createdProductId;
               planDetails.push(obj);
             } catch (err) {
@@ -5671,11 +5247,11 @@ export async function addPlansSubscription(req, res) {
         res.send({ message: "error", data: "Db error" });
       }
     } else if (
-      response.body.data.sellingPlanGroupCreate.userErrors.length > 0
+      response.data.sellingPlanGroupCreate.userErrors.length > 0
     ) {      
       res.send({
         message: "userError",
-        data: response.body.data.sellingPlanGroupCreate.userErrors,
+        data: response.data.sellingPlanGroupCreate.userErrors,
       });
     }
   } catch (error) {
@@ -6280,31 +5856,28 @@ id      }
   try {
     ///**********************/// update selling plan group mutation is fired here
    
-    let response = await client.query({
-      data: { query: mutationQuery, variables: Input },
+    let response = await client.request(mutationQuery,{
+      variables: Input 
     });    
 
-    if (response.body.data.sellingPlanGroupUpdate.userErrors.length > 0) {
+    if (response.data.sellingPlanGroupUpdate.userErrors.length > 0) {
       res.send({
         message: "userError",
-        data: response.body.data.sellingPlanGroupUpdate.userErrors,
+        data: response.data.sellingPlanGroupUpdate.userErrors,
       });
     } else {
       var planIds =
-        response.body.data.sellingPlanGroupUpdate.sellingPlanGroup.sellingPlans
+        response.data.sellingPlanGroupUpdate.sellingPlanGroup.sellingPlans
           .edges;
-      res.send({ message: "success", data: response.body.data });
+      res.send({ message: "success", data: response.data });
 
       if (variantsToDelete.length > 0) {
         try {
-          let response1 = await client.query({
-            data: {
-              query: varientDelete,
-              variables: {
+          let response1 = await client.request(varientDelete,{
+             variables: {
                 id: pid,
                 productVariantIds: variantsToDelete,
-              },
-            },
+              },           
           });
           
         } catch (err) {
@@ -6314,16 +5887,12 @@ id      }
 
       if (varientToAdd.length > 0) {
         try {
-          let response2 = await client.query({
-            data: {
-              query: varientAdd,
+          let response2 = await client.request(varientAdd,{
               variables: {
                 id: pid,
                 productVariantIds: varientToAdd,
-              },
-            },
-          });
-          
+              },          
+          });          
         } catch (err) {
           console.log(err.response.errors, "varientToAdd");
         }
@@ -6397,12 +5966,12 @@ id      }
       if (item.setupFee) {
         try {
           obj.setupPrice = item.setupPrice;
-          let createProduct = await client.query({
-            data: { query: productCreatemutation, variables: Input },
+          let createProduct = await client.request(productCreatemutation,{
+             variables: Input 
           });
           
           let createdProductId =
-            createProduct.body.data.productCreate.product.id;
+            createProduct.data.productCreate.product.id;
           obj.setupProductId = createdProductId;
         } catch (err) {
           console.log(err);
@@ -6505,19 +6074,19 @@ id      }
           
             if (check.plans[0].setupPrice != item.setupPrice) {
            
-              let updatedetails = await client.query({
-                data: { query: productUpdate, variables: updateInput },
+              let updatedetails = await client.request(productUpdate,{
+                 variables: updateInput 
               });              
             }
           } else {
            
             ///**********************/// if plan doesn't contain previously setup fee create new product for setup fee
             try {
-              let createProduct = await client.query({
-                data: { query: productCreatemutation, variables: Input },
+              let createProduct = await client.request(productCreatemutation,{
+                variables: Input 
               });            
               let createdProductId =
-                createProduct.body.data.productCreate.product.id;
+                createProduct.data.productCreate.product.id;
               obj.setupProductId = createdProductId;
             } catch (err) {}
           }
@@ -6535,16 +6104,13 @@ id      }
           );
          
           if (check.plans[0].setupProductId) {
-            let deleteSetupProduct = await client.query({
-              data: {
-                query: productDelete,
-                variables: {
+            let deleteSetupProduct = await client.request(productDelete,{
+                 variables: {
                   input: {
                     id: check.plans[0].setupProductId,
                   },
                 },
-              },
-            });
+               });
 
             delete obj.setupProductId;
             // updatedPlans.push(obj);
@@ -6559,16 +6125,13 @@ id      }
  
   if (deletedSetupProducts.length > 0) {
     deletedSetupProducts.map(async (item) => {
-      let deleteSetupProduct = await client.query({
-        data: {
-          query: productDelete,
-          variables: {
+      let deleteSetupProduct = await client.request(productDelete,{
+           variables: {
             input: {
               id: item,
             },
           },
-        },
-      });
+         });
     });
   }
 
@@ -6610,13 +6173,13 @@ export async function deleteSellingPlanGroup(req, res, next) {
   }`;
 
   try {
-    let response = await client.query({
-      data: { query: mutationQuery, variables: planId },
-    });
-    if (response.body.data.sellingPlanGroupDelete.userErrors.length > 0) {
+    let response = await client.request(mutationQuery,{
+                              variables: planId 
+                              });
+    if (response.data.sellingPlanGroupDelete.userErrors.length > 0) {
       res.send({
         message: "userError",
-        data: response.body.data.sellingPlanGroupDelete.userErrors,
+        data: response.data.sellingPlanGroupDelete.userErrors,
       });
     } else {
       next();
@@ -6658,14 +6221,11 @@ export async function findAndDeleteSetupProducts(req, res, next) {
      
       if (arr.length > 0) {
         for (let i = 0; i < arr.length; i++) {
-          let deleteSetupProduct = await client.query({
-            data: {
-              query: productDelete,
+          let deleteSetupProduct = await client.request(productDelete,{
               variables: {
                 input: {
                   id: arr[i],
-                },
-              },
+                }            
             },
           });
         }
@@ -6766,12 +6326,12 @@ export async function createProduct(req, res, next) {
   // let shop = res.locals.shopify.session.shop;
   let session = res.locals.shopify.session;
   // const client = new shopify.api.clients.Graphql({ session });
-  let name = req.body.name;
-  let price = req.body.price;
-  let check = req.body.check;
-  let quantity = req.body.quantity;
-
-  const product = new shopify.api.rest.Product({ session: session });
+  let {name, price, check, quantity } = req.body;
+console.log("name, price, check, quantity ",name, price, check, quantity )
+  const product = new shopify.api.rest.Product({
+    session
+  });
+  
   product.title = name;
   product.status = "active";
   product.variants = [
@@ -6786,7 +6346,9 @@ export async function createProduct(req, res, next) {
     let result = await product.save({
       update: true,
     });
+    console.log("result10june==>",product)
     if (req.body.check2 == "createProductSubscriptionEdit") {
+      console.log("iniffff10june")
       let pid = product?.admin_graphql_api_id;
 
       let vid = product?.variants[0].admin_graphql_api_id;
@@ -6821,7 +6383,8 @@ export async function createProduct(req, res, next) {
       console.log("first in createProduct");
       res.send({ message: "success", data: product });
     }
-  } catch (err) {
+  } catch (error) {
+    console.log("error",error)
     res.send({ message: "error", data: "Something went wrong" });
   }
 }
@@ -6966,7 +6529,6 @@ export async function CreatePlanFormForCheckout(req, res) {
       sellingPlanGroup {
         id
         appId
-        productVariantCount
         sellingPlans(first: 30) {
           edges {
             node {
@@ -6981,8 +6543,7 @@ export async function CreatePlanFormForCheckout(req, res) {
         message
       }
     }
-  }
-  
+  }  
   `;
 
   const Input = {
@@ -6998,25 +6559,25 @@ export async function CreatePlanFormForCheckout(req, res) {
   };
 
   try {
-    let response = await client.query({
-      data: { query: mutationQuery, variables: Input },
-    });
-    if (response.body.data.sellingPlanGroupCreate.userErrors.length > 0) {
+    let response = await client.request(mutationQuery,{
+            variables: Input 
+              });
+    if (response.data.sellingPlanGroupCreate.userErrors.length > 0) {
       res.send({
         message: "error",
-        data: response.body.data.sellingPlanGroupCreate.userErrors[0].message,
+        data: response.data.sellingPlanGroupCreate.userErrors[0].message,
       });
     } else {
       res.send({
         message: "success",
         data: {
-          plan: response.body.data.sellingPlanGroupCreate.sellingPlanGroup
+          plan: response.data.sellingPlanGroupCreate.sellingPlanGroup
             .sellingPlans,
           shop: shop,
         },
       });
 
-      let ids = response.body.data.sellingPlanGroupCreate.sellingPlanGroup;
+      let ids = response.data.sellingPlanGroupCreate.sellingPlanGroup;
       let plandetail = planDetails.subscription;
       plandetail.startDate = planDetails.startDate;
       let customerDetail = planDetails.customer_details;
@@ -7076,20 +6637,20 @@ export async function createCustomer(req, res) {
   };
 
   try {
-    let response = await client.query({
-      data: { query: mutationQuery, variables: Input },
-    });
+    let response = await client.request(mutationQuery,{
+                            variables: Input 
+                        });
 
-    if (response.body.data.customerCreate.userErrors.length > 0) {
+    if (response.data.customerCreate.userErrors.length > 0) {
       res.send({
         message: "error",
-        data: response.body.data.customerCreate.userErrors[0].message,
+        data: response.data.customerCreate.userErrors[0].message,
       });
     } else {
       res.send({
         message: "success",
         data: {
-          plan: response.body.data.customerCreate,
+          plan: response.data.customerCreate,
         },
       });
     }
@@ -7377,25 +6938,19 @@ export async function prodExRemoveVariants(req, res) {
     }`;
       let response1;
       if (VIds != undefined) {
-        response1 = await cli.query({
-          data: {
-            query: varientDelete,
-            variables: {
+        response1 = await cli.request(varientDelete,{
+          variables: {
               id: SId,
               productVariantIds: VIds,
             },
-          },
-        });
+          });
       } else if (SingleVid != undefined) {
-        response1 = await cli.query({
-          data: {
-            query: varientDelete,
-            variables: {
+        response1 = await cli.request(varientDelete,{
+           variables: {
               id: SId,
               productVariantIds: [SingleVid],
             },
-          },
-        });
+          });
       }
    
       if (response1) {
@@ -7459,6 +7014,7 @@ export async function prodExRemoveVariants(req, res) {
             plan_group_id: SId,
           });
         }
+
         res.send({
           message: "success",
           data: "Details saved successfully",
@@ -7518,12 +7074,10 @@ export async function prodExCreatePlan(req, res) {
           }
         }
         `;
-      let VIDs = await cli.query({
-        data: getproductVarientQuery,
-      });
+      let VIDs = await cli.request(getproductVarientQuery);
     
       let allVarianData = [];
-      VIDs.body.data.product.variants.edges.map((item) => {
+      VIDs.data.product.variants.edges.map((item) => {
         varientIds.push(item.node.id);
         allVarianData.push({
           id: item?.node?.id,
@@ -7534,7 +7088,7 @@ export async function prodExCreatePlan(req, res) {
       });
 
       if (req.body.vid == undefined) {
-        VIDs.body.data.product.variants.edges.map((item) => {
+        VIDs.data.product.variants.edges.map((item) => {
           varientIds.push(item.node.id);
         });
       } else {
@@ -7754,7 +7308,6 @@ mutation sellingPlanGroupCreate($input: SellingPlanGroupInput!,$resources:Sellin
     sellingPlanGroup {
       id
       appId
-      productVariantCount
       sellingPlans(first: 30) {
         edges {
           node {
@@ -7772,22 +7325,22 @@ mutation sellingPlanGroupCreate($input: SellingPlanGroupInput!,$resources:Sellin
 }
 
 `;
-      let createGroup = await cli.query({
-        data: { query: mutationQuery, variables: CreateInput },
+    let createGroup = await cli.request(mutationQuery,{
+          variables: CreateInput 
       });
-      if (createGroup.body.data.sellingPlanGroupCreate.userErrors.length > 0) {
+      if (createGroup.data.sellingPlanGroupCreate.userErrors.length > 0) {
       
         res.send({
           message: "error",
-          data: createGroup.body.data.sellingPlanGroupCreate.userErrors[0]
+          data: createGroup.data.sellingPlanGroupCreate.userErrors[0]
             .message,
         });
       } else {
        
         let planGroupId =
-          createGroup.body.data.sellingPlanGroupCreate.sellingPlanGroup.id;
+          createGroup.data.sellingPlanGroupCreate.sellingPlanGroup.id;
         let planIds =
-          createGroup.body.data.sellingPlanGroupCreate.sellingPlanGroup
+          createGroup.data.sellingPlanGroupCreate.sellingPlanGroup
             .sellingPlans.edges;
 
         let dbArr = [];
@@ -7818,10 +7371,10 @@ mutation sellingPlanGroupCreate($input: SellingPlanGroupInput!,$resources:Sellin
         }
         let productlist = {
           product_id: req.body.pid,
-          product_name: VIDs.body.data.product.title,
-          product_image: VIDs.body.data.product?.images?.edges[0]?.node?.url,
-          hasOnlyDefaultVariant: VIDs.body.data.product.hasOnlyDefaultVariant,
-          handle: VIDs.body.data.product.handle,
+          product_name: VIDs.data.product.title,
+          product_image: VIDs.data.product?.images?.edges[0]?.node?.url,
+          hasOnlyDefaultVariant: VIDs.data.product.hasOnlyDefaultVariant,
+          handle: VIDs.data.product.handle,
           variants: variants,
         };
         let object = {
@@ -7833,6 +7386,7 @@ mutation sellingPlanGroupCreate($input: SellingPlanGroupInput!,$resources:Sellin
         };
 
         let saveData = await planModal.create(object);
+        console.log("11june2024")
         if (saveData) {
           res.send({ message: "success", data: "Plan created successfully" });
         }
@@ -8329,20 +7883,20 @@ export async function prodExPlanUpdate(req, res) {
 
       ///**********************/// update selling plan group mutation is fired here
       
-      let response = await cli.query({
-        data: { query: mutationQuery, variables: Input },
+      let response = await cli.request(mutationQuery,{
+         variables: Input 
       });
    
-      if (response.body.data.sellingPlanGroupUpdate.userErrors.length > 0) {
+      if (response.data.sellingPlanGroupUpdate.userErrors.length > 0) {
         res.send({
           message: "userError",
-          data: response.body.data.sellingPlanGroupUpdate.userErrors[0].message,
+          data: response.data.sellingPlanGroupUpdate.userErrors[0].message,
         });
       } else {
         var planIds =
-          response.body.data.sellingPlanGroupUpdate.sellingPlanGroup
+          response.data.sellingPlanGroupUpdate.sellingPlanGroup
             .sellingPlans.edges;
-        res.send({ message: "success", data: response.body.data });
+        res.send({ message: "success", data: response.data });
 
         let planDetails = [];
         await Promise.all(
@@ -8463,11 +8017,8 @@ export async function prodExAddProduct(req, res) {
       }
     }
     `;
-      let VIDs = await cli.query({
-        data: getproductVarientQuery,
-      });
-    
-      VIDs.body.data.product.variants.edges.map((item) => {
+      let VIDs = await cli.request(getproductVarientQuery);
+      VIDs.data.product.variants.edges.map((item) => {
         variants.push(item.node.id);
       });
     } else {
@@ -8488,14 +8039,11 @@ id      }
  
     try {
       req.body.selectedPlans?.map(async (item, index) => {
-        let response2 = await cli.query({
-          data: {
-            query: varientAdd,
-            variables: {
+        let response2 = await cli.request(varientAdd,{
+           variables: {
               id: item,
               productVariantIds: variants,
-            },
-          },
+            },        
         });
   
         if (index + 1 == req.body.selectedPlans.length) {
@@ -8744,11 +8292,9 @@ export async function sendInvoiceMailAndSaveContract(req, res) {
       let saveDetails = await invoice_all_details.findOne({
         shop: getorder.shop,
       });
-      let orderQueryData = await client.query({
-        data: orderQuery,
-      });
-      // console.log( orderQueryData.body.data.node.shippingAddress,"detailssssssss");
-      let orderDetails = orderQueryData.body.data.node;
+      let orderQueryData = await client.request(orderQuery);
+      // console.log( orderQueryData.data.node.shippingAddress,"detailssssssss");
+      let orderDetails = orderQueryData.data.node;
 
       //////////////////getiing contracts related to order
 
@@ -8882,10 +8428,8 @@ export async function sendInvoiceMailAndSaveContract(req, res) {
               }
             }`;
 
-          let contractData = await client.query({
-            data: mutation,
-          });
-          // console.log(contractData.body.data.subscriptionContract?.billingPolicy,"mutationn" );
+          let contractData = await client.request(mutation);
+          // console.log(contractData.data.subscriptionContract?.billingPolicy,"mutationn" );
           
           ///////////////////getting autao renew from db
           let autoRenewState = await planModal.findOne(
@@ -8894,7 +8438,7 @@ export async function sendInvoiceMailAndSaveContract(req, res) {
               plans: {
                 $elemMatch: {
                   plan_id:
-                    contractData.body.data.subscriptionContract.lines.edges[0]
+                    contractData.data.subscriptionContract.lines.edges[0]
                       .node.sellingPlanId,
                 }, // Replace with the plan_id you want to filter by
               },
@@ -8907,23 +8451,23 @@ export async function sendInvoiceMailAndSaveContract(req, res) {
          
           let products = [];
           let plantype =
-            contractData.body.data.subscriptionContract?.billingPolicy
+            contractData.data.subscriptionContract?.billingPolicy
               ?.intervalCount ==
-            contractData.body.data.subscriptionContract?.deliveryPolicy
+            contractData.data.subscriptionContract?.deliveryPolicy
               ?.intervalCount
               ? "payAsYouGo"
               : "prepaid";
-          contractData.body.data.subscriptionContract.lines.edges.map((el) => {
+          contractData.data.subscriptionContract.lines.edges.map((el) => {
             let price = Number(el.node.currentPrice?.amount);
             // console.log(el.node.currentPrice?.amount,"el.node.currentPrice?.amount");
             if (plantype == "prepaid") {
               let deliveries =
                 Number(
-                  contractData.body.data.subscriptionContract?.billingPolicy
+                  contractData.data.subscriptionContract?.billingPolicy
                     ?.intervalCount
                 ) /
                 Number(
-                  contractData.body.data.subscriptionContract?.deliveryPolicy
+                  contractData.data.subscriptionContract?.deliveryPolicy
                     ?.intervalCount
                 );
               price = Number(el.node.currentPrice?.amount) / deliveries;
@@ -8944,11 +8488,11 @@ export async function sendInvoiceMailAndSaveContract(req, res) {
                 if (plantype == "prepaid") {
                   let deliveries =
                     Number(
-                      contractData.body.data.subscriptionContract?.billingPolicy
+                      contractData.data.subscriptionContract?.billingPolicy
                         ?.intervalCount
                     ) /
                     Number(
-                      contractData.body.data.subscriptionContract
+                      contractData.data.subscriptionContract
                         ?.deliveryPolicy?.intervalCount
                     );
                   price = Number(computedPrice) / deliveries;
@@ -8988,7 +8532,7 @@ export async function sendInvoiceMailAndSaveContract(req, res) {
           ////////check max billing value funcionility////////////
 
           if (
-            contractData.body.data.subscriptionContract?.billingPolicy
+            contractData.data.subscriptionContract?.billingPolicy
               ?.maxCycles == 1
           ) {
             
@@ -9006,16 +8550,16 @@ export async function sendInvoiceMailAndSaveContract(req, res) {
             const Input1 = {
               contractId: contract?.contractID,
             };
-            let response1 = await client.query({
-              data: { query: mutationQuery, variables: Input1 },
-            });
-            
+            let response1 = await client.request(mutationQuery,{
+                    variables: Input1 
+                  });
+                  
             if (
-              response1.body.data?.subscriptionContractUpdate?.userErrors
+              response1.data?.subscriptionContractUpdate?.userErrors
                 .length < 1
             ) {
               let draftID =
-                response1.body.data.subscriptionContractUpdate?.draft?.id;
+                response1.data.subscriptionContractUpdate?.draft?.id;
 
               const mutationQuery = `mutation subscriptionDraftUpdate($draftId: ID!, $input: SubscriptionDraftInput!) {
     subscriptionDraftUpdate(draftId: $draftId, input: $input) {
@@ -9034,12 +8578,12 @@ export async function sendInvoiceMailAndSaveContract(req, res) {
                 draftId: draftID,
                 input: { status: "PAUSED" },
               };
-              let response2 = await client.query({
-                data: { query: mutationQuery, variables: Input },
-              });
+              let response2 = await client.request(mutationQuery,{
+                      variables: Input 
+                    });
 
               if (
-                response2.body.data?.subscriptionDraftUpdate?.userErrors
+                response2.data?.subscriptionDraftUpdate?.userErrors
                   .length < 1
               ) {
                 
@@ -9059,15 +8603,11 @@ export async function sendInvoiceMailAndSaveContract(req, res) {
                 const InputMutationSubscriptionDraftCommit = {
                   draftId: draftID,
                 };
-                let response3 = await client.query({
-                  data: {
-                    query: mutationSubscriptionDraftCommit,
-                    variables: InputMutationSubscriptionDraftCommit,
-                  },
-                });
-
+                let response3 = await client.request(mutationSubscriptionDraftCommit,{
+                       variables: InputMutationSubscriptionDraftCommit,
+                          });
                 if (
-                  response2.body.data?.subscriptionDraftCommit?.userErrors
+                  response3?.data?.subscriptionDraftCommit?.userErrors
                     .length < 1
                 ) {
                   
@@ -9086,7 +8626,7 @@ export async function sendInvoiceMailAndSaveContract(req, res) {
 
           ////////////////////////
 
-          let allData = contractData.body.data.subscriptionContract;
+          let allData = contractData.data.subscriptionContract;
           // console.log(allData, "productsswwewesss");
           let updatedBillingAddress = {
             ...orderDetails?.billingAddress,
@@ -9112,36 +8652,36 @@ export async function sendInvoiceMailAndSaveContract(req, res) {
             billing_address: updatedBillingAddress,
             subscription_details: {
               planName:
-                contractData?.body?.data?.subscriptionContract?.lines?.edges[0]
+                contractData?.data?.subscriptionContract?.lines?.edges[0]
                   ?.node?.sellingPlanName,
               planType:
-                contractData.body.data.subscriptionContract?.billingPolicy
+                contractData.data.subscriptionContract?.billingPolicy
                   ?.intervalCount ==
-                contractData.body.data.subscriptionContract?.deliveryPolicy
+                contractData.data.subscriptionContract?.deliveryPolicy
                   ?.intervalCount
                   ? "payAsYouGo"
                   : "prepaid",
               billingLength:
-                contractData.body.data.subscriptionContract?.billingPolicy
+                contractData.data.subscriptionContract?.billingPolicy
                   ?.intervalCount,
               delivery_billingType:
-                contractData.body.data.subscriptionContract?.billingPolicy
+                contractData.data.subscriptionContract?.billingPolicy
                   ?.interval,
               delivery_billingValue:
-                contractData.body.data.subscriptionContract?.deliveryPolicy
+                contractData.data.subscriptionContract?.deliveryPolicy
                   ?.intervalCount,
               currency: getCurrencySymbol(
                 orderDetails.subtotalPriceSet.presentmentMoney.currencyCode
               ),
               billingMaxValue:
-                contractData.body.data.subscriptionContract?.billingPolicy
+                contractData.data.subscriptionContract?.billingPolicy
                   ?.maxCycles,
               billingMinValue:
-                contractData.body.data.subscriptionContract?.billingPolicy
+                contractData.data.subscriptionContract?.billingPolicy
                   ?.minCycles,
               autoRenew: autoRenewState?.plans[0]?.billingCycle,
               currency:
-                contractData.body.data.subscriptionContract.originOrder
+                contractData.data.subscriptionContract.originOrder
                   .totalPriceSet.presentmentMoney.currencyCode,
             },
             product_details: products,
@@ -9152,47 +8692,47 @@ export async function sendInvoiceMailAndSaveContract(req, res) {
             },
             nextBillingDate: allData?.nextBillingDate,
             status:
-              contractData.body.data.subscriptionContract?.billingPolicy
+              contractData.data.subscriptionContract?.billingPolicy
                 ?.maxCycles == 1
                 ? "PAUSED"
                 : "active",
           };     
 
           if (
-            contractData?.body?.data?.subscriptionContract?.lines?.edges[0]
+            contractData?.data?.subscriptionContract?.lines?.edges[0]
               ?.node?.pricingPolicy
           ) {
             let policies;
             let discountvalue;
 
             if (
-              contractData?.body?.data?.subscriptionContract?.lines?.edges[0]
+              contractData?.data?.subscriptionContract?.lines?.edges[0]
                 ?.node?.pricingPolicy?.cycleDiscounts.length == 1
             ) {
               policies =
-                contractData?.body?.data?.subscriptionContract?.lines?.edges[0]
+                contractData?.data?.subscriptionContract?.lines?.edges[0]
                   ?.node?.pricingPolicy?.cycleDiscounts[0];
 
               discountvalue =
-                contractData?.body?.data?.subscriptionContract?.lines?.edges[0]
+                contractData?.data?.subscriptionContract?.lines?.edges[0]
                   ?.node?.pricingPolicy?.cycleDiscounts[0]?.adjustmentValue;
             } else {
               policies =
-                contractData?.body?.data?.subscriptionContract?.lines?.edges[0]
+                contractData?.data?.subscriptionContract?.lines?.edges[0]
                   ?.node?.pricingPolicy?.cycleDiscounts[1];
 
               discountvalue =
-                contractData?.body?.data?.subscriptionContract?.lines?.edges[0]
+                contractData?.data?.subscriptionContract?.lines?.edges[0]
                   ?.node?.pricingPolicy?.cycleDiscounts[1]?.adjustmentValue;
               let freeTrial =
-                contractData?.body?.data?.subscriptionContract?.lines?.edges[0]
+                contractData?.data?.subscriptionContract?.lines?.edges[0]
                   ?.node?.pricingPolicy?.cycleDiscounts[1]?.afterCycle;
               // obj.subscription_details.freeTrial = freeTrial;
 
               if (parseInt(freeTrial) == 1) {
                 obj.subscription_details.freeTrialStatus = true;
 
-                contractData?.body?.data?.subscriptionContract?.lines?.edges.forEach(
+                contractData?.data?.subscriptionContract?.lines?.edges.forEach(
                   async (item, index) => {
                     const mutationQuery = `mutation subscriptionContractUpdate($contractId: ID!) {
                     subscriptionContractUpdate(contractId: $contractId) {             
@@ -9208,17 +8748,16 @@ export async function sendInvoiceMailAndSaveContract(req, res) {
                     const Input1 = {
                       contractId: contract.contractID,
                     };
-                    let response1 = await client.query({
-                      data: { query: mutationQuery, variables: Input1 },
-                    });
-                  
+                    let response1 = await client.request(mutationQuery,{
+                            variables: Input1 
+                            });                  
                     if (
-                      response1.body.data?.subscriptionContractUpdate
+                      response1.data?.subscriptionContractUpdate
                         ?.userErrors.length < 1
                     ) {
                     
                       let draftID =
-                        response1.body.data.subscriptionContractUpdate?.draft
+                        response1.data.subscriptionContractUpdate?.draft
                           ?.id;
 
                       const mutationQuery = `mutation subscriptionDraftLineUpdate($draftId: ID!, $input: SubscriptionLineUpdateInput!, $lineId: ID!) {
@@ -9252,12 +8791,12 @@ export async function sendInvoiceMailAndSaveContract(req, res) {
                         lineId: item?.node?.id,
                       };
 
-                      let response2 = await client.query({
-                        data: { query: mutationQuery, variables: Input },
-                      });
+                      let response2 = await client.request(mutationQuery,{
+                                        variables: Input 
+                                      });
 
                       if (
-                        response2.body.data?.subscriptionDraftLineUpdate
+                        response2.data?.subscriptionDraftLineUpdate
                           ?.userErrors.length < 1
                       ) {
                        
@@ -9277,12 +8816,9 @@ export async function sendInvoiceMailAndSaveContract(req, res) {
                         const InputMutationSubscriptionDraftCommit = {
                           draftId: draftID,
                         };
-                        let response3 = await client.query({
-                          data: {
-                            query: mutationSubscriptionDraftCommit,
-                            variables: InputMutationSubscriptionDraftCommit,
-                          },
-                        });
+                        let response3 = await client.request(mutationSubscriptionDraftCommit,{
+                               variables: InputMutationSubscriptionDraftCommit
+                              });
 
                       }
                     }
@@ -9314,6 +8850,7 @@ export async function sendInvoiceMailAndSaveContract(req, res) {
           }
 
           const currentDate = new Date().toISOString();
+       
           let saveToBillingAttempt = await billing_Attempt.create({
             shop: getorder.shop,
             status: "initial",
@@ -9321,29 +8858,29 @@ export async function sendInvoiceMailAndSaveContract(req, res) {
             renewal_date: currentDate,
             contract_products: products,
             order_id:
-              contractData.body.data.subscriptionContract.originOrder.id,
+              contractData.data.subscriptionContract.originOrder.id,
             order_no:
-              contractData.body.data.subscriptionContract.originOrder.name,
+              contractData.data.subscriptionContract.originOrder.name,
             contract_id: contract.contractID,
             currency:
-              contractData.body.data.subscriptionContract.originOrder
+              contractData.data.subscriptionContract.originOrder
                 .totalPriceSet.presentmentMoney.currencyCode,
             total_amount:
-              contractData.body.data.subscriptionContract.originOrder
+              contractData.data.subscriptionContract.originOrder
                 .totalPriceSet.presentmentMoney.amount,
           });
           ///////////////// check max to pause start////////////////////////
          
           if (
-            contractData.body.data.subscriptionContract?.billingPolicy
+            contractData.data.subscriptionContract?.billingPolicy
               ?.maxCycles != undefined &&
-            contractData.body.data.subscriptionContract?.billingPolicy
+            contractData.data.subscriptionContract?.billingPolicy
               ?.maxCycles != null
           ) {
             if (
               1 ==
               parseInt(
-                contractData.body.data.subscriptionContract?.billingPolicy
+                contractData.data.subscriptionContract?.billingPolicy
                   ?.maxCycles
               )
             ) {
@@ -9356,23 +8893,23 @@ export async function sendInvoiceMailAndSaveContract(req, res) {
                     userErrors {
                     field
                     message
-                  }v
+                  }
                 }
               }`;
               const Input1 = {
                 contractId: contract.contractID,
               };
-              let response1 = await client.query({
-                data: { query: mutationQuery, variables: Input1 },
-              });
+              let response1 = await client.request(mutationQuery,{
+                        variables: Input1 
+                      });
              
               if (
-                response1.body.data?.subscriptionContractUpdate?.userErrors
+                response1.data?.subscriptionContractUpdate?.userErrors
                   .length < 1
               ) {
                
                 let draftID =
-                  response1.body.data.subscriptionContractUpdate?.draft?.id;
+                  response1.data.subscriptionContractUpdate?.draft?.id;
 
                 const mutationQuery = `mutation subscriptionDraftUpdate($draftId: ID!, $input: SubscriptionDraftInput!) {
                   subscriptionDraftUpdate(draftId: $draftId, input: $input) {
@@ -9391,12 +8928,12 @@ export async function sendInvoiceMailAndSaveContract(req, res) {
                   draftId: draftID,
                   input: { status: "PAUSED" },
                 };
-                let response2 = await client.query({
-                  data: { query: mutationQuery, variables: Input },
-                });
+                let response2 = await client.request(mutationQuery,{
+                      variables: Input 
+                    });
 
                 if (
-                  response2.body.data?.subscriptionDraftUpdate?.userErrors
+                  response2.data?.subscriptionDraftUpdate?.userErrors
                     .length < 1
                 ) {
                   let mutationSubscriptionDraftCommit = `mutation subscriptionDraftCommit($draftId: ID!) {
@@ -9415,11 +8952,8 @@ export async function sendInvoiceMailAndSaveContract(req, res) {
                   const InputMutationSubscriptionDraftCommit = {
                     draftId: draftID,
                   };
-                  let response3 = await client.query({
-                    data: {
-                      query: mutationSubscriptionDraftCommit,
-                      variables: InputMutationSubscriptionDraftCommit,
-                    },
+                  let response3 = await client.request(mutationSubscriptionDraftCommit,{
+                          variables: InputMutationSubscriptionDraftCommit                    
                   });
                 }
               }
@@ -9470,19 +9004,13 @@ export async function sendInvoiceMailAndSaveContract(req, res) {
           tags: ["revlytic-subscription"],
         };
 
-        let addOrderTag = await client.query({
-          data: {
-            query: addTagMutation,
-            variables: orderTagInput,
-          },
+        let addOrderTag = await client.request(addTagMutation,{
+               variables: orderTagInput
+              });
+        let addCustomerTag = await client.request(addTagMutation,{
+              variables: customerTagInput,
         });
-        let addCustomerTag = await client.query({
-          data: {
-            query: addTagMutation,
-            variables: customerTagInput,
-          },
-        });
-
+        
         details = {
           email: orderDetails.email,
           bill_to: {
@@ -9498,18 +9026,17 @@ export async function sendInvoiceMailAndSaveContract(req, res) {
               (orderDetails.billingAddress.address1 != undefined
                 ? orderDetails.billingAddress.address1
                 : "") +
-              " " +
-              (orderDetails.billingAddress.address2 != undefined
+                " " +
+                orderDetails.billingAddress.address2 !=
+              undefined
                 ? orderDetails.billingAddress.address2
-                : ""),
+                : "",
             address2:
-              (orderDetails.billingAddress.city != undefined
+              orderDetails.billingAddress.city != undefined
                 ? orderDetails.billingAddress.city
-                : "") +
-              "-" +
-              (orderDetails.billingAddress.zip != undefined
+                : "" + "-" + orderDetails.billingAddress.zip != undefined
                 ? orderDetails.billingAddress.zip
-                : ""),
+                : "",
 
             province:
               orderDetails.billingAddress.province != undefined
@@ -9643,18 +9170,15 @@ export async function sendInvoiceMailAndSaveContract(req, res) {
 
             if (sendMailToCustomer || sendMailToMerchant) {
               let recipientMails = [];
-
               if (sendMailToMerchant) {
                 let storeData = await getStoreDetails(getorder.shop);
                 shopEmail = storeData.store_email;
-                shopName = storeData.store_name;
-                
+                shopName = storeData.store_name;                
                 recipientMails.push(shopEmail);
                 getData.shopEmail = shopEmail;
                 getData.shopName = shopName;
               }
-              if (sendMailToCustomer) {
-               
+              if (sendMailToCustomer) {               
                 recipientMails.push(getData.customer_email);
               }
            
@@ -9681,8 +9205,6 @@ export async function sendInvoiceMailAndSaveContract(req, res) {
               );
             }
           }
-
-
           if (subscriptionPurchasedTemplateData && saveDetails.components[17]) {
             let sendMailToCustomer =
               subscriptionPurchasedTemplateData?.settings?.subscriptionInvoice
@@ -9733,18 +9255,15 @@ export async function sendInvoiceMailAndSaveContract(req, res) {
               );
             }
           }
-
         } catch (error) {
           console.log("error", error);
         }
-
       }
     }
   } catch (err) {
     console.error("Error in fetching orders", err);
   }
 }
-
 export async function checkAppBlock(req,res) {
   try {
     let {shop}=res.locals.shopify.session;
