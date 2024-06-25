@@ -130,7 +130,6 @@ export async function sendMailOnUpdate(others, app, extra) {
             requireTLS: true,
           };
         }
-
         emailConfig = {
           host: configurationData.host,
           port: parseInt(configurationData.portNumber),

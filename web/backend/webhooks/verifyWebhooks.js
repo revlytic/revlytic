@@ -738,31 +738,24 @@ export async function verifyWebhooks(req, res) {
             let meta_field_value_not;
             let theme_block_support;
             let theme_block_support_not;
-            const client = new shopify.api.clients.Rest({
-              session: {
-                shop: shop,
-                accessToken: gettoken.accessToken,
-              },
-            });
+
             try {
-              const theme = await client.get({ path: "themes", type: "json" });
-              const themeId = theme.body.themes.find(
-                (el) => el.role === "main"
-              );
-
-              getThemeId = themeId?.id;
-              const getAssetsData = await client.get({
-                path: `themes/${themeId.id}/assets`,
-                type: DataType.JSON,
+              console.log("nahidd");
+              let themes = await shopify.api.rest.Theme.all({
+                session: {
+                  shop: shop,
+                  accessToken: gettoken.accessToken,
+                },
               });
-
-              const findJsonTemplate = getAssetsData.body.assets.find(
-                (asset) => {
-                  return asset.key === "templates/product.json";
-                }
-              );
-
-              themeType = findJsonTemplate === undefined ? "vintage" : "modern";
+              const themeId = themes.data.find((el) => el.role === "main");
+              console.log("themeid---->", themeId);
+              getThemeId = themeId?.id;
+              let themeData = await shopify.api.rest.Asset.all({
+                session: session,
+                theme_id: getThemeId,
+                asset: { key: "templates/product.json" },
+              });
+              themeType = themeData === undefined ? "vintage" : "modern";
 
               if (themeType === "modern") {
                 theme_block_support = "support_theme_block";
@@ -795,12 +788,9 @@ export async function verifyWebhooks(req, res) {
             });
 
             try {
-              const response = await Client.query({
-                data: { query: app_query },
-              });
-
-              if (response.body.data.appInstallation.id) {
-                let app_installation_id = response.body.data.appInstallation.id;
+              const response = await Client.request(app_query);
+              if (response.data.appInstallation.id) {
+                let app_installation_id = response.data.appInstallation.id;
                 let createAppDataMetafieldMutation = `mutation CreateAppDataMetafield($metafieldsSetInput: [MetafieldsSetInput!]!) {
                                                 metafieldsSet(metafields: $metafieldsSetInput) {
                                                   metafields {
@@ -837,12 +827,12 @@ export async function verifyWebhooks(req, res) {
                 };
 
                 try {
-                  const result = await Client.query({
-                    data: {
-                      query: createAppDataMetafieldMutation,
+                  const result = await Client.request(
+                    createAppDataMetafieldMutation,
+                    {
                       variables: Input,
-                    },
-                  });
+                    }
+                  );
                 } catch (error) {
                   throw error;
                 }
@@ -975,9 +965,7 @@ export async function verifyWebhooks(req, res) {
                 }
               }
             }`;
-            let orderData = await client.query({
-              data: query,
-            });
+            let orderData = await client.request(query);
 
             let billing_attempt_success =
               await billing_Attempt.findOneAndUpdate(
@@ -991,13 +979,13 @@ export async function verifyWebhooks(req, res) {
                   status: "success",
                   order_id: body.admin_graphql_api_order_id,
                   billing_response_date: currentDate,
-                  order_no: orderData.body.data.order.name,
+                  order_no: orderData.data.order.name,
                   total_amount:
-                    orderData.body.data.order.currentTotalPriceSet
-                      .presentmentMoney.amount,
+                    orderData.data.order.currentTotalPriceSet.presentmentMoney
+                      .amount,
                   currency:
-                    orderData.body.data.order.currentTotalPriceSet
-                      .presentmentMoney.currencyCode,
+                    orderData.data.order.currentTotalPriceSet.presentmentMoney
+                      .currencyCode,
                 }
               );
 
@@ -1012,7 +1000,6 @@ export async function verifyWebhooks(req, res) {
 
             ////////auto renew check
             if (getMaxCycle?.subscription_details?.autoRenew == false) {
-              console.log("ander aa gya haiiiiii");
               const mutationQuery = `mutation subscriptionContractUpdate($contractId: ID!) {
                             subscriptionContractUpdate(contractId: $contractId) {             
                               draft {            
@@ -1027,16 +1014,16 @@ export async function verifyWebhooks(req, res) {
               const Input1 = {
                 contractId: body.admin_graphql_api_subscription_contract_id,
               };
-              let response1 = await client.query({
-                data: { query: mutationQuery, variables: Input1 },
+              let response1 = await client.request(mutationQuery, {
+                variables: Input1,
               });
 
               if (
-                response1.body.data?.subscriptionContractUpdate?.userErrors
-                  .length < 1
+                response1.data?.subscriptionContractUpdate?.userErrors.length <
+                1
               ) {
                 let draftID =
-                  response1.body.data.subscriptionContractUpdate?.draft?.id;
+                  response1.data.subscriptionContractUpdate?.draft?.id;
 
                 const mutationQuery = `mutation subscriptionDraftUpdate($draftId: ID!, $input: SubscriptionDraftInput!) {
                             subscriptionDraftUpdate(draftId: $draftId, input: $input) {
@@ -1055,13 +1042,12 @@ export async function verifyWebhooks(req, res) {
                   draftId: draftID,
                   input: { status: "PAUSED" },
                 };
-                let response2 = await client.query({
-                  data: { query: mutationQuery, variables: Input },
+                let response2 = await client.request(mutationQuery, {
+                  variables: Input,
                 });
 
                 if (
-                  response2.body.data?.subscriptionDraftUpdate?.userErrors
-                    .length < 1
+                  response2.data?.subscriptionDraftUpdate?.userErrors.length < 1
                 ) {
                   let mutationSubscriptionDraftCommit = `mutation subscriptionDraftCommit($draftId: ID!) {
                                             subscriptionDraftCommit(draftId: $draftId) {
@@ -1079,16 +1065,16 @@ export async function verifyWebhooks(req, res) {
                   const InputMutationSubscriptionDraftCommit = {
                     draftId: draftID,
                   };
-                  let response3 = await client.query({
-                    data: {
-                      query: mutationSubscriptionDraftCommit,
+                  let response3 = await client.request(
+                    mutationSubscriptionDraftCommit,
+                    {
                       variables: InputMutationSubscriptionDraftCommit,
-                    },
-                  });
+                    }
+                  );
 
                   if (
-                    response2.body.data?.subscriptionDraftCommit?.userErrors
-                      .length < 1
+                    response3.data?.subscriptionDraftCommit?.userErrors.length <
+                    1
                   ) {
                     let updateTable =
                       await subscriptionDetailsModal.findOneAndUpdate(
@@ -1117,7 +1103,6 @@ export async function verifyWebhooks(req, res) {
                 parseInt(count) ==
                 parseInt(getMaxCycle.subscription_details.billingMaxValue)
               ) {
-                console.log("ander aa gya haiiiiii");
                 const mutationQuery = `mutation subscriptionContractUpdate($contractId: ID!) {
                 subscriptionContractUpdate(contractId: $contractId) {             
                   draft {            
@@ -1132,16 +1117,16 @@ export async function verifyWebhooks(req, res) {
                 const Input1 = {
                   contractId: body.admin_graphql_api_subscription_contract_id,
                 };
-                let response1 = await client.query({
-                  data: { query: mutationQuery, variables: Input1 },
+                let response1 = await client.request(mutationQuery, {
+                  variables: Input1,
                 });
 
                 if (
-                  response1.body.data?.subscriptionContractUpdate?.userErrors
+                  response1.data?.subscriptionContractUpdate?.userErrors
                     .length < 1
                 ) {
                   let draftID =
-                    response1.body.data.subscriptionContractUpdate?.draft?.id;
+                    response1.data.subscriptionContractUpdate?.draft?.id;
 
                   const mutationQuery = `mutation subscriptionDraftUpdate($draftId: ID!, $input: SubscriptionDraftInput!) {
                   subscriptionDraftUpdate(draftId: $draftId, input: $input) {
@@ -1160,13 +1145,13 @@ export async function verifyWebhooks(req, res) {
                     draftId: draftID,
                     input: { status: "PAUSED" },
                   };
-                  let response2 = await client.query({
-                    data: { query: mutationQuery, variables: Input },
+                  let response2 = await client.request(mutationQuery, {
+                    variables: Input,
                   });
 
                   if (
-                    response2.body.data?.subscriptionDraftUpdate?.userErrors
-                      .length < 1
+                    response2.data?.subscriptionDraftUpdate?.userErrors.length <
+                    1
                   ) {
                     let mutationSubscriptionDraftCommit = `mutation subscriptionDraftCommit($draftId: ID!) {
                   subscriptionDraftCommit(draftId: $draftId) {
@@ -1184,19 +1169,20 @@ export async function verifyWebhooks(req, res) {
                     const InputMutationSubscriptionDraftCommit = {
                       draftId: draftID,
                     };
-                    let response3 = await client.query({
-                      data: {
-                        query: mutationSubscriptionDraftCommit,
+
+                    let response3 = await client.request(
+                      mutationSubscriptionDraftCommit,
+                      {
                         variables: InputMutationSubscriptionDraftCommit,
-                      },
-                    });
+                      }
+                    );
 
                     if (
-                      response2.body.data?.subscriptionDraftCommit?.userErrors
+                      response3.data?.subscriptionDraftCommit?.userErrors
                         .length < 1
                     ) {
                       let updateTable =
-                        subscriptionDetailsModal.findOneAndUpdate(
+                        await subscriptionDetailsModal.findOneAndUpdate(
                           {
                             shop: shop,
                             subscription_id: `gid://shopify/SubscriptionContract/${body.subscription_contract_id}`,
@@ -1475,7 +1461,7 @@ export async function verifyWebhooks(req, res) {
                   );
                 }
               } else {
-                console.log("jdfksdjfs;l nodata found");
+                console.log("nodata found");
               }
               res.status(200).json({ message: "Updated Successfully!" });
             }
@@ -1528,6 +1514,24 @@ export async function verifyWebhooks(req, res) {
         }
         break;
 
+      case "bulk_operations/finish":
+        const calculated_hmac = crypto
+          .createHmac("sha256", secretKey)
+          .update(req.body)
+          .digest("base64");
+        try {
+          if (calculated_hmac == hmac_header) {
+            let body = JSON.parse(req?.body);
+            console.log("infinish bulk", body);
+            res.status(200);
+          } else {
+            res.status(401).json("Unauthorized Access!");
+          }
+        } catch (error) {
+          console.error("Webhook processing error:", err);
+          res.status(200).send("success in catch");
+        }
+        break;
       default:
         break;
     }

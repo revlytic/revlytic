@@ -94,7 +94,7 @@ function Billing() {
       let response = await postApi("/api/admin/recurringBiling", planData, app);
       if (response?.data?.message == "success") {
         window.top.location.href =
-          response.data.url.body.data.appSubscriptionCreate.confirmationUrl;
+          response.data.url.data.appSubscriptionCreate.confirmationUrl;
       }
     } else {
       ////////////

@@ -32,8 +32,6 @@ function Fulfillments({
   useEffect(async () => {
     if (fullfillmentDataMain?.fulfillmentIdAndLineItemsData?.length > 0) {
       setOrderNumber(fullfillmentDataMain?.orderNumber);
-      console.log(fullfillmentDataMain);
-
       let result = {};
       fullfillmentDataMain?.contractIdAndLineItemsData.forEach(
         (item, index) => {
@@ -45,7 +43,6 @@ function Fulfillments({
           }
         }
       );
-
       let contractLineItems = result[data["subscription_id"].split("/").at(-1)];
 
       let upcoming = [];
@@ -74,21 +71,17 @@ function Fulfillments({
           completed.push(obj);
         }
       });
-
       if (upcoming.length > 0) {
         let filtered = upcoming.filter((item) =>
           Object.values(item)[0].lineItems.some((lineItem) =>
             contractLineItems.includes(String(lineItem))
           )
         );
-
         filtered.sort((obj1, obj2) => {
           const date1 = new Date(Object.values(obj1)[0].fulfill_at);
           const date2 = new Date(Object.values(obj2)[0].fulfill_at);
-
           return date1 - date2;
         });
-        console.log("filterd", filtered);
         setUpcomingFulfillments(filtered);
       }
       if (completed.length > 0) {
@@ -97,14 +90,11 @@ function Fulfillments({
             contractLineItems.includes(String(lineItem))
           )
         );
-
         filtered.sort((obj1, obj2) => {
           const date1 = new Date(Object.values(obj1)[0].fulfill_at);
           const date2 = new Date(Object.values(obj2)[0].fulfill_at);
-
           return date1 - date2;
         });
-
         setCompletedFulfillments(filtered);
       }
 
@@ -143,12 +133,10 @@ function Fulfillments({
     if (type.toLowerCase() === "day") {
       let nextDate = new Date(originalDate);
       nextDate.setDate(nextDate.getDate() + 1 * parseInt(value));
-
       return nextDate;
     } else if (type.toLowerCase() === "month") {
       let nextDate = new Date(originalDate);
       nextDate.setMonth(nextDate.getMonth() + 1 * parseInt(value));
-
       return nextDate;
     } else if (type.toLowerCase() === "week") {
       let nextDate = new Date(originalDate);
@@ -206,7 +194,6 @@ function Fulfillments({
 
   const handleSkipFulfillment = async (fulfill_id) => {
     setLoader(true);
-
     let value = data?.subscription_details?.delivery_billingValue;
     let type = data.subscription_details.delivery_billingType;
 
@@ -242,7 +229,6 @@ function Fulfillments({
         setNextBillingDate(response?.data?.date);
       }
     }
-
     setLoader(false);
   };
 
@@ -360,7 +346,6 @@ function Fulfillments({
         </section>
       ),
     },
-
     {
       key: "2",
       label: `Open`,

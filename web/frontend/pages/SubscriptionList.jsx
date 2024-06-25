@@ -33,21 +33,17 @@ const SubscriptionList = () => {
   const [pageSize, setPageSize] = useState(10);
   // const pageSize = 10;
 
-  // useEffect(() => {
-  //   filterProducts(searchText);
-  // }, [searchText]);
-
   const { storeName, storeDetails } = useAPI();
 
   useEffect(async () => {
-    getSubscriptionList("all");
-    //  await   postApi('/api/admin/demo',{},app) ;
+    getSubscriptionList("all");   
   }, []);
 
   const handleListChange = (e) => {
     setSelectedListType(e);
     getSubscriptionList(e);
   };
+
   const getSubscriptionList = async (option) => {
     setLoader(true);
     let response = await postApi(
@@ -57,41 +53,19 @@ const SubscriptionList = () => {
     );
     if (response?.data?.message == "success") {
       setSubscriptionList(response?.data?.data);
-      // console.log("checkkkkkkkkkk", response?.data?.data);
       setFilteredList(response?.data?.data);
     } else {
       toast.error(response?.data?.data, {
         position: toast.POSITION.TOP_RIGHT,
       });
       setSubscriptionList([]);
-
       setFilteredList([]);
     }
     setLoader(false);
   };
 
-  // const getSearchedData = (value) => {
-  //   console.log("value",value)
-  //   // let inputValue=value.trim()
-  //   const filtered = subscriptionList.filter((item) => {
-  //     let a = Object.values(item).some(
-  //       (val) =>{ console.log("val",val)
-  //        return val && val.toString().toLowerCase().includes((value.trim().toLowerCase()))
-
-  //       }
-  //     );
-  //     console.log("first", value, item);
-  //     console.log("dddd", a);
-  //     return a;
-  //   });
-  //   console.log("clllf", filtered);
-  //   setFilteredList(filtered);
-  //   setCurrentPage(1);
-  // };
-
   const getSearchedData = (value) => {
-    console.log("value", value);
-    const filtered = subscriptionList.filter((item) => {
+      const filtered = subscriptionList.filter((item) => {
       const numericId = item.subscription_id.match(/\d+/)[0];
 
       const dateString1 = item?.nextBillingDate;
@@ -155,15 +129,7 @@ const SubscriptionList = () => {
 
         {/* <a onClick={() => setIsModalOpen(true)}> </a> */}
       </div>
-      <div className="revltic-planlist subscription-list">
-        {/* <div style={{textAlign:"right"}}>
-      <Button
-        
-          onClick={() => navigate("/createsubscription")}
-        >
-          Add New Subscription
-          </Button>
-          </div> */}
+      <div className="revltic-planlist subscription-list">      
         <p>
           {" "}
           <strong>Note:</strong> This page shows a listing of all executed
@@ -220,8 +186,7 @@ const SubscriptionList = () => {
                 </div>
                 <div className="revlytic-subscription-list-header3">
                   Subscription Type
-                </div>
-                {/* <div className="revlytic-subscription-list-header5">Created Date</div> */}
+                </div>            
                 <div className="revlytic-subscription-list-header4">
                   Next Order Date
                 </div>
@@ -252,8 +217,7 @@ const SubscriptionList = () => {
                         href={
                           `https://admin.shopify.com/store/${
                             storeDetails?.shop?.split(".myshopify.com")[0]
-                          }/customers/` + item?.customerId?.split("/").at(-1)
-                          // } ><p>{item?.firstName ? item?.firstName :"" } {item?.lastName ? item?.lastName :""}</p></a></div>
+                          }/customers/` + item?.customerId?.split("/").at(-1)                         
                         }
                       >
                         <p>{item?.fullName ? item?.fullName : ""} </p>
@@ -263,8 +227,7 @@ const SubscriptionList = () => {
                       {item.createdBy == "merchant"
                         ? "Manual Subscription"
                         : "Subscription"}
-                    </div>
-                    {/* <div className="revlytic-subscription-list-header5"><p>{dateConversion(item?.createdAt)}</p></div> */}
+                    </div>                 
                     <div className="revlytic-subscription-list-header4">
                       <p>{dateConversion(item?.nextBillingDate)}</p>
                     </div>
