@@ -668,126 +668,150 @@ app.get(
     let curSymbol = getSymbol(fetchInfo.data[0].currency);
 
 
+    await StoreSchemaModal.findOneAndUpdate(
+      { shop },
+      {
+        shop,
+        store_owner: fetchInfo.data[0].shop_owner,
+        store_name: fetchInfo.data[0].name,
+        store_email: fetchInfo.data[0].email,
+        currency: fetchInfo.data[0].currency,
+        currency_code: curSymbol,
+        timezone: fetchInfo.data[0].iana_timezone,
+      },
+      { upsert: true, new: true }
+    )
+      .then((data) => {
+        console.log("dataas", data);
+      })
+      .catch((error) => console.log("error", error));
 
- await StoreSchemaModal.findOneAndUpdate({ shop }, { shop, store_owner: fetchInfo.data[0].shop_owner,
-      store_name: fetchInfo.data[0].name,
-      store_email: fetchInfo.data[0].email,
-      currency: fetchInfo.data[0].currency,
-      currency_code: curSymbol,
-      timezone: fetchInfo.data[0].iana_timezone},{upsert:true,new:true}).then((data) => {
-         console.log("dataas",data)
-    }).catch(error=>console.log("error",error));
-    //code
+    await StoreSchemaModal.findOne({ shop })
+      .then(async (data) => {
+        if (data) {
+          if (!data.themeType) {
+            let getThemeId;
+            var themeType;
+            var meta_field_value;
+            let meta_field_value_not;
+            let theme_block_support;
+            let theme_block_support_not;
+            const client = new shopify.api.clients.Rest({ session });
+            try {
+              let themes = await shopify.api.rest.Theme.all({
+                session: session,
+              });
+                           
+              const themeId = themes.data.find(
+                (el) => el.role === "main"
+              );
+              console.log("themeid---->",themeId)
+              getThemeId = themeId?.id;
+             let themeData = await shopify.api.rest.Asset.all({
+                      session: session,
+                      theme_id: getThemeId,
+                      asset: { key: "templates/product.json"},
+                    });
+              themeType = themeData === undefined ? "vintage" : "modern";
+              if (themeType === "modern") {
+                theme_block_support = "support_theme_block";
+                theme_block_support_not = "support_theme_block_not";
+                meta_field_value_not = "false";
+                meta_field_value = "true";
+              } else {
+                theme_block_support = "support_theme_block";
+                meta_field_value = "false";
+                theme_block_support_not = "support_theme_block_not";
+                meta_field_value_not = "true";
+              }
+            } catch (error) {
+              theme_block_support = "support_theme_block";
+              meta_field_value = "false";
+              theme_block_support_not = "support_theme_block_not";
+              meta_field_value_not = "true";
+            }
+          
+            const app_query = `{
+                                  appInstallation {
+                                  id
+                                }
+                                }`;
 
-
-/////////////////////////////////
-
-await   StoreSchemaModal.findOne({ shop }).then(async(data) => {
-
-  if (data) {
-
-    if(!data.themeType){
-let getThemeId;
-var themeType;
-var meta_field_value;
-let meta_field_value_not;
-let theme_block_support;
-let theme_block_support_not;
-const client = new shopify.api.clients.Rest({ session });
-try {
-const theme = await client.get({ path: "themes", type: "json" });
-const themeId = theme.body.themes.find((el) => el.role === "main");
- getThemeId=themeId?.id
-const getAssetsData = await client.get({
-path: `themes/${themeId.id}/assets`,
-type: DataType.JSON,
-});
-const findJsonTemplate = getAssetsData.body.assets.find((asset) => {
-return asset.key === "templates/product.json";
-});
-themeType = findJsonTemplate === undefined ? "vintage" : "modern";
-if (themeType === "modern") {
-theme_block_support = "support_theme_block";
-theme_block_support_not = "support_theme_block_not";
-meta_field_value_not = "false";
-meta_field_value = "true";
-} else {
-theme_block_support = "support_theme_block";
-meta_field_value = "false";
-theme_block_support_not = "support_theme_block_not";
-meta_field_value_not = "true";
-}
-} catch (error) {
-theme_block_support = "support_theme_block";
-meta_field_value = "false";
-theme_block_support_not = "support_theme_block_not";
-meta_field_value_not = "true";
-}
-const app_query = `{
-appInstallation {
-id
-}
-}`;
-const Client = new shopify.api.clients.Graphql({ session });
-try {
-const response = await Client.query({
-data: { query: app_query },
-});
-if (response.body.data.appInstallation.id) {
-let app_installation_id = response.body.data.appInstallation.id;
-
-let createAppDataMetafieldMutation = `mutation CreateAppDataMetafield($metafieldsSetInput: [MetafieldsSetInput!]!) {
-  metafieldsSet(metafields: $metafieldsSetInput) {
-    metafields {
-      id
-      namespace
-      key
-      type
-      value
-    }
-    userErrors {
-      field
-      message
-    }
-  }
-}`;
-const Input = {
-  metafieldsSetInput: [
-    {
-      namespace: "theme_support",
-      key: theme_block_support,
-      type: "boolean",
-      value: meta_field_value,
-      ownerId: app_installation_id,
-    },
-    {
-      namespace: "theme_not_support",
-      key: theme_block_support_not,
-      type: "boolean",
-      value: meta_field_value_not,
-      ownerId: app_installation_id,
-    },
-  ],
-};
-try {
-  const result = await Client.query({
-    data: { query: createAppDataMetafieldMutation, variables: Input },
-  });
-} catch (error) {
-  console.log("errror1233");
-}
-}
-} catch (error) {
-console.log("error4565");
-}
-StoreSchemaModal.updateOne({shop},{$set:{themeType:themeType,themeId:getThemeId}}).then((data)=>console.log("theme stored in db")).catch(error=>console.log("error1290"))
-    }
-  } else {
- console.log("inelse27oct")
-   }
-}).catch((error)=>{
-  console.log("error",error)
-})
+            const Client = new shopify.api.clients.Graphql({ session });
+            try {
+              // const response = await Client.query({
+              //   data: { query: app_query },
+              // });
+              const response =  await Client.request(app_query);                      
+              if (response.data.appInstallation.id) {
+                let app_installation_id = response.data.appInstallation.id;
+                console.log("app_installation_id", app_installation_id);
+                let createAppDataMetafieldMutation = `mutation CreateAppDataMetafield($metafieldsSetInput: [MetafieldsSetInput!]!) {
+                                    metafieldsSet(metafields: $metafieldsSetInput) {
+                                      metafields {
+                                        id
+                                        namespace
+                                        key
+                                        type
+                                        value
+                                      }
+                                      userErrors {
+                                        field
+                                        message
+                                    }
+                                    }
+                                  }`;
+                const Input = {
+                  metafieldsSetInput: [
+                    {
+                      namespace: "theme_support",
+                      key: theme_block_support,
+                      type: "boolean",
+                      value: meta_field_value,
+                      ownerId: app_installation_id,
+                    },
+                    {
+                      namespace: "theme_not_support",
+                      key: theme_block_support_not,
+                      type: "boolean",
+                      value: meta_field_value_not,
+                      ownerId: app_installation_id,
+                    },
+                  ],
+                };
+                try {
+                  // const result = await Client.query({
+                  //   data: {
+                  //     query: createAppDataMetafieldMutation,
+                  //     variables: Input,
+                  //   },
+                  // });
+                  
+                  const result = await Client.request(createAppDataMetafieldMutation,{
+                                 variables: Input,
+                                });
+                                
+                 } catch (error) {
+                  console.log("errror");
+                }
+              }
+            } catch (error) {
+              console.log("error");
+            }
+            StoreSchemaModal.updateOne(
+              { shop },
+              { $set: { themeType: themeType, themeId: getThemeId } }
+            )
+              .then((data) => console.log("theme stored in db"))
+              .catch((error) => console.log("error"));
+          }
+        } else {
+          console.log("inelse");
+        }
+      })
+      .catch((error) => {
+        console.log("error", error);
+      });
      next();
   },
   shopify.redirectToShopifyOrAppRoot()
