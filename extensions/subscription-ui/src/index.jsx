@@ -199,7 +199,7 @@ seteditState(false)
 
     if (planList.length > 0 && planGroupName.length > 0) {
       const createApi = await fetch(
-        "https://gold-program-french-russell.trycloudflare.com/api/prodEx/prodExCreatePlan",
+        "https://com-headers-explains-compare.trycloudflare.com/api/prodEx/prodExCreatePlan",
         {
           method: "POST", // or 'PUT'
           headers: {
@@ -691,7 +691,7 @@ function Add() {
         // console.log(checkedPlans, "checked plans");
 
         const response = await fetch(
-          "https://gold-program-french-russell.trycloudflare.com/api/prodEx/prodExAddProduct",
+          "https://com-headers-explains-compare.trycloudflare.com/api/prodEx/prodExAddProduct",
           {
             method: "POST", // or 'PUT'
             headers: {
@@ -728,7 +728,7 @@ function Add() {
   useEffect(async () => {
     let token = await getSessionToken();
     const response = await fetch(
-      "https://gold-program-french-russell.trycloudflare.com/api/prodEx/prodExGetallPlans",
+      "https://com-headers-explains-compare.trycloudflare.com/api/prodEx/prodExGetallPlans",
       {
         method: "POST", // or 'PUT'
         headers: {
@@ -773,7 +773,7 @@ function Remove() {
     let token = await getSessionToken();
 
     const response = await fetch(
-      "https://gold-program-french-russell.trycloudflare.com/api/prodEx/prodExRemoveVariants",
+      "https://com-headers-explains-compare.trycloudflare.com/api/prodEx/prodExRemoveVariants",
       {
         method: "POST", // or 'PUT'
         headers: {
@@ -879,7 +879,7 @@ function Edit() {
     let token = await getSessionToken();
 
     const createApi = await fetch(
-      "https://gold-program-french-russell.trycloudflare.com/api/prodEx/prodExPlanDetails",
+      "https://com-headers-explains-compare.trycloudflare.com/api/prodEx/prodExPlanDetails",
       {
         method: "POST", // or 'PUT'
         headers: {
@@ -1135,7 +1135,7 @@ console.log("loppp",frequencyPlanName,arr,freeTrial,"sss",freeTrialCount)
 
     if (planList.length > 0 || prevPlanList.length > 0) {
       const createApi = await fetch(
-        "https://gold-program-french-russell.trycloudflare.com/api/prodEx/prodExPlanUpdate",
+        "https://com-headers-explains-compare.trycloudflare.com/api/prodEx/prodExPlanUpdate",
         {
           method: "POST", // or 'PUT'
           headers: {

@@ -25,8 +25,7 @@ if (currentUrl.includes("account")) {
     }
   });
 }
-let serverPath = "https://dev.revlytic.co";
-
+let serverPath = "https://seasonal-templates-permits-baking.trycloudflare.com";
 let activeCurrency = Shopify.currency.active;
 let fetchedData = [];
 let widgetSettingsData = {

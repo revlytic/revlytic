@@ -87,22 +87,18 @@ function Orders({
             new Date(item.renewal_date).getTime() ===
             new Date(nextDate).getTime()
         );
-
         if (!existingAlready) {
           flag = true;
         } else {
           nextDate = dateChange(type, nextDate, value).toISOString();
         }
       }
-
       let bodyData = {
         data: data,
         renewal_date: renewal_date,
         nextBillingDate: nextDate,
       };
-
       let response = await postApi("/api/admin/orderNow", bodyData, app);
-
       if (response?.data?.message == "success") {
         fetchDataUpcomingOrders({ ...data, nextBillingDate: nextDate });
         setExistingSubscription({ ...data, nextBillingDate: nextDate });
@@ -110,14 +106,11 @@ function Orders({
       }
     } else {
       let bodyData = { data: data, renewal_date: renewal_date };
-
       let response = await postApi("/api/admin/orderNow", bodyData, app);
-
       if (response?.data?.message == "success") {
         fetchDataUpcomingOrders(data);
       }
     }
-
     setLoader(false);
   };
 
@@ -657,7 +650,6 @@ function Orders({
         data?.status?.toLowerCase() == "active" ? items : pastAndSkippedItems
       }
       onChange={(activeTab) => {
-        console.log("active", activeTab);
         setIndex(0);
         if (data?.status?.toLowerCase() == "active") {
           activeTab == 1

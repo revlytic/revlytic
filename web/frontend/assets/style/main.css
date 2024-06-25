@@ -5914,3 +5914,7 @@ span.case-create-template circle {
 .revlytic-company-upgrade p strong {
     font-size: 16px;
 }
+
+.disabled-deleteicon-dunning svg{
+      fill:#d1d1d1
+}

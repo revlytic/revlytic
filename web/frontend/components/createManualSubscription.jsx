@@ -1771,10 +1771,10 @@ function CreateManualSubscription() {
           //console.log("cscscsc");
           fetchDataUpcomingOrders(result?.data?.data);
         } else {
-          //console.log("gfgdfgf");
+          // console.log("gfgdfgf",result?.data?.data?.subscription_id);
           let upcomingFulfillmentdData = await postApi(
             "/api/admin/upcomingFulfillment",
-            { id: result?.data?.data?.subscription_details?.subscription_id },
+            { id: result?.data?.data?.subscription_id},
             app
           );
 
