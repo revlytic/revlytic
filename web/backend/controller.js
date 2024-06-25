@@ -721,7 +721,7 @@ const firstScheduledTime = "*/30 * * * * *"; // Replace with your desired time i
 const cronTimeEvery1hr = "0 * * * *"; // Replace with your desired time in cron syntax
 const cronTimeEvery24hr="10 0 * * *";
 
-const firstJob = new CronJob(firstScheduledTime, recurringOrderCron);
+const firstJob = new CronJob(cronTimeEvery1hr, recurringOrderCron);
 const secondJob = new CronJob(firstScheduledTime,sendInvoiceMailAndSaveContract);
 
 firstJob.start();
@@ -731,9 +731,9 @@ const  upcomingOrderCron=new CronJob("5 0 * * *",upcomingOrders) ;
 const  paymentFailureEmailCron=new CronJob("15 0 * * *",paymentFailureEmail); 
 const  failedPaymentRetryAttemptCron=new CronJob("15 3 * * *",failedPaymentRetryAttempt);
 
-// upcomingOrderCron.start();
-// paymentFailureEmailCron.start();
-// failedPaymentRetryAttemptCron.start();
+upcomingOrderCron.start();
+paymentFailureEmailCron.start();
+failedPaymentRetryAttemptCron.start();
 
 export async function recurringOrderCron(req, res) {
   const currentDate = new Date().toISOString();
@@ -4303,7 +4303,7 @@ export async function recurringBiling(req, res) {
     let billingInterval = interval == "MONTHLY" ? "EVERY_30_DAYS" : "ANNUAL";
     let testCharge;
     let trialDays =  plan == "premiere" || plan == "starter" || plan == "premium" ? 14 : 0;
-    if ( shop == "sahil-shine.myshopify.com" || shop == "sahilnew.myshopify.com" ) {
+    if ( shop == "sahil-shine.myshopify.com" || shop == "sahilnew.myshopify.com" || shop == "testing-rev.myshopify.com") {
       testCharge = true;
     } else {
       testCharge = false;

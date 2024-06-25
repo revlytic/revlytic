@@ -5804,10 +5804,13 @@ background-color: #6200ea0a;
     letter-spacing: 0em;
 }
 .revlytic-dunning-section-input.case-stage-dunning span input {
-    width: 35px;
+    width: 45px;
     height: 25px;
     padding: 2px 3px;
     margin-left: 10px;
+}
+.case-stage-dunning h3 {
+    margin-left: 5px;
 }
 .revlytic-dunning-stage-item label {
     font-size: 14px;
