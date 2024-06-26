@@ -553,7 +553,7 @@ app.get(
         paymentMethodText: "Payment Method",
         endingWithText: "ending with",
         emailSetting: {
-          subject: "Subscription Purchased",
+          subject: "Subscription Invoice",
           bcc: "",
           replyTo: "",
           cc: "",
