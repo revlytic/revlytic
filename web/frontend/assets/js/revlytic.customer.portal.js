@@ -1,7 +1,6 @@
-import { commonVariables } from "../../components/common/helpers";
 document.addEventListener("DOMContentLoaded", () => {
   console.log("21novmber");
-  let apiPath =`${commonVariables?.url}/`;
+  let apiPath =`https://dev.revlytic.co/`;
   const urlParams = new URLSearchParams(window.location.search);
   const customerId = urlParams.get("cid");
   // const customerId = ShopifyAnalytics.meta.page.customerId;

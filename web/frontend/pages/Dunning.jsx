@@ -26,7 +26,7 @@ function Dunning2() {
   const [showDueDate, setShowDueDate] = useState(false);
   const [showOverdueInvoices, setShowOverdueInvoices] = useState(false);
 
-  const [attemptNum, setAttemptNum] = useState(1);
+  // const [attemptNum, setAttemptNum] = useState(1);
   const [attemptList, setAttemptList] = useState([
     { retryAfterDays: 1, selectedTemplate: "standardCourtsyNotice" },
     // { retryAfterDays: 2, selectedTemplate: "standardPastDueNotice1" },
@@ -67,64 +67,16 @@ function Dunning2() {
       setStatementsInput(response?.data?.data?.statementsInput);
       setShowDueDate(response?.data?.data?.showDueDate);
       setShowOverdueInvoices(response?.data?.data?.showOverdueInvoices);
-      setAttemptNum(response?.data?.data?.attemptNum);
       setAttemptList(response?.data?.data?.attemptList);
     }
     setLoading(false);
   };
-
-  const handleAttemptChange = (e) => {
-    let numRegex = /^\d+(\.\d+)?$/;
-    if (
-      (numRegex.test(e.target.value) || e.target.value == "") &&
-      e.target.value.includes(".") == false
-    ) {
-      if (e.target.value < 6 && e.target.value > 0) {
-        setAttemptNum(e.target.value);
-      }
-    }
-  };
-
-///if input  type == 'text'
-  // const handleAttemptChange = (e) => {
-  //   // let numRegex = /^\d+(\.\d+)?$/;
-  //   console.log("etarget",e.target.value)
-  //   const preventChar = [".", "-", "/", "e", "E"];
-
-  //   if(preventChar.includes(e.target.value)) {
-  //     e.preventDefault();
-  //   }
-  //   let numRegex = /^[1-9]+$/;
-  //   if (
-  //     (numRegex.test(e.target.value) || e.target.value == "")
-  //     // e.target.value.includes(".") == false && e.target.value.includes("-") == false
-  //   ) {         
-  //      if (e.target.value < 6) {
-  //         setAttemptNum(e.target.value);
-  //     }       
-  //   }
-    
-  // };
 
   const handleTemplateChange = (e, index) => {
     let arr = [...attemptList];
     arr[index].selectedTemplate = e.target.value;
     setAttemptList(arr);
   };
-
-//   const handleRetryAfterDaysChange = (e, index) => {
-//     let numRegex = /^\d+(\.\d+)?$/;
-//     if (
-//       (numRegex.test(e.target.value) || e.target.value == "") &&
-//       e.target.value.includes(".") == false
-//     ) {
-//       if (e.target.value < 11 && e.target.value > 0) {
-//         let arr = [...attemptList];
-//         arr[index].retryAfterDays = e.target.value;
-//         setAttemptList(arr);
-//       }
-//     }
-//   };
 
 
 const checkRange=(index,inputValue)=>{
@@ -207,8 +159,7 @@ setAttemptList(newArray);
       enablePaymentAttempt,
       statementsInput,
       showDueDate,
-      showOverdueInvoices,
-      attemptNum,
+      showOverdueInvoices,      
       attemptList,
     };
 
@@ -230,7 +181,7 @@ setAttemptList(newArray);
   };
 
 
-  const handleAddOption=()=>{
+const handleAddOption=()=>{
  let copy=[...attemptList] ;
  switch (copy.length) {
     case 1:
@@ -248,7 +199,6 @@ setAttemptList(newArray);
   }
   setAttemptList(copy)
 }
-
 
 const deleteOption=(index)=>{
     let copy=[...attemptList];
