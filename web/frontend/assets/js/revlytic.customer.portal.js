@@ -1,7 +1,7 @@
-import { commonVariables } from "../../components/common/helpers";
+// import { commonVariables } from "../../components/common/helpers";
 document.addEventListener("DOMContentLoaded", () => {
   console.log("21novmber");
-  let apiPath =`${commonVariables?.url}/`;
+  let apiPath =`https://thank-targeted-computers-mortgage.trycloudflare.com/`;
   const urlParams = new URLSearchParams(window.location.search);
   const customerId = urlParams.get("cid");
   // const customerId = ShopifyAnalytics.meta.page.customerId;
@@ -2960,7 +2960,7 @@ ${item?.order_no}
       <div class="revlytic-subscription-id">
           <div class="id-content">
               <h4>
-                  <a href="https://${shop}/apps/revlytic-subscriptions">
+                  <a href="https://${shop}/apps/revlytic-subscriptions?cid=${customerId}">
                       <svg xmlns="http://www.w3.org/2000/svg" width="8" height="15" viewBox="0 0 8 15" fill="none">
                           <path
                               d="M0.421912 8.11897C0.174466 7.85791 0.174466 7.42173 0.421912 7.16L6.13135 1.1208C6.38197 0.856382 6.7884 0.856382 7.03839 1.1208C7.289 1.38521 7.289 1.81469 7.03839 2.0791L1.78249 7.63979L7.03902 13.1998C7.28964 13.4649 7.28964 13.8937 7.03902 14.1588C6.7884 14.4232 6.38197 14.4232 6.13198 14.1588L0.421912 8.11897Z"
