@@ -214,7 +214,7 @@ const deleteOption=(index)=>{
         </h1>
         <Collapse onChange={(e) => setActiveKeyArray(e)} defaultActiveKey={"1"}>
           <Panel
-            header={"Dunning Notices  and Statements"}
+            header={"Dunning Management Settings"}
             key="1"
             showArrow={false}
             extra={
@@ -228,12 +228,11 @@ const deleteOption=(index)=>{
             }
           >
             <p>
-              Welcome to Dunning Management! This page will allow you to
-              configure settings related to your Dunning Notices
+            Please select your Dunning settings below.
             </p>
             <div className="revlytic-dunning-section">
               <div className="revlytic-dunning-section-label">
-                <h4>Dunning Notices</h4>
+                <h4>Dunning Notice</h4>
                 <Tooltip title="Allow customers to place a recurring subscription order immediately.">
                   <QuestionCircleOutlined />
                 </Tooltip>
