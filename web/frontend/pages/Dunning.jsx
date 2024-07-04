@@ -320,7 +320,7 @@ const deleteOption=(index)=>{
             <div className="revlytic-dunning-section">
               <div className="revlytic-dunning-section-label">
                 <h4>Auto Payment Retry</h4>
-                <Tooltip title="Allow customers to place a recurring subscription order immediately.">
+                <Tooltip title="Toggle to enable or disable auto payment retry in case an order fails.">
                   <QuestionCircleOutlined /> 
                 </Tooltip>
               </div>
@@ -346,7 +346,7 @@ const deleteOption=(index)=>{
             <div className="revlytic-dunning-section">
               <div className="revlytic-dunning-section-label">
                 <h4>Dunning Notice</h4>
-                <Tooltip title="Allow customers to place a recurring subscription order immediately.">
+                <Tooltip title="">
                   <QuestionCircleOutlined />
                 </Tooltip>
               </div>
