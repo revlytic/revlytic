@@ -213,9 +213,8 @@ const deleteOption=(index)=>{
           Dunning Management Configuration
         </h1>
         <Collapse onChange={(e) => setActiveKeyArray(e)} defaultActiveKey={"1"}>
-         
-        <Panel
-            header={"Upcoming Order Notification"}
+          <Panel
+            header={"Dunning Management Settings"}
             key="1"
             showArrow={false}
             extra={
@@ -229,25 +228,24 @@ const deleteOption=(index)=>{
             }
           >
             <p>
-            Please select your Upcoming Order Notification settings below.
+            Please select your Dunning settings below.
             </p>
-            {/* start */}
             <div className="revlytic-dunning-section">
               <div className="revlytic-dunning-section-label">
-                <h4>Send  Notification</h4>
-                <Tooltip title="Toggle to enable or disable sending email notifications for upcoming orders.">
-                  <QuestionCircleOutlined /> 
+                <h4>Dunning Notice</h4>
+                <Tooltip title="Allow customers to place a recurring subscription order immediately.">
+                  <QuestionCircleOutlined />
                 </Tooltip>
               </div>
-              {/* <div className="revlytic-dunning-section-input">
-                <input
-                  type="number"
-                  onChange={handleAttemptChange}
-                  value={attemptNum}               
-              
-                />
-              </div> */}        
-
+              <div className="revlytic-dunning-section-select">
+                <select
+                  value={dunningNoticeType}
+                  onChange={(e) => setDunningNoticeType(e.target.value)}
+                >
+                  <option value="perInvoice">Per Invoice</option>
+                  <option value="consolidated">Consolidated</option>
+                </select>
+              </div>
               <div className="revlytic-dunning-section-switch">
                 <label>Enable/disable</label>
                 <Switch
@@ -256,12 +254,11 @@ const deleteOption=(index)=>{
                 />
               </div>
             </div>
-{/* endd */}
 
-             <div className="revlytic-dunning-section">
+            <div className="revlytic-dunning-section">
               <div className="revlytic-dunning-section-label">
-                <h4>No. of Days</h4>
-                <Tooltip title="Days Before Order Date to Send Notification Email.">
+                <h4>Enable Statements</h4>
+                <Tooltip title="Allow customers to place a recurring subscription order immediately.">
                   <QuestionCircleOutlined />
                 </Tooltip>
               </div>
@@ -296,11 +293,9 @@ const deleteOption=(index)=>{
               </div>
             </div> */}
           </Panel>
-         
-         
-         
+
           <Panel
-            header={"Dunning Management Settings"}
+            header={"Collection Case Stage"}
             key="2"
             showArrow={false}
             extra={
@@ -314,9 +309,15 @@ const deleteOption=(index)=>{
             }
           >
             <p>
-            Please select your Dunning settings below.
+              Below you can enter the number attempts Revlytic will make to
+              collect the order payment from your customer in the case that they
+              fail to pay. Once you enter the number and click “Set”, the number
+              of stages will appear below. Next, you can select the number of
+              days(Between 1 to 10) after the initial payment faliure you’d like this collection
+              attempt to take place. Finally, you can add and customize the
+              Email template that will be sent the your customer when Revlytic
+              attempts to retry collection attempt.
             </p>
-            {/* start */}
             <div className="revlytic-dunning-section">
               <div className="revlytic-dunning-section-label">
                 <h4>Auto Payment Retry</h4>
@@ -341,80 +342,6 @@ const deleteOption=(index)=>{
                 />
               </div>
             </div>
-{/* endd */}
-
-            <div className="revlytic-dunning-section">
-              <div className="revlytic-dunning-section-label">
-                <h4>Dunning Notice</h4>
-                <Tooltip title="Allow customers to place a recurring subscription order immediately.">
-                  <QuestionCircleOutlined />
-                </Tooltip>
-              </div>
-              <div className="revlytic-dunning-section-select">
-                <select
-                  value={dunningNoticeType}
-                  onChange={(e) => setDunningNoticeType(e.target.value)}
-                
-                >
-                  <option value="perInvoice">Per Invoice</option>
-                  {/* <option value="consolidated">Consolidated</option> */}
-                </select>
-              </div>
-              {/* <div className="revlytic-dunning-section-switch">
-                <label>Enable/disable</label>
-                <Switch
-                  onChange={(val) => setEnableDunningNotices(val)}
-                  checked={enableDunningNotices}
-                />
-              </div> */}
-            </div>
-
-           
-
-            {/* <div className="revlytic-dunning-stage">
-              <div className="revlytic-dunning-stage-item">
-                <label>Show Due Date</label>
-                <Checkbox
-                  checked={showDueDate}
-                  onChange={(e) => setShowDueDate(e.target.checked)}
-                />
-              </div>
-
-              <div className="revlytic-dunning-stage-item">
-                <label>Show Overdue Invoice</label>
-                <Checkbox
-                  checked={showOverdueInvoices}
-                  onChange={(e) => setShowOverdueInvoices(e.target.checked)}
-                />
-              </div>
-            </div> */}
-          </Panel>
-
-          <Panel
-            header={"Collection Case Stage"}
-            key="3"
-            showArrow={false}
-            extra={
-              <div className="revlytic-dunning-collapseIcon">
-                {activeKeyArray?.includes("3") ? (
-                  <MinusOutlined />
-                ) : (
-                  <PlusOutlined />
-                )}
-              </div>
-            }
-          >
-            <p>
-              Below you can add the number of attempts(options) Revlytic will make to
-              collect the order payment from your customer in the case that they
-              fail to pay. Once you added the options , the number
-              of stages will appear below. Next, you can select the number of
-              days(Between 1 to 10) after the initial payment faliure you’d like this collection
-              attempt to take place. Finally, you can add and customize the
-              Email template that will be sent the your customer when Revlytic
-              attempts to retry collection attempt.
-            </p>
-        
 
             {attemptList.length > 0 &&
               attemptList?.map((item, index) => (
