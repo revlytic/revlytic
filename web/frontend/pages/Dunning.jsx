@@ -35,7 +35,7 @@ function Dunning2() {
     // { retryAfterDays: 5, selectedTemplate: "standardFinalDemand" },
   ]);
 
-  const retryHeading = ["First", "Second", "Third", "Fourth", "Fifth"];
+  const retryHeading = ["First Payment", "Second Payment", "Third Payment", "Fourth Payment", "Fifth Payment"];
 
   useEffect(async () => {
     fetchDunningData();
@@ -234,7 +234,7 @@ const deleteOption=(index)=>{
             {/* start */}
             <div className="revlytic-dunning-section">
               <div className="revlytic-dunning-section-label">
-                <h4>Send  Notification</h4>
+                <h4>Enable  Notification</h4>
                 <Tooltip title="Toggle to enable or disable sending email notifications for upcoming orders.">
                   <QuestionCircleOutlined /> 
                 </Tooltip>
@@ -249,7 +249,7 @@ const deleteOption=(index)=>{
               </div> */}        
 
               <div className="revlytic-dunning-section-switch">
-                <label>Enable/disable</label>
+                {/* <label>Enable/disable</label> */}
                 <Switch
                   onChange={(val) => setEnableDunningNotices(val)}
                   checked={enableDunningNotices}
@@ -260,8 +260,8 @@ const deleteOption=(index)=>{
 
              <div className="revlytic-dunning-section">
               <div className="revlytic-dunning-section-label">
-                <h4>No. of Days</h4>
-                <Tooltip title="Days Before Order Date to Send Notification Email.">
+                <h4>Days Before Order</h4>
+                <Tooltip title="Days before order date to send notification email. Maximum number of days allowed is 5.">
                   <QuestionCircleOutlined />
                 </Tooltip>
               </div>
@@ -334,7 +334,7 @@ const deleteOption=(index)=>{
               </div> */}        
 
               <div className="revlytic-dunning-section-switch">
-                <label>Enable/disable</label>
+                {/* <label>Enable/disable</label> */}
                 <Switch
                   checked={enablePaymentAttempt}
                   onChange={(val) => setEnablePaymentAttempt(val)}
@@ -346,7 +346,7 @@ const deleteOption=(index)=>{
             <div className="revlytic-dunning-section">
               <div className="revlytic-dunning-section-label">
                 <h4>Dunning Notice</h4>
-                <Tooltip title="">
+                <Tooltip title="Select 'Per Invoice' to receive a notice for each invoice individually.">
                   <QuestionCircleOutlined />
                 </Tooltip>
               </div>
@@ -411,7 +411,7 @@ const deleteOption=(index)=>{
               of stages will appear below. Next, you can select the number of
               days(Between 1 to 10) after the initial payment faliure you’d like this collection
               attempt to take place. Finally, you can add and customize the
-              Email template that will be sent the your customer when Revlytic
+              Email template that will be sent to your customer when Revlytic
               attempts to retry collection attempt.
             </p>
         
@@ -511,7 +511,7 @@ const deleteOption=(index)=>{
                   </div>
                 </div>
               ))}
-              {attemptList.at(-1).retryAfterDays<10 && attemptList.length < 5 && <div> <Button disabled={!enablePaymentAttempt} onClick={handleAddOption}>Add another Option</Button></div>}
+              {attemptList.at(-1).retryAfterDays<10 && attemptList.length < 5 && <div> <Button disabled={!enablePaymentAttempt} onClick={handleAddOption}>Additional Payment Retry</Button></div>}
             {/* <div className="revlytic-case-dunning-sec-main">
             <h4>Second Retry</h4>
 

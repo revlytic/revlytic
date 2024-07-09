@@ -1791,7 +1791,7 @@ button.ant-btn.css-dev-only-do-not-override-1fviqcj.ant-btn-primary {
 .revlytic-top-section .ant-btn {
     color: #FFF !important;
     text-align: center;
-    font-size: 14px;
+    font-size: 15px;
     font-weight: 700;
     background: #255500 !important;
     border-color: #2b5500;
@@ -5783,6 +5783,7 @@ background-color: #6200ea0a;
     font-weight: 400;
     line-height: 15px;
     letter-spacing: 0em;
+    color: #000;
 }
 .revlytic-dunning-section-select, .revlytic-dunning-section-input {
     width: 100%;
@@ -5795,6 +5796,7 @@ background-color: #6200ea0a;
     width: 100%;
     max-width: 300px;
     border-radius: 5px;
+    font-size: 15px;
 }
 .revlytic-dunning-section-switch label {
     display: block;
@@ -5846,7 +5848,7 @@ background-color: #6200ea0a;
 }
 .dunning-main .ant-collapse-content-box p {
     color: #767676;
-    font-size: 14px;
+    font-size: 15px;
     font-style: normal;
     font-weight: 400;
     line-height: 1.9;
@@ -5881,7 +5883,7 @@ background-color: #6200ea0a;
 }
 
 .case-create-template span {
-    font-size: 14px;
+    font-size: 15px;
     font-weight: 600;
     line-height: 12px;
     letter-spacing: 0em;
