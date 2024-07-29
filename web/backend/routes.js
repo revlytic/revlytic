@@ -92,8 +92,6 @@ import {
   get_active_pause_cancelSubscription_count,
   get_reccuring_skip_failed_count,
   get_subscription_details_analytics,
-  setUpGuideStatusCheck,
-  checkAppBlock,
  } from "./controller.js";
 import {
   appProxy,
@@ -268,8 +266,7 @@ router.post("/saveDunningTemplates", saveDunningTemplates);
 router.post("/get_active_pause_cancelSubscription_count", get_active_pause_cancelSubscription_count);
 router.post("/get_reccuring_skip_failed_count", get_reccuring_skip_failed_count);
 router.post("/get_subscription_details_analytics",get_subscription_details_analytics);
-router.post("/setUpGuideStatusCheck", setUpGuideStatusCheck);
-router.post("/checkAppBlock", checkAppBlock);
+
 
 router.post("/getProductPlanList", getProductPlanList);
 

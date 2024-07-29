@@ -9263,48 +9263,8 @@ export async function sendInvoiceMailAndSaveContract(req, res) {
     console.error("Error in fetching orders", err);
   }
 }
-export async function checkAppBlock(req,res) {
-  try {
-    let {shop}=res.locals.shopify.session;
-    let storeDetails = await getStoreDetails(shop);
-    let theme_config_data = await shopify.api.rest.Asset.all({
-      session: res.locals.shopify.session,
-      theme_id: storeDetails?.themeId,
-      asset: { key: "templates/product.json"},
-    });
-    let currentThemeData = JSON.parse(theme_config_data?.data[0]?.value);
-    let blockData=currentThemeData?.sections?.main?.blocks;
+
+
+
+
     
-    let searchedBlock ;
-    if (blockData) {
-    searchedBlock=Object?.values(blockData)?.find(
-      (item) =>
-        item?.type ==
-        `shopify://apps/${process.env?.APP_NAME}/blocks/revlytic_app_bock/${process.env?.SHOPIFY_THEME_APP_EXTENSION_ID}`
-    );
-   
-    if(searchedBlock && !searchedBlock.disabled){
-     res.send({message:'success',active:true})
-    }
-    else{
-      res.send({message:'success',active:false})
-    }
-    }
-
-  } catch (error) {
-    console.log(error);
-  }
-}
-export async function setUpGuideStatusCheck(req,res){
-try{
-  let { shop } = res.locals.shopify.session;
-   let data=await shopModal.findOne({shop});
-   res.send({message : "success",data})
-
-}
-catch(error){
-  res.send({message:"error"})
-  console.log("error",error)
-}
-}
-
