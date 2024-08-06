@@ -4303,7 +4303,7 @@ export async function recurringBiling(req, res) {
     let billingInterval = interval == "MONTHLY" ? "EVERY_30_DAYS" : "ANNUAL";
     let testCharge;
     let trialDays =  plan == "premiere" || plan == "starter" || plan == "premium" ? 14 : 0;
-    if ( shop == "sahil-shine.myshopify.com" || shop == "sahilnew.myshopify.com") {
+    if ( shop == "sahil-shine.myshopify.com" || shop == "sahilnew.myshopify.com" || shop=='testing-rev.myshopify.com') {
       testCharge = true;
     } else {
       testCharge = false;
