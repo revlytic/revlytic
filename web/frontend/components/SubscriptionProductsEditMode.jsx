@@ -768,8 +768,8 @@ const SubscriptionProductsEdit = ({
           {!edit?.productDetails ? null : (
             <div>
               <Tooltip
-                color="#ffffff"
-                title={
+              {...(billingPlan != "premium" && billingPlan != "premiere" ? { color: "#ffffff" } : {})}
+                 title={
                   billingPlan != "premium" && billingPlan != "premiere" ? (
                     <Link to="/billing?option=editProducts">
                       Upgrade Your Plan
@@ -777,7 +777,7 @@ const SubscriptionProductsEdit = ({
                   ) : (
                     "Add products to your Subscription Plan. You can either add all variants of a Product or a specific Product variant as selected."
                   )
-                }
+                }               
               >
                 <Button
                   className="revlytic pricing-add-product"
