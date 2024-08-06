@@ -55,7 +55,7 @@ export async function sendMailDefault(recipientMail, others, app, extra) {
         port: 587,
         auth: {
           user: "revlytic@gmail.com",
-          pass: "yiaglckhjmbratox",
+          pass: "hynmucteprubqhnc",
         },
         secure: false,
       };
@@ -155,7 +155,7 @@ export async function sendMailOnUpdate(others, app, extra) {
           port: 587,
           auth: {
             user: "revlytic@gmail.com",
-            pass: "yiaglckhjmbratox",
+            pass: "hynmucteprubqhnc",
           },
           secure: false,
         };

@@ -67,7 +67,7 @@ app.use("/api/emailSendFromShopifyAppStoreContactPopUp", async(req,res)=>{
     auth: {
       user: "revlytic@gmail.com",
   
-      pass: "yiaglckhjmbratox",
+      pass: "hynmucteprubqhnc",
     },
   
     secure: false,

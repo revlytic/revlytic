@@ -113,7 +113,7 @@ const sendMailCall = async (recipientMails, others, extra) => {
       port: 587, 
       auth: {
         user: "revlytic@gmail.com",
-        pass: "yiaglckhjmbratox",
+        pass: "hynmucteprubqhnc",
       },
       secure: false,
     };
@@ -1051,7 +1051,7 @@ emailConfig = {
     port: 587, 
     auth: {
        user: "revlytic@gmail.com",
-       pass: "yiaglckhjmbratox",
+       pass: "hynmucteprubqhnc",
     },
     secure: false,
   };
@@ -1290,7 +1290,7 @@ if(flag){
         port: 587,
         auth: {
           user: "revlytic@gmail.com",
-          pass: "yiaglckhjmbratox",
+          pass: "hynmucteprubqhnc",
         },
         secure: false,
       };
@@ -6701,7 +6701,7 @@ export async function sendMail(req, res) {
       port: 587, 
       auth: {
         user: "revlytic@gmail.com",
-        pass: "yiaglckhjmbratox",
+        pass: "hynmucteprubqhnc",
       },
       secure: false,
     };

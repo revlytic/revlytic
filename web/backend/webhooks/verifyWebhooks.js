@@ -96,7 +96,7 @@ const sendPaymentFailureMail = async (recipientMails, others, extra) => {
         port: 587,
         auth: {
           user: "revlytic@gmail.com",
-          pass: "yiaglckhjmbratox",
+          pass: "hynmucteprubqhnc",
         },
         secure: false,
       };
@@ -483,7 +483,7 @@ export async function verifyWebhooks(req, res) {
               port: 587, // Convert port number to integer
               auth: {
                 user: "revlytic@gmail.com",
-                pass: "yiaglckhjmbratox",
+                pass: "hynmucteprubqhnc",
               },
               secure: false,
             };
@@ -593,7 +593,7 @@ export async function verifyWebhooks(req, res) {
               secure: false,
               auth: {
                 user: "revlytic@gmail.com",
-                pass: "yiaglckhjmbratox",
+                pass: "hynmucteprubqhnc",
                  },
             });
             const mailOptions = {

@@ -3580,7 +3580,7 @@ ${cancelReasonModal}
                   port: 587, // Convert port number to integer
                   auth: {
                     user: "revlytic@gmail.com",
-                    pass: "yiaglckhjmbratox",
+                    pass: "hynmucteprubqhnc",
                   },
                   secure: false,
                 };
