@@ -11,6 +11,7 @@ function ContactUs() {
   const [loader, setLoader] = useState(false);
   const { storeDetails } = useAPI();
 
+
   const onFinish = async (values) => {
     // console.log("onfinish",values)
     setLoader(true);
@@ -18,9 +19,9 @@ function ContactUs() {
     let options = {
       to: "sahilagnihotri7@gmail.com",
       subject: "Revlytic Customer Enquiry",
-      html: `<div>Name :  <strong> ${values.name}</strong> <div>
-    <div>Email :  <strong> ${values.email}</strong> <div>
-    <div>Message :  <strong> ${values.message}</strong> <div>
+      html: `<div>Name :  <strong> ${values?.name?.trim()}</strong> <div>
+    <div>Email :  <strong> ${values?.email?.trim()}</strong> <div>
+    <div>Message :  <strong> ${values?.message?.trim()}</strong> <div>
     <div>Store :  <strong> ${storeDetails?.shop}</strong> <div>
     <div>Store Password :  <strong> ${values.storepassword}</strong> <div>
     `,
@@ -46,6 +47,19 @@ function ContactUs() {
     }
   };
 
+  const validateNoEmptySpaces = (data, value) => {
+    
+    if (!value || value.trim() === '') {
+      if(data.field=='name'){
+      return Promise.reject(new Error('Name is required!'));
+    }
+    else{
+      return Promise.reject(new Error('Message is required!'));
+    }
+  }
+    return Promise.resolve();
+  }; 
+
   return (
     <Spin spinning={loader} size="large" tip="Loading...">
       <Form
@@ -67,8 +81,9 @@ function ContactUs() {
             rules={[
               {
                 required: true,
-                message: "Required",
+                message: "",
               },
+              { validator: validateNoEmptySpaces }
             ]}
           >
             <Input
@@ -81,7 +96,7 @@ function ContactUs() {
             rules={[
               {
                 required: true,
-                message: "Required",
+                message: "Email is required!",
               },
               {
                 pattern: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
@@ -110,8 +125,9 @@ function ContactUs() {
             rules={[
               {
                 required: true,
-                message: "Required",
+                message: "",
               },
+              { validator: validateNoEmptySpaces }
             ]}
           >
             <Input.TextArea rows={3} />
