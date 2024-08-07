@@ -10,7 +10,6 @@ import billing_Attempt from "./modals/billingAttempt.js";
 import invoice_all_details from "./modals/invoice.js";
 import emailTemplatesModal from "./modals/emailtemplates.js";
 import announcementsModal from "./modals/announcements.js";
-import { DataType } from "@shopify/shopify-api";
 // import pdf from "html-pdf";
 import mime from "mime";
 import fs from "fs";
