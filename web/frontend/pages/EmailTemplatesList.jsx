@@ -8,6 +8,7 @@ import {
   Switch,
   Form,
   Checkbox,
+  Tooltip,
 } from "antd";
 import { EditOutlined } from "@ant-design/icons";
 import { useAppBridge } from "@shopify/app-bridge-react";
@@ -376,7 +377,6 @@ const EmailTemplatesList = () => {
                         setEmailTestModal(true);
                         setSelectedTemplate(item);
                       }}
-
                       // onClick={()=>handleEmailTestClick(index,item[0],item[1])}
                     >
                       Email Test
@@ -484,7 +484,23 @@ const EmailTemplatesList = () => {
                             valuePropName="checked"
                             initialValue={false}
                           >
-                            <Switch />
+                            <Tooltip
+                              color="#ffffff"
+                              className="revlytic-upgrade-tooltip"
+                              title={
+                                billingPlan != "premium" ? (
+                                  <Link
+                                    to={`/billing?option=enableEmailConfiguration`}
+                                  >
+                                    Upgrade your Plan
+                                  </Link>
+                                ) : (
+                                  ""
+                                )
+                              }
+                            >
+                              <Switch disabled={billingPlan != "premium"} />
+                            </Tooltip>
                           </Form.Item>
 
                           {/* <p>Enable custom email configuration</p>
@@ -627,7 +643,28 @@ const EmailTemplatesList = () => {
                       </div>
 
                       <div className="revlytic-email-save">
-                        <Button htmlType="submit">Save</Button>
+                        <Tooltip
+                          color="#ffffff"
+                          className="revlytic-upgrade-tooltip"
+                          title={
+                            billingPlan != "premium" ? (
+                              <Link
+                                to={`/billing?option=enableEmailConfiguration`}
+                              >
+                                Upgrade your Plan
+                              </Link>
+                            ) : (
+                              ""
+                            )
+                          }
+                        >
+                          <Button
+                            htmlType="submit"
+                            disabled={billingPlan != "premium"}
+                          >
+                            Save
+                          </Button>
+                        </Tooltip>
                       </div>
                     </Form>
 
