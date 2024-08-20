@@ -30,7 +30,7 @@
       "paymentMethodText": "Payment Method",
       "endingWithText": "ending with",
       "emailSetting": {
-        "subject": "Upcoming order Reminder",
+        "subject": "Upcoming order",
         "bcc": "",
         "cc": "",
         "replyTo": ""
@@ -44,7 +44,7 @@
         "<p><span style=\"color: rgb(73,86,97);font-size: 14px;font-family: 'Mulish', sans-serif;\">If you have any questions or concerns, please reply to this email and we will get back to you as soon as we can.</span>&nbsp;&nbsp;</p>\n",
       "subscriptionUrl": "",
       "subscriptionIdText": "Subscription ID",
-      "contentText": "<p><span style=\"font-size: 14px;font-family: 'Mulish', sans-serif;\">Hi {{customer_name}},</span><br/><br/><span style=\"font-size: 14px;font-family: 'Mulish', sans-serif;\">Your subscription has been canceled.</span><br/><br/><span style=\"font-size: 14px;font-family: 'Mulish', sans-serif;\">Kindly go to customer portal to confirm the cancellation.</span><br/><br/><span style=\"font-size: 14px;font-family: 'Mulish', sans-serif;\">Thanks!</span><br/><span style=\"font-size: 14px;font-family: 'Mulish', sans-serif;\">{{shop_name}}</span></p>"
+      "contentText": "<p><span style=\"font-size: 14px;font-family: 'Mulish', sans-serif;\">Hi {{customer_name}},</span><br/><br/><span style=\"font-size: 14px;font-family: 'Mulish', sans-serif;\">You have an upcoming order scheduled for the specified subscription.</span><br/><br/><span style=\"font-size: 14px;font-family: 'Mulish', sans-serif;\">Kindly check out the details provided.</span><br/><br/><span style=\"font-size: 14px;font-family: 'Mulish', sans-serif;\">Thanks!</span><br/><span style=\"font-size: 14px;font-family: 'Mulish', sans-serif;\">{{shop_name}}</span></p>"
   },
   "standardCourtsyNotice": {
     "status": true,
@@ -91,7 +91,7 @@
       "<p><span style=\"color: rgb(73,86,97);font-size: 14px;font-family: 'Mulish', sans-serif;\">If you have any questions or concerns, please reply to this email and we will get back to you as soon as we can.</span>&nbsp;&nbsp;</p>\n",
     "subscriptionUrl": "",
     "subscriptionIdText": "Subscription ID",
-    "contentText": "<p><span style=\"font-size: 14px;font-family: 'Mulish', sans-serif;\">Hi {{customer_name}},</span><br/><br/><span style=\"font-size: 14px;font-family: 'Mulish', sans-serif;\">Your subscription has been canceled.</span><br/><br/><span style=\"font-size: 14px;font-family: 'Mulish', sans-serif;\">Kindly go to customer portal to confirm the cancellation.</span><br/><br/><span style=\"font-size: 14px;font-family: 'Mulish', sans-serif;\">Thanks!</span><br/><span style=\"font-size: 14px;font-family: 'Mulish', sans-serif;\">{{shop_name}}</span></p>"
+    "contentText": "<p><span style=\"font-size: 14px;font-family: 'Mulish', sans-serif;\">Hi {{customer_name}},</span><br/><br/><span style=\"font-size: 14px;font-family: 'Mulish', sans-serif;\">We have noticed that your most recent payment attempt was unsuccessful.</span><br/><br/><span style=\"font-size: 14px;font-family: 'Mulish', sans-serif;\">Please review and update your payment information as soon as possible before the automated payment retry attempt to avoid consecutive payment failures.</span><br/><br/><span style=\"font-size: 14px;font-family: 'Mulish', sans-serif;\">Thanks!</span><br/><span style=\"font-size: 14px;font-family: 'Mulish', sans-serif;\">{{shop_name}}</span></p>"
 }, 
 "standardPastDueNotice1": {
   "status": true,
@@ -138,7 +138,7 @@
     "<p><span style=\"color: rgb(73,86,97);font-size: 14px;font-family: 'Mulish', sans-serif;\">If you have any questions or concerns, please reply to this email and we will get back to you as soon as we can.</span>&nbsp;&nbsp;</p>\n",
   "subscriptionUrl": "",
   "subscriptionIdText": "Subscription ID",
-  "contentText": "<p><span style=\"font-size: 14px;font-family: 'Mulish', sans-serif;\">Hi {{customer_name}},</span><br/><br/><span style=\"font-size: 14px;font-family: 'Mulish', sans-serif;\">Your subscription has been canceled.</span><br/><br/><span style=\"font-size: 14px;font-family: 'Mulish', sans-serif;\">Kindly go to customer portal to confirm the cancellation.</span><br/><br/><span style=\"font-size: 14px;font-family: 'Mulish', sans-serif;\">Thanks!</span><br/><span style=\"font-size: 14px;font-family: 'Mulish', sans-serif;\">{{shop_name}}</span></p>"
+  "contentText": "<p><span style=\"font-size: 14px;font-family: 'Mulish', sans-serif;\">Hi {{customer_name}},</span><br/><br/><span style=\"font-size: 14px;font-family: 'Mulish', sans-serif;\">Your payment attempt has failed again.</span><br/><br/><span style=\"font-size: 14px;font-family: 'Mulish', sans-serif;\">Kindly update your payment information before the automated payment retry so as to prevent further payment failures and order execution delays.</span><br/><br/><span style=\"font-size: 14px;font-family: 'Mulish', sans-serif;\">Thanks!</span><br/><span style=\"font-size: 14px;font-family: 'Mulish', sans-serif;\">{{shop_name}}</span></p>"
 },
 "standardPastDueNotice2": {
   "status": true,
@@ -185,7 +185,7 @@
     "<p><span style=\"color: rgb(73,86,97);font-size: 14px;font-family: 'Mulish', sans-serif;\">If you have any questions or concerns, please reply to this email and we will get back to you as soon as we can.</span>&nbsp;&nbsp;</p>\n",
   "subscriptionUrl": "",
   "subscriptionIdText": "Subscription ID",
-  "contentText": "<p><span style=\"font-size: 14px;font-family: 'Mulish', sans-serif;\">Hi {{customer_name}},</span><br/><br/><span style=\"font-size: 14px;font-family: 'Mulish', sans-serif;\">Your subscription has been canceled.</span><br/><br/><span style=\"font-size: 14px;font-family: 'Mulish', sans-serif;\">Kindly go to customer portal to confirm the cancellation.</span><br/><br/><span style=\"font-size: 14px;font-family: 'Mulish', sans-serif;\">Thanks!</span><br/><span style=\"font-size: 14px;font-family: 'Mulish', sans-serif;\">{{shop_name}}</span></p>"
+  "contentText": "<p><span style=\"font-size: 14px;font-family: 'Mulish', sans-serif;\">Hi {{customer_name}},</span><br/><br/><span style=\"font-size: 14px;font-family: 'Mulish', sans-serif;\">The specified subscription has experienced a series of unsuccessful payments.</span><br/><br/><span style=\"font-size: 14px;font-family: 'Mulish', sans-serif;\"> Please check your payment information, In order to prevent further payment failures and order execution delays, complete the necessary modifications before the automated payment retry.</span><br/><br/><span style=\"font-size: 14px;font-family: 'Mulish', sans-serif;\">Thanks!</span><br/><span style=\"font-size: 14px;font-family: 'Mulish', sans-serif;\">{{shop_name}}</span></p>"
 },
 "standardPastDueNotice3": {
   "status": true,
@@ -232,7 +232,7 @@
     "<p><span style=\"color: rgb(73,86,97);font-size: 14px;font-family: 'Mulish', sans-serif;\">If you have any questions or concerns, please reply to this email and we will get back to you as soon as we can.</span>&nbsp;&nbsp;</p>\n",
   "subscriptionUrl": "",
   "subscriptionIdText": "Subscription ID",
-  "contentText": "<p><span style=\"font-size: 14px;font-family: 'Mulish', sans-serif;\">Hi {{customer_name}},</span><br/><br/><span style=\"font-size: 14px;font-family: 'Mulish', sans-serif;\">Your subscription has been canceled.</span><br/><br/><span style=\"font-size: 14px;font-family: 'Mulish', sans-serif;\">Kindly go to customer portal to confirm the cancellation.</span><br/><br/><span style=\"font-size: 14px;font-family: 'Mulish', sans-serif;\">Thanks!</span><br/><span style=\"font-size: 14px;font-family: 'Mulish', sans-serif;\">{{shop_name}}</span></p>"
+  "contentText": "<p><span style=\"font-size: 14px;font-family: 'Mulish', sans-serif;\">Hi {{customer_name}},</span><br/><br/><span style=\"font-size: 14px;font-family: 'Mulish', sans-serif;\">Your payment attempts have failed repeatedly.</span><br/><br/><span style=\"font-size: 14px;font-family: 'Mulish', sans-serif;\">Immediate action is essential to avoid additional payment failures and delays in order processing. Please update your payment details immediately before the automated payment attempt retry.</span><br/><br/><span style=\"font-size: 14px;font-family: 'Mulish', sans-serif;\">Thanks!</span><br/><span style=\"font-size: 14px;font-family: 'Mulish', sans-serif;\">{{shop_name}}</span></p>"
 },
 "standardFinalDemand": {
   "status": true,
@@ -279,7 +279,7 @@
     "<p><span style=\"color: rgb(73,86,97);font-size: 14px;font-family: 'Mulish', sans-serif;\">If you have any questions or concerns, please reply to this email and we will get back to you as soon as we can.</span>&nbsp;&nbsp;</p>\n",
   "subscriptionUrl": "",
   "subscriptionIdText": "Subscription ID",
-  "contentText": "<p><span style=\"font-size: 14px;font-family: 'Mulish', sans-serif;\">Hi {{customer_name}},</span><br/><br/><span style=\"font-size: 14px;font-family: 'Mulish', sans-serif;\">Your subscription has been canceled.</span><br/><br/><span style=\"font-size: 14px;font-family: 'Mulish', sans-serif;\">Kindly go to customer portal to confirm the cancellation.</span><br/><br/><span style=\"font-size: 14px;font-family: 'Mulish', sans-serif;\">Thanks!</span><br/><span style=\"font-size: 14px;font-family: 'Mulish', sans-serif;\">{{shop_name}}</span></p>"
+  "contentText": "<p><span style=\"font-size: 14px;font-family: 'Mulish', sans-serif;\">Hi {{customer_name}},</span><br/><br/><span style=\"font-size: 14px;font-family: 'Mulish', sans-serif;\">Final notice: We have received many unsuccessful payments from you.</span><br/><br/><span style=\"font-size: 14px;font-family: 'Mulish', sans-serif;\">Please find a speedy solution to this issue prior to the last automated payment attempt; if not, further delays may cause order to be canceled.</span><br/><br/><span style=\"font-size: 14px;font-family: 'Mulish', sans-serif;\">Thanks!</span><br/><span style=\"font-size: 14px;font-family: 'Mulish', sans-serif;\">{{shop_name}}</span></p>"
 }
   
   }
