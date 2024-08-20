@@ -4,7 +4,6 @@ import postApi from "../common/postApi";
 import { Link, useNavigate } from "react-router-dom";
 import { useAPI } from "../common/commonContext";
 import { useAppBridge } from "@shopify/app-bridge-react";
-import { toast } from "react-toastify";
 import { ArrowLeftOutlined, ArrowRightOutlined } from "@ant-design/icons";
 
 function Orders({
@@ -486,6 +485,20 @@ function Orders({
                             </Tooltip>
                           </div>
                         ) : item.status == "failed" ? (
+                          <Tooltip
+                              color="#ffffff"
+                              title={
+                                billingPlan != "starter" &&
+                                billingPlan != "premium" &&
+                                billingPlan != "premiere" ? (
+                                  <Link to={`/billing?option=earlyAttempt`}>
+                                    Upgrade your Plan
+                                  </Link>
+                                ) : (
+                                  ""
+                                )
+                              }
+                            >
                           <Button
                             onClick={() =>
                               handleRetry(
@@ -502,6 +515,9 @@ function Orders({
                           >
                             Retry
                           </Button>
+
+                          </Tooltip>
+
                         ) : (
                           ""
                         )}
