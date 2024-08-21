@@ -146,7 +146,7 @@ export async function sendMailOnUpdate(others, app, extra) {
           subject: selectedTemplate?.emailSetting?.subject,
           cc: selectedTemplate?.emailSetting?.cc,
           bcc: selectedTemplate?.emailSetting?.bcc,
-          replyTo: selectedTemplate?.emailSetting?.replyTo,
+          replyTo: selectedTemplate?.emailSetting?.replyTo ?  selectedTemplate?.emailSetting?.replyTo  : extra?.shop_email,
           ...others,
         };
       } else {
@@ -166,7 +166,7 @@ export async function sendMailOnUpdate(others, app, extra) {
           subject: selectedTemplate?.emailSetting?.subject,
           cc: selectedTemplate?.emailSetting?.cc,
           bcc: selectedTemplate?.emailSetting?.bcc,
-          replyTo: selectedTemplate?.emailSetting?.replyTo,
+         replyTo: selectedTemplate?.emailSetting?.replyTo ? selectedTemplate?.emailSetting?.replyTo : extra?.shop_email,       
           ...others,
         };
       }

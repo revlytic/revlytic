@@ -410,7 +410,7 @@ const deleteOption=(index)=>{
               fail to pay. Once you added the options , the number
               of stages will appear below. Next, you can select the number of
               days(Between 1 to 10) after the initial payment faliure you’d like this collection
-              attempt to take place. Finally, you can add and customize the
+              attempt to take place. Please note that if the total number of days across all attempts reaches 10, no further options can be added. Finally, you can add and customize the
               Email template that will be sent to your customer when Revlytic
               attempts to retry collection attempt.
             </p>
