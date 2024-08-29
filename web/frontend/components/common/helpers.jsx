@@ -55,7 +55,7 @@ export async function sendMailDefault(recipientMail, others, app, extra) {
         port: 587,
         auth: {
           user: "revlytic@gmail.com",
-          pass: "yiaglckhjmbratox",
+          pass: "hynmucteprubqhnc",
         },
         secure: false,
       };
@@ -130,7 +130,6 @@ export async function sendMailOnUpdate(others, app, extra) {
             requireTLS: true,
           };
         }
-
         emailConfig = {
           host: configurationData.host,
           port: parseInt(configurationData.portNumber),
@@ -147,7 +146,7 @@ export async function sendMailOnUpdate(others, app, extra) {
           subject: selectedTemplate?.emailSetting?.subject,
           cc: selectedTemplate?.emailSetting?.cc,
           bcc: selectedTemplate?.emailSetting?.bcc,
-          replyTo: selectedTemplate?.emailSetting?.replyTo,
+          replyTo: selectedTemplate?.emailSetting?.replyTo ?  selectedTemplate?.emailSetting?.replyTo  : extra?.shop_email,
           ...others,
         };
       } else {
@@ -156,7 +155,7 @@ export async function sendMailOnUpdate(others, app, extra) {
           port: 587,
           auth: {
             user: "revlytic@gmail.com",
-            pass: "yiaglckhjmbratox",
+            pass: "hynmucteprubqhnc",
           },
           secure: false,
         };
@@ -167,7 +166,7 @@ export async function sendMailOnUpdate(others, app, extra) {
           subject: selectedTemplate?.emailSetting?.subject,
           cc: selectedTemplate?.emailSetting?.cc,
           bcc: selectedTemplate?.emailSetting?.bcc,
-          replyTo: selectedTemplate?.emailSetting?.replyTo,
+         replyTo: selectedTemplate?.emailSetting?.replyTo ? selectedTemplate?.emailSetting?.replyTo : extra?.shop_email,       
           ...others,
         };
       }
@@ -183,4 +182,8 @@ export async function sendMailOnUpdate(others, app, extra) {
   } else {
     return { message: "error" };
   }
+}
+
+export let commonVariables={
+  url:"https://revlytic.co",  
 }

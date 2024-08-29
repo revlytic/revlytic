@@ -4,7 +4,6 @@ import postApi from "../common/postApi";
 import { Link, useNavigate } from "react-router-dom";
 import { useAPI } from "../common/commonContext";
 import { useAppBridge } from "@shopify/app-bridge-react";
-import { toast } from "react-toastify";
 import { ArrowLeftOutlined, ArrowRightOutlined } from "@ant-design/icons";
 
 function Orders({
@@ -87,22 +86,18 @@ function Orders({
             new Date(item.renewal_date).getTime() ===
             new Date(nextDate).getTime()
         );
-
         if (!existingAlready) {
           flag = true;
         } else {
           nextDate = dateChange(type, nextDate, value).toISOString();
         }
       }
-
       let bodyData = {
         data: data,
         renewal_date: renewal_date,
         nextBillingDate: nextDate,
       };
-
       let response = await postApi("/api/admin/orderNow", bodyData, app);
-
       if (response?.data?.message == "success") {
         fetchDataUpcomingOrders({ ...data, nextBillingDate: nextDate });
         setExistingSubscription({ ...data, nextBillingDate: nextDate });
@@ -110,14 +105,11 @@ function Orders({
       }
     } else {
       let bodyData = { data: data, renewal_date: renewal_date };
-
       let response = await postApi("/api/admin/orderNow", bodyData, app);
-
       if (response?.data?.message == "success") {
         fetchDataUpcomingOrders(data);
       }
     }
-
     setLoader(false);
   };
 
@@ -493,6 +485,20 @@ function Orders({
                             </Tooltip>
                           </div>
                         ) : item.status == "failed" ? (
+                          <Tooltip
+                              color="#ffffff"
+                              title={
+                                billingPlan != "starter" &&
+                                billingPlan != "premium" &&
+                                billingPlan != "premiere" ? (
+                                  <Link to={`/billing?option=earlyAttempt`}>
+                                    Upgrade your Plan
+                                  </Link>
+                                ) : (
+                                  ""
+                                )
+                              }
+                            >
                           <Button
                             onClick={() =>
                               handleRetry(
@@ -509,6 +515,9 @@ function Orders({
                           >
                             Retry
                           </Button>
+
+                          </Tooltip>
+
                         ) : (
                           ""
                         )}
@@ -657,7 +666,6 @@ function Orders({
         data?.status?.toLowerCase() == "active" ? items : pastAndSkippedItems
       }
       onChange={(activeTab) => {
-        console.log("active", activeTab);
         setIndex(0);
         if (data?.status?.toLowerCase() == "active") {
           activeTab == 1

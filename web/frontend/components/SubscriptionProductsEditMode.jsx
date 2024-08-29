@@ -768,7 +768,7 @@ const SubscriptionProductsEdit = ({
           {!edit?.productDetails ? null : (
             <div>
               <Tooltip
-                color="#ffffff"
+               {...(billingPlan != "premium" && billingPlan != "premiere" ? { color: "#ffffff" } : {})}
                 title={
                   billingPlan != "premium" && billingPlan != "premiere" ? (
                     <Link to="/billing?option=editProducts">

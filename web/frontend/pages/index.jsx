@@ -28,8 +28,7 @@ import { Link } from "react-router-dom";
 import { InfoCircleOutlined } from "@ant-design/icons";
 import CalculateBillingUsage from "../components/calculateBillingUsage";
 import setup_instructions from "../assets/setup_instructions.pdf";
-
-
+import { commonVariables } from "../components/common/helpers";
 function Home() {
   const { storeDetails } = useAPI();
 
@@ -49,7 +48,7 @@ function Home() {
 
   const [customDate, setCustomDate] = useState(dayjs().format("YYYY-MM-DD"));
 
-  const [range, setRange] = useState("today");
+  const [range, setRange] = useState("last90Days");
 
   const [recurringRevenue, setRecurringRevenue] = useState(0);
 
@@ -65,7 +64,8 @@ function Home() {
   const [announcementList, setAnnouncementList] = useState([]);
   const [showAppBlock, setShowAppBlock] = useState();
 
-  const [billingPlan,setBillingPlan]=useState('')
+  const [billingPlan, setBillingPlan] = useState("");
+
 
   useEffect(async () => {
     let data = await axios.get(
@@ -85,7 +85,7 @@ function Home() {
     filtered && setCurrencyConversionRates(filtered.rates);
 
     if (filtered && storeDetails?.currency) {
-      let response = await getData({ range: "today" }, filtered?.rates);
+      let response = await getData({ range: "last90Days" }, filtered?.rates);
     }
     return () => {};
   }, [storeDetails]);
@@ -94,7 +94,7 @@ function Home() {
     setLoader(true);
 
     setLoader(false);
-    await getActiveCustomers({ range: "today" });
+    await getActiveCustomers({ range: "last90Days" });
 
     await getAnnouncements();
     await checkAppBlockEmbed();
@@ -150,7 +150,7 @@ function Home() {
 
     if (response?.data?.message == "success") {
       let arr = response?.data?.data;
-
+       
       let sum = 0;
 
       // let countInitialStatus = 0;
@@ -464,7 +464,7 @@ function Home() {
                 <div className="revlytic-annoucments-inner-row">
                   <div className="revlytic-annoucments-inner-column">
                     <img
-                      src={`https://revlytic.co/images/announcement/${item?.image}`}
+                      src={`${commonVariables?.url}/images/announcement/${item?.image}`}
                       width="100"
                       height="100"
                     />
@@ -555,6 +555,7 @@ function Home() {
                    > 
                   <Button>Tutorial</Button>
                 </a> 
+
         </div>
       </Card>
       <div className="revlytic plan-group-listing-button">

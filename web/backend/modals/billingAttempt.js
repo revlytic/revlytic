@@ -18,6 +18,7 @@ let billing_Attempts = new Schema(
     numberOfAttempts: Number,
     lastEmailSentStatus: String,
     retriedAttemptStatus: String,
+    attemptMode: String,
   },
   { timestamps: true }
 );

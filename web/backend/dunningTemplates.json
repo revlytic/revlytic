@@ -1,0 +1,285 @@
+ {
+    "upcomingOrderReminder": {
+      "status": true,
+      "adminNotification": true,
+      "showCurrency": true,
+      "showShippingAddress": true,
+      "showBillingAddress": true,
+      "showPaymentMethod": true,
+      "showOrderNumber": true,
+      "showLineItems": true,
+      "showSubscriptionId": true,
+      "logoUrl":
+        "https://cdn.shopify.com/s/files/1/0753/8068/7139/files/revlytic.c679902f_1.svg?v=1701756753",
+      "logoHeight": "70",
+      "logoWidth": "170",
+      "logoAlignment": "center",
+      "headingText": "Upcoming Order",
+      "headingTextColor": "#000000",
+      "textColor": "#767676",
+      "manageSubscriptionText": "Manage Subscription",
+      "manageSubscriptionTextColor": "#FFFFFF",
+      "manageSubscriptionButtonBackground": "#0F550C",
+      "subscriptionShippingAddressText": "Shipping Address",
+      "subscriptionBillingAddressText": "Billing Address",
+      "deliveryFrequencyText": "Delivery Frequency",
+      "nextBillingDateText": "Next Billing Date",
+      "planNameText": "Plan Name",
+      "billingFrequencyText": "Billing Frequency",
+      "orderNumberText": "Order Number",
+      "paymentMethodText": "Payment Method",
+      "endingWithText": "ending with",
+      "emailSetting": {
+        "subject": "Upcoming order",
+        "bcc": "",
+        "cc": "",
+        "replyTo": ""
+      },
+      
+      "shippingAddress":
+        "<p><span style=\"color: rgba(0,0,0,0.88);font-size: 14px;font-family: 'Mulish', sans-serif;\">{{shipping_address_1}}, {{shipping_city}}, {{shipping_province}}, {{shipping_country}}</span></p>\n",
+      "billingAddress":
+        "<p><span style=\"color: rgba(0,0,0,0.88);font-size: 14px;font-family: 'Mulish', sans-serif;\">{{billing_address_1}}, {{billing_city}}, {{billing_province}}, {{billing_country}}</span>&nbsp;</p>\n",
+      "footerText":
+        "<p><span style=\"color: rgb(73,86,97);font-size: 14px;font-family: 'Mulish', sans-serif;\">If you have any questions or concerns, please reply to this email and we will get back to you as soon as we can.</span>&nbsp;&nbsp;</p>\n",
+      "subscriptionUrl": "",
+      "subscriptionIdText": "Subscription ID",
+      "contentText": "<p><span style=\"font-size: 14px;font-family: 'Mulish', sans-serif;\">Hi {{customer_name}},</span><br/><br/><span style=\"font-size: 14px;font-family: 'Mulish', sans-serif;\">You have an upcoming order scheduled for the specified subscription.</span><br/><br/><span style=\"font-size: 14px;font-family: 'Mulish', sans-serif;\">Kindly check out the details provided.</span><br/><br/><span style=\"font-size: 14px;font-family: 'Mulish', sans-serif;\">Thanks!</span><br/><span style=\"font-size: 14px;font-family: 'Mulish', sans-serif;\">{{shop_name}}</span></p>"
+  },
+  "standardCourtsyNotice": {
+    "status": true,
+    "adminNotification": true,
+    "showCurrency": true,
+    "showShippingAddress": true,
+    "showBillingAddress": true,
+    "showPaymentMethod": true,
+    "showOrderNumber": true,
+    "showLineItems": true,
+    "showSubscriptionId": true,
+    "logoUrl":
+      "https://cdn.shopify.com/s/files/1/0753/8068/7139/files/revlytic.c679902f_1.svg?v=1701756753",
+    "logoHeight": "70",
+    "logoWidth": "170",
+    "logoAlignment": "center",
+    "headingText": "Standard Courtsy Notice",
+    "headingTextColor": "#000000",
+    "textColor": "#767676",
+    "manageSubscriptionText": "Manage Subscription",
+    "manageSubscriptionTextColor": "#FFFFFF",
+    "manageSubscriptionButtonBackground": "#0F550C",
+    "subscriptionShippingAddressText": "Shipping Address",
+    "subscriptionBillingAddressText": "Billing Address",
+    "deliveryFrequencyText": "Delivery Frequency",
+    "nextBillingDateText": "Next Billing Date",
+    "planNameText": "Plan Name",
+    "billingFrequencyText": "Billing Frequency",
+    "orderNumberText": "Order Number",
+    "paymentMethodText": "Payment Method",
+    "endingWithText": "ending with",
+    "emailSetting": {
+      "subject": "Standard Courtsy Notice",
+      "bcc": "",
+      "cc": "",
+      "replyTo": ""
+    },
+    
+    "shippingAddress":
+      "<p><span style=\"color: rgba(0,0,0,0.88);font-size: 14px;font-family: 'Mulish', sans-serif;\">{{shipping_address_1}}, {{shipping_city}}, {{shipping_province}}, {{shipping_country}}</span></p>\n",
+    "billingAddress":
+      "<p><span style=\"color: rgba(0,0,0,0.88);font-size: 14px;font-family: 'Mulish', sans-serif;\">{{billing_address_1}}, {{billing_city}}, {{billing_province}}, {{billing_country}}</span>&nbsp;</p>\n",
+    "footerText":
+      "<p><span style=\"color: rgb(73,86,97);font-size: 14px;font-family: 'Mulish', sans-serif;\">If you have any questions or concerns, please reply to this email and we will get back to you as soon as we can.</span>&nbsp;&nbsp;</p>\n",
+    "subscriptionUrl": "",
+    "subscriptionIdText": "Subscription ID",
+    "contentText": "<p><span style=\"font-size: 14px;font-family: 'Mulish', sans-serif;\">Hi {{customer_name}},</span><br/><br/><span style=\"font-size: 14px;font-family: 'Mulish', sans-serif;\">We have noticed that your most recent payment attempt was unsuccessful.</span><br/><br/><span style=\"font-size: 14px;font-family: 'Mulish', sans-serif;\">Please review and update your payment information as soon as possible before the automated payment retry attempt to avoid consecutive payment failures.</span><br/><br/><span style=\"font-size: 14px;font-family: 'Mulish', sans-serif;\">Thanks!</span><br/><span style=\"font-size: 14px;font-family: 'Mulish', sans-serif;\">{{shop_name}}</span></p>"
+}, 
+"standardPastDueNotice1": {
+  "status": true,
+  "adminNotification": true,
+  "showCurrency": true,
+  "showShippingAddress": true,
+  "showBillingAddress": true,
+  "showPaymentMethod": true,
+  "showOrderNumber": true,
+  "showLineItems": true,
+  "showSubscriptionId": true,
+  "logoUrl":
+    "https://cdn.shopify.com/s/files/1/0753/8068/7139/files/revlytic.c679902f_1.svg?v=1701756753",
+  "logoHeight": "70",
+  "logoWidth": "170",
+  "logoAlignment": "center",
+  "headingText": "Standard Past Due Notice 1",
+  "headingTextColor": "#000000",
+  "textColor": "#767676",
+  "manageSubscriptionText": "Manage Subscription",
+  "manageSubscriptionTextColor": "#FFFFFF",
+  "manageSubscriptionButtonBackground": "#0F550C",
+  "subscriptionShippingAddressText": "Shipping Address",
+  "subscriptionBillingAddressText": "Billing Address",
+  "deliveryFrequencyText": "Delivery Frequency",
+  "nextBillingDateText": "Next Billing Date",
+  "planNameText": "Plan Name",
+  "billingFrequencyText": "Billing Frequency",
+  "orderNumberText": "Order Number",
+  "paymentMethodText": "Payment Method",
+  "endingWithText": "ending with",
+  "emailSetting": {
+    "subject": "Standard Past Due Notice 1",
+    "bcc": "",
+    "cc": "",
+    "replyTo": ""
+  },
+  
+  "shippingAddress":
+    "<p><span style=\"color: rgba(0,0,0,0.88);font-size: 14px;font-family: 'Mulish', sans-serif;\">{{shipping_address_1}}, {{shipping_city}}, {{shipping_province}}, {{shipping_country}}</span></p>\n",
+  "billingAddress":
+    "<p><span style=\"color: rgba(0,0,0,0.88);font-size: 14px;font-family: 'Mulish', sans-serif;\">{{billing_address_1}}, {{billing_city}}, {{billing_province}}, {{billing_country}}</span>&nbsp;</p>\n",
+  "footerText":
+    "<p><span style=\"color: rgb(73,86,97);font-size: 14px;font-family: 'Mulish', sans-serif;\">If you have any questions or concerns, please reply to this email and we will get back to you as soon as we can.</span>&nbsp;&nbsp;</p>\n",
+  "subscriptionUrl": "",
+  "subscriptionIdText": "Subscription ID",
+  "contentText": "<p><span style=\"font-size: 14px;font-family: 'Mulish', sans-serif;\">Hi {{customer_name}},</span><br/><br/><span style=\"font-size: 14px;font-family: 'Mulish', sans-serif;\">Your payment attempt has failed again.</span><br/><br/><span style=\"font-size: 14px;font-family: 'Mulish', sans-serif;\">Kindly update your payment information before the automated payment retry so as to prevent further payment failures and order execution delays.</span><br/><br/><span style=\"font-size: 14px;font-family: 'Mulish', sans-serif;\">Thanks!</span><br/><span style=\"font-size: 14px;font-family: 'Mulish', sans-serif;\">{{shop_name}}</span></p>"
+},
+"standardPastDueNotice2": {
+  "status": true,
+  "adminNotification": true,
+  "showCurrency": true,
+  "showShippingAddress": true,
+  "showBillingAddress": true,
+  "showPaymentMethod": true,
+  "showOrderNumber": true,
+  "showLineItems": true,
+  "showSubscriptionId": true,
+  "logoUrl":
+    "https://cdn.shopify.com/s/files/1/0753/8068/7139/files/revlytic.c679902f_1.svg?v=1701756753",
+  "logoHeight": "70",
+  "logoWidth": "170",
+  "logoAlignment": "center",
+  "headingText": "Standard Past Due Notice 2",
+  "headingTextColor": "#000000",
+  "textColor": "#767676",
+  "manageSubscriptionText": "Manage Subscription",
+  "manageSubscriptionTextColor": "#FFFFFF",
+  "manageSubscriptionButtonBackground": "#0F550C",
+  "subscriptionShippingAddressText": "Shipping Address",
+  "subscriptionBillingAddressText": "Billing Address",
+  "deliveryFrequencyText": "Delivery Frequency",
+  "nextBillingDateText": "Next Billing Date",
+  "planNameText": "Plan Name",
+  "billingFrequencyText": "Billing Frequency",
+  "orderNumberText": "Order Number",
+  "paymentMethodText": "Payment Method",
+  "endingWithText": "ending with",
+  "emailSetting": {
+    "subject": "Standard Past Due Notice 2",
+    "bcc": "",
+    "cc": "",
+    "replyTo": ""
+  },
+  
+  "shippingAddress":
+    "<p><span style=\"color: rgba(0,0,0,0.88);font-size: 14px;font-family: 'Mulish', sans-serif;\">{{shipping_address_1}}, {{shipping_city}}, {{shipping_province}}, {{shipping_country}}</span></p>\n",
+  "billingAddress":
+    "<p><span style=\"color: rgba(0,0,0,0.88);font-size: 14px;font-family: 'Mulish', sans-serif;\">{{billing_address_1}}, {{billing_city}}, {{billing_province}}, {{billing_country}}</span>&nbsp;</p>\n",
+  "footerText":
+    "<p><span style=\"color: rgb(73,86,97);font-size: 14px;font-family: 'Mulish', sans-serif;\">If you have any questions or concerns, please reply to this email and we will get back to you as soon as we can.</span>&nbsp;&nbsp;</p>\n",
+  "subscriptionUrl": "",
+  "subscriptionIdText": "Subscription ID",
+  "contentText": "<p><span style=\"font-size: 14px;font-family: 'Mulish', sans-serif;\">Hi {{customer_name}},</span><br/><br/><span style=\"font-size: 14px;font-family: 'Mulish', sans-serif;\">The specified subscription has experienced a series of unsuccessful payments.</span><br/><br/><span style=\"font-size: 14px;font-family: 'Mulish', sans-serif;\"> Please check your payment information, In order to prevent further payment failures and order execution delays, complete the necessary modifications before the automated payment retry.</span><br/><br/><span style=\"font-size: 14px;font-family: 'Mulish', sans-serif;\">Thanks!</span><br/><span style=\"font-size: 14px;font-family: 'Mulish', sans-serif;\">{{shop_name}}</span></p>"
+},
+"standardPastDueNotice3": {
+  "status": true,
+  "adminNotification": true,
+  "showCurrency": true,
+  "showShippingAddress": true,
+  "showBillingAddress": true,
+  "showPaymentMethod": true,
+  "showOrderNumber": true,
+  "showLineItems": true,
+  "showSubscriptionId": true,
+  "logoUrl":
+    "https://cdn.shopify.com/s/files/1/0753/8068/7139/files/revlytic.c679902f_1.svg?v=1701756753",
+  "logoHeight": "70",
+  "logoWidth": "170",
+  "logoAlignment": "center",
+  "headingText": "Standard Past Due Notice 3",
+  "headingTextColor": "#000000",
+  "textColor": "#767676",
+  "manageSubscriptionText": "Manage Subscription",
+  "manageSubscriptionTextColor": "#FFFFFF",
+  "manageSubscriptionButtonBackground": "#0F550C",
+  "subscriptionShippingAddressText": "Shipping Address",
+  "subscriptionBillingAddressText": "Billing Address",
+  "deliveryFrequencyText": "Delivery Frequency",
+  "nextBillingDateText": "Next Billing Date",
+  "planNameText": "Plan Name",
+  "billingFrequencyText": "Billing Frequency",
+  "orderNumberText": "Order Number",
+  "paymentMethodText": "Payment Method",
+  "endingWithText": "ending with",
+  "emailSetting": {
+    "subject": "Standard Past Due Notice 3",
+    "bcc": "",
+    "cc": "",
+    "replyTo": ""
+  },
+  
+  "shippingAddress":
+    "<p><span style=\"color: rgba(0,0,0,0.88);font-size: 14px;font-family: 'Mulish', sans-serif;\">{{shipping_address_1}}, {{shipping_city}}, {{shipping_province}}, {{shipping_country}}</span></p>\n",
+  "billingAddress":
+    "<p><span style=\"color: rgba(0,0,0,0.88);font-size: 14px;font-family: 'Mulish', sans-serif;\">{{billing_address_1}}, {{billing_city}}, {{billing_province}}, {{billing_country}}</span>&nbsp;</p>\n",
+  "footerText":
+    "<p><span style=\"color: rgb(73,86,97);font-size: 14px;font-family: 'Mulish', sans-serif;\">If you have any questions or concerns, please reply to this email and we will get back to you as soon as we can.</span>&nbsp;&nbsp;</p>\n",
+  "subscriptionUrl": "",
+  "subscriptionIdText": "Subscription ID",
+  "contentText": "<p><span style=\"font-size: 14px;font-family: 'Mulish', sans-serif;\">Hi {{customer_name}},</span><br/><br/><span style=\"font-size: 14px;font-family: 'Mulish', sans-serif;\">Your payment attempts have failed repeatedly.</span><br/><br/><span style=\"font-size: 14px;font-family: 'Mulish', sans-serif;\">Immediate action is essential to avoid additional payment failures and delays in order processing. Please update your payment details immediately before the automated payment attempt retry.</span><br/><br/><span style=\"font-size: 14px;font-family: 'Mulish', sans-serif;\">Thanks!</span><br/><span style=\"font-size: 14px;font-family: 'Mulish', sans-serif;\">{{shop_name}}</span></p>"
+},
+"standardFinalDemand": {
+  "status": true,
+  "adminNotification": true,
+  "showCurrency": true,
+  "showShippingAddress": true,
+  "showBillingAddress": true,
+  "showPaymentMethod": true,
+  "showOrderNumber": true,
+  "showLineItems": true,
+  "showSubscriptionId": true,
+  "logoUrl":
+    "https://cdn.shopify.com/s/files/1/0753/8068/7139/files/revlytic.c679902f_1.svg?v=1701756753",
+  "logoHeight": "70",
+  "logoWidth": "170",
+  "logoAlignment": "center",
+  "headingText": "Standard Final Demand",
+  "headingTextColor": "#000000",
+  "textColor": "#767676",
+  "manageSubscriptionText": "Manage Subscription",
+  "manageSubscriptionTextColor": "#FFFFFF",
+  "manageSubscriptionButtonBackground": "#0F550C",
+  "subscriptionShippingAddressText": "Shipping Address",
+  "subscriptionBillingAddressText": "Billing Address",
+  "deliveryFrequencyText": "Delivery Frequency",
+  "nextBillingDateText": "Next Billing Date",
+  "planNameText": "Plan Name",
+  "billingFrequencyText": "Billing Frequency",
+  "orderNumberText": "Order Number",
+  "paymentMethodText": "Payment Method",
+  "endingWithText": "ending with",
+  "emailSetting": {
+    "subject": "Standard Final Demand",
+    "bcc": "",
+    "cc": "",
+    "replyTo": ""
+  },
+  
+  "shippingAddress":
+    "<p><span style=\"color: rgba(0,0,0,0.88);font-size: 14px;font-family: 'Mulish', sans-serif;\">{{shipping_address_1}}, {{shipping_city}}, {{shipping_province}}, {{shipping_country}}</span></p>\n",
+  "billingAddress":
+    "<p><span style=\"color: rgba(0,0,0,0.88);font-size: 14px;font-family: 'Mulish', sans-serif;\">{{billing_address_1}}, {{billing_city}}, {{billing_province}}, {{billing_country}}</span>&nbsp;</p>\n",
+  "footerText":
+    "<p><span style=\"color: rgb(73,86,97);font-size: 14px;font-family: 'Mulish', sans-serif;\">If you have any questions or concerns, please reply to this email and we will get back to you as soon as we can.</span>&nbsp;&nbsp;</p>\n",
+  "subscriptionUrl": "",
+  "subscriptionIdText": "Subscription ID",
+  "contentText": "<p><span style=\"font-size: 14px;font-family: 'Mulish', sans-serif;\">Hi {{customer_name}},</span><br/><br/><span style=\"font-size: 14px;font-family: 'Mulish', sans-serif;\">Final notice: We have received many unsuccessful payments from you.</span><br/><br/><span style=\"font-size: 14px;font-family: 'Mulish', sans-serif;\">Please find a speedy solution to this issue prior to the last automated payment attempt; if not, further delays may cause order to be canceled.</span><br/><br/><span style=\"font-size: 14px;font-family: 'Mulish', sans-serif;\">Thanks!</span><br/><span style=\"font-size: 14px;font-family: 'Mulish', sans-serif;\">{{shop_name}}</span></p>"
+}
+  
+  }
