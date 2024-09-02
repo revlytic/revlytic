@@ -9,11 +9,10 @@ import {
   FullscreenOutlined,
   MenuOutlined,
   UpOutlined,
-  } from "@ant-design/icons";
+} from "@ant-design/icons";
 import { FullscreenExitOutlined } from "@ant-design/icons";
 import { Button } from "antd";
 import { useLocation } from "react-router-dom";
-
 
 import Home from "../../assets/images/Home.svg";
 import image3 from "../../assets/images/dunning_icon.svg";
@@ -22,7 +21,7 @@ import image8 from "../../assets/images/setting_icon.svg";
 import image9 from "../../assets/images/subscription_icon.svg";
 import contact from "../../assets/images/contactus.svg";
 import setup from "../../assets/images/setup.svg";
-import storefrontIcon from '../../assets/images/storefront_icon.svg'
+import storefrontIcon from "../../assets/images/storefront_icon.svg";
 
 function Sidebar() {
   const app = useAppBridge();
@@ -32,7 +31,6 @@ function Sidebar() {
   const [full, setFull] = useState(false);
   const [settings, setSettings] = useState(false);
   const [toggleSidebar, setToggleSidebar] = useState(true);
-  
 
   return (
     <div style={{ display: "flex" }}>
@@ -200,7 +198,7 @@ function Sidebar() {
                     </li>
                   </div>
                 )}
-                   <li
+                <li
                   className={
                     location.pathname == "/dunning"
                       ? "revlytic custom  active-sidebar"

@@ -87,7 +87,7 @@ const sendPaymentFailureMail = async (recipientMails, others, extra) => {
         subject: extra?.selectedTemplateData?.emailSetting?.subject,
         cc: extra?.selectedTemplateData?.emailSetting?.cc,
         bcc: extra?.selectedTemplateData?.emailSetting?.bcc,
-        replyTo: extra?.selectedTemplateData?.emailSetting?.replyTo,
+        replyTo: extra?.selectedTemplateData?.emailSetting?.replyTo ? extra?.selectedTemplateData?.emailSetting?.replyTo : extra?.shop_email,
         ...others,
       };
 
