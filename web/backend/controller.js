@@ -122,9 +122,11 @@ const sendMailCall = async (recipientMails, others, extra) => {
       subject: extra?.selectedTemplateData?.emailSetting?.subject,
       cc: extra?.selectedTemplateData?.emailSetting?.cc,
       bcc: extra?.selectedTemplateData?.emailSetting?.bcc,
-      replyTo: extra?.selectedTemplateData?.emailSetting?.replyTo,
+      replyTo: extra?.selectedTemplateData?.emailSetting?.replyTo ?  extra?.selectedTemplateData?.emailSetting?.replyTo  : extra?.data?.shopEmail,
       ...others,
     };
+
+    
   }
   const __dirname = path.resolve();
   
@@ -1061,7 +1063,7 @@ emailConfig = {
     subject:selectedTemplate?.emailSetting?.subject,
     cc:selectedTemplate?.emailSetting?.cc,
     bcc:selectedTemplate?.emailSetting?.bcc,
-    replyTo:selectedTemplate?.emailSetting?.replyTo,
+    replyTo:selectedTemplate?.emailSetting?.replyTo ? selectedTemplate?.emailSetting?.replyTo : storedetails?.store_email,
     // ...others,
  };   
 }
@@ -1300,7 +1302,7 @@ if(flag){
         subject:selectedTemplate?.emailSetting?.subject,
         cc:selectedTemplate?.emailSetting?.cc,
         bcc:selectedTemplate?.emailSetting?.bcc,
-        replyTo:selectedTemplate?.emailSetting?.replyTo,
+        replyTo:selectedTemplate?.emailSetting?.replyTo ? selectedTemplate?.emailSetting?.replyTo : storedetails?.store_email ,
         // ...others,
      };   
     }
@@ -4620,8 +4622,7 @@ export async function get_active_pause_cancelSubscription_count(req, res) {
             pauseCount: { $sum: { $cond: [{ $eq: [{ $toLower: "$status" }, "paused"] }, 1, 0] } }
           }
         }
-      ]);
-     
+      ]);        
       res.send({ message: "success", data });
     } catch (error) {
       console.log("error", error);
@@ -4644,14 +4645,14 @@ export async function get_active_pause_cancelSubscription_count(req, res) {
           $group: {
             _id: null,
             recurringCount: { $sum: { $cond: [{ $eq: [{ $toLower: "$status" }, "success"] }, 1, 0] } },
-            skipCount: { $sum: { $cond: [{ $eq: [{ $toLower: "$status" }, "cancelled"] }, 1, 0] } },
+            skipCount: { $sum: { $cond: [{ $eq: [{ $toLower: "$status" }, "skipped"] }, 1, 0] } },
             failedCount: { $sum: { $cond: [ { $or: [ 
               { $eq: [{ $toLower: "$status" }, "failed"] }, 
               { $eq: [{ $toLower: "$status" }, "retriedAfterFailure"] }
             ]}, 1, 0] } }
           }
         }
-      ]);    
+      ]);      
       res.send({ message: "success", data });
     } catch (error) {
       console.log("error", error);
@@ -4677,11 +4678,24 @@ export async function get_active_pause_cancelSubscription_count(req, res) {
         $gte: new Date(new Date(data.customDate).setUTCHours(0, 0, 0, 0)),
         $lte: new Date(new Date(data.customDate).setUTCHours(23, 59, 59, 999)),
       };
-    } else if (data.range == "customRange") {
+    } else if (data.range == "customRange") {   
+      let start =new Date(data.startDate).setUTCHours(0, 0, 0, 0);
+      let end=new Date(data.endDate).setUTCHours(23, 59, 59, 999)   
       dateRange = {
-        $gte: new Date(new Date(data.startDate).setUTCHours(0, 0, 0, 0)),
-        $lte: new Date(new Date(data.endDate).setUTCHours(23, 59, 59, 999)),
+        $gte: new Date(start),
+        $lte: new Date(end),
       };
+
+      const oneDay = 24 * 60 * 60 * 1000; // hours * minutes * seconds * milliseconds
+      const timeDifference = Math.abs(end - start);  
+      let daysDifference = Math.floor(timeDifference / oneDay);      
+       
+      for (let i = 0; i <=daysDifference; i++) {
+        const date = new Date();
+        date.setDate(new Date(data.endDate).getDate() - i);
+        datesArray.push({_id:convertISOtoDate(date),count:0});
+      }
+      // console.log('datesarray==>',datesArray)
     } else if (data.range == "today") {
       date = new Date();
       datesArray.push({_id:convertISOtoDate(date),count:0});
@@ -4691,6 +4705,7 @@ export async function get_active_pause_cancelSubscription_count(req, res) {
       };
     } else if (data.range == "yesterday") {
       date = new Date();
+      console.log("date123==>",date)
       date.setDate(date.getDate() - 1);
       datesArray.push({_id:convertISOtoDate(date),count:0});
       dateRange = {
@@ -4740,23 +4755,16 @@ export async function get_active_pause_cancelSubscription_count(req, res) {
         datesArray.push({_id:convertISOtoDate(date),count:0});
       }
 
-    } else if (data.range == "lastmonth") {
-      ///this case is used in billing plan page
-      date = new Date();  
-      date.setDate(date.getDate() - 30);  
-      dateRange = {
-        $gte: new Date(date.setUTCHours(23, 59, 59, 99)),
-        $lt: new Date(new Date().setUTCHours(23, 59, 59, 999)),
-      };
-    }
+    }     
     return ({dateRange,datesArray});
   }
 
   export async function get_subscription_details_analytics(req,res){  
     try {
     let shop = res.locals.shopify.session.shop;
-    let getData = findDateRangeNew(req.body);
   
+    let getData = findDateRangeNew(req.body);
+      //  console.log("getData",getData)
     let datesArray=getData.datesArray
     let data= await subscriptionDetailsModal.aggregate([
        {
@@ -4796,31 +4804,31 @@ res.send({message:'error'})
    }
  }  
 
-  export async function getSubscriptionsRevenueForAnalytics(){
-      try
-      {
-        let shop=res.locals.shopify.session.shop
-        let data=await billing_Attempt.aggregate([
-          {
-              $group: {
-                  _id: { $dateToString: { format: "%Y-%m-%d", date: "$date" } },
-                  totalRevenue: { $sum: "$revenue" }
-              }
-          },
-          {
-              $project: {
-                  _id: 0,
-                  date: "$_id",
-                  totalRevenue: 1
-              }
-          }
-      ])
-      }
-      catch(error){
-        console.log("error",error)
-        res.send({message:"error"})
-      }
-  }
+  // export async function getSubscriptionsRevenueForAnalytics(){
+  //     try
+  //     {
+  //       let shop=res.locals.shopify.session.shop
+  //       let data=await billing_Attempt.aggregate([
+  //         {
+  //             $group: {
+  //                 _id: { $dateToString: { format: "%Y-%m-%d", date: "$date" } },
+  //                 totalRevenue: { $sum: "$revenue" }
+  //             }
+  //         },
+  //         {
+  //             $project: {
+  //                 _id: 0,
+  //                 date: "$_id",
+  //                 totalRevenue: 1
+  //             }
+  //         }
+  //     ])
+  //     }
+  //     catch(error){
+  //       console.log("error",error)
+  //       res.send({message:"error"})
+  //     }
+  // }
 
 ///////////////////////////////////////////////
 
@@ -9148,6 +9156,12 @@ export async function sendInvoiceMailAndSaveContract(req, res) {
        
           let shopName;
           let shopEmail;
+          let storeData = await getStoreDetails(getorder.shop);
+              shopEmail = storeData.store_email;
+              shopName = storeData.store_name;                
+              getData.shopEmail = shopEmail;
+              getData.shopName = shopName; 
+
           let subscriptionPurchasedTemplateData =
             await emailTemplatesModal.findOne(
               { shop: getorder.shop },
@@ -9167,14 +9181,10 @@ export async function sendInvoiceMailAndSaveContract(req, res) {
                 ?.adminNotification;
 
             if (sendMailToCustomer || sendMailToMerchant) {
-              let recipientMails = [];
-              if (sendMailToMerchant) {
-                let storeData = await getStoreDetails(getorder.shop);
-                shopEmail = storeData.store_email;
-                shopName = storeData.store_name;                
-                recipientMails.push(shopEmail);
-                getData.shopEmail = shopEmail;
-                getData.shopName = shopName;
+              let recipientMails = [];            
+
+              if (sendMailToMerchant) {                             
+                recipientMails.push(shopEmail);              
               }
               if (sendMailToCustomer) {               
                 recipientMails.push(getData.customer_email);
@@ -9186,6 +9196,7 @@ export async function sendInvoiceMailAndSaveContract(req, res) {
                 subscriptionPurchasedTemplateData?.settings
                   ?.subscriptionPurchased;
            
+             
               let mailCheck = await sendMailCall(
                 recipientMails,
                 {},
@@ -9212,19 +9223,12 @@ export async function sendInvoiceMailAndSaveContract(req, res) {
                 ?.adminNotification;
 
             if (sendMailToCustomer || sendMailToMerchant) {
-              let recipientMails = [];
+              let recipientMails = [];             
 
               if (sendMailToMerchant) {
-                let storeData = await getStoreDetails(getorder.shop);
-                shopEmail = storeData.store_email;
-                shopName = storeData.store_name;
-             
-                recipientMails.push(shopEmail);
-                getData.shopEmail = shopEmail;
-                getData.shopName = shopName;
+                recipientMails.push(shopEmail);         
               }
-              if (sendMailToCustomer) {
-               
+              if (sendMailToCustomer) {               
                 recipientMails.push(getData.customer_email);
               }
           

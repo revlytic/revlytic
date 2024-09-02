@@ -586,7 +586,24 @@ const deleteOption=(index)=>{
           </Panel>
         </Collapse>
         <div className="revlytic-dunning-submitBtn">
-          <Button onClick={handleSubmit}>Submit</Button>
+        <Tooltip
+            color="#ffffff"
+            title={
+              billingPlan != "premium" &&
+              billingPlan != "premiere" ? (
+                <Link to={`/billing?option=dunning`}>
+                  Upgrade your Plan
+                </Link>
+              ) : (
+                ""
+              )
+            }
+          >
+          <Button onClick={handleSubmit}  disabled={
+                    billingPlan != "premium" &&
+                    billingPlan != "premiere"
+        }>Submit</Button>
+   </Tooltip>
         </div>
       </div>
       <CalculateBillingUsage setBillingPlan={setBillingPlan}/>

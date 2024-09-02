@@ -491,8 +491,18 @@ function Billing() {
                       <div className="check-box">
                         <CheckOutlined />
                       </div>
-                      Subscription
+                      {option == "dunning" ? (
+                        <strong> Dunning </strong>
+                      ) : (
+                        "Dunning"
+                      )}
                     </li>
+                    {/* <li>
+                      <div className="check-box">
+                        <CheckOutlined />
+                      </div>
+                      Subscription
+                    </li> */}
                   </ul>
                 </div>
                 {/* <div className="revlytic-upgradeButton">
