@@ -24,7 +24,6 @@
     "@shopify/stylelint-polaris": "^9.0.2",
     "@vitejs/plugin-react": "1.2.0",
     "antd": "^5.7.0",
-    "apexcharts": "^3.49.0",
     "axios": "^1.3.6",
     "clipboard-copy": "^4.0.1",
     "draft-js": "^0.11.7",
